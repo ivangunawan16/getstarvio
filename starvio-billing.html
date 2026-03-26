@@ -387,11 +387,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
       <div class="m-body" id="sub-confirm">
         <div class="pay-summary">
           <div class="pay-row"><span class="pay-row-k">Paket</span><span class="pay-row-v">Subscriber Bulanan</span></div>
-          <div class="pay-row"><span class="pay-row-k">Kredit per bulan</span><span class="pay-row-v">375 kredit</span></div>
-          <div class="pay-row"><span class="pay-row-k">Harga per kredit</span><span class="pay-row-v">Rp 833</span></div>
+          <div class="pay-row"><span class="pay-row-k">Kredit per bulan</span><span class="pay-row-v">250 kredit</span></div>
+          <div class="pay-row"><span class="pay-row-k">Harga per kredit</span><span class="pay-row-v">Rp 1.000</span></div>
           <div class="pay-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"><span class="pay-row-k" style="font-weight:700;color:var(--ink)">Total/bulan</span><span class="pay-row-v" style="font-size:14px;color:var(--lime-dk)">Rp 250.000</span></div>
         </div>
-        <div style="font-size:11px;color:var(--ink3);line-height:1.5">Pembayaran via transfer bank / QRIS. 375 kredit langsung tersedia setelah aktivasi.</div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.5">Pembayaran via transfer bank / QRIS. 250 kredit langsung tersedia setelah aktivasi.</div>
       </div>
       <div class="m-body" id="sub-processing" style="display:none">
         <div style="text-align:center;padding:20px">
@@ -404,7 +404,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
         <div style="text-align:center;padding:20px">
           <div class="pay-check">&#10003;</div>
           <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px">Langganan Aktif!</div>
-          <div style="font-size:12px;color:var(--ink3)">375 kredit subscription sudah ditambahkan ke akun kamu.</div>
+          <div style="font-size:12px;color:var(--ink3)">250 kredit subscription sudah ditambahkan ke akun kamu.</div>
         </div>
       </div>
     </div>
@@ -505,7 +505,7 @@ function calcUsageRate(U) {
    ══════════════════════════════════════════════ */
 
 var SUB_PRICE = 250000
-var SUB_CREDITS = 375 // 250 base + 125 early access bonus
+var SUB_CREDITS = 250
 
 var PACKAGES = [
   { id: 'p1', amt: 300,  price: 250000,  label: '300',   priceStr: 'Rp 250.000', per: 'Rp 833/kredit', bonus: '+50 bonus (20%)' },
@@ -545,7 +545,7 @@ function generateDummyHistory(U) {
   h.push({ date: '2026-03-01', type: 'welcome', label: 'Welcome Bonus', delta: 100, balAfter: bal + 5, note: 'Bonus kredit pendaftaran' })
 
   if (U.plan === 'subscriber') {
-    h.push({ date: '2026-03-01', type: 'subscription', label: 'Subscription', delta: 375, balAfter: bal + 8, note: 'Kredit bulanan subscriber (250 base + 125 early access +50%)' })
+    h.push({ date: '2026-03-01', type: 'subscription', label: 'Subscription', delta: 250, balAfter: bal + 8, note: 'Kredit bulanan subscriber (250 kredit/bulan)' })
   }
 
   // Some usage entries
@@ -683,7 +683,7 @@ function processSubscribe() {
       label: 'Subscription',
       delta: SUB_CREDITS,
       balAfter: U.remLeft,
-      note: 'Aktivasi subscriber — Rp 250.000/bulan (375 kredit, incl. early access +50%)'
+      note: 'Aktivasi subscriber — Rp 250.000/bulan (250 kredit/bulan)'
     })
     saveU(U)
 
@@ -826,7 +826,7 @@ function render() {
   if (plan === 'subscriber') {
     html += '<button class="cancel-link" onclick="openCancelModal()">Batalkan Langganan</button>'
   } else {
-    html += '<button class="btn btn-lime" onclick="openSubscribe()">Subscribe — Rp 250.000/bulan (375 kredit)</button>'
+    html += '<button class="btn btn-lime" onclick="openSubscribe()">Subscribe — Rp 250.000/bulan (250 kredit)</button>'
   }
   html += '</div>'
   html += '</div>'
@@ -988,7 +988,7 @@ function render() {
     recoHtml += '<div class="reco-banner">'
     recoHtml += '<div class="reco-icon" style="background:var(--lime-bg);border:1px solid #c8f07a">&#128161;</div>'
     recoHtml += '<div class="reco-text"><div class="reco-title">Upgrade ke Subscriber?</div>'
-    recoHtml += '<div class="reco-sub">Dapatkan 375 kredit/bulan hanya Rp 250.000 (Rp 667/kredit). Early access bonus +50%! Setiap reminder punya potensi bawa pelanggan balik.</div></div>'
+    recoHtml += '<div class="reco-sub">Dapatkan 250 kredit/bulan hanya Rp 250.000 (Rp 1.000/kredit). Setiap reminder punya potensi bawa pelanggan balik.</div></div>'
     recoHtml += '</div>'
   }
   html += recoHtml
@@ -1085,7 +1085,7 @@ function render() {
 
   // Checkbox: sub hampir habis (<50/300)
   html += '<div class="notif-row">'
-  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.subLow !== false ? 'checked' : '') + ' onchange="toggleNotif(\'subLow\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit subscription hampir habis (&lt; 50/375)</span></label>'
+  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.subLow !== false ? 'checked' : '') + ' onchange="toggleNotif(\'subLow\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit subscription hampir habis (&lt; 50/250)</span></label>'
   html += '</div>'
 
   // Checkbox: 3 hari sebelum renewal
@@ -1113,15 +1113,15 @@ function devSetBilling(preset) {
     'free-low':      { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
     'free-critical': { plan:'free', subCreditsLeft:0, topupCreditsLeft:5,   subRenewsAt:null, remMax:100 },
     'free-empty':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 },
-    'sub-healthy':   { plan:'subscriber', subCreditsLeft:312, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-low':       { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:375 }
+    'sub-healthy':   { plan:'subscriber', subCreditsLeft:187, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-low':       { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:250 }
   }
   var s = states[preset]
   if (!s) return
-  u.plan = s.plan; u.subCreditsLeft = s.subCreditsLeft; u.subCreditsMax = 375
+  u.plan = s.plan; u.subCreditsLeft = s.subCreditsLeft; u.subCreditsMax = 250
   u.topupCreditsLeft = s.topupCreditsLeft; u.subRenewsAt = s.subRenewsAt; u.remMax = s.remMax
   localStorage.setItem('starvio_user', JSON.stringify(u))
   var t = document.getElementById('dev-billing-toast')

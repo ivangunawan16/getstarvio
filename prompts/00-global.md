@@ -21,7 +21,7 @@ Kamu sedang membangun halaman untuk **Starvio** — WhatsApp-based customer retu
 **Billing model:**
 - 1 kredit = 1 WhatsApp reminder terkirim
 - **Welcome bonus:** 100 kredit gratis saat pertama join (semua user, 1x saja)
-- **Subscription Rp 250.000/bulan:** include 375 kredit/bulan (250 base + 125 early access +50%) — ⚠️ TIDAK rollover ke bulan berikutnya
+- **Subscription Rp 250.000/bulan:** include 250 kredit/bulan — ⚠️ TIDAK rollover ke bulan berikutnya
 - **Top-up (pay-as-you-go):** beli kredit extra kapan saja — ✅ tidak ada expiry
 - **Urutan pakai:** kredit subscription habis duluan → baru kredit top-up
 - `remLeft` = `subCreditsLeft + topupCreditsLeft` (total usable, selalu computed)
@@ -70,7 +70,7 @@ Key rules yang tidak boleh dilanggar:
   topupCreditsLeft: number,    // kredit top-up (tidak ada expiry)
   subRenewsAt: "ISO string | null", // tanggal renewal berikutnya (null jika free)
   // remLeft = subCreditsLeft + topupCreditsLeft — SELALU computed, tidak disimpan langsung
-  remMax: number,              // max kredit per bulan (375 untuk subscriber incl. early access bonus, tidak relevan untuk free)
+  remMax: number,              // max kredit per bulan (250 untuk subscriber, tidak relevan untuk free)
   defaultInterval: number,     // default interval reminder dalam hari
   cats: [
     {
@@ -391,3 +391,4 @@ Build satu halaman per sesi. Untuk setiap halaman:
 |---|---|
 | 2026-03-26 | Sync with built HTML: `starvio-catat-kunjungan.html` is "Catat Kunjungan" page (halaman utama, bukan redirect). Nav ID = `nav-catat` pointing to `starvio-catat-kunjungan.html`. Onboarding = 4 steps (not 5). Settings includes QR check-in section. loadU() computes remLeft = subCreditsLeft + topupCreditsLeft. |
 | 2026-03-26 | Sync: subCreditsMax=375 (was 300), content max-width=960px (was 900px), subscription=375 kredit/bulan (250 base + 125 early access +50%), top-up base Rp 1.000/kredit |
+| 2026-03-27 | Subscription credits changed: 375 → 250 (flat, no early access bonus). subCreditsMax=250, remMax=250 for subscribers. Early access +50% bonus now applies ONLY to top-up packages. |

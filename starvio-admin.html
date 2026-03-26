@@ -370,11 +370,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           </div>
           <div class="plan-field">
             <div class="plan-field-lbl">Kredit per bulan</div>
-            <input class="plan-field-inp" id="pc-sub-credit" value="375" type="number" min="0">
+            <input class="plan-field-inp" id="pc-sub-credit" value="250" type="number" min="0">
             <div class="plan-field-unit">kredit / bulan</div>
           </div>
           <div class="plan-field" style="padding-left:32px">
-            <div class="plan-field-lbl" style="font-size:11px;color:var(--ink3);font-style:italic">250 base + 125 early access bonus</div>
+            <div class="plan-field-lbl" style="font-size:11px;color:var(--ink3);font-style:italic">250 kredit/bulan (flat)</div>
           </div>
           <div class="plan-field">
             <div class="plan-field-lbl">Harga</div>
@@ -935,9 +935,9 @@ var TX_DATA = [];
       var sd = new Date('2026-03-01');
       TX_DATA.push({
         company: b.name, type:'subscription', label:'Langganan Bulanan',
-        icon:'↺', cls:'reset', sign:'+', amount:375,
+        icon:'↺', cls:'reset', sign:'+', amount:250,
         date: sd.toISOString().split('T')[0],
-        balanceAfter: 375, keterangan:'Reset + kredit bulanan Maret'
+        balanceAfter: 250, keterangan:'Reset + kredit bulanan Maret'
       });
     }
 

@@ -18,8 +18,7 @@ Kelola subscription dan kredit reminder. **ROI framing** — reminder bukan "bia
 │                   │  Berlaku 1x, tidak ada expiry        │
 ├─────────────────────────────────────────────────────────┤
 │  SUBSCRIPTION     │  Rp 250.000 / bulan                  │
-│  (opsional)       │  Include 375 kredit/bulan            │
-│                   │  (250 base + 125 early access +50%)  │
+│  (opsional)       │  Include 250 kredit/bulan            │
 │                   │  ⚠️ TIDAK rollover ke bulan berikutnya│
 │                   │  Reset tanggal yang sama tiap bulan  │
 ├─────────────────────────────────────────────────────────┤
@@ -37,7 +36,7 @@ Kelola subscription dan kredit reminder. **ROI framing** — reminder bukan "bia
 
 **User states:**
 - **New / Trial:** `plan: "free"` — punya welcome bonus 100 kredit, belum subscribe
-- **Subscriber aktif:** `plan: "subscriber"` — bayar 250k/bulan, dapat 375 kredit di-refresh tiap bulan (250 base + 125 early access +50%)
+- **Subscriber aktif:** `plan: "subscriber"` — bayar 250k/bulan, dapat 250 kredit di-refresh tiap bulan
 - **Subscriber + top-up:** punya kedua tipe kredit sekaligus
 
 ---
@@ -50,7 +49,7 @@ Tambahkan field ini ke `starvio_user`:
 {
   plan: "free" | "subscriber",       // status subscription
   subCreditsLeft: number,            // sisa kredit dari subscription bulan ini (reset bulanan)
-  subCreditsMax: 375,                // 250 base + 125 early access bonus (+50%)
+  subCreditsMax: 250,
   topupCreditsLeft: number,          // kredit top-up (tidak ada expiry)
   subRenewsAt: "ISO string | null",  // tanggal renewal berikutnya (null jika free)
   // remLeft = subCreditsLeft + topupCreditsLeft (computed, bukan disimpan)
@@ -70,7 +69,7 @@ Tambahkan field ini ke `starvio_user`:
 - Badge: "Paket Gratis" (grey)
 - Teks: "Kamu sedang memakai welcome bonus — `remLeft` kredit tersisa"
 - CTA prominent: tombol **"Subscribe Sekarang — Rp 250.000/bulan"**
-- Subtext: "Dapatkan 375 reminder/bulan + akses semua fitur (incl. early access bonus +50%)"
+- Subtext: "Dapatkan 250 reminder/bulan + akses semua fitur"
 
 **Jika `plan === "subscriber"`:**
 - Badge: "Subscriber Aktif" (lime)
@@ -85,7 +84,7 @@ Tampilkan dua baris kredit secara visual terpisah:
 
 **Kredit Subscription** (hanya tampil jika `plan === "subscriber"`)
 - Label: "Kredit Bulanan" + badge "Reset tiap bulan"
-- Angka: `subCreditsLeft` dari `subCreditsMax` (375)
+- Angka: `subCreditsLeft` dari `subCreditsMax` (250)
 - Progress bar
 - Warning jika < 30: "Kredit bulanan hampir habis — tidak rollover ke bulan depan"
 
@@ -136,7 +135,7 @@ Tampilkan banner rekomendasi berdasarkan kondisi:
 
 | Kondisi | Rekomendasi |
 |---|---|
-| `plan === "free"` + `remLeft` < 30 | "Subscribe sekarang — dapat 375 kredit fresh tiap bulan" |
+| `plan === "free"` + `remLeft` < 30 | "Subscribe sekarang — dapat 250 kredit fresh tiap bulan" |
 | `plan === "subscriber"` + sub habis + topup > 0 | "Kredit bulanan habis — kredit top-up kamu akan dipakai" |
 | `plan === "subscriber"` + topup = 0 + sub < 30 | "Mau ada cadangan? Top up kredit extra sekarang" |
 | `remLeft` = 0 | 🚨 Banner merah: "Automation dihentikan — isi kredit untuk lanjutkan" |
@@ -160,7 +159,7 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 | Tipe | Warna | Contoh Keterangan |
 |---|---|---|
 | Top Up | hijau + | "Top Up 500 kredit" |
-| Subscription | biru + | "Renewal bulanan — 375 kredit" |
+| Subscription | biru + | "Renewal bulanan — 250 kredit" |
 | Welcome Bonus | lime + | "Welcome bonus 100 kredit" |
 | Penggunaan | merah – | "Reminder terkirim ke Mia" |
 
@@ -172,7 +171,7 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 - Checkbox:
   - ☑ Saat kredit total Rendah (< 30)
   - ☑ Saat kredit total Kritis (< 10)
-  - ☑ Saat kredit subscription hampir habis (< 50 dari 375)
+  - ☑ Saat kredit subscription hampir habis (< 50 dari 250)
   - ☑ 3 hari sebelum renewal
 
 ---
@@ -205,3 +204,4 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 | 2026-03-26 | Tambah Reference section — acuan v2.0, warning jangan pakai v2.1 |
 | 2026-03-26 | **MAJOR UPDATE:** Tambah subscription model Rp 250.000/bulan + 300 kredit (no rollover) + top-up pay-as-you-go (no expiry) + welcome bonus 100 kredit. Update data schema, semua sections billing, resolve known bug #3 |
 | 2026-03-26 | Sync with HTML: subCreditsMax=375 (250 base + 125 early access +50%). Top-up packages: 300 (Rp 250k, +20%), 625 (Rp 500k, +25%), 1500 (Rp 1jt, +50%). Base price Rp 1.000/kredit. Auto top-up has explicit "Simpan Pengaturan" button. |
+| 2026-03-27 | Subscription credits: 375 → 250 (flat, no early access bonus on subscription). subCreditsMax=250. Early access +50% applies ONLY to top-up packages. |

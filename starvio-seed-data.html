@@ -212,19 +212,19 @@ var DUMMY = {
   country: 'ID',
   defaultInterval: 30,
   plan: 'subscriber',
-  subCreditsLeft: 312,
-  subCreditsMax: 375,
+  subCreditsLeft: 187,
+  subCreditsMax: 250,
   topupCreditsLeft: 50,
   subRenewsAt: (function(){ var d=new Date(); d.setMonth(d.getMonth()+1); d.setDate(15); return d.toISOString() })(),
-  remMax: 375,
+  remMax: 250,
   automationEnabled: true,
   billingHistory: [
     { date: (function(){ var d=new Date(); d.setDate(d.getDate()-28); return d.toISOString().slice(0,10) })(), type:'welcome', label:'Welcome Bonus', delta:100, balAfter:100, note:'Bonus kredit pendaftaran' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-25); return d.toISOString().slice(0,10) })(), type:'subscription', label:'Subscription', delta:375, balAfter:475, note:'Aktivasi subscriber — Rp 250.000/bulan (375 kredit, early access +50%)' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-20); return d.toISOString().slice(0,10) })(), type:'topup', label:'Top Up', delta:300, balAfter:775, note:'Paket 300 kredit — Rp 250.000 (incl. +50 bonus 20%)' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-15); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-22, balAfter:428, note:'22 reminder terkirim' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-8); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-80, balAfter:348, note:'80 reminder terkirim' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-2); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-61, balAfter:287, note:'61 reminder terkirim' }
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-25); return d.toISOString().slice(0,10) })(), type:'subscription', label:'Subscription', delta:250, balAfter:350, note:'Aktivasi subscriber — Rp 250.000/bulan (250 kredit/bulan)' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-20); return d.toISOString().slice(0,10) })(), type:'topup', label:'Top Up', delta:300, balAfter:650, note:'Paket 300 kredit — Rp 250.000 (incl. +50 bonus 20%)' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-15); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-22, balAfter:303, note:'22 reminder terkirim' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-8); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-80, balAfter:223, note:'80 reminder terkirim' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-2); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-61, balAfter:162, note:'61 reminder terkirim' }
   ],
   billingNotifs: { lowCredit:true, criticalCredit:true, subLow:true, renewalReminder:true },
 
@@ -487,9 +487,9 @@ function injectData() {
 
   var renewDate = new Date(); renewDate.setMonth(renewDate.getMonth() + 1); renewDate.setDate(15);
   var billingPresets = {
-    'sub-healthy':  { plan:'subscriber', subCreditsLeft:312, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-low':      { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-empty':    { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-healthy':  { plan:'subscriber', subCreditsLeft:187, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-low':      { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-empty':    { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:250 },
     'free-full':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, remMax:100 },
     'free-low':     { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
     'free-empty':   { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 }
@@ -504,7 +504,7 @@ function injectData() {
       var data = JSON.parse(JSON.stringify(DUMMY));
       data.plan = bp.plan;
       data.subCreditsLeft = bp.subCreditsLeft;
-      data.subCreditsMax = bp.plan === 'subscriber' ? 375 : 0;
+      data.subCreditsMax = bp.plan === 'subscriber' ? 250 : 0;
       data.topupCreditsLeft = bp.topupCreditsLeft;
       data.subRenewsAt = bp.subRenewsAt;
       data.remMax = bp.remMax;
@@ -539,18 +539,18 @@ function setBilling(preset) {
     'free-low':      { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
     'free-critical': { plan:'free', subCreditsLeft:0, topupCreditsLeft:5,   subRenewsAt:null, remMax:100 },
     'free-empty':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 },
-    'sub-healthy':   { plan:'subscriber', subCreditsLeft:312, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-low':       { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:375 },
-    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:375 }
+    'sub-healthy':   { plan:'subscriber', subCreditsLeft:187, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-low':       { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:250 }
   };
 
   var s = states[preset];
   if (!s) return;
   u.plan = s.plan;
   u.subCreditsLeft = s.subCreditsLeft;
-  u.subCreditsMax = 375;
+  u.subCreditsMax = 250;
   u.topupCreditsLeft = s.topupCreditsLeft;
   u.subRenewsAt = s.subRenewsAt;
   u.remMax = s.remMax;

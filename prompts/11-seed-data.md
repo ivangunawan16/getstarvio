@@ -44,7 +44,7 @@ Pelanggan, kategori, dan reminder log tetap sama — hanya billing fields yang b
 - Preset buttons/pills — klik untuk switch billing state instan
 - Tab aktif (state saat ini): highlight style
 - Di bawah, tampilkan ringkasan state saat ini
-- `subCreditsMax` selalu di-set ke 375 untuk subscriber presets
+- `subCreditsMax` selalu di-set ke 250 untuk subscriber presets
 
 **Implementasi (tiap tab klik):**
 ```js
@@ -78,7 +78,7 @@ country: "ID",
 // Billing fields (model baru):
 plan: "subscriber",           // Cynthia sudah subscribe
 subCreditsLeft: 237,          // dari 300/bulan, sudah terpakai bulan ini
-subCreditsMax: 375,           // 250 base + 125 early access (+50%)
+subCreditsMax: 250,
 topupCreditsLeft: 50,         // kredit top-up yang tidak ada expiry
 subRenewsAt: "+1 month",     // dynamic — 1 bulan dari sekarang
 remMax: 300,                  // max kredit subscription per bulan (NOT 100)
@@ -124,3 +124,4 @@ notifSettings: { lowCredit:true, criticalCredit:true, subLow:true, preRenewal:tr
 | 2026-03-26 | **Tambah Credit State Switcher:** 6 tab pills (Free OK/Tipis/Habis + Paid OK/Tipis/Kritis) untuk quick switch state tanpa edit localStorage manual |
 | 2026-03-26 | Sync: plan=subscriber, subCreditsLeft=237, topupCreditsLeft=50, remMax=300. Has billingHistory array (5 entries) and notifSettings. remLeft is computed (not stored). |
 | 2026-03-26 | Sync: subCreditsMax=375. 9 billing presets (not 6). billingHistory format: delta/balAfter/label/note. Dev panel has billing condition switcher. |
+| 2026-03-27 | Subscription credits: 375 → 250 (flat, no early access bonus). subCreditsMax=250, remMax=250. |
