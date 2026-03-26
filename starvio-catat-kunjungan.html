@@ -98,12 +98,12 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
 /* ── MODAL OVERLAY ── */
 .overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px);padding:20px}
 .overlay.show{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:visible;animation:fadeUp .18s ease;width:100%;max-width:560px;min-height:500px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 .modal-hd{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .modal-title{font-size:16px;font-weight:700;color:var(--ink)}
 .modal-close{width:30px;height:30px;border-radius:50%;background:var(--bg3);color:var(--ink2);font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;cursor:pointer;border:none;font-family:'Sora',sans-serif}
 .modal-close:hover{background:var(--bg4)}
-.modal-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px}
+.modal-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px;max-height:calc(85vh - 80px);overflow-y:auto}
 
 /* ── STEP INDICATOR ── */
 .steps{display:flex;align-items:center;gap:6px;margin-bottom:4px}
@@ -113,13 +113,13 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
 .step-label{font-size:11px;color:var(--ink3);margin-left:6px}
 
 /* ── SEARCH INPUT ── */
-.search-wrap{position:relative}
+.search-wrap{position:relative;z-index:20}
 .search-input{width:100%;padding:10px 12px 10px 36px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg2);color:var(--ink);font-size:13px;font-family:'Sora',sans-serif;transition:border-color .15s}
 .search-input:focus{outline:none;border-color:var(--lime2)}
 .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink3)}
 
 /* ── AUTOCOMPLETE ── */
-.ac-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:10;display:none;overflow:hidden;max-height:280px;overflow-y:auto}
+.ac-dropdown{background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.12);display:none;overflow:hidden;max-height:320px;overflow-y:auto;margin-top:8px}
 .ac-dropdown.show{display:block}
 .ac-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--border)}
 .ac-item:last-child{border-bottom:none}
@@ -144,24 +144,27 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
 .phone-input:focus{outline:none;border-color:var(--lime2)}
 .input-error{font-size:11px;color:var(--red);margin-top:2px;display:none}
 
-/* ── SELECTED CUSTOMER ── */
-.selected-cx{display:flex;align-items:center;gap:12px;padding:12px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm)}
-.selected-cx-name{font-size:13px;font-weight:600;color:var(--lime-dk)}
+/* ── FOUND CARD (matches checkin page) ── */
+.found-card{background:var(--bg2);border-radius:var(--r-lg);border:1.5px solid var(--border);border-top:3px solid var(--lime2);padding:18px 16px}
+.found-card .greeting{font-size:18px;font-weight:700;margin-bottom:4px}
+.found-card .pick-label{font-size:13px;color:var(--ink2)}
 
-/* ── CHECKLIST ── */
-.check-list{display:flex;flex-direction:column;gap:8px}
-.check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;transition:border-color .15s,background .15s;user-select:none}
-.check-item:hover{border-color:var(--border2);background:var(--bg3)}
-.check-item.checked{border-color:var(--lime2);background:var(--lime-bg)}
-.check-box{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border2);background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
-.check-item.checked .check-box{border-color:var(--lime2);background:var(--lime2)}
-.check-icon{font-size:15px;flex-shrink:0}
-.check-name{font-size:13px;font-weight:500;color:var(--ink)}
+/* ── SERVICE ROWS (matches checkin page) ── */
+.svc-list{display:flex;flex-direction:column;gap:8px}
+.svc-row{display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:border-color .15s,background .15s;min-height:56px;user-select:none;-webkit-tap-highlight-color:transparent}
+.svc-row:hover{border-color:var(--border2);background:var(--bg3)}
+.svc-row.checked{border-color:var(--lime2);background:var(--lime-bg)}
+.svc-row .svc-icon{font-size:22px;flex-shrink:0;line-height:1}
+.svc-row .svc-name{font-size:14px;font-weight:600;color:var(--ink);flex:1;min-width:0}
+.svc-row .svc-check{width:22px;height:22px;flex-shrink:0;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;transition:all .15s}
+.svc-row.checked .svc-check{background:var(--lime2);border-color:var(--lime2)}
+.svc-row .svc-check svg{display:none}
+.svc-row.checked .svc-check svg{display:block}
 
-/* ── DATE FIELD ── */
-.date-row{display:flex;align-items:center;gap:10px;margin-top:4px}
-.date-label{font-size:12px;font-weight:600;color:var(--ink2);white-space:nowrap}
-.date-input{padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg3);color:var(--ink2);font-size:13px;font-family:'JetBrains Mono',monospace;flex:1}
+/* ── DATE FIELD (matches checkin) ── */
+.date-row{display:flex;flex-direction:column;gap:4px}
+.date-label{font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase}
+.date-input{width:100%;height:48px;padding:0 14px;background:var(--bg2);border:2px solid var(--border);border-radius:var(--r-sm);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--ink)}
 
 /* ── SUMMARY ── */
 .summary-card{background:var(--bg3);border-radius:var(--r-sm);padding:16px}
@@ -308,8 +311,8 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
         <div class="search-wrap" id="search-wrap">
           <svg class="search-icon" id="search-icon-svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
           <input type="text" class="search-input" id="cx-search" placeholder="Cari nama atau nomor WA..." autocomplete="off">
-          <div class="ac-dropdown" id="ac-dropdown"></div>
         </div>
+        <div class="ac-dropdown" id="ac-dropdown"></div>
         <!-- New customer form (hidden by default) -->
         <div id="new-cx-form" style="display:none;margin-top:16px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
@@ -347,12 +350,14 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
 
       <!-- Step 2: Pick Services -->
       <div id="step-2" style="display:none">
-        <div class="selected-cx" id="selected-cx-info"></div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink2);margin-top:4px">Pilih layanan yang dikerjakan:</div>
-        <div class="check-list" id="service-checklist"></div>
-        <div class="date-row">
-          <span class="date-label">Tanggal:</span>
-          <input type="date" class="date-input" id="visit-date">
+        <div class="found-card" id="selected-cx-info">
+          <div class="greeting" id="cx-greeting"></div>
+          <div class="date-row" style="margin-top:8px">
+            <span class="date-label">Tanggal Kunjungan</span>
+            <input type="date" class="date-input" id="visit-date" readonly style="background:var(--bg3);color:var(--ink3)">
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-top:14px">Pilih layanan hari ini:</div>
+          <div class="svc-list" id="service-checklist" style="margin-top:8px"></div>
         </div>
         <div class="modal-actions">
           <button class="btn btn-ghost" onclick="goStep(1)">Kembali</button>
@@ -650,20 +655,20 @@ function saveNewCustomer() {
 function renderStep2() {
   if (!selectedCustomer) return
 
-  // Show selected customer info
-  var infoEl = document.getElementById('selected-cx-info')
-  infoEl.innerHTML = '<div class="avatar" style="width:32px;height:32px;font-size:12px">' + initials(selectedCustomer.name) + '</div>' +
-    '<span class="selected-cx-name">' + escHtml(selectedCustomer.name) + '</span>'
+  // Show greeting (matches checkin page found-card)
+  document.getElementById('cx-greeting').innerHTML = 'Hai, ' + escHtml(selectedCustomer.name) + '! 👋'
 
-  // Render service checklist from cats
+  // Render service checklist from cats (matching checkin page style)
   var cats = U.cats || []
   var cl = document.getElementById('service-checklist')
   cl.innerHTML = ''
   cats.forEach(function(cat) {
     var div = document.createElement('div')
-    div.className = 'check-item'
+    div.className = 'svc-row'
     div.setAttribute('data-cat-id', cat.id)
-    div.innerHTML = '<div class="check-box"></div><span class="check-icon">' + cat.icon + '</span><span class="check-name">' + escHtml(cat.name) + '</span>'
+    div.innerHTML = '<div class="svc-icon">' + (cat.icon || '📌') + '</div>' +
+      '<div class="svc-name">' + escHtml(cat.name) + '</div>' +
+      '<div class="svc-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>'
     div.addEventListener('click', function() {
       this.classList.toggle('checked')
       updateSelectedServices()
@@ -678,7 +683,7 @@ function renderStep2() {
 }
 
 function updateSelectedServices() {
-  var items = document.querySelectorAll('#service-checklist .check-item')
+  var items = document.querySelectorAll('#service-checklist .svc-row')
   var cats = U.cats || []
   selectedServices = []
   items.forEach(function(item) {

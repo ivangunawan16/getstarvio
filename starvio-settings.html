@@ -910,7 +910,7 @@ function renderWaStatus(u) {
 }
 
 /* ══════════════════════════════════════════
-   QR / KUMPULKAN FUNCTIONS
+   QR CHECK-IN FUNCTIONS
    ══════════════════════════════════════════ */
 
 /* ── COPY LINK ── */
@@ -1025,7 +1025,7 @@ function boot() {
   var U = loadU()
   if (!U) { location.href = 'starvio-login.html'; return }
 
-  // ── QR / Kumpulkan section ──
+  // ── QR Check-in section ──
   var slug = U.bizSlug || 'bisnis-kamu'
   var link = 'starvio.app/checkin/' + slug
   document.getElementById('qr-slug').textContent = link

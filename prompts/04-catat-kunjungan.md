@@ -37,10 +37,16 @@ Dua section, vertikal dari atas ke bawah:
 - Tidak ada input manual tanpa search terlebih dahulu
 
 **Tahap 2: Pilih Layanan** (setelah pelanggan dipilih)
-- Tampilkan SEMUA layanan dari `cats[]` sebagai checklist
-- Per item: ikon, nama layanan, interval (hari) — format JetBrains Mono
-- Admin centang layanan yang dikerjakan hari ini — boleh lebih dari satu
-- Field tanggal: default hari ini, bisa diubah (untuk koreksi input mundur)
+- UI matches checkin page: `found-card` with green top-border (`border-top:3px solid var(--lime2)`)
+- Greeting di dalam card: "Hai, [nama]! 👋" (`font-size:18px;font-weight:700`)
+- Field tanggal di dalam card: default hari ini, readonly (background `var(--bg3)`)
+- Label "Pilih layanan hari ini:" di dalam card
+- Service list di dalam card (`svc-list`): semua layanan dari `cats[]` sebagai rows
+- Per row: ikon (22px), nama layanan (14px bold), circular check (22x22, `border-radius:50%`)
+- Row yang dicentang: `border-color:var(--lime2);background:var(--lime-bg)`, check circle filled lime
+- Admin centang layanan yang dikerjakan — boleh lebih dari satu
+- Autocomplete dropdown di Step 1 adalah inline (tidak `position:absolute`), dengan `margin-top:8px`
+- Modal: `max-width:560px;min-height:500px`
 
 **Tahap 3: Konfirmasi**
 - Ringkasan: nama pelanggan, layanan yang dipilih, tanggal
@@ -96,4 +102,5 @@ Dua section, vertikal dari atas ke bawah:
 | 2026-03-26 | **Update v3:** Halaman ini satu-satunya tempat catat kunjungan. Semua CRM/edit ada di Pelanggan. Tambah "Yang TIDAK Ada" section untuk clarity |
 | 2026-03-26 | Cleanup: `starvio-kumpulkan.html` dihapus. `starvio-catat-kunjungan.html` adalah halaman utama. nav-catat href=starvio-catat-kunjungan.html. No QR/how-to content (moved to Settings). Customer names link to pelanggan page. |
 | 2026-03-26 | **FINAL:** starvio-kumpulkan.html dihapus. starvio-catat-kunjungan.html adalah halaman utama (bukan redirect). nav-catat href = starvio-catat-kunjungan.html |
+| 2026-03-26 | **Sync Step 2 UI:** found-card with greeting, date inside card, service list inside card, circular checks (matches checkin page). Modal 560px wide, min-height 500px. Autocomplete dropdown inline. |
 
