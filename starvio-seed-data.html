@@ -21,6 +21,14 @@ body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a19
 .wrap{width:100%;max-width:960px;margin:0 auto;animation:fadeUp .25s ease}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
 @media(max-width:767px){.grid-2{grid-template-columns:1fr}}
+.inject-opts{display:flex;flex-direction:column;gap:5px}
+.inject-opt{display:flex;align-items:center;gap:8px;padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r-sm);cursor:pointer;font-size:12px;transition:all .15s;background:var(--bg2)}
+.inject-opt:hover{border-color:var(--border2);background:var(--bg3)}
+.inject-opt.sel{border-color:var(--lime2);background:var(--lime-bg)}
+.inject-opt input{display:none}
+.io-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;transition:all .15s}
+.inject-opt.sel .io-dot{border-color:var(--lime2);background:var(--lime);box-shadow:inset 0 0 0 2px #fff}
+.io-sub{font-size:10px;color:var(--ink3);font-weight:400}
 .logo-row{display:flex;align-items:center;gap:9px;margin-bottom:24px}
 .logo-mark{width:32px;height:32px;background:var(--lime);border-radius:8px;display:flex;align-items:center;justify-content:center}
 .logo-mark svg{width:15px;height:15px}
@@ -111,7 +119,7 @@ body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a19
     <div class="card">
       <div class="card-hd">
         <div class="card-title">Inject Dummy Data</div>
-        <div class="card-sub">50 pelanggan, 6 kategori, 42 reminder</div>
+        <div class="card-sub">50 pelanggan, 6 kategori, 42 reminder — pilih kondisi billing</div>
       </div>
       <div class="card-body">
         <div class="biz-preview">
@@ -121,7 +129,18 @@ body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a19
             <div class="biz-meta">Cynthia · cynthia@gmail.com · Jakarta</div>
           </div>
         </div>
-        <div class="btn-row" style="margin-top:10px">
+
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px">Pilih kondisi saat inject:</div>
+        <div class="inject-opts">
+          <label class="inject-opt sel" id="io-sub-healthy"><input type="radio" name="inject-plan" value="sub-healthy" checked><span class="io-dot"></span><div><strong>Subscriber — Sehat</strong><br><span class="io-sub">312 sub + 50 topup = 362 kredit</span></div></label>
+          <label class="inject-opt" id="io-sub-low"><input type="radio" name="inject-plan" value="sub-low"><span class="io-dot"></span><div><strong>Subscriber — Low</strong><br><span class="io-sub">18 sub + 50 topup = 68 kredit</span></div></label>
+          <label class="inject-opt" id="io-sub-empty"><input type="radio" name="inject-plan" value="sub-empty"><span class="io-dot"></span><div><strong>Subscriber — Habis</strong><br><span class="io-sub">0 sub + 0 topup = 0 kredit</span></div></label>
+          <label class="inject-opt" id="io-free-full"><input type="radio" name="inject-plan" value="free-full"><span class="io-dot"></span><div><strong>Free — Full</strong><br><span class="io-sub">Welcome bonus 100 kredit</span></div></label>
+          <label class="inject-opt" id="io-free-low"><input type="radio" name="inject-plan" value="free-low"><span class="io-dot"></span><div><strong>Free — Hampir Habis</strong><br><span class="io-sub">22 kredit tersisa</span></div></label>
+          <label class="inject-opt" id="io-free-empty"><input type="radio" name="inject-plan" value="free-empty"><span class="io-dot"></span><div><strong>Free — Habis</strong><br><span class="io-sub">0 kredit, perlu topup</span></div></label>
+        </div>
+
+        <div class="btn-row" style="margin-top:12px">
           <button class="btn btn-lime" onclick="injectData()">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v8M4 7l4 4 4-4"/><path d="M3 13h10"/></svg>
             Inject
@@ -450,20 +469,55 @@ function addLog(msg, type) {
   el.scrollTop = el.scrollHeight;
 }
 
+// Radio button selection UI
+document.querySelectorAll('.inject-opt input[name="inject-plan"]').forEach(function(r) {
+  r.addEventListener('change', function() {
+    document.querySelectorAll('.inject-opt').forEach(function(o) { o.classList.remove('sel'); });
+    if (r.checked) r.closest('.inject-opt').classList.add('sel');
+  });
+});
+
 function injectData() {
   showLog();
   document.getElementById('log').innerHTML = '';
-  addLog('Memulai inject...', '');
+
+  // Get selected billing condition
+  var sel = document.querySelector('input[name="inject-plan"]:checked');
+  var preset = sel ? sel.value : 'sub-healthy';
+
+  var renewDate = new Date(); renewDate.setMonth(renewDate.getMonth() + 1); renewDate.setDate(15);
+  var billingPresets = {
+    'sub-healthy':  { plan:'subscriber', subCreditsLeft:312, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-low':      { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-empty':    { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'free-full':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, remMax:100 },
+    'free-low':     { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
+    'free-empty':   { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 }
+  };
+  var bp = billingPresets[preset] || billingPresets['sub-healthy'];
+  var totalKredit = bp.subCreditsLeft + bp.topupCreditsLeft;
+
+  addLog('Memulai inject (' + preset + ')...', '');
   setTimeout(function() {
     try {
-      var totalSvc = DUMMY.customers.reduce(function(a, c) { return a + (c.services ? c.services.length : 1); }, 0);
-      addLog('Bisnis: ' + DUMMY.bizName + ' (' + DUMMY.adminName + ')', '');
-      addLog('Menulis ' + DUMMY.customers.length + ' pelanggan (' + totalSvc + ' total service records)...', '');
-      addLog('Menulis ' + DUMMY.cats.length + ' kategori...', '');
-      addLog('Menulis ' + DUMMY.reminders.length + ' log reminder...', '');
-      localStorage.setItem(KEY, JSON.stringify(DUMMY));
+      // Apply billing condition to DUMMY before saving
+      var data = JSON.parse(JSON.stringify(DUMMY));
+      data.plan = bp.plan;
+      data.subCreditsLeft = bp.subCreditsLeft;
+      data.subCreditsMax = bp.plan === 'subscriber' ? 375 : 0;
+      data.topupCreditsLeft = bp.topupCreditsLeft;
+      data.subRenewsAt = bp.subRenewsAt;
+      data.remMax = bp.remMax;
+
+      var totalSvc = data.customers.reduce(function(a, c) { return a + (c.services ? c.services.length : 1); }, 0);
+      addLog('Bisnis: ' + data.bizName + ' (' + data.adminName + ')', '');
+      addLog('Plan: ' + bp.plan + ' | Kredit: ' + totalKredit + ' (sub:' + bp.subCreditsLeft + ' + topup:' + bp.topupCreditsLeft + ')', '');
+      addLog('Menulis ' + data.customers.length + ' pelanggan (' + totalSvc + ' total service records)...', '');
+      addLog('Menulis ' + data.cats.length + ' kategori...', '');
+      addLog('Menulis ' + data.reminders.length + ' log reminder...', '');
+      localStorage.setItem(KEY, JSON.stringify(data));
       addLog('✓ Tersimpan ke localStorage ["' + KEY + '"]', 'ok');
-      addLog('✓ Ukuran: ' + (JSON.stringify(DUMMY).length / 1024).toFixed(1) + ' KB', 'ok');
+      addLog('✓ Ukuran: ' + (JSON.stringify(data).length / 1024).toFixed(1) + ' KB', 'ok');
       addLog('✓ Siap — klik link di bawah untuk buka halaman.', 'ok');
       checkStatus();
     } catch (e) {
