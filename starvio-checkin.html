@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check-in — Starvio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+  --border:#e2e1d9;--border2:#cccbc2;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+}
+
+html,body{
+  min-height:100vh;
+  background:var(--bg);
+  font-family:'Sora',sans-serif;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---- TOPBAR ---- */
+.topbar{
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+.topbar-logo{
+  width:30px;height:30px;
+  background:var(--ink);
+  border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.topbar-logo svg{display:block;}
+.topbar-name{
+  font-size:16px;font-weight:700;letter-spacing:-.3px;color:var(--ink);
+}
+
+/* ---- PAGE WRAP ---- */
+.page-wrap{
+  min-height:calc(100vh - 59px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.card{
+  width:100%;
+  max-width:480px;
+  margin:0 auto;
+  padding:28px 16px 24px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ---- BIZ HEADER ---- */
+.biz-name{
+  text-align:center;
+  font-size:13px;font-weight:600;
+  color:var(--ink2);
+  margin-bottom:4px;
+  letter-spacing:0.3px;
+  text-transform:uppercase;
+}
+.tagline{
+  text-align:center;
+  font-size:13px;
+  color:var(--ink3);
+  margin-bottom:28px;
+  line-height:1.5;
+}
+
+/* ---- STATE WRAPPER ---- */
+.state{
+  display:none;
+  flex-direction:column;
+  gap:16px;
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity 300ms ease,transform 300ms ease;
+}
+.state.active{display:flex;}
+.state.visible{opacity:1;transform:translateY(0);}
+
+/* ---- HEADINGS ---- */
+.state-heading{
+  font-size:20px;font-weight:700;
+  color:var(--ink);
+  line-height:1.3;
+}
+.state-sub{
+  font-size:14px;color:var(--ink2);line-height:1.5;
+  margin-top:-8px;
+}
+
+/* ---- PHONE INPUT ---- */
+.phone-row{
+  display:flex;gap:8px;align-items:stretch;
+}
+.country-sel{
+  flex-shrink:0;
+  height:56px;
+  padding:0 12px;
+  background:var(--bg2);
+  border:2px solid var(--border);
+  border-radius:var(--r-sm);
+  font-family:'Sora',sans-serif;
+  font-size:15px;
+  color:var(--ink);
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+  outline:none;
+  transition:border-color 200ms;
+}
+.country-sel:focus{border-color:var(--lime2);}
+.phone-input{
+  flex:1;
+  height:56px;
+  padding:0 16px;
+  background:var(--bg2);
+  border:2px solid var(--border);
+  border-radius:var(--r-sm);
+  font-family:'JetBrains Mono','Sora',monospace;
+  font-size:18px;
+  color:var(--ink);
+  outline:none;
+  transition:border-color 200ms;
+  -webkit-appearance:none;
+}
+.phone-input:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.25);}
+.phone-input::placeholder{color:var(--ink4);}
+
+.phone-hint{
+  font-size:12px;color:var(--ink3);margin-top:-8px;
+}
+
+/* ---- BUTTONS ---- */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:16px;
+  font-family:'Sora',sans-serif;
+  font-size:15px;font-weight:700;
+  border-radius:var(--r-sm);
+  border:none;cursor:pointer;
+  transition:background 150ms,opacity 150ms,transform 100ms;
+  min-height:56px;
+  width:100%;
+  text-align:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:scale(0.98);}
+.btn-lime{background:var(--lime);color:var(--lime-dk);}
+.btn-lime:hover{background:var(--lime2);}
+.btn-lime:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+.btn-outline{background:transparent;color:var(--ink2);border:1.5px solid var(--border2);}
+.btn-outline:hover{background:var(--bg3);}
+
+/* ---- LINK BUTTON ---- */
+.link-btn{
+  background:none;border:none;cursor:pointer;
+  font-family:'Sora',sans-serif;font-size:13px;
+  color:var(--ink3);text-decoration:underline;
+  padding:8px 0;min-height:44px;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.link-btn:hover{color:var(--ink2);}
+
+/* ---- FOUND CARD ---- */
+.found-card{
+  background:var(--bg2);
+  border-radius:var(--r-lg);
+  border:1.5px solid var(--border);
+  border-top:3px solid var(--lime2);
+  padding:18px 16px;
+}
+.found-card .greeting{
+  font-size:18px;font-weight:700;margin-bottom:4px;
+}
+.found-card .pick-label{
+  font-size:13px;color:var(--ink2);
+}
+
+/* ---- SERVICE ROWS ---- */
+.svc-list{display:flex;flex-direction:column;gap:8px;}
+.svc-row{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 14px;
+  background:var(--bg2);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  cursor:pointer;
+  transition:border-color 150ms,background 150ms;
+  min-height:60px;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.svc-row:hover{border-color:var(--border2);background:var(--bg3);}
+.svc-row.checked{border-color:var(--lime2);background:var(--lime-bg);}
+.svc-row .svc-icon{font-size:22px;flex-shrink:0;line-height:1;}
+.svc-row .svc-info{flex:1;min-width:0;}
+.svc-row .svc-name{font-size:14px;font-weight:600;color:var(--ink);}
+.svc-row .svc-badge{
+  display:inline-flex;align-items:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:600;
+  background:var(--bg3);color:var(--ink3);
+  border-radius:999px;
+  padding:2px 8px;margin-top:3px;
+}
+.svc-row.checked .svc-badge{background:rgba(184,240,74,.3);color:var(--lime-dk);}
+.svc-row .svc-check{
+  width:22px;height:22px;flex-shrink:0;
+  border-radius:50%;
+  border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  transition:all 150ms;
+}
+.svc-row.checked .svc-check{
+  background:var(--lime2);border-color:var(--lime2);
+}
+.svc-check svg{display:none;}
+.svc-row.checked .svc-check svg{display:block;}
+
+/* ---- DATE INPUT ---- */
+.date-row{display:flex;flex-direction:column;gap:4px;}
+.date-label{font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;}
+.date-input{
+  width:100%;height:48px;
+  padding:0 14px;
+  background:var(--bg2);
+  border:2px solid var(--border);
+  border-radius:var(--r-sm);
+  font-family:'JetBrains Mono','Sora',monospace;
+  font-size:14px;color:var(--ink);
+  outline:none;
+  transition:border-color 200ms;
+  -webkit-appearance:none;
+}
+.date-input:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.25);}
+
+/* ---- REMINDER PREVIEW ---- */
+.reminder-list{display:flex;flex-direction:column;gap:6px;}
+.reminder-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--lime-bg);
+  border:1px solid rgba(184,240,74,.4);
+  border-radius:var(--r-sm);
+  padding:10px 12px;
+  font-size:13px;
+}
+.reminder-item .r-icon{font-size:16px;flex-shrink:0;}
+.reminder-item .r-info{flex:1;}
+.reminder-item .r-svc{font-weight:600;color:var(--ink);font-size:13px;}
+.reminder-item .r-date{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--lime-dk);font-size:12px;font-weight:600;margin-top:1px;
+}
+.reminder-label{
+  font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;
+  margin-bottom:2px;
+}
+
+/* ---- NAME INPUT ---- */
+.text-input{
+  width:100%;height:52px;
+  padding:0 16px;
+  background:var(--bg2);
+  border:2px solid var(--border);
+  border-radius:var(--r-sm);
+  font-family:'Sora',sans-serif;
+  font-size:15px;color:var(--ink);
+  outline:none;
+  transition:border-color 200ms;
+  -webkit-appearance:none;
+}
+.text-input:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.25);}
+.text-input::placeholder{color:var(--ink4);}
+
+/* ---- SUCCESS ---- */
+.success-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  gap:12px;
+  text-align:center;
+}
+.check-circle{
+  width:80px;height:80px;
+  border-radius:50%;
+  background:var(--lime);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:4px;
+  animation:popIn 400ms ease forwards;
+}
+@keyframes popIn{
+  0%{transform:scale(0);opacity:0}
+  60%{transform:scale(1.15);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
+.check-circle svg{
+  width:40px;height:40px;
+}
+.check-circle .check-path{
+  stroke-dasharray:60;
+  stroke-dashoffset:60;
+  animation:draw-check 500ms 300ms ease forwards;
+}
+@keyframes draw-check{to{stroke-dashoffset:0;}}
+
+.success-heading{font-size:24px;font-weight:700;}
+.success-sub{font-size:14px;color:var(--ink2);line-height:1.6;max-width:300px;}
+
+/* ---- ERROR STATE ---- */
+.error-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  gap:12px;text-align:center;padding:40px 16px;
+}
+.error-emoji{font-size:48px;}
+.error-msg{font-size:15px;color:var(--ink2);line-height:1.6;max-width:280px;}
+
+/* ---- SPINNER ---- */
+.spinner-wrap{
+  display:flex;justify-content:center;padding:12px 0;
+}
+.spinner{
+  width:28px;height:28px;
+  border:3px solid var(--border);
+  border-top-color:var(--lime2);
+  border-radius:50%;
+  animation:spin 600ms linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ---- DIVIDER ---- */
+.divider{height:1px;background:var(--border);margin:4px 0;}
+
+/* ---- SECTION LABEL ---- */
+.section-label{
+  font-size:12px;font-weight:600;color:var(--ink3);
+  letter-spacing:.5px;text-transform:uppercase;
+  margin-bottom:-4px;
+}
+
+/* ---- FOOTER ---- */
+.page-footer{
+  text-align:center;
+  padding:20px 16px;
+  font-size:11px;
+  color:var(--ink4);
+  letter-spacing:.3px;
+}
+.page-footer span{color:var(--ink3);}
+
+/* ---- NOT-FOUND PILL ---- */
+.not-found-pill{
+  display:flex;align-items:center;gap:8px;
+  background:var(--amber-bg);
+  border:1px solid rgba(245,166,35,.3);
+  border-radius:var(--r-sm);
+  padding:12px 14px;
+  font-size:13px;color:var(--amber-dk);
+  font-weight:500;
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR: logo + biz name -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+      <path d="M10 2L12.4 7.6H18.5L13.6 11.3L15.5 17L10 13.5L4.5 17L6.4 11.3L1.5 7.6H7.6L10 2Z" fill="#b8f04a"/>
+    </svg>
+  </div>
+  <div class="topbar-name" id="topbarBizName">Starvio</div>
+</div>
+
+<div class="page-wrap">
+  <div class="card">
+
+    <div class="tagline">Check-in & dapatkan reminder otomatis via WhatsApp 📲</div>
+
+    <!-- ERROR STATE (no cats) -->
+    <div id="stateError" class="error-wrap" style="display:none;">
+      <div class="error-emoji">😕</div>
+      <div class="error-msg">Bisnis ini belum setup layanan. Silakan hubungi staff.</div>
+    </div>
+
+    <!-- STATE 1: PHONE INPUT -->
+    <div id="state1" class="state">
+      <div class="state-heading">Masukkan nomor WA kamu</div>
+      <div class="phone-row">
+        <select class="country-sel" id="countryCode" aria-label="Kode negara">
+          <option value="62">🇮🇩 +62</option>
+          <option value="60">🇲🇾 +60</option>
+          <option value="65">🇸🇬 +65</option>
+          <option value="63">🇵🇭 +63</option>
+          <option value="66">🇹🇭 +66</option>
+          <option value="84">🇻🇳 +84</option>
+          <option value="44">🇬🇧 +44</option>
+          <option value="1">🇺🇸 +1</option>
+        </select>
+        <input
+          class="phone-input"
+          id="phoneInput"
+          type="tel"
+          inputmode="numeric"
+          placeholder="81234567890"
+          autocomplete="tel"
+          aria-label="Nomor WhatsApp"
+          maxlength="15"
+        >
+      </div>
+      <div class="phone-hint">Awalan 0 akan dihapus otomatis</div>
+      <div id="spinnerWrap" class="spinner-wrap" style="display:none;">
+        <div class="spinner"></div>
+      </div>
+      <!-- DEV: Sample numbers -->
+      <div id="dev-samples" style="margin-top:14px;border:1.5px dashed var(--border2);border-radius:var(--r-sm);padding:10px 12px;background:var(--bg3);display:none">
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);margin-bottom:6px">🧪 DEV — Quick test</div>
+        <div id="dev-sample-btns" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+      </div>
+    </div>
+
+    <!-- STATE 2: FOUND -->
+    <div id="state2" class="state">
+      <div class="found-card">
+        <div class="greeting" id="foundGreeting"></div>
+        <div class="date-row" style="margin-top:8px">
+          <div class="date-label">Tanggal kunjungan</div>
+          <input type="date" class="date-input" id="foundDateInput" readonly style="opacity:.6;cursor:not-allowed;background:var(--bg3)">
+        </div>
+        <div class="pick-label" style="margin-top:12px">Pilih layanan hari ini:</div>
+      </div>
+      <div class="svc-list" id="foundSvcList"></div>
+      <button class="btn btn-lime" id="foundCheckinBtn" onclick="doFoundCheckin()" disabled>Check-in Sekarang</button>
+      <button class="link-btn" onclick="goToState1()">Bukan saya</button>
+    </div>
+
+    <!-- STATE 3: NEW -->
+    <div id="state3" class="state">
+      <div class="not-found-pill">
+        <span>🔍</span>
+        <span>Nomor ini belum terdaftar</span>
+      </div>
+      <div class="state-sub" style="margin-top:0;">Isi data kamu untuk daftar & dapatkan reminder otomatis</div>
+      <input
+        class="text-input"
+        id="newNameInput"
+        type="text"
+        placeholder="Nama kamu"
+        autocomplete="name"
+        aria-label="Nama"
+        oninput="onNewFormChange()"
+      >
+      <div class="date-row" style="margin-top:8px">
+        <div class="date-label">Tanggal kunjungan</div>
+        <input type="date" class="date-input" id="newDateInput" readonly style="opacity:.6;cursor:not-allowed;background:var(--bg3)">
+      </div>
+      <div class="section-label" style="margin-top:12px">Layanan apa hari ini?</div>
+      <div class="svc-list" id="newSvcList"></div>
+      <button class="btn btn-lime" id="newCheckinBtn" onclick="doNewCheckin()" disabled>Daftar & Check-in</button>
+      <button class="link-btn" onclick="goToState1()">Coba nomor lain</button>
+    </div>
+
+    <!-- STATE 4: SUCCESS -->
+    <div id="state4" class="state">
+      <div class="success-wrap">
+        <div class="check-circle" id="checkCircle">
+          <svg viewBox="0 0 44 44" fill="none">
+            <path
+              class="check-path"
+              d="M10 22L18 30L34 14"
+              stroke="#2d4a00"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <div class="success-heading" id="successHeading">Terima kasih!</div>
+        <div class="success-sub">Kami akan kirim reminder ke WA kamu saat waktunya kembali.</div>
+      </div>
+      <button class="btn btn-outline" onclick="resetAll()" style="margin-top:12px;">Scan lagi</button>
+    </div>
+
+  </div>
+
+  <div class="page-footer">Powered by <span>Starvio</span></div>
+</div>
+
+<script>
+/* ── SHARED ── */
+function loadU() {
+  try {
+    const raw = localStorage.getItem('starvio_user')
+    if (!raw) return null
+    const u = JSON.parse(raw)
+    if (u.DATA_VERSION !== 4) return null
+    u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    return u
+  } catch(e) { return null }
+}
+
+let U = loadU()
+
+// State tracking
+let currentPhone = ''
+let currentCountryCode = '62'
+let currentCustomer = null
+let checkedInServices = []
+let checkedInDate = ''
+
+// ---- UTILS ----
+function saveU() { localStorage.setItem('starvio_user', JSON.stringify(U)) }
+
+function todayStr() {
+  return new Date().toISOString().split('T')[0]
+}
+
+function addDays(dateStr, n) {
+  const d = new Date(dateStr + 'T00:00:00')
+  d.setDate(d.getDate() + n)
+  return d.toISOString().split('T')[0]
+}
+
+function formatDateID(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00')
+  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu']
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des']
+  return days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear()
+}
+
+function normalizePhone(raw) {
+  let p = raw.replace(/\D/g, '')
+  // Strip country code if present
+  if (p.startsWith('62')) p = p.slice(2)
+  else if (p.startsWith('60')) p = p.slice(2)
+  else if (p.startsWith('65')) p = p.slice(2)
+  else if (p.startsWith('63')) p = p.slice(2)
+  else if (p.startsWith('66')) p = p.slice(2)
+  else if (p.startsWith('84')) p = p.slice(2)
+  else if (p.startsWith('44')) p = p.slice(2)
+  else if (p.startsWith('1') && p.length > 10) p = p.slice(1)
+  // Strip leading 0
+  if (p.startsWith('0')) p = p.slice(1)
+  return p
+}
+
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+function genId() {
+  return 'cx-' + Date.now().toString(36) + Math.random().toString(36).slice(2,6)
+}
+
+// ---- STATE MACHINE ----
+function showState(id) {
+  ['state1','state2','state3','state4'].forEach(function(s) {
+    var el = document.getElementById(s)
+    el.classList.remove('active','visible')
+  })
+  var target = document.getElementById(id)
+  target.classList.add('active')
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      target.classList.add('visible')
+    })
+  })
+}
+
+/* DEV: Sample numbers */
+function initDevSamples() {
+  var U = loadU()
+  if (!U || !(U.customers || []).length) return
+  var wrap = document.getElementById('dev-samples')
+  var cont = document.getElementById('dev-sample-btns')
+  wrap.style.display = 'block'
+  var cxs = U.customers.slice(0, 8)
+  cont.innerHTML = cxs.map(function(cx) {
+    var name = cx.name.split(' ')[0]
+    var num = cx.wa.replace(/^62/, '')
+    return '<button onclick="devFillPhone(\'' + cx.wa + '\')" style="padding:4px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);font-size:10px;font-family:inherit;cursor:pointer;color:var(--ink2);transition:all .12s">' + name + '</button>'
+  }).join('')
+  // Add "new number" button
+  cont.innerHTML += '<button onclick="devFillPhone(\'628999999999\')" style="padding:4px 8px;border:1px solid var(--amber);border-radius:6px;background:var(--amber-bg);font-size:10px;font-family:inherit;cursor:pointer;color:var(--amber-dk)">+ Nomor baru</button>'
+}
+
+function devFillPhone(wa) {
+  var num = wa.replace(/^62/, '')
+  document.getElementById('phoneInput').value = num
+  document.getElementById('phoneInput').dispatchEvent(new Event('input'))
+}
+
+initDevSamples()
+
+function goToState1() {
+  document.getElementById('phoneInput').value = ''
+  currentPhone = ''
+  currentCustomer = null
+  showState('state1')
+  document.getElementById('phoneInput').focus()
+}
+
+function resetAll() {
+  document.getElementById('phoneInput').value = ''
+  currentPhone = ''
+  currentCustomer = null
+  checkedInServices = []
+  checkedInDate = ''
+  showState('state1')
+  document.getElementById('phoneInput').focus()
+}
+
+// ---- INIT ----
+function init() {
+  // Topbar biz name
+  var topEl = document.getElementById('topbarBizName')
+  if (U && U.bizName) {
+    topEl.textContent = U.bizName
+  }
+
+  // Check cats
+  if (!U || !U.cats || U.cats.length === 0) {
+    document.getElementById('stateError').style.display = 'flex'
+    return
+  }
+
+  // Set default dates
+  document.getElementById('foundDateInput').value = todayStr()
+  document.getElementById('newDateInput').value = todayStr()
+
+  showState('state1')
+
+  // Phone input: strip leading 0 real-time + auto-search
+  var phoneInput = document.getElementById('phoneInput')
+  var searchTimeout = null
+
+  phoneInput.addEventListener('input', function() {
+    // Strip leading 0 real-time
+    var val = phoneInput.value.replace(/\D/g, '')
+    if (val.startsWith('0')) {
+      val = val.slice(1)
+      phoneInput.value = val
+    }
+
+    // Clear pending search
+    if (searchTimeout) clearTimeout(searchTimeout)
+
+    // Auto-search when >= 10 digits
+    if (val.length >= 10) {
+      searchTimeout = setTimeout(function() {
+        doSearch()
+      }, 300)
+    }
+  })
+
+  phoneInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doSearch()
+  })
+
+  // Date change listeners
+  document.getElementById('foundDateInput').addEventListener('change', function() {
+    updateFoundReminders()
+  })
+  document.getElementById('newDateInput').addEventListener('change', function() {
+    updateNewReminders()
+  })
+}
+
+// ---- SEARCH ----
+function doSearch() {
+  var raw = document.getElementById('phoneInput').value
+  var norm = raw.replace(/\D/g, '')
+  if (norm.startsWith('0')) norm = norm.slice(1)
+  if (norm.length < 7) return
+
+  currentPhone = norm
+  currentCountryCode = document.getElementById('countryCode').value
+
+  // Show spinner
+  document.getElementById('spinnerWrap').style.display = 'flex'
+
+  setTimeout(function() {
+    document.getElementById('spinnerWrap').style.display = 'none'
+
+    var customers = (U && U.customers) ? U.customers : []
+    var found = customers.find(function(cx) {
+      var cxNorm = normalizePhone(cx.wa || '')
+      return cxNorm === norm
+    })
+
+    if (found) {
+      currentCustomer = found
+      showFoundState(found)
+    } else {
+      currentCustomer = null
+      showNewState()
+    }
+  }, 250)
+}
+
+// ---- FOUND STATE (State 2) ----
+function showFoundState(cx) {
+  document.getElementById('foundGreeting').textContent = 'Hai, ' + (cx.name || 'Kamu') + '! \uD83D\uDC4B'
+  document.getElementById('foundDateInput').value = todayStr()
+  renderSvcList('foundSvcList', cx, 'found')
+  updateFoundReminders()
+  showState('state2')
+}
+
+function renderSvcList(containerId, cx, mode) {
+  var cats = U.cats || []
+  var container = document.getElementById(containerId)
+  container.innerHTML = ''
+
+  cats.forEach(function(cat, i) {
+    // For found customer: pre-select services that are NOT aktif (not currently tracked)
+    var isPreChecked = false
+    if (mode === 'found' && cx && cx.services) {
+      var hasService = cx.services.some(function(s) { return s.name === cat.name })
+      isPreChecked = !hasService  // pre-select those NOT already registered
+    }
+
+    var row = document.createElement('div')
+    row.className = 'svc-row' + (isPreChecked ? ' checked' : '')
+    row.setAttribute('role', 'checkbox')
+    row.setAttribute('aria-checked', isPreChecked ? 'true' : 'false')
+    row.setAttribute('tabindex', '0')
+    row.dataset.idx = i
+    row.innerHTML =
+      '<div class="svc-icon">' + esc(cat.icon || '\u2702\uFE0F') + '</div>' +
+      '<div class="svc-info">' +
+        '<div class="svc-name">' + esc(cat.name) + '</div>' +
+      '</div>' +
+      '<div class="svc-check">' +
+        '<svg width="12" height="10" viewBox="0 0 12 10" fill="none">' +
+          '<path d="M1.5 5L4.5 8L10.5 1.5" stroke="#2d4a00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+      '</div>'
+
+    row.addEventListener('click', function() { toggleSvcRow(row, mode) })
+    row.addEventListener('keydown', function(e) {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleSvcRow(row, mode) }
+    })
+    container.appendChild(row)
+  })
+}
+
+function toggleSvcRow(row, mode) {
+  var checked = row.classList.toggle('checked')
+  row.setAttribute('aria-checked', checked ? 'true' : 'false')
+  if (mode === 'found') {
+    var sel = getCheckedCats('foundSvcList')
+    document.getElementById('foundCheckinBtn').disabled = sel.length === 0
+  } else {
+    onNewFormChange()
+  }
+}
+
+function getCheckedCats(containerId) {
+  var rows = document.querySelectorAll('#' + containerId + ' .svc-row.checked')
+  var cats = U.cats || []
+  return Array.from(rows).map(function(r) { return cats[parseInt(r.dataset.idx)] })
+}
+
+function updateFoundReminders() {
+  var selected = getCheckedCats('foundSvcList')
+  document.getElementById('foundCheckinBtn').disabled = selected.length === 0
+}
+
+function updateNewReminders() {
+  // handled by onNewFormChange
+}
+
+function renderReminderList(container, cats, baseDate) {
+  container.innerHTML = ''
+  cats.forEach(function(cat) {
+    var days = parseInt(cat.interval || 30)
+    var remDate = addDays(baseDate, days)
+    var item = document.createElement('div')
+    item.className = 'reminder-item'
+    item.innerHTML =
+      '<div class="r-icon">' + esc(cat.icon || '\u2702\uFE0F') + '</div>' +
+      '<div class="r-info">' +
+        '<div class="r-svc">' + esc(cat.name) + '</div>' +
+        '<div class="r-date">Reminder pada: ' + formatDateID(remDate) + '</div>' +
+      '</div>'
+    container.appendChild(item)
+  })
+}
+
+// ---- FOUND CHECK-IN (State 2 submit) ----
+function doFoundCheckin() {
+  var selected = getCheckedCats('foundSvcList')
+  if (selected.length === 0) return
+
+  var dateVal = document.getElementById('foundDateInput').value || todayStr()
+
+  if (!currentCustomer.services) currentCustomer.services = []
+
+  selected.forEach(function(cat) {
+    var existing = currentCustomer.services.find(function(s) { return s.name === cat.name })
+    if (existing) {
+      existing.date = dateVal
+    } else {
+      currentCustomer.services.push({
+        name: cat.name,
+        icon: cat.icon || '\u2702\uFE0F',
+        date: dateVal,
+        days: parseInt(cat.interval || 30)
+      })
+    }
+  })
+
+  // Set via to "qr" on check-in
+  currentCustomer.via = 'qr'
+
+  saveU()
+  checkedInServices = selected
+  checkedInDate = dateVal
+  showSuccessState(currentCustomer.name)
+}
+
+// ---- NEW STATE (State 3) ----
+function showNewState() {
+  document.getElementById('newNameInput').value = ''
+  document.getElementById('newDateInput').value = todayStr()
+  renderSvcList('newSvcList', null, 'new')
+  updateNewReminders()
+  showState('state3')
+  document.getElementById('newNameInput').focus()
+}
+
+function onNewFormChange() {
+  var name = document.getElementById('newNameInput').value.trim()
+  var selected = getCheckedCats('newSvcList')
+  document.getElementById('newCheckinBtn').disabled = !(name.length > 0 && selected.length > 0)
+  updateNewReminders()
+}
+
+// ---- NEW CHECK-IN (State 3 submit) ----
+function doNewCheckin() {
+  var name = document.getElementById('newNameInput').value.trim()
+  var selected = getCheckedCats('newSvcList')
+  if (!name || selected.length === 0) return
+
+  var dateVal = document.getElementById('newDateInput').value || todayStr()
+  var cc = document.getElementById('countryCode').value
+
+  var newCx = {
+    id: genId(),
+    name: name,
+    wa: cc + currentPhone,
+    via: 'qr',
+    services: selected.map(function(cat) {
+      return {
+        name: cat.name,
+        icon: cat.icon || '\u2702\uFE0F',
+        date: dateVal,
+        days: parseInt(cat.interval || 30)
+      }
+    })
+  }
+
+  if (!U.customers) U.customers = []
+  U.customers.push(newCx)
+  currentCustomer = newCx
+  saveU()
+  checkedInServices = selected
+  checkedInDate = dateVal
+  showSuccessState(name)
+}
+
+// ---- SUCCESS STATE (State 4) ----
+function showSuccessState(name) {
+  document.getElementById('successHeading').textContent = 'Terima kasih, ' + (name || 'Kamu') + '!'
+
+  // Reset check animation by re-cloning the circle
+  var circle = document.getElementById('checkCircle')
+  var clone = circle.cloneNode(true)
+  circle.parentNode.replaceChild(clone, circle)
+  clone.id = 'checkCircle'
+
+  showState('state4')
+}
+
+// ---- START ----
+init()
+</script>
+</body>
+</html>

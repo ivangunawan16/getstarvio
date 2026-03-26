@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Starvio Admin · Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:var(--bg)}
+:root{
+  --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+  --border:#e2e1d9;--border2:#cccbc2;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --blue:#2563eb;--blue-bg:#eff4ff;--blue-dk:#1e3a8a;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+/* ── PASSWORD GATE ── */
+.gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.gate.hidden{display:none}
+.gate-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:36px 40px;width:380px;max-width:92vw;box-shadow:0 8px 32px rgba(0,0,0,.06);text-align:center}
+.gate-mark{width:48px;height:48px;background:var(--lime);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:18px}
+.gate-mark svg{width:24px;height:24px}
+.gate-title{font-size:18px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.gate-sub{font-size:12px;color:var(--ink3);margin-bottom:24px}
+.gate-inp{width:100%;padding:12px 16px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--ink);font-size:14px;font-family:inherit;outline:none;text-align:center;letter-spacing:2px;transition:border-color .15s}
+.gate-inp:focus{border-color:var(--lime2)}
+.gate-inp.error{border-color:var(--red);animation:shake .4s ease}
+.gate-btn{width:100%;padding:12px;background:var(--lime);color:var(--lime-dk);border:none;border-radius:var(--r);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:12px;transition:background .12s}
+.gate-btn:hover{background:var(--lime2)}
+.gate-error{font-size:11px;color:var(--red);margin-top:10px;min-height:16px}
+
+/* ── SHELL ── */
+.shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.shell.hidden{display:none}
+
+/* ── TOPBAR ── */
+.topbar{padding:14px 24px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-mark{width:28px;height:28px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tb-mark svg{width:14px;height:14px}
+.tb-title{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
+.tb-badge{font-size:8px;font-weight:800;background:var(--red);color:#fff;padding:2px 6px;border-radius:4px;letter-spacing:.05em;margin-left:2px}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-time{font-size:11px;color:var(--ink3);font-family:'JetBrains Mono',monospace}
+.tb-logout{padding:5px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);font-size:11px;font-weight:600;font-family:inherit;color:var(--ink2);cursor:pointer;transition:all .12s}
+.tb-logout:hover{background:var(--bg4);color:var(--ink)}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:24px 28px}
+
+/* ── SUMMARY CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;animation:fadeUp .2s ease backwards}
+.stat-card:nth-child(2){animation-delay:.04s}
+.stat-card:nth-child(3){animation-delay:.08s}
+.stat-card:nth-child(4){animation-delay:.12s}
+.stat-n{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--ink);line-height:1;margin-bottom:4px}
+.stat-l{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 16px;border-radius:var(--r-sm);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .12s;white-space:nowrap}
+.btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}
+.btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--border2)}.btn-ghost:hover{background:var(--bg3);color:var(--ink)}
+.btn-red{background:var(--red-bg);color:var(--red-dk);border:1px solid rgba(232,69,60,.15)}.btn-red:hover{background:var(--red);color:#fff}
+.btn-blue{background:var(--blue-bg);color:var(--blue-dk);border:1px solid rgba(37,99,235,.15)}.btn-blue:hover{background:var(--blue);color:#fff}
+.btn-sm{padding:5px 12px;font-size:10px}
+.btn-xs{padding:3px 9px;font-size:10px}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:200px}
+.search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--ink3)}
+.search-inp{width:100%;padding:8px 12px 8px 34px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ink);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s}
+.search-inp:focus{border-color:var(--lime2)}
+.search-inp::placeholder{color:var(--ink4)}
+.filter-sel{padding:7px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ink2);font-size:11px;font-family:inherit;cursor:pointer;outline:none}
+
+/* ── TABLE ── */
+.tbl-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--bg3)}
+.tbl td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:12px;color:var(--ink2)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg3);cursor:pointer}
+
+/* ── BADGES ── */
+.badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+.b-lime{background:var(--lime-bg);color:var(--lime-dk);border:1px solid rgba(184,240,74,.35)}
+.b-blue{background:var(--blue-bg);color:var(--blue-dk);border:1px solid rgba(37,99,235,.15)}
+.b-red{background:var(--red-bg);color:var(--red-dk);border:1px solid rgba(232,69,60,.15)}
+.b-gray{background:var(--bg4);color:var(--ink3);border:1px solid var(--border2)}
+.b-amber{background:var(--amber-bg);color:var(--amber-dk);border:1px solid rgba(245,166,35,.2)}
+.dot{width:5px;height:5px;border-radius:50%;display:inline-block}
+
+/* ── SECTION HEADER ── */
+.section-hd{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-hd svg{width:16px;height:16px;color:var(--ink3)}
+
+/* ── CHURN RISK ── */
+.churn-section{margin-top:24px}
+.churn-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;transition:background .12s}
+.churn-card:hover{background:var(--bg3)}
+.churn-left{display:flex;align-items:center;gap:14px}
+.churn-icon{width:34px;height:34px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.churn-icon.warn{background:var(--amber-bg);color:var(--amber)}
+.churn-icon.danger{background:var(--red-bg);color:var(--red)}
+.churn-name{font-size:13px;font-weight:600;color:var(--ink)}
+.churn-reason{font-size:11px;color:var(--ink3);margin-top:2px}
+
+/* ── OVERLAY / MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:16px}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);width:520px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.12);animation:fadeUp .15s ease}
+.mhd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:1;border-radius:var(--r-lg) var(--r-lg) 0 0}
+.m-title{font-size:14px;font-weight:700;color:var(--ink)}
+.m-close{background:var(--bg3);border:none;color:var(--ink3);cursor:pointer;width:26px;height:26px;border-radius:var(--r-sm);font-size:15px;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all .12s}
+.m-close:hover{background:var(--bg4);color:var(--ink)}
+.mbd{padding:18px 20px}
+.mft{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* ── DETAIL MODAL INTERNALS ── */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.detail-grid.full{grid-template-columns:1fr}
+.kv{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+.kv:last-child{border-bottom:none;padding-bottom:0}
+.kv:first-child{padding-top:0}
+.kv-key{font-size:11px;color:var(--ink3);flex-shrink:0}
+.kv-val{font-size:12px;font-weight:600;color:var(--ink);text-align:right}
+.kv-val.mono{font-family:'JetBrains Mono',monospace}
+
+.field-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:block}
+.field-inp{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .12s}
+.field-inp:focus{border-color:var(--lime2)}
+
+/* ── CREDIT ADD ── */
+.credit-row{display:flex;gap:8px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.credit-inp{flex:1;padding:9px 12px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:14px;font-family:'JetBrains Mono',monospace;font-weight:700;outline:none;text-align:center}
+.credit-inp:focus{border-color:var(--lime2)}
+
+/* ── ACTIVITY LOG ── */
+.log-list{max-height:180px;overflow-y:auto;margin-top:14px;border-top:1px solid var(--border);padding-top:10px}
+.log-item{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:11px;color:var(--ink2);line-height:1.5}
+.log-item:not(:last-child){border-bottom:1px solid var(--border)}
+.log-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink3);white-space:nowrap;flex-shrink:0;padding-top:1px}
+.log-text{flex:1}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 16px;font-size:12px;font-weight:600;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.08);opacity:0;transform:translateY(8px);transition:all .2s;max-width:300px}
+.toast.toast-show{opacity:1;transform:translateY(0)}
+.toast.toast-success{border-color:rgba(184,240,74,.4);color:var(--lime-dk)}
+.toast.toast-error{border-color:rgba(232,69,60,.3);color:var(--red-dk)}
+
+/* ── TAB NAV ── */
+.tab-nav{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg2);padding:0 28px;flex-shrink:0}
+.tab-btn{padding:10px 18px;font-size:12px;font-weight:600;font-family:inherit;color:var(--ink3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .12s;white-space:nowrap}
+.tab-btn:hover{color:var(--ink2)}
+.tab-btn.active{color:var(--ink);border-bottom-color:var(--lime)}
+.tab-section{display:none}
+.tab-section.active{display:block}
+
+/* ── PLAN CONFIG ── */
+.plan-config{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.plan-config-hd{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg3)}
+.plan-config-name{font-size:13px;font-weight:700;color:var(--ink)}
+.plan-field{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border)}
+.plan-field:last-child{border-bottom:none}
+.plan-field-lbl{font-size:12px;color:var(--ink2);flex:1}
+.plan-field-inp{width:120px;padding:5px 10px;background:#fff;border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:700;outline:none;text-align:right}
+.plan-field-inp:focus{border-color:var(--lime2)}
+.plan-field-unit{font-size:11px;color:var(--ink3);white-space:nowrap;min-width:80px}
+.plan-tier{display:flex;align-items:center;gap:10px;padding:8px 16px;font-size:12px;color:var(--ink2);border-bottom:1px solid var(--border)}
+.plan-tier:last-child{border-bottom:none}
+.plan-tier-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--lime-bg);color:var(--lime-dk);border:1px solid rgba(184,240,74,.35)}
+
+/* ── TRANSACTIONS ── */
+.tx-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.tx-row:last-child{border-bottom:none}
+.tx-row:hover{background:var(--bg3)}
+.tx-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.tx-icon.add{background:var(--lime-bg);color:var(--lime-dk)}
+.tx-icon.sub{background:var(--red-bg);color:var(--red)}
+.tx-icon.reset{background:var(--blue-bg);color:var(--blue)}
+.tx-icon.welcome{background:var(--amber-bg);color:var(--amber)}
+.tx-amount{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace;min-width:60px;text-align:right}
+.tx-amount.add{color:#2d8a00}
+.tx-amount.sub{color:var(--red)}
+.tx-amount.reset{color:var(--blue)}
+.tx-amount.welcome{color:var(--amber)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .content{padding:16px}
+  .detail-grid{grid-template-columns:1fr}
+  .tbl-wrap{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ PASSWORD GATE ══════════════════ -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="gate-mark">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5L10 6.5H15L11 9.5L12.5 14L8 11L3.5 14L5 9.5L1 6.5H6L8 1.5Z" fill="#1a1917"/></svg>
+    </div>
+    <div class="gate-title">Starvio Admin</div>
+    <div class="gate-sub">Command Center · Internal Only</div>
+    <form onsubmit="return tryLogin(event)">
+      <input class="gate-inp" id="gate-pw" type="password" placeholder="Password" autofocus>
+      <button class="gate-btn" type="submit">Masuk</button>
+    </form>
+    <div class="gate-error" id="gate-error"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ MAIN SHELL ══════════════════ -->
+<div class="shell hidden" id="shell">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-mark">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5L10 6.5H15L11 9.5L12.5 14L8 11L3.5 14L5 9.5L1 6.5H6L8 1.5Z" fill="#1a1917"/></svg>
+      </div>
+      <span class="tb-title">Starvio Admin</span>
+      <span class="tb-badge">INTERNAL</span>
+    </div>
+    <div class="tb-right">
+      <span class="tb-time" id="tb-time">--:--</span>
+      <button class="tb-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- TAB NAV -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('dashboard',this)">Dashboard</button>
+    <button class="tab-btn" onclick="switchTab('plan-config',this)">Plan Config</button>
+    <button class="tab-btn" onclick="switchTab('transactions',this)">Transactions</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ══════════ TAB: DASHBOARD ══════════ -->
+    <div class="tab-section active" id="tab-dashboard">
+
+    <!-- ── SUMMARY CARDS ── -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-n" id="st-active" style="color:var(--lime-dk)">0</div>
+        <div class="stat-l">Active Businesses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-n" id="st-credits">0</div>
+        <div class="stat-l">Total Credits Sold</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-n" id="st-reminders">0</div>
+        <div class="stat-l">Reminders Sent</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-n" id="st-churn" style="color:var(--red)">0</div>
+        <div class="stat-l">Churn Risk</div>
+      </div>
+    </div>
+
+    <!-- ── SUBSCRIBER TABLE ── -->
+    <div class="section-hd">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M5 3V1.5M11 3V1.5M2 7h12"/></svg>
+      Subscriber Overview
+    </div>
+
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <svg class="search-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="4"/><path d="M10.5 10.5l3 3"/></svg>
+        <input class="search-inp" id="s-search" placeholder="Cari nama bisnis..." oninput="renderTable()">
+      </div>
+      <select class="filter-sel" id="s-status" onchange="renderTable()">
+        <option value="all">Semua Status</option>
+        <option value="active">Aktif</option>
+        <option value="trial">Trial</option>
+        <option value="suspended">Suspended</option>
+        <option value="churned">Churned</option>
+      </select>
+      <select class="filter-sel" id="s-wa" onchange="renderTable()">
+        <option value="all">WA Status</option>
+        <option value="connected">Connected</option>
+        <option value="disconnected">Disconnected</option>
+      </select>
+    </div>
+
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Business Name</th>
+            <th>Type</th>
+            <th>Join Date</th>
+            <th>Status</th>
+            <th>Credits</th>
+            <th>Reminders Sent</th>
+            <th>WA Status</th>
+          </tr>
+        </thead>
+        <tbody id="s-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- ── CHURN RISK SECTION ── -->
+    <div class="churn-section">
+      <div class="section-hd" style="color:var(--red)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2l6 11H2L8 2z"/><path d="M8 7v3M8 11.5v.5"/></svg>
+        Churn Risk Alerts
+      </div>
+      <div id="churn-list"></div>
+    </div>
+
+    </div><!-- /tab-dashboard -->
+
+    <!-- ══════════ TAB: PLAN CONFIG ══════════ -->
+    <div class="tab-section" id="tab-plan-config">
+      <div class="section-hd">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13.5 8.5a5.5 5.5 0 11-11 0 5.5 5.5 0 0111 0z"/><path d="M8 5.5v3l2 1"/></svg>
+        Konfigurasi Plan
+      </div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:16px;line-height:1.6">
+        Konfigurasi plan yang berlaku untuk semua client baru. Perubahan di sini <strong style="color:var(--amber)">tidak mempengaruhi</strong> client yang sudah aktif.
+      </div>
+
+      <div style="max-width:600px">
+        <!-- Free Plan -->
+        <div class="plan-config">
+          <div class="plan-config-hd">
+            <div>
+              <div class="plan-config-name">Free Plan</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:2px">One-time trial — tidak reset</div>
+            </div>
+            <span class="badge b-gray">Trial</span>
+          </div>
+          <div class="plan-field">
+            <div class="plan-field-lbl">Welcome bonus</div>
+            <input class="plan-field-inp" id="pc-free-bonus" value="100" type="number" min="0">
+            <div class="plan-field-unit">kredit</div>
+          </div>
+          <div class="plan-field">
+            <div class="plan-field-lbl">Reset otomatis</div>
+            <input class="plan-field-inp" value="Tidak" disabled style="opacity:.4;width:80px">
+            <div class="plan-field-unit"></div>
+          </div>
+        </div>
+
+        <!-- Subscriber Plan -->
+        <div class="plan-config">
+          <div class="plan-config-hd">
+            <div>
+              <div class="plan-config-name">Subscriber Plan</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:2px">Bulanan — reset setiap siklus billing</div>
+            </div>
+            <span class="badge b-lime">Active</span>
+          </div>
+          <div class="plan-field">
+            <div class="plan-field-lbl">Kredit per bulan</div>
+            <input class="plan-field-inp" id="pc-sub-credit" value="375" type="number" min="0">
+            <div class="plan-field-unit">kredit / bulan</div>
+          </div>
+          <div class="plan-field" style="padding-left:32px">
+            <div class="plan-field-lbl" style="font-size:11px;color:var(--ink3);font-style:italic">250 base + 125 early access bonus</div>
+          </div>
+          <div class="plan-field">
+            <div class="plan-field-lbl">Harga</div>
+            <input class="plan-field-inp" id="pc-sub-price" value="250000" type="number" min="0">
+            <div class="plan-field-unit">IDR / bulan</div>
+          </div>
+          <div class="plan-field">
+            <div class="plan-field-lbl">Reset otomatis</div>
+            <input class="plan-field-inp" value="Ya" disabled style="opacity:.4;width:80px">
+            <div class="plan-field-unit"></div>
+          </div>
+          <div class="plan-field">
+            <div class="plan-field-lbl">Carry over sisa kredit</div>
+            <input class="plan-field-inp" value="Tidak" disabled style="opacity:.4;width:80px">
+            <div class="plan-field-unit"></div>
+          </div>
+        </div>
+
+        <!-- Top-Up Pricing -->
+        <div class="plan-config">
+          <div class="plan-config-hd">
+            <div>
+              <div class="plan-config-name">Top-Up Pricing</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:2px">Tidak kadaluarsa · digunakan setelah kuota habis</div>
+            </div>
+            <span class="badge b-blue">Add-on</span>
+          </div>
+          <div class="plan-field">
+            <div class="plan-field-lbl">Harga per kredit</div>
+            <input class="plan-field-inp" id="pc-topup-price" value="1000" type="number" min="0">
+            <div class="plan-field-unit">IDR / kredit</div>
+          </div>
+          <div style="padding:10px 16px;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Paket Tiers</div>
+          <div class="plan-tier">
+            <span style="font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;min-width:90px">Rp 250.000</span>
+            <span style="color:var(--ink3)">→</span>
+            <span style="font-weight:600;color:var(--ink)">300 kredit</span>
+            <span class="plan-tier-badge">+20%</span>
+          </div>
+          <div class="plan-tier">
+            <span style="font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;min-width:90px">Rp 500.000</span>
+            <span style="color:var(--ink3)">→</span>
+            <span style="font-weight:600;color:var(--ink)">625 kredit</span>
+            <span class="plan-tier-badge">+25%</span>
+          </div>
+          <div class="plan-tier">
+            <span style="font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;min-width:90px">Rp 1.000.000</span>
+            <span style="color:var(--ink3)">→</span>
+            <span style="font-weight:600;color:var(--ink)">1.500 kredit</span>
+            <span class="plan-tier-badge">+50%</span>
+          </div>
+        </div>
+
+        <button class="btn btn-lime" onclick="savePlanConfig()" style="margin-top:8px">Simpan Konfigurasi</button>
+      </div>
+    </div><!-- /tab-plan-config -->
+
+    <!-- ══════════ TAB: TRANSACTIONS ══════════ -->
+    <div class="tab-section" id="tab-transactions">
+      <div class="section-hd">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+        Log Transaksi
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <svg class="search-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="4"/><path d="M10.5 10.5l3 3"/></svg>
+          <input class="search-inp" id="tx-search" placeholder="Cari nama company..." oninput="renderTx()">
+        </div>
+        <select class="filter-sel" id="tx-type" onchange="renderTx()">
+          <option value="all">Semua Tipe</option>
+          <option value="topup">Top Up</option>
+          <option value="subscription">Subscription</option>
+          <option value="usage">Penggunaan</option>
+          <option value="welcome">Welcome</option>
+        </select>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Company</th>
+              <th>Tipe</th>
+              <th>Jumlah</th>
+              <th>Saldo Setelah</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody id="tx-tbody"></tbody>
+        </table>
+      </div>
+    </div><!-- /tab-transactions -->
+
+  </div><!-- /content -->
+</div><!-- /shell -->
+
+<!-- ══════════════════ DETAIL MODAL ══════════════════ -->
+<div class="overlay" id="modal-detail" onclick="if(event.target===this)closeModal('modal-detail')">
+  <div class="modal">
+    <div class="mhd">
+      <div class="m-title" id="md-title">Business Detail</div>
+      <button class="m-close" onclick="closeModal('modal-detail')">&#215;</button>
+    </div>
+    <div class="mbd" id="md-body"></div>
+    <div class="mft" id="md-footer"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-container"></div>
+
+<script>
+// ══════════════════════════════
+// ADMIN DATA
+// ══════════════════════════════
+const ADMIN_DATA = [
+  { id:'biz-1', name:'Celestial Spa & Wellness', type:'spa', joinDate:'2025-11-15', status:'active', creditLeft:63, creditMax:100, remindersSent:37, waStatus:'connected', owner:'Cynthia', email:'cynthia@gmail.com' },
+  { id:'biz-2', name:'Salon Cantik', type:'salon', joinDate:'2026-01-20', status:'active', creditLeft:12, creditMax:100, remindersSent:88, waStatus:'connected', owner:'Diana', email:'diana@gmail.com' },
+  { id:'biz-3', name:'Barber Bros', type:'barbershop', joinDate:'2026-02-01', status:'trial', creditLeft:85, creditMax:100, remindersSent:15, waStatus:'connected', owner:'Riko', email:'riko@gmail.com' },
+  { id:'biz-4', name:'Nail Palace', type:'nail', joinDate:'2025-09-10', status:'suspended', creditLeft:0, creditMax:500, remindersSent:423, waStatus:'disconnected', owner:'Jessica', email:'jessica@gmail.com' },
+  { id:'biz-5', name:'Klinik Estetika', type:'klinik', joinDate:'2025-12-01', status:'churned', creditLeft:0, creditMax:100, remindersSent:67, waStatus:'disconnected', owner:'Dr. Rina', email:'rina@gmail.com' }
+];
+
+// Activity logs per business (simulated)
+const ACTIVITY_LOG = {
+  'biz-1': [
+    { time:'2026-03-25 14:30', text:'Credit top-up +50 by admin' },
+    { time:'2026-03-20 09:15', text:'WA reconnected' },
+    { time:'2026-03-15 11:00', text:'Monthly reminder reset' },
+    { time:'2026-02-28 16:45', text:'Status changed to Active' }
+  ],
+  'biz-2': [
+    { time:'2026-03-24 10:00', text:'Low credit warning sent' },
+    { time:'2026-03-18 08:30', text:'Reminder burst: 15 sent' },
+    { time:'2026-03-01 09:00', text:'Monthly reminder reset' }
+  ],
+  'biz-3': [
+    { time:'2026-03-20 13:00', text:'Trial started' },
+    { time:'2026-02-01 10:00', text:'Account created (trial)' }
+  ],
+  'biz-4': [
+    { time:'2026-03-10 17:00', text:'Account suspended - non-payment' },
+    { time:'2026-03-05 09:00', text:'WA disconnected' },
+    { time:'2026-02-20 11:30', text:'Credits exhausted' },
+    { time:'2025-09-10 08:00', text:'Account created' }
+  ],
+  'biz-5': [
+    { time:'2026-03-15 12:00', text:'Status changed to Churned' },
+    { time:'2026-03-01 09:00', text:'WA disconnected' },
+    { time:'2026-02-15 10:00', text:'Credits exhausted' },
+    { time:'2025-12-01 08:00', text:'Account created' }
+  ]
+};
+
+var currentDetailId = null;
+
+// ══════════════════════════════
+// PASSWORD GATE
+// ══════════════════════════════
+function tryLogin(e) {
+  e.preventDefault();
+  var pw = document.getElementById('gate-pw');
+  var err = document.getElementById('gate-error');
+  if (pw.value === 'starvio2026') {
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('shell').classList.remove('hidden');
+    renderTable();
+    renderChurnRisks();
+    updateStats();
+    startClock();
+  } else {
+    pw.classList.add('error');
+    err.textContent = 'Password salah. Coba lagi.';
+    setTimeout(function(){ pw.classList.remove('error'); }, 500);
+  }
+  return false;
+}
+
+function doLogout() {
+  document.getElementById('shell').classList.add('hidden');
+  document.getElementById('gate').classList.remove('hidden');
+  document.getElementById('gate-pw').value = '';
+  document.getElementById('gate-error').textContent = '';
+}
+
+// ══════════════════════════════
+// CLOCK
+// ══════════════════════════════
+function startClock() {
+  function tick() {
+    var now = new Date();
+    var h = String(now.getHours()).padStart(2,'0');
+    var m = String(now.getMinutes()).padStart(2,'0');
+    var s = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('tb-time').textContent = h+':'+m+':'+s;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ══════════════════════════════
+// STATS
+// ══════════════════════════════
+function updateStats() {
+  var active = ADMIN_DATA.filter(function(b){ return b.status === 'active' || b.status === 'trial'; }).length;
+  var totalCredits = ADMIN_DATA.reduce(function(s,b){ return s + b.creditMax; }, 0);
+  var totalReminders = ADMIN_DATA.reduce(function(s,b){ return s + b.remindersSent; }, 0);
+  var churnRisks = getChurnRisks().length;
+
+  document.getElementById('st-active').textContent = active;
+  document.getElementById('st-credits').textContent = totalCredits.toLocaleString();
+  document.getElementById('st-reminders').textContent = totalReminders.toLocaleString();
+  document.getElementById('st-churn').textContent = churnRisks;
+}
+
+// ══════════════════════════════
+// SUBSCRIBER TABLE
+// ══════════════════════════════
+function renderTable() {
+  var q = (document.getElementById('s-search').value || '').toLowerCase();
+  var st = document.getElementById('s-status').value;
+  var wa = document.getElementById('s-wa').value;
+
+  var filtered = ADMIN_DATA.filter(function(b) {
+    return (!q || b.name.toLowerCase().indexOf(q) >= 0) &&
+           (st === 'all' || b.status === st) &&
+           (wa === 'all' || b.waStatus === wa);
+  });
+
+  var html = '';
+  filtered.forEach(function(b) {
+    var statusBadge = getStatusBadge(b.status);
+    var waBadge = b.waStatus === 'connected'
+      ? '<span class="badge b-lime"><span class="dot" style="background:var(--lime-dk)"></span>Connected</span>'
+      : '<span class="badge b-red"><span class="dot" style="background:var(--red)"></span>Disconnected</span>';
+    var creditColor = b.creditLeft <= 0 ? 'var(--red)' : b.creditLeft <= 20 ? 'var(--amber)' : 'var(--ink)';
+
+    html += '<tr onclick="openDetail(\''+b.id+'\')">';
+    html += '<td><span style="font-weight:600;color:var(--ink)">'+b.name+'</span></td>';
+    html += '<td style="text-transform:capitalize">'+b.type+'</td>';
+    html += '<td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--ink3)">'+b.joinDate+'</td>';
+    html += '<td>'+statusBadge+'</td>';
+    html += '<td><span style="font-family:JetBrains Mono,monospace;font-weight:700;color:'+creditColor+'">'+b.creditLeft+'</span><span style="color:var(--ink4);font-size:10px"> / '+b.creditMax+'</span></td>';
+    html += '<td style="font-family:JetBrains Mono,monospace;font-weight:600">'+b.remindersSent+'</td>';
+    html += '<td>'+waBadge+'</td>';
+    html += '</tr>';
+  });
+
+  if (!filtered.length) {
+    html = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada data ditemukan.</td></tr>';
+  }
+
+  document.getElementById('s-tbody').innerHTML = html;
+}
+
+function getStatusBadge(status) {
+  switch(status) {
+    case 'active':    return '<span class="badge b-lime">Aktif</span>';
+    case 'trial':     return '<span class="badge b-blue">Trial</span>';
+    case 'suspended': return '<span class="badge b-red">Suspended</span>';
+    case 'churned':   return '<span class="badge b-gray">Churned</span>';
+    default:          return '<span class="badge b-gray">'+status+'</span>';
+  }
+}
+
+// ══════════════════════════════
+// DETAIL MODAL
+// ══════════════════════════════
+function openDetail(id) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === id; });
+  if (!b) return;
+  currentDetailId = id;
+
+  document.getElementById('md-title').textContent = b.name;
+
+  var creditColor = b.creditLeft <= 0 ? 'var(--red)' : b.creditLeft <= 20 ? 'var(--amber)' : 'var(--lime-dk)';
+  var statusBadge = getStatusBadge(b.status);
+
+  var html = '';
+
+  // Business Info
+  html += '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Business Info</div>';
+  html += '<div class="kv"><span class="kv-key">Owner</span><span class="kv-val">'+b.owner+'</span></div>';
+  html += '<div class="kv"><span class="kv-key">Email</span><span class="kv-val mono" style="font-size:11px">'+b.email+'</span></div>';
+  html += '<div class="kv"><span class="kv-key">Type</span><span class="kv-val" style="text-transform:capitalize">'+b.type+'</span></div>';
+  html += '<div class="kv"><span class="kv-key">Join Date</span><span class="kv-val mono">'+b.joinDate+'</span></div>';
+  html += '<div class="kv"><span class="kv-key">Status</span><span class="kv-val">'+statusBadge+'</span></div>';
+  html += '<div class="kv"><span class="kv-key">WA Status</span><span class="kv-val">'+(b.waStatus==='connected'?'<span class="badge b-lime"><span class="dot" style="background:var(--lime-dk)"></span>Connected</span>':'<span class="badge b-red"><span class="dot" style="background:var(--red)"></span>Disconnected</span>')+'</span></div>';
+  html += '</div>';
+
+  // Credits
+  html += '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Credits</div>';
+  html += '<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px">';
+  html += '<span style="font-size:32px;font-weight:800;font-family:JetBrains Mono,monospace;color:'+creditColor+'">'+b.creditLeft+'</span>';
+  html += '<span style="font-size:13px;color:var(--ink3)">/ '+b.creditMax+'</span>';
+  html += '</div>';
+  html += '<div style="font-size:11px;color:var(--ink3)">Reminders sent: <strong style="color:var(--ink2)">'+b.remindersSent+'</strong></div>';
+
+  // Credit bar
+  var pct = b.creditMax > 0 ? Math.round(b.creditLeft / b.creditMax * 100) : 0;
+  var barColor = pct <= 0 ? 'var(--red)' : pct <= 20 ? 'var(--amber)' : 'var(--lime)';
+  html += '<div style="margin-top:10px;height:6px;background:var(--bg4);border-radius:99px;overflow:hidden">';
+  html += '<div style="height:100%;width:'+pct+'%;background:'+barColor+';border-radius:99px;transition:width .3s"></div>';
+  html += '</div>';
+
+  // Manual credit add
+  html += '<div class="credit-row">';
+  html += '<input type="number" class="credit-inp" id="credit-add-val" value="50" min="1" placeholder="Jumlah">';
+  html += '<button class="btn btn-lime btn-sm" onclick="doAddCredit()">Tambah Kredit</button>';
+  html += '</div>';
+  html += '</div>';
+
+  // Suspend / Activate toggle
+  html += '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Actions</div>';
+  if (b.status === 'active' || b.status === 'trial') {
+    html += '<button class="btn btn-red" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">Suspend Account</button>';
+  } else {
+    html += '<button class="btn btn-lime" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">Activate Account</button>';
+  }
+  html += '</div>';
+
+  // Activity Log
+  var logs = ACTIVITY_LOG[b.id] || [];
+  html += '<div>';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Activity Log</div>';
+  html += '<div class="log-list" id="detail-log">';
+  logs.forEach(function(log) {
+    html += '<div class="log-item"><span class="log-time">'+log.time+'</span><span class="log-text">'+log.text+'</span></div>';
+  });
+  if (!logs.length) {
+    html += '<div style="font-size:11px;color:var(--ink4);padding:8px 0">No activity recorded.</div>';
+  }
+  html += '</div>';
+  html += '</div>';
+
+  document.getElementById('md-body').innerHTML = html;
+
+  // Footer
+  document.getElementById('md-footer').innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'modal-detail\')">Tutup</button>';
+
+  openModal('modal-detail');
+}
+
+// ══════════════════════════════
+// ACTIONS (prototype = setTimeout + visual feedback)
+// ══════════════════════════════
+function doAddCredit() {
+  var inp = document.getElementById('credit-add-val');
+  var amount = parseInt(inp.value, 10);
+  if (!amount || amount <= 0) { toast('Masukkan jumlah kredit yang valid', 'error'); return; }
+
+  var b = ADMIN_DATA.find(function(x){ return x.id === currentDetailId; });
+  if (!b) return;
+
+  var btn = inp.nextElementSibling;
+  btn.textContent = 'Menambahkan...';
+  btn.disabled = true;
+
+  setTimeout(function() {
+    b.creditLeft += amount;
+    // Add to log
+    if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
+    var now = new Date();
+    var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    ACTIVITY_LOG[b.id].unshift({ time: ts, text: 'Credit top-up +'+amount+' by admin' });
+
+    toast('Berhasil menambahkan '+amount+' kredit ke '+b.name, 'success');
+    renderTable();
+    updateStats();
+    openDetail(currentDetailId); // refresh modal
+  }, 800);
+}
+
+function doToggleStatus(id) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === id; });
+  if (!b) return;
+
+  var btn = document.getElementById('btn-toggle-status');
+  var isActive = (b.status === 'active' || b.status === 'trial');
+  btn.textContent = isActive ? 'Suspending...' : 'Activating...';
+  btn.disabled = true;
+
+  setTimeout(function() {
+    var oldStatus = b.status;
+    if (isActive) {
+      b.status = 'suspended';
+      toast(b.name + ' telah di-suspend', 'success');
+    } else {
+      b.status = 'active';
+      toast(b.name + ' telah diaktifkan kembali', 'success');
+    }
+    // Add to log
+    if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
+    var now = new Date();
+    var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    ACTIVITY_LOG[b.id].unshift({ time: ts, text: 'Status changed from '+oldStatus+' to '+b.status+' by admin' });
+
+    renderTable();
+    renderChurnRisks();
+    updateStats();
+    openDetail(id); // refresh modal
+  }, 800);
+}
+
+// ══════════════════════════════
+// CHURN RISK
+// ══════════════════════════════
+function getChurnRisks() {
+  var risks = [];
+  var now = new Date();
+
+  ADMIN_DATA.forEach(function(b) {
+    // Credit exhausted (creditLeft === 0 and not already churned)
+    if (b.creditLeft <= 0 && b.status !== 'churned') {
+      risks.push({ biz: b, reason: 'Kredit habis — sudah 0/' + b.creditMax, level: 'danger' });
+    }
+    // WA disconnected
+    if (b.waStatus === 'disconnected' && b.status !== 'churned') {
+      risks.push({ biz: b, reason: 'WhatsApp terputus > 3 hari', level: 'danger' });
+    }
+    // Trial expiring (trial status, check join date)
+    if (b.status === 'trial') {
+      var joinDate = new Date(b.joinDate);
+      var trialEnd = new Date(joinDate);
+      trialEnd.setDate(trialEnd.getDate() + 30); // 30 day trial
+      var daysLeft = Math.ceil((trialEnd - now) / (1000*60*60*24));
+      if (daysLeft < 7 && daysLeft >= 0) {
+        risks.push({ biz: b, reason: 'Trial berakhir dalam ' + daysLeft + ' hari', level: 'warn' });
+      }
+    }
+  });
+  return risks;
+}
+
+function renderChurnRisks() {
+  var risks = getChurnRisks();
+  var html = '';
+
+  if (!risks.length) {
+    html = '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;text-align:center;color:var(--ink3);font-size:12px">Tidak ada churn risk saat ini.</div>';
+  } else {
+    risks.forEach(function(r) {
+      html += '<div class="churn-card" onclick="openDetail(\''+r.biz.id+'\')">';
+      html += '<div class="churn-left">';
+      html += '<div class="churn-icon '+r.level+'">'+(r.level==='danger'?'!':'?')+'</div>';
+      html += '<div><div class="churn-name">'+r.biz.name+'</div><div class="churn-reason">'+r.reason+'</div></div>';
+      html += '</div>';
+      html += '<div>'+getStatusBadge(r.biz.status)+'</div>';
+      html += '</div>';
+    });
+  }
+
+  document.getElementById('churn-list').innerHTML = html;
+}
+
+// ══════════════════════════════
+// MODAL HELPERS
+// ══════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
+function toast(msg, type) {
+  var wrap = document.getElementById('toast-container');
+  var t = document.createElement('div');
+  t.className = 'toast' + (type ? ' toast-'+type : '');
+  t.textContent = msg;
+  wrap.appendChild(t);
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){ t.classList.add('toast-show'); });
+  });
+  setTimeout(function(){
+    t.classList.remove('toast-show');
+    setTimeout(function(){ t.remove(); }, 250);
+  }, 3000);
+}
+
+// ══════════════════════════════
+// TAB NAVIGATION
+// ══════════════════════════════
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab-section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  var section = document.getElementById('tab-'+tab);
+  if (section) section.classList.add('active');
+  if (el) el.classList.add('active');
+  if (tab === 'transactions') renderTx();
+}
+
+// ══════════════════════════════
+// PLAN CONFIG
+// ══════════════════════════════
+function savePlanConfig() {
+  var btn = event.target;
+  btn.textContent = 'Menyimpan...';
+  btn.disabled = true;
+  setTimeout(function() {
+    btn.textContent = 'Simpan Konfigurasi';
+    btn.disabled = false;
+    toast('Konfigurasi plan berhasil disimpan', 'success');
+  }, 800);
+}
+
+// ══════════════════════════════
+// TRANSACTION DATA
+// ══════════════════════════════
+var TX_DATA = [];
+(function generateTxData() {
+  var txTypes = [
+    { type:'subscription', label:'Langganan Bulanan',   icon:'↺', cls:'reset', sign:'+' },
+    { type:'topup',        label:'Top Up Kredit',       icon:'+', cls:'add',   sign:'+' },
+    { type:'usage',        label:'Penggunaan Reminder', icon:'−', cls:'sub',   sign:'-' },
+    { type:'welcome',      label:'Welcome Bonus',       icon:'★', cls:'welcome', sign:'+' }
+  ];
+
+  ADMIN_DATA.forEach(function(b, ci) {
+    var balance = b.creditLeft;
+
+    // Welcome bonus for each business
+    var wd = new Date(b.joinDate);
+    TX_DATA.push({
+      company: b.name, type:'welcome', label:'Welcome Bonus',
+      icon:'★', cls:'welcome', sign:'+', amount:100,
+      date: wd.toISOString().split('T')[0],
+      balanceAfter: 100, keterangan:'Bonus pendaftaran awal'
+    });
+
+    // Generate usage
+    for (var i=0; i<3; i++) {
+      var d = new Date('2026-03-25');
+      d.setDate(d.getDate() - (ci*3 + i*4));
+      var amt = Math.floor(Math.random()*15)+5;
+      balance += amt;
+      TX_DATA.push({
+        company: b.name, type:'usage', label:'Penggunaan Reminder',
+        icon:'−', cls:'sub', sign:'-', amount: amt,
+        date: d.toISOString().split('T')[0],
+        balanceAfter: Math.max(0, b.creditLeft + Math.floor(Math.random()*50)),
+        keterangan: amt+' reminder terkirim'
+      });
+    }
+
+    // Subscription for active
+    if (b.status === 'active') {
+      var sd = new Date('2026-03-01');
+      TX_DATA.push({
+        company: b.name, type:'subscription', label:'Langganan Bulanan',
+        icon:'↺', cls:'reset', sign:'+', amount:375,
+        date: sd.toISOString().split('T')[0],
+        balanceAfter: 375, keterangan:'Reset + kredit bulanan Maret'
+      });
+    }
+
+    // Top-up for some
+    if (ci % 2 === 0 && b.status !== 'churned') {
+      var td = new Date('2026-03-10');
+      td.setDate(td.getDate() - ci*2);
+      TX_DATA.push({
+        company: b.name, type:'topup', label:'Top Up Kredit',
+        icon:'+', cls:'add', sign:'+', amount:300,
+        date: td.toISOString().split('T')[0],
+        balanceAfter: b.creditLeft + 300,
+        keterangan:'Paket Rp 250.000 (+20% bonus)'
+      });
+    }
+  });
+
+  TX_DATA.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+})();
+
+// ══════════════════════════════
+// RENDER TRANSACTIONS
+// ══════════════════════════════
+function renderTx() {
+  var q = (document.getElementById('tx-search').value || '').toLowerCase();
+  var type = document.getElementById('tx-type').value;
+
+  var filtered = TX_DATA.filter(function(tx) {
+    return (type === 'all' || tx.type === type) &&
+           (!q || tx.company.toLowerCase().indexOf(q) >= 0);
+  });
+
+  var html = '';
+  if (!filtered.length) {
+    html = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada transaksi ditemukan.</td></tr>';
+  } else {
+    filtered.slice(0,50).forEach(function(tx) {
+      var typeBadge = '';
+      switch(tx.type) {
+        case 'topup':        typeBadge = '<span class="badge b-lime">Top Up</span>'; break;
+        case 'subscription': typeBadge = '<span class="badge b-blue">Subscription</span>'; break;
+        case 'usage':        typeBadge = '<span class="badge b-red">Penggunaan</span>'; break;
+        case 'welcome':      typeBadge = '<span class="badge b-amber">Welcome</span>'; break;
+      }
+      var amountColor = tx.sign === '+' ? '#2d8a00' : 'var(--red)';
+      html += '<tr>';
+      html += '<td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--ink3);white-space:nowrap">'+tx.date+'</td>';
+      html += '<td style="font-weight:600;color:var(--ink)">'+tx.company+'</td>';
+      html += '<td>'+typeBadge+'</td>';
+      html += '<td style="font-family:JetBrains Mono,monospace;font-weight:700;color:'+amountColor+'">'+tx.sign+tx.amount+'</td>';
+      html += '<td style="font-family:JetBrains Mono,monospace;font-weight:600">'+tx.balanceAfter+'</td>';
+      html += '<td style="font-size:11px;color:var(--ink3)">'+tx.keterangan+'</td>';
+      html += '</tr>';
+    });
+  }
+
+  document.getElementById('tx-tbody').innerHTML = html;
+}
+
+// ══════════════════════════════
+// KEYBOARD
+// ══════════════════════════════
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('modal-detail').classList.contains('show')) {
+      closeModal('modal-detail');
+    }
+  }
+  // Enter on gate
+  if (e.key === 'Enter' && !document.getElementById('gate').classList.contains('hidden')) {
+    tryLogin(e);
+  }
+});
+</script>
+</body>
+</html>

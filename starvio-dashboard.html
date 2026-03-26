@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starvio — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+  --border:#e2e1d9;--border2:#cccbc2;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --blue:#2563eb;--blue-bg:#eff4ff;--blue-dk:#1e3a8a;
+  --r:12px;--r-sm:8px;--r-lg:16px;--sidebar:224px;
+}
+html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidden;background:var(--bg)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh}
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── SIDEBAR ── */
+.s-logo{padding:14px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.s-mark{width:28px;height:28px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s-bname{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.s-biz{padding:10px 16px;border-bottom:1px solid var(--border)}
+.s-biz-n{font-size:12px;font-weight:600;color:var(--ink)}
+.s-biz-t{font-size:10px;color:var(--ink3);margin-top:1px}
+.s-nav{padding:8px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:var(--ink3);font-size:12px;font-weight:500;transition:all .15s;text-decoration:none;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--ink2)}
+.nav-item.active{background:var(--lime);color:var(--lime-dk);font-weight:700}
+.nav-icon{width:18px;text-align:center;flex-shrink:0;font-size:14px}
+.nav-pill{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px}
+.np-red{background:var(--red-bg);color:var(--red-dk)}
+.s-counter{margin:8px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 12px}
+.sc-n{font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.sc-l{font-size:10px;color:var(--lime-dk);opacity:.6;margin-top:2px;line-height:1.3}
+.sc-bar{height:3px;background:rgba(45,74,0,.1);border-radius:99px;margin-top:7px;overflow:hidden}
+.sc-fill{height:100%;background:var(--lime-dk);border-radius:99px;transition:width .5s}
+.s-bottom{padding:8px;border-top:1px solid var(--border)}
+.s-user{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--r-sm)}
+.s-av{width:26px;height:26px;border-radius:50%;background:var(--lime-bg);border:1px solid #c8f07a;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.s-uname{font-size:11px;font-weight:600;color:var(--ink)}
+.s-urole{font-size:10px;color:var(--ink3)}
+.s-logout{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;opacity:.4;transition:opacity .15s;margin-left:auto;flex-shrink:0}
+.s-logout:hover{opacity:1}
+.s-reset{width:100%;margin-top:6px;padding:7px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);font-size:10px;font-weight:600;color:var(--ink3);font-family:inherit;cursor:pointer;transition:all .15s}
+.s-reset:hover{background:var(--bg4);color:var(--ink2)}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;margin-right:8px}
+
+/* ── CONTENT ── */
+.db-content{flex:1;overflow-y:auto;padding:20px 24px 40px}
+.db-inner{max-width:960px;margin:0 auto}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:17px 19px;margin-bottom:13px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.b-lime{background:var(--lime-bg);color:var(--lime-dk);border:1px solid #c8f07a}
+.b-amber{background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a}
+.b-red{background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3}
+.b-blue{background:var(--blue-bg);color:var(--blue-dk);border:1px solid #bfcff8}
+.b-gray{background:var(--bg3);color:var(--ink3);border:1px solid var(--border)}
+
+/* ── METRICS ── */
+.met-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px}
+.met{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px}
+.met-lbl{font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:7px}
+.met-val{font-size:28px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.met-sub{font-size:11px;color:var(--ink3);margin-top:5px}
+.met.blue{border-color:#bfcff8;background:linear-gradient(135deg,#fff,var(--blue-bg))}.met.blue .met-val{color:var(--blue-dk)}
+.met.lime{border-color:var(--lime2);background:linear-gradient(135deg,#fff,#f4fde6)}.met.lime .met-val{color:var(--lime-dk)}
+.met.red{border-color:#f5c5c3;background:linear-gradient(135deg,#fff,var(--red-bg))}.met.red .met-val{color:var(--red-dk)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}
+.btn-ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}.btn-ghost:hover{background:var(--bg3)}
+.btn-danger{background:var(--red-bg);color:var(--red-dk);border:1.5px solid #f5c5c3}
+.btn-sm{padding:6px 12px;font-size:11px}
+
+/* ── REMINDER LIST ── */
+.rem-item{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--border)}
+.rem-item:last-child{border-bottom:none}
+.rem-av{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--ink2);flex-shrink:0}
+
+/* ── QUICK LINKS ── */
+.ql-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px}
+.ql-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:18px 16px;cursor:pointer;transition:all .15s;text-decoration:none;display:block}
+.ql-card:hover{border-color:var(--lime2);background:var(--lime-bg)}
+.ql-icon{font-size:24px;margin-bottom:8px}
+.ql-title{font-size:13px;font-weight:700;color:var(--ink)}
+.ql-card:hover .ql-title{color:var(--lime-dk)}
+.ql-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+
+/* ── CREDIT ALERT ── */
+.credit-alert{display:none;background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:10px 16px;margin-bottom:14px;font-size:12px;color:var(--amber-dk);align-items:center;gap:8px}
+.credit-alert.critical{background:var(--red-bg);border-color:#f5c5c3;color:var(--red-dk)}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px)}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease;width:360px}
+.mhd{padding:19px 22px 15px;border-bottom:1px solid var(--border);text-align:center}
+.mftr{padding:13px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.m-title{font-size:15px;font-weight:700;color:var(--ink)}
+.m-sub{font-size:12px;color:var(--ink3);margin-top:4px}
+
+/* ── SIDEBAR OVERLAY (mobile) ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
+.sidebar-overlay.open{display:block}
+
+/* ── MOBILE ── */
+@media(max-width:767px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .hamburger-btn{display:flex}
+  .met-grid{grid-template-columns:repeat(2,1fr)}
+  .ql-grid{grid-template-columns:1fr}
+  .db-content{padding:16px 16px 32px}
+}
+@media(min-width:768px) and (max-width:1023px){
+  .sidebar{width:60px}
+  .s-bname,.s-biz,.s-urole,.s-uname,.sc-l,.nav-item span:not(.nav-icon):not(.nav-pill){display:none}
+  .s-logo{justify-content:center;padding:14px 8px}
+  .nav-item{justify-content:center;padding:10px 8px}
+  .s-counter{padding:8px;text-align:center}
+  .s-user{justify-content:center}
+  .s-bottom{text-align:center}
+  .s-reset{font-size:0;padding:8px}
+  .s-reset::after{content:'↺';font-size:14px}
+}
+/* ── LIVE ACTIVITY FEED ── */
+.feed-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.feed-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.feed-title{font-size:14px;font-weight:600;color:var(--ink)}
+.feed-status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--lime-dk)}
+.feed-dot{width:7px;height:7px;border-radius:50%;background:var(--lime2);animation:pulse-feed 1.8s infinite}
+@keyframes pulse-feed{0%,100%{box-shadow:0 0 0 0 rgba(159,217,58,.5)}50%{box-shadow:0 0 0 4px rgba(159,217,58,0)}}
+.feed-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;transition:background .12s}
+.feed-row:last-child{border-bottom:none}
+.feed-row:hover{background:var(--bg3)}
+.feed-row.gagal{background:var(--red-bg)}
+.feed-row.gagal:hover{background:#fbd0ce}
+.feed-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
+.feed-text{flex:1;font-size:12px;color:var(--ink);min-width:0;line-height:1.4}
+.feed-text strong{font-weight:700}
+.feed-time{font-size:11px;color:var(--ink3);white-space:nowrap;flex-shrink:0}
+.feed-empty{padding:24px 16px;text-align:center;font-size:12px;color:var(--ink3)}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="s-logo">
+    <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
+    <span class="s-bname">Starvio</span>
+  </div>
+  <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
+  <nav class="s-nav">
+    <a id="nav-dashboard"  href="starvio-dashboard.html"    class="nav-item active"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a id="nav-catat"      href="starvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan"  href="starvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="starvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
+    <a id="nav-log"        href="starvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-kategori"   href="starvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
+    <a id="nav-billing"    href="starvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
+    <a id="nav-settings"   href="starvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
+  </nav>
+  <div class="s-counter">
+    <div class="sc-n" id="sc-n">0</div>
+    <div class="sc-l">kredit tersisa dari <span id="sc-total">100</span></div>
+    <div class="sc-bar"><div class="sc-fill" id="sc-fill" style="width:100%"></div></div>
+  </div>
+  <div class="s-bottom">
+    <div class="s-user">
+      <div class="s-av" id="s-av">—</div>
+      <div><div class="s-uname" id="s-uname">Owner</div><div class="s-urole">Owner</div></div>
+      <button class="s-logout" onclick="openLogout()" title="Logout">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </button>
+    </div>
+    <button class="s-reset" onclick="resetDemo()">↺ Reset demo data</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center">
+      <button class="hamburger-btn" onclick="openSidebar()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+      </button>
+      <span class="tb-title">Dashboard</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <!-- WA Status Chip -->
+      <div id="wa-chip" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700"></div>
+    </div>
+  </div>
+
+  <div class="db-content">
+    <div class="db-inner">
+
+      <!-- ⓪ LIVE ACTIVITY FEED -->
+      <div class="feed-card" id="feed-card">
+        <div class="feed-header">
+          <div class="feed-title">Yang baru terjadi</div>
+          <div class="feed-status"><div class="feed-dot"></div>Sistem berjalan</div>
+        </div>
+        <div id="feed-body"></div>
+      </div>
+
+      <!-- ① GREETING CARD -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;margin-bottom:14px;position:relative;overflow:hidden">
+        <div style="position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.3px" id="h-greeting">Selamat pagi 👋</div>
+            <div style="font-size:12px;color:var(--ink3);margin-top:4px" id="h-date"></div>
+            <a href="starvio-automation.html" id="h-auto-badge" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;text-decoration:none;cursor:pointer;transition:opacity .15s" title="Klik untuk buka pengaturan Automation"></a>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;text-align:center;min-width:80px">
+              <div style="font-size:22px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;line-height:1" id="h-visit-today">0</div>
+              <div style="font-size:10px;color:var(--ink3);margin-top:3px">Kunjungan Hari Ini</div>
+            </div>
+            <div style="background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 14px;text-align:center;min-width:80px">
+              <div style="font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;line-height:1" id="h-credit">0</div>
+              <div style="font-size:10px;color:var(--lime-dk);opacity:.6;margin-top:3px">Kredit Tersisa</div>
+            </div>
+            <div style="background:var(--red-bg);border:1px solid rgba(232,69,60,.2);border-radius:var(--r-sm);padding:10px 14px;text-align:center;min-width:80px" id="h-lost-tile">
+              <div style="font-size:22px;font-weight:700;color:var(--red-dk);font-family:'JetBrains Mono',monospace;line-height:1" id="h-lost-n">0</div>
+              <div style="font-size:10px;color:var(--red-dk);opacity:.6;margin-top:3px">Pelanggan Hilang</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⑤ QUICK LINKS (action cards) -->
+      <div class="ql-grid" style="margin-bottom:14px">
+        <a href="starvio-catat-kunjungan.html" class="ql-card">
+          <div class="ql-icon">📋</div>
+          <div class="ql-title">Catat Kunjungan</div>
+          <div class="ql-sub">Catat pelanggan yang datang hari ini</div>
+        </a>
+        <a href="starvio-pelanggan.html?action=add" class="ql-card">
+          <div class="ql-icon">👥</div>
+          <div class="ql-title">Tambah Pelanggan</div>
+          <div class="ql-sub">Daftarkan pelanggan baru manual</div>
+        </a>
+        <a href="starvio-automation.html" class="ql-card">
+          <div class="ql-icon">🤖</div>
+          <div class="ql-title">Atur Automation</div>
+          <div class="ql-sub">Konfigurasi reminder otomatis</div>
+        </a>
+      </div>
+
+      <!-- CREDIT ALERT -->
+      <div class="credit-alert" id="credit-alert">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><path d="M8 2l6 11H2L8 2z"/><path d="M8 7v3M8 11.5v.5"/></svg>
+        <span id="credit-alert-text"></span>
+        <a href="starvio-billing.html" style="font-weight:700;color:inherit;margin-left:auto;white-space:nowrap">Top up →</a>
+      </div>
+
+      <!-- ② METRICS GRID -->
+      <div class="met-grid">
+        <div class="met">
+          <div class="met-lbl">Total Pelanggan</div>
+          <div class="met-val" id="m-total">0</div>
+          <div class="met-sub">terdaftar di sistem</div>
+        </div>
+        <div class="met blue">
+          <div class="met-lbl">Kunjungan Bulan Ini</div>
+          <div class="met-val" id="m-visits">0</div>
+          <div class="met-sub">kunjungan tercatat</div>
+        </div>
+        <div class="met lime">
+          <div class="met-lbl">Reminder Terkirim</div>
+          <div class="met-val" id="m-sent">0</div>
+          <div class="met-sub">bulan ini</div>
+        </div>
+        <div class="met" id="m-lost-card">
+          <div class="met-lbl">Pelanggan Hilang</div>
+          <div class="met-val" id="m-lost">0</div>
+          <div class="met-sub">lewat interval</div>
+        </div>
+      </div>
+
+      <!-- ③ PELANGGAN PERLU PERHATIAN -->
+      <div id="attn-section" style="display:none;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"><path d="M8 2l6 11H2L8 2z"/><path d="M8 7v3M8 11.5v.5"/></svg>
+            Pelanggan Perlu Perhatian
+          </div>
+          <a href="starvio-pelanggan.html" style="font-size:11px;font-weight:600;color:var(--ink3);text-decoration:underline">Lihat semua →</a>
+        </div>
+        <div id="attn-list" style="display:flex;flex-direction:column;gap:7px"></div>
+      </div>
+
+      <!-- ④ JADWAL REMINDER HARI INI -->
+      <div id="reminder-section" style="display:none;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:700;color:var(--ink)">Jadwal Reminder Hari Ini</div>
+          <a href="starvio-log-reminder.html" style="font-size:11px;font-weight:600;color:var(--ink3);text-decoration:underline">Lihat log →</a>
+        </div>
+        <div id="reminder-list" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden"></div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div id="empty-state" style="display:none;text-align:center;padding:40px 20px;background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r-lg);margin-bottom:16px">
+        <div style="font-size:36px;margin-bottom:12px">🎯</div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Belum ada pelanggan</div>
+        <div style="font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:16px">Pasang QR di kasir kamu atau tambah pelanggan manual.</div>
+        <a href="starvio-catat-kunjungan.html" class="btn btn-lime" style="text-decoration:none">Mulai Kumpulkan Pelanggan</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="overlay" id="m-logout">
+  <div class="modal">
+    <div class="mhd">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--red-bg);border:1px solid #f5c5c3;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="var(--red-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </div>
+      <div class="m-title">Yakin mau logout?</div>
+      <div class="m-sub">Sesi kamu akan diakhiri.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeLogout()">Batal</button>
+      <button class="btn btn-danger btn-sm" onclick="doLogout()">Ya, Logout</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── SHARED ── */
+function loadU() {
+  try {
+    const raw = localStorage.getItem('starvio_user')
+    if (!raw) return null
+    const u = JSON.parse(raw)
+    if (u.DATA_VERSION !== 4) return null
+    u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    return u
+  } catch(e) { return null }
+}
+
+function bootSidebar() {
+  const page = location.pathname.split('/').pop()
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('href') === page)
+  })
+  const u = loadU()
+  const el = document.getElementById('sidebarBizName')
+  if (el && u) el.textContent = u.bizName || ''
+}
+
+function resetDemo() {
+  location.href = 'starvio-seed-data.html?auto=1'
+}
+
+function doLogout() {
+  localStorage.removeItem('starvio_user')
+  location.href = 'starvio-login.html'
+}
+
+/* ── STATUS LOGIC ── */
+function getStatus(service) {
+  const diff = Math.floor((Date.now() - new Date(service.date)) / 86400000)
+  const pct = (diff / service.days) * 100
+  if (pct >= 100) return 'hilang'
+  if (pct >= 70) return 'mendekati'
+  return 'aktif'
+}
+
+function worstStatus(customer) {
+  const order = { hilang: 0, mendekati: 1, aktif: 2 }
+  return customer.services.reduce((worst, svc) => {
+    const s = getStatus(svc)
+    return order[s] < order[worst] ? s : worst
+  }, 'aktif')
+}
+
+function worstService(customer) {
+  let worst = null, worstScore = -1
+  customer.services.forEach(svc => {
+    const diff = Math.floor((Date.now() - new Date(svc.date)) / 86400000)
+    const pct = diff / svc.days
+    if (pct > worstScore) { worstScore = pct; worst = { ...svc, diff, pct } }
+  })
+  return worst
+}
+
+/* ── SIDEBAR MOBILE ── */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open')
+  document.getElementById('sidebarOverlay').classList.add('open')
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('sidebarOverlay').classList.remove('open')
+}
+
+/* ── MODAL ── */
+function openLogout() { document.getElementById('m-logout').classList.add('show') }
+function closeLogout() { document.getElementById('m-logout').classList.remove('show') }
+
+/* ── RELATIVE TIME ── */
+function relTime(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const m = Math.floor(diff / 60000)
+  if (m < 1) return 'Baru saja'
+  if (m < 60) return m + ' menit lalu'
+  const h = Math.floor(m / 60)
+  if (h < 24) return h + ' jam lalu'
+  const d = Math.floor(h / 24)
+  if (d === 1) return 'Kemarin'
+  if (d < 7) return d + ' hari lalu'
+  return new Date(dateStr).toLocaleDateString('id-ID', {day:'numeric',month:'short'})
+}
+
+/* ── LIVE ACTIVITY FEED ── */
+function renderFeed(U) {
+  const events = []
+  const rems = U.reminders || []
+  const cxs = U.customers || []
+
+  // Reminder events
+  rems.forEach(function(r) {
+    if (r.status === 'terkirim' && r.sentAt) {
+      events.push({ type: 'reminder_sent', icon: '\uD83D\uDCE9', text: 'Reminder terkirim ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: r.sentAt, link: 'starvio-log-reminder.html', gagal: false })
+    } else if (r.status === 'gagal') {
+      var d = r.sentAt || r.scheduledAt
+      events.push({ type: 'reminder_gagal', icon: '\u274C', text: 'Reminder gagal ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: d, link: 'starvio-log-reminder.html', gagal: true })
+    }
+  })
+
+  // New customers via QR
+  cxs.forEach(function(cx) {
+    if (cx.via === 'qr' && cx.services && cx.services.length > 0) {
+      // Use earliest service date as join date
+      var earliest = cx.services.reduce(function(min, s) { return s.date < min ? s.date : min }, cx.services[0].date)
+      events.push({ type: 'new_cx', icon: '\uD83D\uDC64', text: 'Pelanggan baru: <strong>' + cx.name + '</strong> via QR check-in', date: earliest, link: 'starvio-pelanggan.html', gagal: false })
+    }
+  })
+
+  // Visit events (recent service dates)
+  cxs.forEach(function(cx) {
+    (cx.services || []).forEach(function(svc) {
+      if (svc.date) {
+        events.push({ type: 'visit', icon: '\uD83D\uDCCB', text: 'Kunjungan dicatat: <strong>' + cx.name + '</strong> — ' + (svc.icon || '') + ' ' + svc.name, date: svc.date, link: 'starvio-pelanggan.html', gagal: false })
+      }
+    })
+  })
+
+  // Sort newest first
+  events.sort(function(a, b) { return new Date(b.date) - new Date(a.date) })
+
+  var feedBody = document.getElementById('feed-body')
+  if (events.length === 0) {
+    feedBody.innerHTML = '<div class="feed-empty">Belum ada aktivitas. Mulai dengan catat kunjungan pertama!</div>'
+    return
+  }
+
+  feedBody.innerHTML = events.slice(0, 8).map(function(ev) {
+    return '<a href="' + ev.link + '" class="feed-row' + (ev.gagal ? ' gagal' : '') + '">' +
+      '<span class="feed-icon">' + ev.icon + '</span>' +
+      '<span class="feed-text">' + ev.text + '</span>' +
+      '<span class="feed-time">' + relTime(ev.date) + '</span>' +
+      '</a>'
+  }).join('')
+}
+
+/* ── BOOT ── */
+function boot() {
+  const U = loadU()
+  if (!U) { location.href = 'starvio-login.html'; return }
+
+  const cxs = U.customers || []
+  const cats = U.cats || []
+  const rems = U.reminders || []
+
+  // Live Activity Feed
+  renderFeed(U)
+
+  const today = new Date()
+  today.setHours(0,0,0,0)
+  const todayISO = today.toISOString().slice(0,10)
+
+  // Sidebar
+  document.getElementById('sidebarBizName').textContent = U.bizName || ''
+  const tz = (U.timezone || 'Asia/Jakarta').split('/')[1] || 'Jakarta'
+  document.getElementById('s-biz-t').textContent = (U.bizType || 'Bisnis') + ' · ' + tz
+  const av = (U.adminName || 'U').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()
+  document.getElementById('s-av').textContent = av
+  document.getElementById('s-uname').textContent = U.adminName || 'Owner'
+  document.getElementById('sc-n').textContent = U.remLeft || 0
+  document.getElementById('sc-total').textContent = U.remMax || 100
+  const pct = Math.round((U.remLeft || 0) / (U.remMax || 100) * 100)
+  const fill = document.getElementById('sc-fill')
+  fill.style.width = pct + '%'
+  fill.style.background = pct <= 10 ? 'var(--red)' : pct <= 30 ? 'var(--amber-dk)' : 'var(--lime-dk)'
+
+  // Greeting
+  const firstName = (U.adminName || '').split(' ')[0] || 'Owner'
+  const h = new Date().getHours()
+  const greet = h < 11 ? 'pagi' : h < 15 ? 'siang' : h < 18 ? 'sore' : 'malam'
+  document.getElementById('h-greeting').textContent = 'Selamat ' + greet + ', ' + firstName + ' 👋'
+  document.getElementById('h-date').textContent = today.toLocaleDateString('id-ID', {weekday:'long',day:'numeric',month:'long',year:'numeric'})
+
+  // Automation Status Badge
+  const autoBadge = document.getElementById('h-auto-badge')
+  if (U.automationEnabled) {
+    autoBadge.style.background = 'var(--lime-bg)'
+    autoBadge.style.border = '1px solid #c8f07a'
+    autoBadge.style.color = 'var(--lime-dk)'
+    autoBadge.textContent = '\uD83E\uDD16 Automation ON'
+  } else {
+    autoBadge.style.background = 'var(--bg3)'
+    autoBadge.style.border = '1px solid var(--border)'
+    autoBadge.style.color = 'var(--ink3)'
+    autoBadge.textContent = '\uD83E\uDD16 Automation OFF'
+  }
+
+  // WA Status Chip
+  const waChip = document.getElementById('wa-chip')
+  if (U.waNum) {
+    waChip.style.background = 'var(--lime-bg)'
+    waChip.style.border = '1px solid #c8f07a'
+    waChip.style.color = 'var(--lime-dk)'
+    waChip.innerHTML = '<div style="width:6px;height:6px;border-radius:50%;background:var(--lime2);animation:pulse 2s ease-in-out infinite"></div> WA Aktif'
+  } else {
+    waChip.style.background = 'var(--red-bg)'
+    waChip.style.border = '1px solid #f5c5c3'
+    waChip.style.color = 'var(--red-dk)'
+    waChip.innerHTML = '<div style="width:6px;height:6px;border-radius:50%;background:var(--red)"></div> WA Terputus'
+  }
+
+  // Greeting tiles
+  const visitToday = cxs.filter(cx => cx.services.some(s => s.date === todayISO)).length
+  document.getElementById('h-visit-today').textContent = visitToday
+  document.getElementById('h-credit').textContent = U.remLeft || 0
+
+  // Count lost
+  const lostCxs = cxs.filter(cx => worstStatus(cx) === 'hilang')
+  const nearCxs = cxs.filter(cx => worstStatus(cx) === 'mendekati')
+  const attnCxs = [...lostCxs, ...nearCxs]
+
+  document.getElementById('h-lost-n').textContent = lostCxs.length
+  if (lostCxs.length === 0) {
+    document.getElementById('h-lost-tile').style.background = 'rgba(255,255,255,.06)'
+    document.getElementById('h-lost-tile').style.border = '1px solid rgba(255,255,255,.1)'
+  }
+
+  // Lost badge in sidebar
+  const navLost = document.getElementById('nav-lost-n')
+  if (lostCxs.length > 0) { navLost.textContent = lostCxs.length; navLost.style.display = 'inline-flex' }
+
+  // Credit alert
+  const alertEl = document.getElementById('credit-alert')
+  const alertTxt = document.getElementById('credit-alert-text')
+  if (U.remLeft < 10 && U.remLeft > 0) {
+    alertEl.style.display = 'flex'
+    alertTxt.textContent = 'Kredit hampir habis — ' + U.remLeft + ' kredit tersisa.'
+  } else if (U.remLeft <= 0) {
+    alertEl.style.display = 'flex'
+    alertEl.classList.add('critical')
+    alertTxt.textContent = 'Kredit habis! Reminder tidak bisa dikirim.'
+  }
+
+  // Metrics
+  document.getElementById('m-total').textContent = cxs.length
+
+  // Visits this month
+  const thisMonth = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0')
+  let visitCount = 0
+  cxs.forEach(cx => cx.services.forEach(s => { if (s.date && s.date.startsWith(thisMonth)) visitCount++ }))
+  document.getElementById('m-visits').textContent = visitCount
+
+  // Reminders sent this month
+  const sentThisMonth = rems.filter(r => r.status === 'terkirim' && r.sentAt && r.sentAt.startsWith(thisMonth)).length
+  document.getElementById('m-sent').textContent = sentThisMonth
+
+  // Lost metric card
+  document.getElementById('m-lost').textContent = lostCxs.length
+  const lostCard = document.getElementById('m-lost-card')
+  if (lostCxs.length > 0) { lostCard.classList.add('red') }
+
+  // Empty state
+  if (cxs.length === 0) {
+    document.getElementById('empty-state').style.display = 'block'
+  }
+
+  // Perlu Perhatian section
+  const attnSection = document.getElementById('attn-section')
+  const attnList = document.getElementById('attn-list')
+  if (attnCxs.length > 0) {
+    attnSection.style.display = 'block'
+    const sorted = attnCxs.sort((a, b) => {
+      const aW = worstService(a), bW = worstService(b)
+      return (bW ? bW.pct : 0) - (aW ? aW.pct : 0)
+    })
+    attnList.innerHTML = sorted.slice(0, 5).map(cx => {
+      const ws = worstService(cx)
+      const status = worstStatus(cx)
+      const isLost = status === 'hilang'
+      const color = isLost ? 'var(--red)' : 'var(--amber)'
+      const bg = isLost ? 'var(--red-bg)' : 'var(--amber-bg)'
+      const bd = isLost ? '#f5c5c3' : '#fcd88a'
+      const init = cx.name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()
+      const label = ws ? (isLost ? ws.diff + ' hari (lewat interval)' : ws.diff + ' hari · ' + Math.round(ws.pct * 100) + '% interval') : ''
+      const svcName = ws ? ws.name : ''
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:' + bg + ';border:1px solid ' + bd + ';border-radius:var(--r-sm)">' +
+        '<div style="width:30px;height:30px;border-radius:50%;background:' + color + ';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">' + init + '</div>' +
+        '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ink)">' + cx.name + '</div>' +
+        '<div style="font-size:11px;color:var(--ink2);margin-top:1px">' + svcName + ' · ' + label + '</div></div></div>'
+    }).join('')
+    if (attnCxs.length > 5) {
+      attnList.innerHTML += '<div style="font-size:11px;color:var(--ink3);padding:4px 2px">+' + (attnCxs.length - 5) + ' lainnya — <a href="starvio-pelanggan.html" style="color:var(--ink3);text-decoration:underline">lihat semua</a></div>'
+    }
+  }
+
+  // Reminder hari ini
+  const todayRems = rems.filter(r => r.scheduledAt && r.scheduledAt.startsWith(todayISO))
+  const remSection = document.getElementById('reminder-section')
+  const remList = document.getElementById('reminder-list')
+  if (todayRems.length > 0) {
+    remSection.style.display = 'block'
+    remList.innerHTML = todayRems.slice(0, 8).map(r => {
+      const init = (r.cxName || '?').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()
+      let chipClass = 'b-gray', chipText = r.status
+      if (r.status === 'terkirim') { chipClass = 'b-lime'; chipText = 'Terkirim' }
+      else if (r.status === 'gagal') { chipClass = 'b-red'; chipText = 'Gagal' }
+      else if (r.status === 'pending') { chipClass = 'b-amber'; chipText = 'Pending' }
+      return '<div class="rem-item">' +
+        '<div class="rem-av">' + init + '</div>' +
+        '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--ink)">' + (r.cxName || '—') + '</div>' +
+        '<div style="font-size:11px;color:var(--ink3);margin-top:1px">' + (r.svc || '') + '</div></div>' +
+        '<span class="badge ' + chipClass + '">' + chipText + '</span></div>'
+    }).join('')
+  }
+}
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded', function() {
+  boot()
+  bootSidebar()
+})
+</script>
+</body>
+</html>

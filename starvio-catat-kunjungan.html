@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starvio — Catat Kunjungan</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+  --border:#e2e1d9;--border2:#cccbc2;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --blue:#2563eb;--blue-bg:#eff4ff;--blue-dk:#1e3a8a;
+  --r:12px;--r-sm:8px;--r-lg:16px;--sidebar:224px;
+}
+html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidden;background:var(--bg);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh}
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── SIDEBAR ── */
+.s-logo{padding:14px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.s-mark{width:28px;height:28px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s-bname{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.s-biz{padding:10px 16px;border-bottom:1px solid var(--border)}
+.s-biz-n{font-size:12px;font-weight:600;color:var(--ink)}
+.s-biz-t{font-size:10px;color:var(--ink3);margin-top:1px}
+.s-nav{padding:8px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:var(--ink3);font-size:12px;font-weight:500;transition:all .15s;text-decoration:none;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--ink2)}
+.nav-item.active{background:var(--lime);color:var(--lime-dk);font-weight:700}
+.nav-icon{width:18px;text-align:center;flex-shrink:0;font-size:14px}
+.nav-pill{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px}
+.np-red{background:var(--red-bg);color:var(--red-dk)}
+.s-counter{margin:8px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 12px}
+.sc-n{font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.sc-l{font-size:10px;color:var(--lime-dk);opacity:.6;margin-top:2px;line-height:1.3}
+.sc-bar{height:3px;background:rgba(45,74,0,.1);border-radius:99px;margin-top:7px;overflow:hidden}
+.sc-fill{height:100%;background:var(--lime-dk);border-radius:99px;transition:width .5s}
+.s-bottom{padding:8px;border-top:1px solid var(--border)}
+.s-user{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--r-sm)}
+.s-av{width:26px;height:26px;border-radius:50%;background:var(--lime-bg);border:1px solid #c8f07a;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.s-uname{font-size:11px;font-weight:600;color:var(--ink)}
+.s-urole{font-size:10px;color:var(--ink3)}
+.s-logout{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;opacity:.4;transition:opacity .15s;margin-left:auto;flex-shrink:0}
+.s-logout:hover{opacity:1}
+.s-reset{width:100%;margin-top:6px;padding:7px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);font-size:10px;font-weight:600;color:var(--ink3);font-family:inherit;cursor:pointer;transition:all .15s}
+.s-reset:hover{background:var(--bg4);color:var(--ink2)}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;margin-right:8px}
+
+/* ── CONTENT ── */
+.page-content{flex:1;overflow-y:auto;padding:20px 24px 40px}
+.content-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+
+/* ── BIG CTA ── */
+.cta-wrap{display:flex;justify-content:center;padding:20px 0}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 40px;border-radius:var(--r);background:var(--lime);color:var(--lime-dk);font-size:16px;font-weight:700;font-family:'Sora',sans-serif;transition:background .15s;box-shadow:0 2px 8px rgba(184,240,74,.35)}
+.cta-btn:hover{background:var(--lime2)}
+.cta-btn:active{transform:scale(.98)}
+
+/* ── SECTION CARD ── */
+.section-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.section-title{font-size:14px;font-weight:600;color:var(--ink)}
+
+/* ── VISIT ROW ── */
+.visit-row{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--border)}
+.visit-row:last-child{border-bottom:none}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.visit-info{flex:1;min-width:0}
+.visit-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.visit-name a{color:var(--blue);text-decoration:none}
+.visit-name a:hover{text-decoration:underline}
+.visit-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.svc-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;background:var(--bg3);color:var(--ink2)}
+
+/* ── EMPTY STATE ── */
+.empty-card{background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r-lg);padding:40px 32px;text-align:center}
+.empty-icon{font-size:40px;margin-bottom:16px}
+.empty-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.empty-sub{font-size:13px;color:var(--ink3);line-height:1.6;max-width:360px;margin:0 auto 24px}
+.empty-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:var(--r-sm);background:var(--lime);color:var(--lime-dk);font-size:13px;font-weight:600;font-family:'Sora',sans-serif;transition:background .15s;border:none;cursor:pointer}
+.empty-btn:hover{background:var(--lime2)}
+
+/* ── MODAL OVERLAY ── */
+.overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px);padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-hd{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:16px;font-weight:700;color:var(--ink)}
+.modal-close{width:30px;height:30px;border-radius:50%;background:var(--bg3);color:var(--ink2);font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;cursor:pointer;border:none;font-family:'Sora',sans-serif}
+.modal-close:hover{background:var(--bg4)}
+.modal-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px}
+
+/* ── STEP INDICATOR ── */
+.steps{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--bg4);transition:background .2s}
+.step-dot.active{background:var(--lime)}
+.step-dot.done{background:var(--lime2)}
+.step-label{font-size:11px;color:var(--ink3);margin-left:6px}
+
+/* ── SEARCH INPUT ── */
+.search-wrap{position:relative}
+.search-input{width:100%;padding:10px 12px 10px 36px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg2);color:var(--ink);font-size:13px;font-family:'Sora',sans-serif;transition:border-color .15s}
+.search-input:focus{outline:none;border-color:var(--lime2)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink3)}
+
+/* ── AUTOCOMPLETE ── */
+.ac-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:10;display:none;overflow:hidden;max-height:280px;overflow-y:auto}
+.ac-dropdown.show{display:block}
+.ac-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--border)}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover{background:var(--bg3)}
+.ac-avatar{width:30px;height:30px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.ac-info{flex:1;min-width:0}
+.ac-name{font-size:12px;font-weight:600;color:var(--ink)}
+.ac-wa{font-size:11px;color:var(--ink3);font-family:'JetBrains Mono',monospace}
+.ac-action{font-size:11px;color:var(--blue);font-weight:500;flex-shrink:0}
+.ac-add{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;transition:background .1s;background:var(--lime-bg);color:var(--lime-dk);font-size:12px;font-weight:600;border-top:1px solid var(--border)}
+.ac-add:hover{background:#ddf6a0}
+
+/* ── NEW CUSTOMER FORM ── */
+.new-cx-form{display:flex;flex-direction:column;gap:12px}
+.input-label{font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:5px}
+.form-input{width:100%;padding:9px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg2);color:var(--ink);font-size:13px;font-family:'Sora',sans-serif;transition:border-color .15s}
+.form-input:focus{outline:none;border-color:var(--lime2)}
+.phone-row{display:flex;gap:8px}
+.cc-select{width:90px;padding:9px 6px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg2);color:var(--ink);font-size:12px;font-family:'Sora',sans-serif;flex-shrink:0}
+.cc-select:focus{outline:none;border-color:var(--lime2)}
+.phone-input{flex:1;padding:9px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg2);color:var(--ink);font-size:13px;font-family:'JetBrains Mono',monospace;transition:border-color .15s}
+.phone-input:focus{outline:none;border-color:var(--lime2)}
+.input-error{font-size:11px;color:var(--red);margin-top:2px;display:none}
+
+/* ── SELECTED CUSTOMER ── */
+.selected-cx{display:flex;align-items:center;gap:12px;padding:12px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm)}
+.selected-cx-name{font-size:13px;font-weight:600;color:var(--lime-dk)}
+
+/* ── CHECKLIST ── */
+.check-list{display:flex;flex-direction:column;gap:8px}
+.check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;transition:border-color .15s,background .15s;user-select:none}
+.check-item:hover{border-color:var(--border2);background:var(--bg3)}
+.check-item.checked{border-color:var(--lime2);background:var(--lime-bg)}
+.check-box{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border2);background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.check-item.checked .check-box{border-color:var(--lime2);background:var(--lime2)}
+.check-icon{font-size:15px;flex-shrink:0}
+.check-name{font-size:13px;font-weight:500;color:var(--ink)}
+
+/* ── DATE FIELD ── */
+.date-row{display:flex;align-items:center;gap:10px;margin-top:4px}
+.date-label{font-size:12px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.date-input{padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg3);color:var(--ink2);font-size:13px;font-family:'JetBrains Mono',monospace;flex:1}
+
+/* ── SUMMARY ── */
+.summary-card{background:var(--bg3);border-radius:var(--r-sm);padding:16px}
+.summary-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;font-size:13px}
+.summary-row:last-child{margin-bottom:0}
+.summary-label{color:var(--ink3);font-weight:500}
+.summary-val{color:var(--ink);font-weight:600;text-align:right}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}
+.btn-lime:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}.btn-ghost:hover{background:var(--bg3)}
+.btn-danger{background:var(--red-bg);color:var(--red-dk);border:1.5px solid #f5c5c3}
+.btn-full{width:100%;padding:11px;border-radius:var(--r-sm);font-size:14px;font-weight:600}
+.btn-sm{padding:6px 12px;font-size:11px}
+.modal-actions{display:flex;gap:8px;margin-top:4px}
+.modal-actions .btn{flex:1}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:12px 24px;border-radius:var(--r-sm);font-size:13px;font-weight:600;z-index:300;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ── SIDEBAR OVERLAY (mobile) ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
+.sidebar-overlay.open{display:block}
+
+/* ── LOGOUT MODAL ── */
+.m-title{font-size:15px;font-weight:700;color:var(--ink)}
+.m-sub{font-size:12px;color:var(--ink3);margin-top:4px}
+.mhd{padding:19px 22px 15px;border-bottom:1px solid var(--border);text-align:center}
+.mftr{padding:13px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* ── MOBILE ── */
+@media(max-width:767px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .hamburger-btn{display:flex}
+  .page-content{padding:16px 16px 32px}
+  .cta-btn{padding:14px 28px;font-size:15px}
+  .modal{max-width:100%;max-height:100vh;border-radius:0;height:100%}
+}
+@media(min-width:768px) and (max-width:1023px){
+  .sidebar{width:60px}
+  .s-bname,.s-biz,.s-urole,.s-uname,.sc-l,.nav-item span:not(.nav-icon):not(.nav-pill){display:none}
+  .s-logo{justify-content:center;padding:14px 8px}
+  .nav-item{justify-content:center;padding:10px 8px}
+  .s-counter{padding:8px;text-align:center}
+  .s-user{justify-content:center}
+  .s-bottom{text-align:center}
+  .s-reset{font-size:0;padding:8px}
+  .s-reset::after{content:'\21BA';font-size:14px}
+}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="s-logo">
+    <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
+    <span class="s-bname">Starvio</span>
+  </div>
+  <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
+  <nav class="s-nav">
+    <a id="nav-dashboard"  href="starvio-dashboard.html"         class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a id="nav-catat"      href="starvio-catat-kunjungan.html"   class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan"  href="starvio-pelanggan.html"         class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="starvio-automation.html"        class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
+    <a id="nav-log"        href="starvio-log-reminder.html"      class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-kategori"   href="starvio-kategori.html"          class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
+    <a id="nav-billing"    href="starvio-billing.html"           class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
+    <a id="nav-settings"   href="starvio-settings.html"          class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
+  </nav>
+  <div class="s-counter">
+    <div class="sc-n" id="sc-n">0</div>
+    <div class="sc-l">kredit tersisa dari <span id="sc-total">100</span></div>
+    <div class="sc-bar"><div class="sc-fill" id="sc-fill" style="width:100%"></div></div>
+  </div>
+  <div class="s-bottom">
+    <div class="s-user">
+      <div class="s-av" id="s-av">—</div>
+      <div><div class="s-uname" id="s-uname">Owner</div><div class="s-urole">Owner</div></div>
+      <button class="s-logout" onclick="openLogout()" title="Logout">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </button>
+    </div>
+    <button class="s-reset" onclick="resetDemo()">&#8634; Reset demo data</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center">
+      <button class="hamburger-btn" onclick="openSidebar()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+      </button>
+      <span class="tb-title">Catat Kunjungan</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="content-inner">
+
+      <!-- BIG CTA -->
+      <div class="cta-wrap">
+        <button class="cta-btn" onclick="openVisitModal()">&#x1F4CB; Catat Kunjungan</button>
+      </div>
+
+      <!-- KUNJUNGAN HARI INI -->
+      <div id="today-section"></div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- VISIT MODAL -->
+<div class="overlay" id="visit-modal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" id="modal-step-title">Cari Pelanggan</div>
+      <button class="modal-close" onclick="closeVisitModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <!-- Step indicators -->
+      <div class="steps">
+        <div class="step-dot active" id="dot-1"></div>
+        <div class="step-dot" id="dot-2"></div>
+        <div class="step-dot" id="dot-3"></div>
+        <span class="step-label" id="step-label">Langkah 1 dari 3</span>
+      </div>
+
+      <!-- Step 1: Search -->
+      <div id="step-1">
+        <div class="search-wrap" id="search-wrap">
+          <svg class="search-icon" id="search-icon-svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input type="text" class="search-input" id="cx-search" placeholder="Cari nama atau nomor WA..." autocomplete="off">
+          <div class="ac-dropdown" id="ac-dropdown"></div>
+        </div>
+        <!-- New customer form (hidden by default) -->
+        <div id="new-cx-form" style="display:none;margin-top:16px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <button class="btn btn-ghost btn-sm" onclick="backToSearch()" style="padding:5px 10px">&larr;</button>
+            <span style="font-size:13px;font-weight:600;color:var(--ink)">Tambah Pelanggan Baru</span>
+          </div>
+          <div class="new-cx-form">
+            <div>
+              <div class="input-label">Nama</div>
+              <input type="text" class="form-input" id="new-cx-name" placeholder="Nama pelanggan">
+            </div>
+            <div>
+              <div class="input-label">Nomor WhatsApp</div>
+              <div class="phone-row">
+                <select class="cc-select" id="new-cx-cc">
+                  <option value="62" selected>+62</option>
+                  <option value="60">+60</option>
+                  <option value="65">+65</option>
+                  <option value="63">+63</option>
+                  <option value="66">+66</option>
+                  <option value="84">+84</option>
+                  <option value="81">+81</option>
+                  <option value="82">+82</option>
+                  <option value="61">+61</option>
+                  <option value="1">+1</option>
+                </select>
+                <input type="tel" class="phone-input" id="new-cx-wa" placeholder="81234567890">
+              </div>
+              <div class="input-error" id="wa-error">Minimum 9 digit</div>
+            </div>
+            <button class="btn btn-lime btn-full" onclick="saveNewCustomer()">Lanjut</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Pick Services -->
+      <div id="step-2" style="display:none">
+        <div class="selected-cx" id="selected-cx-info"></div>
+        <div style="font-size:12px;font-weight:600;color:var(--ink2);margin-top:4px">Pilih layanan yang dikerjakan:</div>
+        <div class="check-list" id="service-checklist"></div>
+        <div class="date-row">
+          <span class="date-label">Tanggal:</span>
+          <input type="date" class="date-input" id="visit-date">
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="goStep(1)">Kembali</button>
+          <button class="btn btn-lime" id="btn-step3" onclick="goStep(3)" disabled>Lanjut</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Confirm -->
+      <div id="step-3" style="display:none">
+        <div class="summary-card" id="summary-card"></div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="goStep(2)">Kembali</button>
+          <button class="btn btn-lime" onclick="saveVisit()">Simpan Kunjungan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="overlay" id="m-logout">
+  <div class="modal" style="max-width:360px">
+    <div class="mhd">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--red-bg);border:1px solid #f5c5c3;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="var(--red-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </div>
+      <div class="m-title">Yakin mau logout?</div>
+      <div class="m-sub">Sesi kamu akan diakhiri.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeLogout()">Batal</button>
+      <button class="btn btn-danger btn-sm" onclick="doLogout()">Ya, Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── SHARED ── */
+var U = null
+
+function loadU() {
+  try {
+    var raw = localStorage.getItem('starvio_user')
+    if (!raw) return null
+    var u = JSON.parse(raw)
+    if (u.DATA_VERSION !== 4) return null
+    u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    return u
+  } catch(e) { return null }
+}
+
+function saveU(u) {
+  localStorage.setItem('starvio_user', JSON.stringify(u))
+}
+
+function bootSidebar() {
+  var page = location.pathname.split('/').pop()
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('href') === page)
+  })
+  var el = document.getElementById('sidebarBizName')
+  if (el && U) el.textContent = U.bizName || ''
+}
+
+function resetDemo() {
+  location.href = 'starvio-seed-data.html?auto=1'
+}
+
+function doLogout() {
+  localStorage.removeItem('starvio_user')
+  location.href = 'starvio-login.html'
+}
+
+/* ── SIDEBAR MOBILE ── */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open')
+  document.getElementById('sidebarOverlay').classList.add('open')
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('sidebarOverlay').classList.remove('open')
+}
+
+/* ── LOGOUT MODAL ── */
+function openLogout() { document.getElementById('m-logout').classList.add('show') }
+function closeLogout() { document.getElementById('m-logout').classList.remove('show') }
+
+/* ── TOAST ── */
+function showToast(msg) {
+  var t = document.getElementById('toast')
+  t.textContent = msg
+  t.classList.add('show')
+  setTimeout(function() { t.classList.remove('show') }, 2500)
+}
+
+/* ── HELPERS ── */
+function todayISO() {
+  var d = new Date()
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0')
+}
+
+function initials(name) {
+  return (name || '').split(' ').map(function(w){ return w[0] }).slice(0,2).join('').toUpperCase()
+}
+
+function formatWA(wa) {
+  if (!wa) return ''
+  return '+' + wa
+}
+
+/* ── STATUS LOGIC ── */
+function getStatus(service) {
+  var diff = Math.floor((Date.now() - new Date(service.date)) / 86400000)
+  var pct = (diff / service.days) * 100
+  if (pct >= 100) return 'hilang'
+  if (pct >= 70) return 'mendekati'
+  return 'aktif'
+}
+
+function worstStatus(customer) {
+  var order = { hilang: 0, mendekati: 1, aktif: 2 }
+  return (customer.services || []).reduce(function(worst, svc) {
+    var s = getStatus(svc)
+    return order[s] < order[worst] ? s : worst
+  }, 'aktif')
+}
+
+/* ── STATE ── */
+var selectedCustomer = null
+var selectedServices = []
+var currentStep = 1
+var searchTimeout = null
+
+/* ── VISIT MODAL ── */
+function openVisitModal() {
+  selectedCustomer = null
+  selectedServices = []
+  currentStep = 1
+
+  // Reset step 1
+  document.getElementById('cx-search').value = ''
+  document.getElementById('ac-dropdown').classList.remove('show')
+  document.getElementById('ac-dropdown').innerHTML = ''
+  document.getElementById('new-cx-form').style.display = 'none'
+  document.getElementById('search-wrap').style.display = ''
+  document.getElementById('cx-search').style.display = ''
+  document.getElementById('search-icon-svg').style.display = ''
+
+  // Show/hide steps
+  document.getElementById('step-1').style.display = ''
+  document.getElementById('step-2').style.display = 'none'
+  document.getElementById('step-3').style.display = 'none'
+  updateStepUI()
+
+  document.getElementById('visit-modal').classList.add('show')
+  document.body.style.overflow = 'hidden'
+  setTimeout(function() { document.getElementById('cx-search').focus() }, 100)
+}
+
+function closeVisitModal() {
+  document.getElementById('visit-modal').classList.remove('show')
+  document.body.style.overflow = ''
+}
+
+function updateStepUI() {
+  var titles = { 1: 'Cari Pelanggan', 2: 'Pilih Layanan', 3: 'Konfirmasi' }
+  document.getElementById('modal-step-title').textContent = titles[currentStep]
+  document.getElementById('step-label').textContent = 'Langkah ' + currentStep + ' dari 3'
+  for (var i = 1; i <= 3; i++) {
+    var dot = document.getElementById('dot-' + i)
+    dot.className = 'step-dot'
+    if (i < currentStep) dot.classList.add('done')
+    else if (i === currentStep) dot.classList.add('active')
+  }
+}
+
+function goStep(step) {
+  currentStep = step
+  document.getElementById('step-1').style.display = step === 1 ? '' : 'none'
+  document.getElementById('step-2').style.display = step === 2 ? '' : 'none'
+  document.getElementById('step-3').style.display = step === 3 ? '' : 'none'
+  updateStepUI()
+
+  if (step === 2) renderStep2()
+  if (step === 3) renderStep3()
+}
+
+/* ── STEP 1: SEARCH ── */
+function runSearch(q) {
+  var dd = document.getElementById('ac-dropdown')
+  var cxs = (U && U.customers) ? U.customers : []
+  var ql = q.toLowerCase()
+  var results = cxs.filter(function(cx) {
+    return cx.name.toLowerCase().indexOf(ql) !== -1 || (cx.wa && cx.wa.indexOf(q) !== -1)
+  })
+
+  var html = ''
+  results.slice(0, 6).forEach(function(cx) {
+    html += '<div class="ac-item" data-cx-id="' + cx.id + '">' +
+      '<div class="ac-avatar">' + initials(cx.name) + '</div>' +
+      '<div class="ac-info"><div class="ac-name">' + escHtml(cx.name) + '</div><div class="ac-wa">' + formatWA(cx.wa) + '</div></div>' +
+      '<span class="ac-action">Pilih</span></div>'
+  })
+
+  // Always show "tambah baru" at the end
+  html += '<div class="ac-add" id="ac-add-btn">&#x2795; Tambah pelanggan baru</div>'
+
+  dd.innerHTML = html
+  dd.classList.add('show')
+
+  // Attach click handlers
+  dd.querySelectorAll('.ac-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      selectCustomer(this.getAttribute('data-cx-id'))
+    })
+  })
+  var addBtn = document.getElementById('ac-add-btn')
+  if (addBtn) addBtn.addEventListener('click', showNewCxForm)
+}
+
+function escHtml(s) {
+  var d = document.createElement('div')
+  d.textContent = s
+  return d.innerHTML
+}
+
+function selectCustomer(cxId) {
+  var cxs = U.customers || []
+  selectedCustomer = cxs.find(function(cx) { return cx.id === cxId }) || null
+  if (selectedCustomer) {
+    document.getElementById('ac-dropdown').classList.remove('show')
+    selectedServices = []
+    goStep(2)
+  }
+}
+
+/* ── NEW CUSTOMER FORM ── */
+function showNewCxForm() {
+  document.getElementById('ac-dropdown').classList.remove('show')
+  document.getElementById('search-wrap').style.display = 'none'
+  document.getElementById('new-cx-form').style.display = ''
+  document.getElementById('new-cx-name').value = ''
+  document.getElementById('new-cx-wa').value = ''
+  document.getElementById('new-cx-cc').value = '62'
+  document.getElementById('wa-error').style.display = 'none'
+  document.getElementById('new-cx-name').style.borderColor = ''
+  setTimeout(function() { document.getElementById('new-cx-name').focus() }, 50)
+}
+
+function backToSearch() {
+  document.getElementById('new-cx-form').style.display = 'none'
+  document.getElementById('search-wrap').style.display = ''
+  document.getElementById('cx-search').focus()
+}
+
+function saveNewCustomer() {
+  var name = document.getElementById('new-cx-name').value.trim()
+  var waRaw = document.getElementById('new-cx-wa').value.replace(/\D/g, '')
+  var cc = document.getElementById('new-cx-cc').value
+
+  if (!name) {
+    document.getElementById('new-cx-name').style.borderColor = 'var(--red)'
+    return
+  }
+  document.getElementById('new-cx-name').style.borderColor = ''
+
+  if (waRaw.length < 9) {
+    document.getElementById('wa-error').style.display = 'block'
+    return
+  }
+  document.getElementById('wa-error').style.display = 'none'
+
+  var fullWa = cc + waRaw
+  var newCx = {
+    id: 'cx-' + Date.now(),
+    name: name,
+    wa: fullWa,
+    via: 'manual',
+    services: []
+  }
+
+  if (!U.customers) U.customers = []
+  U.customers.push(newCx)
+  saveU(U)
+
+  selectedCustomer = newCx
+  selectedServices = []
+  goStep(2)
+}
+
+/* ── STEP 2: PICK SERVICES ── */
+function renderStep2() {
+  if (!selectedCustomer) return
+
+  // Show selected customer info
+  var infoEl = document.getElementById('selected-cx-info')
+  infoEl.innerHTML = '<div class="avatar" style="width:32px;height:32px;font-size:12px">' + initials(selectedCustomer.name) + '</div>' +
+    '<span class="selected-cx-name">' + escHtml(selectedCustomer.name) + '</span>'
+
+  // Render service checklist from cats
+  var cats = U.cats || []
+  var cl = document.getElementById('service-checklist')
+  cl.innerHTML = ''
+  cats.forEach(function(cat) {
+    var div = document.createElement('div')
+    div.className = 'check-item'
+    div.setAttribute('data-cat-id', cat.id)
+    div.innerHTML = '<div class="check-box"></div><span class="check-icon">' + cat.icon + '</span><span class="check-name">' + escHtml(cat.name) + '</span>'
+    div.addEventListener('click', function() {
+      this.classList.toggle('checked')
+      updateSelectedServices()
+    })
+    cl.appendChild(div)
+  })
+
+  // Set date to today
+  document.getElementById('visit-date').value = todayISO()
+
+  updateSelectedServices()
+}
+
+function updateSelectedServices() {
+  var items = document.querySelectorAll('#service-checklist .check-item')
+  var cats = U.cats || []
+  selectedServices = []
+  items.forEach(function(item) {
+    if (item.classList.contains('checked')) {
+      var catId = item.getAttribute('data-cat-id')
+      var cat = cats.find(function(c) { return c.id === catId })
+      if (cat) selectedServices.push(cat)
+    }
+  })
+  document.getElementById('btn-step3').disabled = selectedServices.length === 0
+}
+
+/* ── STEP 3: CONFIRM ── */
+function renderStep3() {
+  var date = document.getElementById('visit-date').value
+  var card = document.getElementById('summary-card')
+
+  var svcHtml = selectedServices.map(function(s) {
+    return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;background:var(--lime-bg);color:var(--lime-dk);font-weight:500">' + s.icon + ' ' + escHtml(s.name) + '</span>'
+  }).join(' ')
+
+  card.innerHTML =
+    '<div class="summary-row"><span class="summary-label">Pelanggan</span><span class="summary-val">' + escHtml(selectedCustomer.name) + '</span></div>' +
+    '<div class="summary-row"><span class="summary-label">Layanan</span><span class="summary-val" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end">' + svcHtml + '</span></div>' +
+    '<div class="summary-row"><span class="summary-label">Tanggal</span><span class="summary-val" style="font-family:\'JetBrains Mono\',monospace">' + date + '</span></div>'
+}
+
+/* ── SAVE VISIT ── */
+function saveVisit() {
+  var date = document.getElementById('visit-date').value
+  var cxId = selectedCustomer.id
+
+  // Find customer in U.customers by id
+  var cx = (U.customers || []).find(function(c) { return c.id === cxId })
+  if (!cx) return
+
+  // Update or add services
+  selectedServices.forEach(function(cat) {
+    var existing = cx.services.find(function(s) { return s.name === cat.name })
+    if (existing) {
+      existing.date = date
+      existing.icon = cat.icon
+      existing.days = cat.interval
+    } else {
+      cx.services.push({
+        name: cat.name,
+        icon: cat.icon,
+        date: date,
+        days: cat.interval
+      })
+    }
+  })
+
+  saveU(U)
+  closeVisitModal()
+  renderTodayVisits()
+  showToast('Kunjungan berhasil dicatat!')
+}
+
+/* ── RENDER TODAY'S VISITS ── */
+function renderTodayVisits() {
+  var section = document.getElementById('today-section')
+  var today = todayISO()
+  var cxs = (U && U.customers) ? U.customers : []
+
+  // Filter customers who have any service with today's date
+  var todayCxs = cxs.filter(function(cx) {
+    return cx.services && cx.services.some(function(s) { return s.date && s.date.startsWith(today) })
+  })
+
+  if (todayCxs.length === 0) {
+    section.innerHTML =
+      '<div class="empty-card">' +
+        '<div class="empty-icon">&#x1F4CB;</div>' +
+        '<div class="empty-title">Belum ada kunjungan hari ini</div>' +
+        '<div class="empty-sub">Klik tombol di atas untuk mulai mencatat kunjungan pelanggan.</div>' +
+        '<button class="empty-btn" onclick="openVisitModal()">&#x1F4CB; Catat Kunjungan</button>' +
+      '</div>'
+    return
+  }
+
+  var html = '<div class="section-card">' +
+    '<div class="section-header"><span class="section-title">Kunjungan Hari Ini (' + todayCxs.length + ')</span></div>'
+
+  todayCxs.forEach(function(cx) {
+    var todayServices = cx.services.filter(function(s) { return s.date && s.date.startsWith(today) })
+    var chips = todayServices.map(function(s) {
+      return '<span class="svc-chip">' + (s.icon || '') + ' ' + escHtml(s.name) + '</span>'
+    }).join('')
+
+    html += '<div class="visit-row">' +
+      '<div class="avatar">' + initials(cx.name) + '</div>' +
+      '<div class="visit-info">' +
+        '<div class="visit-name"><a href="starvio-pelanggan.html?cx=' + encodeURIComponent(cx.wa) + '">' + escHtml(cx.name) + '</a></div>' +
+        '<div class="visit-chips">' + chips + '</div>' +
+      '</div></div>'
+  })
+
+  html += '</div>'
+  section.innerHTML = html
+}
+
+/* ── BOOT SIDEBAR DATA ── */
+function bootSidebarData() {
+  if (!U) return
+  var tz = (U.timezone || 'Asia/Jakarta').split('/')[1] || 'Jakarta'
+  document.getElementById('s-biz-t').textContent = (U.bizType || 'Bisnis') + ' \u00B7 ' + tz
+  var av = initials(U.adminName || 'U')
+  document.getElementById('s-av').textContent = av
+  document.getElementById('s-uname').textContent = U.adminName || 'Owner'
+  document.getElementById('sc-n').textContent = U.remLeft || 0
+  document.getElementById('sc-total').textContent = U.remMax || 100
+  var pct = Math.round((U.remLeft || 0) / (U.remMax || 100) * 100)
+  var fill = document.getElementById('sc-fill')
+  fill.style.width = pct + '%'
+  fill.style.background = pct <= 10 ? 'var(--red)' : pct <= 30 ? 'var(--amber-dk)' : 'var(--lime-dk)'
+
+  // Lost badge in sidebar
+  var cxs = U.customers || []
+  var lostCount = cxs.filter(function(cx) { return worstStatus(cx) === 'hilang' }).length
+  var navLost = document.getElementById('nav-lost-n')
+  if (lostCount > 0) { navLost.textContent = lostCount; navLost.style.display = 'inline-flex' }
+}
+
+/* ── ESC KEY ── */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('visit-modal').classList.contains('show')) {
+      closeVisitModal()
+    } else if (document.getElementById('m-logout').classList.contains('show')) {
+      closeLogout()
+    }
+  }
+})
+
+/* ── OVERLAY CLICK ── */
+document.getElementById('visit-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeVisitModal()
+})
+document.getElementById('m-logout').addEventListener('click', function(e) {
+  if (e.target === this) closeLogout()
+})
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded', function() {
+  U = loadU()
+  if (!U) { location.href = 'starvio-login.html'; return }
+
+  bootSidebarData()
+  bootSidebar()
+  renderTodayVisits()
+
+  // Search input with debounce
+  var searchInput = document.getElementById('cx-search')
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout)
+    var q = this.value.trim()
+    if (q.length < 1) {
+      document.getElementById('ac-dropdown').classList.remove('show')
+      return
+    }
+    searchTimeout = setTimeout(function() { runSearch(q) }, 200)
+  })
+
+  // Phone input auto-strip leading zero
+  document.getElementById('new-cx-wa').addEventListener('input', function() {
+    var raw = this.value.replace(/\D/g, '')
+    if (raw.startsWith('0')) {
+      this.value = raw.slice(1)
+    }
+  })
+})
+</script>
+</body>
+</html>

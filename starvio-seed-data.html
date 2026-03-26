@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starvio — Seed Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a1917;min-height:100vh;padding:24px}
+:root{
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --blue:#2563eb;--blue-bg:#eff4ff;--blue-dk:#1e3a8a;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;--border:#e2e1d9;--border2:#cccbc2;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.wrap{width:100%;max-width:960px;margin:0 auto;animation:fadeUp .25s ease}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+@media(max-width:767px){.grid-2{grid-template-columns:1fr}}
+.logo-row{display:flex;align-items:center;gap:9px;margin-bottom:24px}
+.logo-mark{width:32px;height:32px;background:var(--lime);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:15px;height:15px}
+.logo-name{font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-.4px}
+.logo-tag{font-size:11px;color:var(--ink3);margin-left:2px}
+.card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.card-hd{padding:16px 20px 12px;border-bottom:1px solid var(--border)}
+.card-title{font-size:14px;font-weight:700;color:var(--ink)}
+.card-sub{font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.5}
+.card-body{padding:16px 20px}
+.status-list{display:flex;flex-direction:column;gap:7px}
+.status-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bg3);border-radius:var(--r-sm);font-size:12px}
+.si-label{font-weight:600;color:var(--ink2)}
+.si-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink3);margin:0 8px;flex:1;text-align:right}
+.si-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;flex-shrink:0}
+.badge-ok{background:var(--lime-bg);color:var(--lime-dk);border:1px solid #c8f07a}
+.badge-empty{background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a}
+.badge-none{background:var(--bg3);color:var(--ink3);border:1px solid var(--border2)}
+.preview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.prev-met{background:var(--bg3);border-radius:var(--r-sm);padding:10px;text-align:center}
+.prev-n{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--ink);line-height:1;letter-spacing:-1px}
+.prev-n.lime{color:var(--lime-dk)}
+.prev-l{font-size:10px;color:var(--ink3);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.biz-preview{background:var(--lime-bg);border:1.5px solid var(--lime2);border-radius:var(--r-sm);padding:11px 14px;margin-bottom:14px;display:flex;align-items:center;gap:11px}
+.biz-icon{width:34px;height:34px;background:var(--lime);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.biz-name{font-size:13px;font-weight:700;color:var(--lime-dk)}
+.biz-meta{font-size:11px;color:var(--lime-dk);opacity:.75;margin-top:1px}
+.check-list{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.check-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)}
+.check-row .tick{color:var(--lime2);font-weight:700}
+.btn-row{display:flex;gap:9px;margin-top:16px}
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s;flex:1}
+.btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}
+.btn-ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--border2);flex:none;padding:11px 16px}.btn-ghost:hover{background:var(--bg3)}
+.btn-danger{background:var(--red-bg);color:var(--red-dk);border:1.5px solid #f5c5c3;flex:none;padding:11px 16px}.btn-danger:hover{background:#fbd0ce}
+.log{background:#1a1917;border-radius:var(--r-sm);padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;max-height:200px;overflow-y:auto;margin-top:14px;display:none}
+.log-line{color:rgba(255,255,255,.5)}
+.log-line.ok{color:#b8f04a}
+.log-line.warn{color:#f5a623}
+.log-line.err{color:#f87171}
+.sep{border-top:1px solid var(--border);margin:14px 0}
+.go-label{font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.nav-links{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px}
+@media(max-width:767px){.nav-links{grid-template-columns:repeat(2,1fr)}}
+.billing-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.billing-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;color:var(--ink2);transition:all .15s;text-align:left}
+.billing-btn:hover{border-color:var(--lime2);background:var(--lime-bg);color:var(--lime-dk)}
+.billing-btn .bb-icon{font-size:14px;flex-shrink:0}
+.billing-btn .bb-label{font-weight:700;color:var(--ink);font-size:11px}
+.billing-btn .bb-sub{font-size:9px;color:var(--ink3);font-weight:500;margin-top:1px}
+.nav-link{display:block;padding:10px 14px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg2);font-size:12px;font-weight:600;color:var(--ink2);text-decoration:none;transition:border-color .15s,background .15s}
+.nav-link:hover{border-color:var(--lime2);background:var(--lime-bg);color:var(--lime-dk)}
+.nav-emoji{margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="logo-row">
+    <div class="logo-mark"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
+    <span class="logo-name">Starvio</span>
+    <span class="logo-tag">· Seed Data Tool</span>
+  </div>
+
+  <!-- 1. QUICK NAV — paling atas, 4 columns -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-body" style="padding:12px 16px">
+      <div class="nav-links">
+        <a href="starvio-dashboard.html" class="nav-link"><span class="nav-emoji">🏠</span>Dashboard</a>
+        <a href="starvio-catat-kunjungan.html" class="nav-link"><span class="nav-emoji">📋</span>Catat</a>
+        <a href="starvio-pelanggan.html" class="nav-link"><span class="nav-emoji">👥</span>Pelanggan</a>
+        <a href="starvio-automation.html" class="nav-link"><span class="nav-emoji">🤖</span>Automation</a>
+        <a href="starvio-log-reminder.html" class="nav-link"><span class="nav-emoji">📜</span>Log</a>
+        <a href="starvio-kategori.html" class="nav-link"><span class="nav-emoji">🏷️</span>Kategori</a>
+        <a href="starvio-billing.html" class="nav-link"><span class="nav-emoji">💳</span>Billing</a>
+        <a href="starvio-settings.html" class="nav-link"><span class="nav-emoji">⚙️</span>Settings</a>
+        <a href="starvio-checkin.html" class="nav-link"><span class="nav-emoji">📱</span>Check-in</a>
+        <a href="starvio-onboarding.html" class="nav-link"><span class="nav-emoji">🚀</span>Onboarding</a>
+        <a href="starvio-login.html" class="nav-link"><span class="nav-emoji">🔐</span>Login</a>
+        <a href="starvio-admin.html" class="nav-link"><span class="nav-emoji">⚡</span>Admin</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. INJECT (left) + BILLING TEST (right) -->
+  <div class="grid-2">
+    <!-- LEFT: Inject Dummy Data -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">Inject Dummy Data</div>
+        <div class="card-sub">50 pelanggan, 6 kategori, 42 reminder</div>
+      </div>
+      <div class="card-body">
+        <div class="biz-preview">
+          <div class="biz-icon">✨</div>
+          <div>
+            <div class="biz-name">Celestial Spa & Wellness</div>
+            <div class="biz-meta">Cynthia · cynthia@gmail.com · Jakarta</div>
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn btn-lime" onclick="injectData()">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v8M4 7l4 4 4-4"/><path d="M3 13h10"/></svg>
+            Inject
+          </button>
+          <button class="btn btn-ghost" onclick="checkStatus()">Refresh</button>
+          <button class="btn btn-danger" onclick="clearData()">Clear</button>
+        </div>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Billing Condition Switcher -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">🧪 Test Billing</div>
+        <div class="card-sub">Switch state tanpa re-inject data</div>
+      </div>
+      <div class="card-body" style="padding:12px 16px">
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Free Plan</div>
+        <div class="billing-grid" style="margin-bottom:10px">
+          <button class="billing-btn" onclick="setBilling('free-full')"><span class="bb-icon">🆓</span><div><div class="bb-label">Full (100)</div><div class="bb-sub">Welcome bonus utuh</div></div></button>
+          <button class="billing-btn" onclick="setBilling('free-low')"><span class="bb-icon">⚠️</span><div><div class="bb-label">Low (22)</div><div class="bb-sub">Hampir habis</div></div></button>
+          <button class="billing-btn" onclick="setBilling('free-critical')"><span class="bb-icon">🔴</span><div><div class="bb-label">Critical (5)</div><div class="bb-sub">Urgent topup</div></div></button>
+          <button class="billing-btn" onclick="setBilling('free-empty')"><span class="bb-icon">⛔</span><div><div class="bb-label">Empty (0)</div><div class="bb-sub">Automation stop</div></div></button>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Subscriber (Rp 250k/bln)</div>
+        <div class="billing-grid">
+          <button class="billing-btn" style="border-color:var(--lime2)" onclick="setBilling('sub-healthy')"><span class="bb-icon">✅</span><div><div class="bb-label">Healthy (287)</div><div class="bb-sub">237 sub + 50 topup</div></div></button>
+          <button class="billing-btn" onclick="setBilling('sub-low')"><span class="bb-icon">📉</span><div><div class="bb-label">Sub Low (68)</div><div class="bb-sub">18 sub + 50 topup</div></div></button>
+          <button class="billing-btn" onclick="setBilling('sub-depleted')"><span class="bb-icon">🔄</span><div><div class="bb-label">Sub Habis (30)</div><div class="bb-sub">0 sub + 30 topup</div></div></button>
+          <button class="billing-btn" onclick="setBilling('sub-critical')"><span class="bb-icon">🚨</span><div><div class="bb-label">Critical (7)</div><div class="bb-sub">0 sub + 7 topup</div></div></button>
+          <button class="billing-btn" onclick="setBilling('sub-empty')"><span class="bb-icon">💀</span><div><div class="bb-label">Empty (0)</div><div class="bb-sub">Semua habis</div></div></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. STATUS — full width di bawah -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-title">Status localStorage</div>
+      <div class="card-sub">Data yang tersimpan di browser ini sekarang</div>
+    </div>
+    <div class="card-body">
+      <div class="status-list" id="status-list"><div class="status-item"><span class="si-label">Memuat...</span></div></div>
+      <div class="preview-grid" id="preview-grid" style="display:none"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var KEY = 'starvio_user';
+
+var today = new Date();
+function daysAgo(n) { var d = new Date(today); d.setDate(d.getDate() - n); return d.toISOString(); }
+function hoursAgo(n) { var d = new Date(today); d.setHours(d.getHours() - n); return d.toISOString(); }
+
+var DUMMY = {
+  DATA_VERSION: 4,
+  bizName: 'Celestial Spa & Wellness',
+  bizType: 'spa',
+  bizSlug: 'celestial-spa-wellness',
+  adminName: 'Cynthia',
+  adminEmail: 'cynthia@gmail.com',
+  ownerWa: '628123456789',
+  waNum: '628987654321',
+  timezone: 'Asia/Jakarta',
+  country: 'ID',
+  defaultInterval: 30,
+  plan: 'subscriber',
+  subCreditsLeft: 312,
+  subCreditsMax: 375,
+  topupCreditsLeft: 50,
+  subRenewsAt: (function(){ var d=new Date(); d.setMonth(d.getMonth()+1); d.setDate(15); return d.toISOString() })(),
+  remMax: 300,
+  automationEnabled: true,
+  billingHistory: [
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-28); return d.toISOString().slice(0,10) })(), type:'welcome', label:'Welcome Bonus', delta:100, balAfter:100, note:'Bonus kredit pendaftaran' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-25); return d.toISOString().slice(0,10) })(), type:'subscription', label:'Subscription', delta:375, balAfter:475, note:'Aktivasi subscriber — Rp 250.000/bulan (375 kredit, early access +50%)' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-20); return d.toISOString().slice(0,10) })(), type:'topup', label:'Top Up', delta:300, balAfter:775, note:'Paket 300 kredit — Rp 250.000 (incl. +50 bonus 20%)' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-15); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-22, balAfter:428, note:'22 reminder terkirim' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-8); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-80, balAfter:348, note:'80 reminder terkirim' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-2); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-61, balAfter:287, note:'61 reminder terkirim' }
+  ],
+  billingNotifs: { lowCredit:true, criticalCredit:true, subLow:true, renewalReminder:true },
+
+  cats: [
+    { id:'cat-1', name:'Facial Treatment', icon:'💆', interval:30, templateId:'tpl-a', templateBody:'Hai [nama], sudah sebulan sejak Facial Treatment terakhir kamu di [bisnis]. Yuk booking lagi biar kulit tetap glowing! ✨' },
+    { id:'cat-2', name:'Waxing', icon:'🪒', interval:14, templateId:'tpl-b', templateBody:'Hai [nama]! Sudah 2 minggu nih sejak waxing terakhir. Mau reschedule? Hubungi kami ya 😊' },
+    { id:'cat-3', name:'Manicure & Pedicure', icon:'💅', interval:21, templateId:'tpl-a', templateBody:'Hai [nama], sudah 3 minggu sejak Manicure & Pedicure terakhir kamu di [bisnis]. Yuk booking lagi! 💅' },
+    { id:'cat-4', name:'Body Massage', icon:'🧖', interval:21, templateId:'tpl-c', templateBody:'Hai [nama], badan pegal? Sudah waktunya Body Massage lagi di [bisnis]. Ada diskon 10% kalau booking minggu ini! 💆‍♀️' },
+    { id:'cat-5', name:'Hair Treatment', icon:'💇', interval:45, templateId:'tpl-d', templateBody:'Hai [nama], gimana rambut kamu setelah Hair Treatment di [bisnis]? Kalau mau touch-up, kabari kami ya! 💇‍♀️' },
+    { id:'cat-6', name:'Lash Lift & Tint', icon:'👁️', interval:42, templateId:'tpl-b', templateBody:'Hai [nama]! Sudah lama nih sejak Lash Lift & Tint terakhir. Bulu mata kamu pasti kangen perawatan 😍' }
+  ],
+
+  customers: [
+    // === AKTIF (15 customers — recent visits) ===
+    { id:'cx-01', name:'Amelia Sanjaya', wa:'628131110001', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(5),days:30},{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(5),days:21}]},
+    { id:'cx-02', name:'Brigitta Kusuma', wa:'628131110002', via:'qr',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(3),days:21},{name:'Hair Treatment',icon:'💇',date:daysAgo(3),days:45}]},
+    { id:'cx-03', name:'Clarissa Tanoto', wa:'628131110003', via:'manual',
+      services:[{name:'Waxing',icon:'🪒',date:daysAgo(4),days:14}]},
+    { id:'cx-04', name:'Devina Halim', wa:'628131110004', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(7),days:30},{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(7),days:42}]},
+    { id:'cx-05', name:'Elisa Widjaja', wa:'628131110005', via:'qr',
+      services:[{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(6),days:21}]},
+    { id:'cx-06', name:'Fiona Salim', wa:'628131110006', via:'manual',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(4),days:21},{name:'Facial Treatment',icon:'💆',date:daysAgo(8),days:30}]},
+    { id:'cx-07', name:'Gloria Santoso', wa:'628131110007', via:'qr',
+      services:[{name:'Waxing',icon:'🪒',date:daysAgo(2),days:14},{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(2),days:21}]},
+    { id:'cx-08', name:'Hanna Wibowo', wa:'628131110008', via:'qr',
+      services:[{name:'Hair Treatment',icon:'💇',date:daysAgo(10),days:45}]},
+    { id:'cx-09', name:'Isabella Gunawan', wa:'628131110009', via:'qr',
+      services:[{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(9),days:42},{name:'Facial Treatment',icon:'💆',date:daysAgo(9),days:30}]},
+    { id:'cx-10', name:'Jasmine Hartono', wa:'628131110010', via:'manual',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(6),days:21}]},
+    { id:'cx-11', name:'Kezia Prijono', wa:'628131110011', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(8),days:30},{name:'Waxing',icon:'🪒',date:daysAgo(3),days:14}]},
+    { id:'cx-12', name:'Laura Setiawan', wa:'628131110012', via:'qr',
+      services:[{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(5),days:21},{name:'Body Massage',icon:'🧖',date:daysAgo(5),days:21}]},
+    { id:'cx-13', name:'Monica Hadisaputra', wa:'628131110013', via:'manual',
+      services:[{name:'Hair Treatment',icon:'💇',date:daysAgo(7),days:45}]},
+    { id:'cx-14', name:'Natalia Budianto', wa:'628131110014', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(6),days:30},{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(6),days:42}]},
+    { id:'cx-15', name:'Olivia Mardani', wa:'628131110015', via:'qr',
+      services:[{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(10),days:42},{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(10),days:21}]},
+
+    // === MENDEKATI (15 customers — approaching interval 70-99%) ===
+    { id:'cx-16', name:'Patricia Sutanto', wa:'628131110016', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(23),days:30},{name:'Waxing',icon:'🪒',date:daysAgo(11),days:14}]},
+    { id:'cx-17', name:'Quincy Lesmana', wa:'628131110017', via:'manual',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(16),days:21}]},
+    { id:'cx-18', name:'Rachel Tandiono', wa:'628131110018', via:'qr',
+      services:[{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(17),days:21},{name:'Hair Treatment',icon:'💇',date:daysAgo(35),days:45}]},
+    { id:'cx-19', name:'Stephanie Kurniawan', wa:'628131110019', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(24),days:30}]},
+    { id:'cx-20', name:'Tabitha Dharmawan', wa:'628131110020', via:'qr',
+      services:[{name:'Waxing',icon:'🪒',date:daysAgo(12),days:14},{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(32),days:42}]},
+    { id:'cx-21', name:'Ursula Hidayat', wa:'628131110021', via:'manual',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(17),days:21}]},
+    { id:'cx-22', name:'Valeria Chandra', wa:'628131110022', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(25),days:30},{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(16),days:21}]},
+    { id:'cx-23', name:'Wendy Prasetio', wa:'628131110023', via:'qr',
+      services:[{name:'Hair Treatment',icon:'💇',date:daysAgo(36),days:45}]},
+    { id:'cx-24', name:'Xenia Rachman', wa:'628131110024', via:'manual',
+      services:[{name:'Waxing',icon:'🪒',date:daysAgo(11),days:14}]},
+    { id:'cx-25', name:'Yolanda Adiputra', wa:'628131110025', via:'qr',
+      services:[{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(31),days:42},{name:'Facial Treatment',icon:'💆',date:daysAgo(22),days:30}]},
+    { id:'cx-26', name:'Zelda Hermawan', wa:'628131110026', via:'qr',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(16),days:21},{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(17),days:21}]},
+    { id:'cx-27', name:'Anastasia Wirawan', wa:'628131110027', via:'manual',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(24),days:30}]},
+    { id:'cx-28', name:'Belinda Cahyono', wa:'628131110028', via:'qr',
+      services:[{name:'Waxing',icon:'🪒',date:daysAgo(12),days:14},{name:'Body Massage',icon:'🧖',date:daysAgo(18),days:21}]},
+    { id:'cx-29', name:'Carmella Tanuwijaya', wa:'628131110029', via:'qr',
+      services:[{name:'Hair Treatment',icon:'💇',date:daysAgo(34),days:45},{name:'Facial Treatment',icon:'💆',date:daysAgo(26),days:30}]},
+    { id:'cx-30', name:'Dinda Pradipta', wa:'628131110030', via:'manual',
+      services:[{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(30),days:42}]},
+
+    // === HILANG / OVERDUE (18 customers — past interval 100%+) ===
+    { id:'cx-31', name:'Cornelia Surya', wa:'628131110031', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(45),days:30},{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(40),days:21}]},
+    { id:'cx-32', name:'Diana Putranto', wa:'628131110032', via:'manual',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(35),days:21}]},
+    { id:'cx-33', name:'Eva Kristanto', wa:'628131110033', via:'qr',
+      services:[{name:'Hair Treatment',icon:'💇',date:daysAgo(60),days:45},{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(55),days:42}]},
+    { id:'cx-34', name:'Frida Susanto', wa:'628131110034', via:'qr',
+      services:[{name:'Waxing',icon:'🪒',date:daysAgo(25),days:14}]},
+    { id:'cx-35', name:'Gisella Handojo', wa:'628131110035', via:'manual',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(50),days:30}]},
+    { id:'cx-36', name:'Helena Purnama', wa:'628131110036', via:'qr',
+      services:[{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(38),days:21},{name:'Body Massage',icon:'🧖',date:daysAgo(42),days:21}]},
+    { id:'cx-37', name:'Irma Suliantoro', wa:'628131110037', via:'qr',
+      services:[{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(58),days:42}]},
+    { id:'cx-38', name:'Jennifer Kosasih', wa:'628131110038', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(40),days:30},{name:'Hair Treatment',icon:'💇',date:daysAgo(55),days:45}]},
+    { id:'cx-39', name:'Katrina Muljono', wa:'628131110039', via:'manual',
+      services:[{name:'Waxing',icon:'🪒',date:daysAgo(22),days:14},{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(35),days:21}]},
+    { id:'cx-40', name:'Linda Kartawijaya', wa:'628131110040', via:'qr',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(30),days:21}]},
+    { id:'cx-41', name:'Magdalena Santoso', wa:'628131110041', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(48),days:30}]},
+    { id:'cx-42', name:'Nadia Darmawan', wa:'628131110042', via:'qr',
+      services:[{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(52),days:42},{name:'Facial Treatment',icon:'💆',date:daysAgo(38),days:30}]},
+    { id:'cx-43', name:'Octavia Limanto', wa:'628131110043', via:'manual',
+      services:[{name:'Hair Treatment',icon:'💇',date:daysAgo(56),days:45}]},
+    { id:'cx-44', name:'Priscilla Setiady', wa:'628131110044', via:'qr',
+      services:[{name:'Waxing',icon:'🪒',date:daysAgo(20),days:14},{name:'Body Massage',icon:'🧖',date:daysAgo(30),days:21}]},
+    { id:'cx-45', name:'Queenie Hartawan', wa:'628131110045', via:'qr',
+      services:[{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(32),days:21}]},
+    { id:'cx-46', name:'Rosalind Budiman', wa:'628131110046', via:'qr',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(52),days:30},{name:'Lash Lift & Tint',icon:'👁️',date:daysAgo(50),days:42}]},
+    { id:'cx-47', name:'Sandra Wongso', wa:'628131110047', via:'manual',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(28),days:21},{name:'Hair Treatment',icon:'💇',date:daysAgo(58),days:45}]},
+    { id:'cx-48', name:'Tiffany Tanujaya', wa:'628131110048', via:'qr',
+      services:[{name:'Waxing',icon:'🪒',date:daysAgo(18),days:14}]},
+
+    // === TODAY's VISITS (2 customers) ===
+    { id:'cx-49', name:'Grace Sutanto', wa:'628144400049', via:'manual',
+      services:[{name:'Facial Treatment',icon:'💆',date:daysAgo(0),days:30},{name:'Manicure & Pedicure',icon:'💅',date:daysAgo(0),days:21}]},
+    { id:'cx-50', name:'Helen Salim', wa:'628144400050', via:'qr',
+      services:[{name:'Body Massage',icon:'🧖',date:daysAgo(0),days:21}]}
+  ],
+
+  reminders: [
+    // Today — mix statuses
+    { id:'rem-01', cxId:'cx-31', cxName:'Cornelia Surya', svc:'Facial Treatment', scheduledAt:daysAgo(0), sentAt:hoursAgo(2), status:'terkirim', kredit:1 },
+    { id:'rem-02', cxId:'cx-34', cxName:'Frida Susanto', svc:'Waxing', scheduledAt:daysAgo(0), sentAt:null, status:'pending', kredit:1 },
+    { id:'rem-03', cxId:'cx-32', cxName:'Diana Putranto', svc:'Body Massage', scheduledAt:daysAgo(0), sentAt:null, status:'gagal', kredit:1 },
+    { id:'rem-04', cxId:'cx-40', cxName:'Linda Kartawijaya', svc:'Body Massage', scheduledAt:daysAgo(0), sentAt:hoursAgo(1), status:'terkirim', kredit:1 },
+    // Yesterday
+    { id:'rem-05', cxId:'cx-35', cxName:'Gisella Handojo', svc:'Facial Treatment', scheduledAt:daysAgo(1), sentAt:daysAgo(1), status:'terkirim', kredit:1 },
+    { id:'rem-06', cxId:'cx-37', cxName:'Irma Suliantoro', svc:'Lash Lift & Tint', scheduledAt:daysAgo(1), sentAt:daysAgo(1), status:'terkirim', kredit:1 },
+    { id:'rem-07', cxId:'cx-41', cxName:'Magdalena Santoso', svc:'Facial Treatment', scheduledAt:daysAgo(1), sentAt:null, status:'gagal', kredit:1 },
+    // 2 days ago
+    { id:'rem-08', cxId:'cx-36', cxName:'Helena Purnama', svc:'Manicure & Pedicure', scheduledAt:daysAgo(2), sentAt:daysAgo(2), status:'terkirim', kredit:1 },
+    { id:'rem-09', cxId:'cx-39', cxName:'Katrina Muljono', svc:'Waxing', scheduledAt:daysAgo(2), sentAt:daysAgo(2), status:'terkirim', kredit:1 },
+    { id:'rem-10', cxId:'cx-48', cxName:'Tiffany Tanujaya', svc:'Waxing', scheduledAt:daysAgo(2), sentAt:null, status:'gagal', kredit:1 },
+    // 3 days ago
+    { id:'rem-11', cxId:'cx-38', cxName:'Jennifer Kosasih', svc:'Facial Treatment', scheduledAt:daysAgo(3), sentAt:daysAgo(3), status:'terkirim', kredit:1 },
+    { id:'rem-12', cxId:'cx-43', cxName:'Octavia Limanto', svc:'Hair Treatment', scheduledAt:daysAgo(3), sentAt:daysAgo(3), status:'terkirim', kredit:1 },
+    // 4 days ago
+    { id:'rem-13', cxId:'cx-44', cxName:'Priscilla Setiady', svc:'Waxing', scheduledAt:daysAgo(4), sentAt:daysAgo(4), status:'terkirim', kredit:1 },
+    { id:'rem-14', cxId:'cx-45', cxName:'Queenie Hartawan', svc:'Manicure & Pedicure', scheduledAt:daysAgo(4), sentAt:daysAgo(4), status:'terkirim', kredit:1 },
+    // 5 days ago
+    { id:'rem-15', cxId:'cx-46', cxName:'Rosalind Budiman', svc:'Facial Treatment', scheduledAt:daysAgo(5), sentAt:daysAgo(5), status:'terkirim', kredit:1 },
+    { id:'rem-16', cxId:'cx-16', cxName:'Patricia Sutanto', svc:'Facial Treatment', scheduledAt:daysAgo(5), sentAt:daysAgo(5), status:'terkirim', kredit:1 },
+    // 7 days ago
+    { id:'rem-17', cxId:'cx-17', cxName:'Quincy Lesmana', svc:'Body Massage', scheduledAt:daysAgo(7), sentAt:daysAgo(7), status:'terkirim', kredit:1 },
+    { id:'rem-18', cxId:'cx-20', cxName:'Tabitha Dharmawan', svc:'Waxing', scheduledAt:daysAgo(7), sentAt:daysAgo(7), status:'terkirim', kredit:1 },
+    { id:'rem-19', cxId:'cx-47', cxName:'Sandra Wongso', svc:'Body Massage', scheduledAt:daysAgo(7), sentAt:null, status:'gagal', kredit:1 },
+    // 10 days ago
+    { id:'rem-20', cxId:'cx-19', cxName:'Stephanie Kurniawan', svc:'Facial Treatment', scheduledAt:daysAgo(10), sentAt:daysAgo(10), status:'terkirim', kredit:1 },
+    { id:'rem-21', cxId:'cx-21', cxName:'Ursula Hidayat', svc:'Body Massage', scheduledAt:daysAgo(10), sentAt:daysAgo(10), status:'terkirim', kredit:1 },
+    { id:'rem-22', cxId:'cx-22', cxName:'Valeria Chandra', svc:'Facial Treatment', scheduledAt:daysAgo(10), sentAt:daysAgo(10), status:'terkirim', kredit:1 },
+    // 14 days ago
+    { id:'rem-23', cxId:'cx-24', cxName:'Xenia Rachman', svc:'Waxing', scheduledAt:daysAgo(14), sentAt:daysAgo(14), status:'terkirim', kredit:1 },
+    { id:'rem-24', cxId:'cx-25', cxName:'Yolanda Adiputra', svc:'Lash Lift & Tint', scheduledAt:daysAgo(14), sentAt:daysAgo(14), status:'terkirim', kredit:1 },
+    { id:'rem-25', cxId:'cx-27', cxName:'Anastasia Wirawan', svc:'Facial Treatment', scheduledAt:daysAgo(14), sentAt:daysAgo(14), status:'terkirim', kredit:1 },
+    // 18 days ago
+    { id:'rem-26', cxId:'cx-26', cxName:'Zelda Hermawan', svc:'Body Massage', scheduledAt:daysAgo(18), sentAt:daysAgo(18), status:'terkirim', kredit:1 },
+    { id:'rem-27', cxId:'cx-28', cxName:'Belinda Cahyono', svc:'Waxing', scheduledAt:daysAgo(18), sentAt:daysAgo(18), status:'terkirim', kredit:1 },
+    // 20 days ago
+    { id:'rem-28', cxId:'cx-29', cxName:'Carmella Tanuwijaya', svc:'Hair Treatment', scheduledAt:daysAgo(20), sentAt:daysAgo(20), status:'terkirim', kredit:1 },
+    { id:'rem-29', cxId:'cx-30', cxName:'Dinda Pradipta', svc:'Lash Lift & Tint', scheduledAt:daysAgo(20), sentAt:daysAgo(20), status:'terkirim', kredit:1 },
+    // 22 days ago
+    { id:'rem-30', cxId:'cx-23', cxName:'Wendy Prasetio', svc:'Hair Treatment', scheduledAt:daysAgo(22), sentAt:daysAgo(22), status:'terkirim', kredit:1 },
+    // 25 days ago
+    { id:'rem-31', cxId:'cx-42', cxName:'Nadia Darmawan', svc:'Lash Lift & Tint', scheduledAt:daysAgo(25), sentAt:daysAgo(25), status:'terkirim', kredit:1 },
+    { id:'rem-32', cxId:'cx-33', cxName:'Eva Kristanto', svc:'Hair Treatment', scheduledAt:daysAgo(25), sentAt:daysAgo(25), status:'terkirim', kredit:1 },
+    // Scheduled (future-ish / today)
+    { id:'rem-33', cxId:'cx-16', cxName:'Patricia Sutanto', svc:'Waxing', scheduledAt:daysAgo(0), sentAt:null, status:'pending', kredit:1 },
+    { id:'rem-34', cxId:'cx-17', cxName:'Quincy Lesmana', svc:'Body Massage', scheduledAt:daysAgo(0), sentAt:null, status:'pending', kredit:1 },
+    { id:'rem-35', cxId:'cx-25', cxName:'Yolanda Adiputra', svc:'Facial Treatment', scheduledAt:daysAgo(0), sentAt:null, status:'pending', kredit:1 },
+    { id:'rem-36', cxId:'cx-23', cxName:'Wendy Prasetio', svc:'Hair Treatment', scheduledAt:daysAgo(0), sentAt:null, status:'pending', kredit:1 },
+    // More scattered
+    { id:'rem-37', cxId:'cx-36', cxName:'Helena Purnama', svc:'Body Massage', scheduledAt:daysAgo(8), sentAt:daysAgo(8), status:'terkirim', kredit:1 },
+    { id:'rem-38', cxId:'cx-31', cxName:'Cornelia Surya', svc:'Manicure & Pedicure', scheduledAt:daysAgo(12), sentAt:daysAgo(12), status:'terkirim', kredit:1 },
+    { id:'rem-39', cxId:'cx-35', cxName:'Gisella Handojo', svc:'Facial Treatment', scheduledAt:daysAgo(15), sentAt:null, status:'gagal', kredit:1 },
+    { id:'rem-40', cxId:'cx-38', cxName:'Jennifer Kosasih', svc:'Hair Treatment', scheduledAt:daysAgo(16), sentAt:daysAgo(16), status:'terkirim', kredit:1 },
+    { id:'rem-41', cxId:'cx-42', cxName:'Nadia Darmawan', svc:'Facial Treatment', scheduledAt:daysAgo(19), sentAt:daysAgo(19), status:'terkirim', kredit:1 },
+    { id:'rem-42', cxId:'cx-46', cxName:'Rosalind Budiman', svc:'Lash Lift & Tint', scheduledAt:daysAgo(24), sentAt:daysAgo(24), status:'terkirim', kredit:1 }
+  ]
+};
+
+function checkStatus() {
+  var raw = localStorage.getItem(KEY);
+  var list = document.getElementById('status-list');
+  var grid = document.getElementById('preview-grid');
+  if (!raw) {
+    list.innerHTML = '<div class="status-item"><span class="si-label">starvio_user</span><span class="si-badge badge-empty">Kosong</span></div><div style="font-size:11px;color:var(--ink3);padding:6px 2px;line-height:1.6">Klik <strong>Inject Dummy Data</strong> untuk mulai.</div>';
+    grid.style.display = 'none';
+    return;
+  }
+  try {
+    var d = JSON.parse(raw);
+    var cx = (d.customers || []).length;
+    var cats = (d.cats || []).length;
+    var rems = (d.reminders || []).length;
+    var kb = (raw.length / 1024).toFixed(1);
+    var totalSvc = (d.customers || []).reduce(function(a, c) { return a + (c.services ? c.services.length : 1); }, 0);
+    list.innerHTML =
+      '<div class="status-item"><span class="si-label">Bisnis</span><span class="si-val">' + (d.bizName || '—') + '</span><span class="si-badge badge-ok">Ada</span></div>' +
+      '<div class="status-item"><span class="si-label">Owner</span><span class="si-val">' + (d.adminName || '—') + ' · ' + (d.adminEmail || '—') + '</span><span class="si-badge badge-ok">Ada</span></div>' +
+      '<div class="status-item"><span class="si-label">Pelanggan</span><span class="si-val">' + cx + ' pelanggan · ' + totalSvc + ' services</span><span class="si-badge ' + (cx > 0 ? 'badge-ok' : 'badge-empty') + '">' + (cx > 0 ? 'Ada' : 'Kosong') + '</span></div>' +
+      '<div class="status-item"><span class="si-label">Kategori</span><span class="si-val">' + cats + ' kategori</span><span class="si-badge ' + (cats > 0 ? 'badge-ok' : 'badge-empty') + '">' + (cats > 0 ? 'Ada' : 'Kosong') + '</span></div>' +
+      '<div class="status-item"><span class="si-label">Log Reminder</span><span class="si-val">' + rems + ' records</span><span class="si-badge ' + (rems > 0 ? 'badge-ok' : 'badge-empty') + '">' + (rems > 0 ? 'Ada' : 'Kosong') + '</span></div>' +
+      (function(){
+        var plan = d.plan || 'free';
+        var planLabel = plan === 'subscriber' ? 'Subscriber' : plan.charAt(0).toUpperCase() + plan.slice(1);
+        var subLeft = d.subCreditsLeft || 0;
+        var subMax = d.subCreditsMax || 0;
+        var topup = d.topupCreditsLeft || 0;
+        var total = subLeft + topup;
+        return '<div class="status-item"><span class="si-label">Plan</span><span class="si-val">' + planLabel + '</span><span class="si-badge badge-ok">' + planLabel + '</span></div>' +
+          '<div class="status-item"><span class="si-label">Kredit Sub</span><span class="si-val">' + subLeft + ' / ' + subMax + '</span><span class="si-badge ' + (subLeft > 0 ? 'badge-ok' : 'badge-empty') + '">' + (subLeft > 0 ? 'Ada' : 'Habis') + '</span></div>' +
+          '<div class="status-item"><span class="si-label">Kredit Top-Up</span><span class="si-val">' + topup + '</span><span class="si-badge ' + (topup > 0 ? 'badge-ok' : 'badge-none') + '">' + (topup > 0 ? 'Ada' : '—') + '</span></div>' +
+          '<div class="status-item"><span class="si-label">Total Kredit</span><span class="si-val">' + total + '</span><span class="si-badge ' + (total > 50 ? 'badge-ok' : total > 0 ? 'badge-empty' : 'badge-none') + '">' + total + '</span></div>';
+      })() +
+      '<div class="status-item"><span class="si-label">Ukuran</span><span class="si-val">' + kb + ' KB</span><span class="si-badge badge-none">localStorage</span></div>';
+    if (cx > 0) {
+      grid.style.display = 'grid';
+      grid.innerHTML =
+        '<div class="prev-met"><div class="prev-n lime">' + cx + '</div><div class="prev-l">Pelanggan</div></div>' +
+        '<div class="prev-met"><div class="prev-n">' + totalSvc + '</div><div class="prev-l">Services</div></div>' +
+        '<div class="prev-met"><div class="prev-n">' + cats + '</div><div class="prev-l">Kategori</div></div>' +
+        '<div class="prev-met"><div class="prev-n">' + rems + '</div><div class="prev-l">Log Rem.</div></div>';
+    } else {
+      grid.style.display = 'none';
+    }
+  } catch (e) {
+    list.innerHTML = '<div class="status-item"><span class="si-label">Error parsing data</span><span class="si-badge" style="background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3">Error</span></div>';
+    grid.style.display = 'none';
+  }
+}
+
+function showLog() { document.getElementById('log').style.display = 'block'; }
+function addLog(msg, type) {
+  var el = document.getElementById('log');
+  var line = document.createElement('div');
+  line.className = 'log-line' + (type ? ' ' + type : '');
+  line.textContent = '> ' + msg;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+function injectData() {
+  showLog();
+  document.getElementById('log').innerHTML = '';
+  addLog('Memulai inject...', '');
+  setTimeout(function() {
+    try {
+      var totalSvc = DUMMY.customers.reduce(function(a, c) { return a + (c.services ? c.services.length : 1); }, 0);
+      addLog('Bisnis: ' + DUMMY.bizName + ' (' + DUMMY.adminName + ')', '');
+      addLog('Menulis ' + DUMMY.customers.length + ' pelanggan (' + totalSvc + ' total service records)...', '');
+      addLog('Menulis ' + DUMMY.cats.length + ' kategori...', '');
+      addLog('Menulis ' + DUMMY.reminders.length + ' log reminder...', '');
+      localStorage.setItem(KEY, JSON.stringify(DUMMY));
+      addLog('✓ Tersimpan ke localStorage ["' + KEY + '"]', 'ok');
+      addLog('✓ Ukuran: ' + (JSON.stringify(DUMMY).length / 1024).toFixed(1) + ' KB', 'ok');
+      addLog('✓ Siap — klik link di bawah untuk buka halaman.', 'ok');
+      checkStatus();
+    } catch (e) {
+      addLog('ERROR: ' + e.message, 'err');
+    }
+  }, 150);
+}
+
+/* ── BILLING CONDITION SWITCHER ── */
+function setBilling(preset) {
+  var raw = localStorage.getItem(KEY);
+  if (!raw) { alert('Inject data dulu sebelum switch billing state.'); return; }
+  var u = JSON.parse(raw);
+
+  var renewDate = new Date(); renewDate.setMonth(renewDate.getMonth() + 1); renewDate.setDate(15);
+
+  var states = {
+    'free-full':     { plan:'free', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, remMax:100 },
+    'free-low':      { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
+    'free-critical': { plan:'free', subCreditsLeft:0, topupCreditsLeft:5,   subRenewsAt:null, remMax:100 },
+    'free-empty':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 },
+    'sub-healthy':   { plan:'subscriber', subCreditsLeft:312, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-low':       { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:375 }
+  };
+
+  var s = states[preset];
+  if (!s) return;
+  u.plan = s.plan;
+  u.subCreditsLeft = s.subCreditsLeft;
+  u.subCreditsMax = 375;
+  u.topupCreditsLeft = s.topupCreditsLeft;
+  u.subRenewsAt = s.subRenewsAt;
+  u.remMax = s.remMax;
+  localStorage.setItem(KEY, JSON.stringify(u));
+
+  var total = s.subCreditsLeft + s.topupCreditsLeft;
+  showLog();
+  addLog('🧪 Billing state → <b>' + preset + '</b> (plan: ' + s.plan + ', sub: ' + s.subCreditsLeft + ', topup: ' + s.topupCreditsLeft + ', total: ' + total + ')', 'ok');
+  checkStatus();
+}
+
+function clearData() {
+  if (!confirm('Hapus semua data dari localStorage?')) return;
+  showLog();
+  document.getElementById('log').innerHTML = '';
+  localStorage.removeItem(KEY);
+  addLog('🗑️ Data dihapus dari localStorage', 'warn');
+  checkStatus();
+}
+
+// Auto-inject if ?auto=1
+if (new URLSearchParams(location.search).get('auto') === '1') {
+  injectData();
+}
+
+checkStatus();
+</script>
+</body>
+</html>

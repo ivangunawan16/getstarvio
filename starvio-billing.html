@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starvio — Billing & Kredit</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+  --border:#e2e1d9;--border2:#cccbc2;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --blue:#2563eb;--blue-bg:#eff4ff;--blue-dk:#1e3a8a;
+  --r:12px;--r-sm:8px;--r-lg:16px;--sidebar:224px;
+}
+html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidden;background:var(--bg)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh}
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── SIDEBAR ── */
+.s-logo{padding:14px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.s-mark{width:28px;height:28px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s-bname{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.s-biz{padding:10px 16px;border-bottom:1px solid var(--border)}
+.s-biz-n{font-size:12px;font-weight:600;color:var(--ink)}
+.s-biz-t{font-size:10px;color:var(--ink3);margin-top:1px}
+.s-nav{padding:8px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:var(--ink3);font-size:12px;font-weight:500;transition:all .15s;text-decoration:none;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--ink2)}
+.nav-item.active{background:var(--lime);color:var(--lime-dk);font-weight:700}
+.nav-icon{width:18px;text-align:center;flex-shrink:0;font-size:14px}
+.nav-pill{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px}
+.np-red{background:var(--red-bg);color:var(--red-dk)}
+.s-counter{margin:8px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 12px}
+.sc-n{font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.sc-l{font-size:10px;color:var(--lime-dk);opacity:.6;margin-top:2px;line-height:1.3}
+.sc-bar{height:3px;background:rgba(45,74,0,.1);border-radius:99px;margin-top:7px;overflow:hidden}
+.sc-fill{height:100%;background:var(--lime-dk);border-radius:99px;transition:width .5s}
+.s-bottom{padding:8px;border-top:1px solid var(--border)}
+.s-user{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--r-sm)}
+.s-av{width:26px;height:26px;border-radius:50%;background:var(--lime-bg);border:1px solid #c8f07a;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.s-uname{font-size:11px;font-weight:600;color:var(--ink)}
+.s-urole{font-size:10px;color:var(--ink3)}
+.s-logout{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;opacity:.4;transition:opacity .15s;margin-left:auto;flex-shrink:0}
+.s-logout:hover{opacity:1}
+.s-reset{width:100%;margin-top:6px;padding:7px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);font-size:10px;font-weight:600;color:var(--ink3);font-family:inherit;cursor:pointer;transition:all .15s}
+.s-reset:hover{background:var(--bg4);color:var(--ink2)}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;margin-right:8px}
+
+/* ── CONTENT ── */
+.db-content{flex:1;overflow-y:auto;padding:20px 24px 40px}
+.db-inner{max-width:960px;margin:0 auto;animation:fadeUp .2s ease}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:17px 19px;margin-bottom:13px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.b-lime{background:var(--lime-bg);color:var(--lime-dk);border:1px solid #c8f07a}
+.b-amber{background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a}
+.b-red{background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3}
+.b-blue{background:var(--blue-bg);color:var(--blue-dk);border:1px solid #bfcff8}
+.b-gray{background:var(--bg3);color:var(--ink3);border:1px solid var(--border)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}
+.btn-ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}.btn-ghost:hover{background:var(--bg3)}
+.btn-danger{background:var(--red-bg);color:var(--red-dk);border:1.5px solid #f5c5c3}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-ink{background:var(--ink);color:#fff}.btn-ink:hover{background:#2d2c28}
+
+/* ── SECTION HEADERS ── */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:20px}
+.sec-title{font-size:13px;font-weight:700;color:var(--ink)}
+.sec-sub{font-size:11px;color:var(--ink3)}
+
+/* ── PLAN STATUS ── */
+.plan-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:13px}
+.plan-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.plan-info{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.plan-badge-free{background:var(--bg3);color:var(--ink3);border:1px solid var(--border);display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px}
+.plan-badge-sub{background:var(--lime-bg);color:var(--lime-dk);border:1px solid #c8f07a;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px}
+.plan-credit{font-size:13px;color:var(--ink2)}
+.plan-credit b{color:var(--ink);font-family:'JetBrains Mono',monospace}
+.cancel-link{font-size:11px;color:var(--red);cursor:pointer;text-decoration:underline;background:none;border:none;font-family:inherit}
+.cancel-link:hover{color:var(--red-dk)}
+
+/* ── CREDIT SUMMARY ── */
+.credit-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.credit-row:last-child{border-bottom:none}
+.credit-label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--ink)}
+.credit-val{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--ink)}
+.progress-bar{height:6px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:99px;transition:width .5s}
+.total-block{text-align:center;padding:20px 16px;border-top:2px solid var(--border);margin-top:4px}
+.total-num{font-size:44px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
+.total-label{font-size:12px;color:var(--ink3);margin-top:4px}
+.total-warn{font-size:12px;font-weight:700;margin-top:6px}
+
+/* ── TOP-UP PACKAGES ── */
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.pkg-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--r);padding:18px 14px;cursor:pointer;transition:all .15s;text-align:center;position:relative}
+.pkg-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.pkg-card.sel{border-color:var(--lime2);background:var(--lime-bg)}
+.pkg-pop{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;background:var(--lime);color:var(--lime-dk);padding:2px 10px;border-radius:99px;white-space:nowrap}
+.pkg-amt{font-size:24px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--ink);line-height:1;margin-bottom:2px}
+.pkg-card.sel .pkg-amt{color:var(--lime-dk)}
+.pkg-unit{font-size:10px;color:var(--ink3);margin-bottom:8px}
+.pkg-price{font-size:15px;font-weight:700;color:var(--ink)}
+.pkg-card.sel .pkg-price{color:var(--lime-dk)}
+.pkg-per{font-size:10px;color:var(--ink3);margin-top:3px}
+.pkg-save{font-size:10px;font-weight:700;color:var(--lime-dk);margin-top:4px}
+
+/* ── AUTO TOP-UP ── */
+.auto-topup{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:17px 19px;margin-bottom:13px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between}
+.toggle-label{font-size:13px;font-weight:700;color:var(--ink)}
+.toggle-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+.toggle-switch{position:relative;width:40px;height:22px;cursor:pointer;flex-shrink:0}
+.toggle-switch input{display:none}
+.toggle-track{position:absolute;inset:0;background:var(--bg4);border-radius:99px;transition:background .2s}
+.toggle-switch input:checked+.toggle-track{background:var(--lime)}
+.toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.toggle-switch input:checked~.toggle-knob{transform:translateX(18px)}
+.threshold-row{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap}
+.threshold-input{width:60px;padding:6px 8px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;text-align:center;color:var(--ink)}
+.threshold-input:focus{outline:none;border-color:var(--lime2)}
+.threshold-select{padding:6px 8px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-family:inherit;color:var(--ink);background:var(--bg2);cursor:pointer}
+.threshold-select:focus{outline:none;border-color:var(--lime2)}
+
+/* ── RECOMMENDATION BANNER ── */
+.reco-banner{background:var(--bg2);border:1.5px solid var(--lime2);border-radius:var(--r);padding:16px 19px;margin-bottom:13px;display:flex;align-items:flex-start;gap:12px}
+.reco-banner.warn{border-color:#fcd88a}
+.reco-banner.crit{border-color:#f5c5c3}
+.reco-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.reco-text{flex:1}
+.reco-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.reco-sub{font-size:11px;color:var(--ink3);line-height:1.5}
+
+/* ── PREDICTION ── */
+.pred-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 19px;margin-bottom:13px;display:flex;align-items:center;gap:10px}
+.pred-icon{font-size:18px;flex-shrink:0}
+.pred-text{font-size:12px;color:var(--ink2);line-height:1.5}
+.pred-text b{color:var(--ink)}
+
+/* ── TRANSACTION TABLE ── */
+.tx-table{width:100%;border-collapse:collapse}
+.tx-table th{text-align:left;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;border-bottom:1.5px solid var(--border)}
+.tx-table td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:12px;color:var(--ink)}
+.tx-table tr:last-child td{border-bottom:none}
+.tx-type{font-weight:600;font-size:11px;display:inline-flex;padding:2px 8px;border-radius:99px}
+.tx-topup{background:var(--lime-bg);color:var(--lime-dk)}
+.tx-sub{background:var(--blue-bg);color:var(--blue-dk)}
+.tx-welcome{background:var(--lime-bg);color:var(--lime-dk)}
+.tx-usage{background:var(--red-bg);color:var(--red-dk)}
+.tx-plus{color:var(--lime-dk);font-weight:700;font-family:'JetBrains Mono',monospace}
+.tx-minus{color:var(--red-dk);font-weight:700;font-family:'JetBrains Mono',monospace}
+
+/* ── NOTIFICATION ── */
+.notif-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:17px 19px;margin-bottom:16px}
+.notif-row{display:flex;align-items:center;gap:10px;padding:8px 0}
+.notif-row+.notif-row{border-top:1px solid var(--border)}
+.notif-label{flex:1;font-size:12px;color:var(--ink)}
+.notif-value{font-size:12px;color:var(--ink3);font-family:'JetBrains Mono',monospace}
+.checkbox-row{display:flex;align-items:center;gap:8px;cursor:pointer}
+.checkbox-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--lime-dk)}
+
+/* ── OVERLAY / MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px)}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease;width:400px;max-width:94vw}
+.mhd{padding:19px 22px 15px;border-bottom:1px solid var(--border);text-align:center}
+.mftr{padding:13px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.m-title{font-size:15px;font-weight:700;color:var(--ink)}
+.m-sub{font-size:12px;color:var(--ink3);margin-top:4px}
+.m-body{padding:16px 22px}
+
+/* ── PAYMENT MODAL ── */
+.pay-summary{background:var(--bg3);border-radius:var(--r-sm);padding:14px;margin-bottom:12px}
+.pay-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.pay-row:last-child{margin-bottom:0}
+.pay-row-k{color:var(--ink3)}
+.pay-row-v{font-weight:700;color:var(--ink)}
+.pay-spinner{width:32px;height:32px;border:3px solid var(--bg4);border-top-color:var(--lime);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+.pay-check{width:48px;height:48px;border-radius:50%;background:var(--lime-bg);border:2px solid var(--lime);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px}
+
+/* ── SIDEBAR OVERLAY (mobile) ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
+.sidebar-overlay.open{display:block}
+
+/* ── MOBILE ── */
+@media(max-width:767px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .hamburger-btn{display:flex}
+  .pkg-grid{grid-template-columns:1fr}
+  .db-content{padding:16px 16px 32px}
+  .plan-row{flex-direction:column;align-items:flex-start;gap:10px}
+  .tx-table{font-size:11px}
+  .tx-table th,.tx-table td{padding:7px 6px}
+}
+@media(min-width:768px) and (max-width:1023px){
+  .sidebar{width:60px}
+  .s-bname,.s-biz,.s-urole,.s-uname,.sc-l,.nav-item span:not(.nav-icon):not(.nav-pill){display:none}
+  .s-logo{justify-content:center;padding:14px 8px}
+  .nav-item{justify-content:center;padding:10px 8px}
+  .s-counter{padding:8px;text-align:center}
+  .s-user{justify-content:center}
+  .s-bottom{text-align:center}
+  .s-reset{font-size:0;padding:8px}
+  .s-reset::after{content:'\21BA';font-size:14px}
+}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="s-logo">
+    <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
+    <span class="s-bname">Starvio</span>
+  </div>
+  <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
+  <nav class="s-nav">
+    <a id="nav-dashboard"  href="starvio-dashboard.html"    class="nav-item"><span class="nav-icon">&#127968;</span><span>Dashboard</span></a>
+    <a id="nav-catat"      href="starvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan"  href="starvio-pelanggan.html"    class="nav-item"><span class="nav-icon">&#128101;</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="starvio-automation.html"   class="nav-item"><span class="nav-icon">&#129302;</span><span>Automation</span></a>
+    <a id="nav-log"        href="starvio-log-reminder.html" class="nav-item"><span class="nav-icon">&#128220;</span><span>Log Reminder</span></a>
+    <a id="nav-kategori"   href="starvio-kategori.html"     class="nav-item"><span class="nav-icon">&#127991;&#65039;</span><span>Kategori</span></a>
+    <a id="nav-billing"    href="starvio-billing.html"      class="nav-item active"><span class="nav-icon">&#128179;</span><span>Billing</span></a>
+    <a id="nav-settings"   href="starvio-settings.html"     class="nav-item"><span class="nav-icon">&#9881;&#65039;</span><span>Settings</span></a>
+  </nav>
+  <div class="s-counter">
+    <div class="sc-n" id="sc-n">0</div>
+    <div class="sc-l">kredit tersisa dari <span id="sc-total">100</span></div>
+    <div class="sc-bar"><div class="sc-fill" id="sc-fill" style="width:100%"></div></div>
+  </div>
+  <div class="s-bottom">
+    <div class="s-user">
+      <div class="s-av" id="s-av">—</div>
+      <div><div class="s-uname" id="s-uname">Owner</div><div class="s-urole">Owner</div></div>
+      <button class="s-logout" onclick="openLogout()" title="Logout">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </button>
+    </div>
+    <button class="s-reset" onclick="resetDemo()">&#8634; Reset demo data</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center">
+      <button class="hamburger-btn" onclick="openSidebar()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+      </button>
+      <span class="tb-title">Billing & Kredit</span>
+    </div>
+  </div>
+
+  <div class="db-content">
+    <!-- DEV: Billing Test Panel — paling atas -->
+    <div class="db-inner" style="margin-bottom:14px">
+      <div style="border:1.5px dashed var(--border2);border-radius:var(--r);padding:10px 16px;background:var(--bg3)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:700;color:var(--ink3)">🧪 Test Billing</span>
+          <div id="dev-billing-toast" style="font-size:11px;color:var(--lime-dk);font-weight:600;display:none"></div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="devSetBilling('free-full')">🆓 Free 100</button>
+          <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="devSetBilling('free-low')">⚠️ Free 22</button>
+          <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="devSetBilling('free-critical')">🔴 Free 5</button>
+          <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="devSetBilling('free-empty')">⛔ Free 0</button>
+          <span style="width:1px;background:var(--border2);margin:0 2px"></span>
+          <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px;border-color:var(--lime2)" onclick="devSetBilling('sub-healthy')">✅ Sub 362</button>
+          <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="devSetBilling('sub-low')">📉 Sub 68</button>
+          <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="devSetBilling('sub-depleted')">🔄 Sub 30</button>
+          <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="devSetBilling('sub-critical')">🚨 Sub 7</button>
+          <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="devSetBilling('sub-empty')">💀 Sub 0</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="db-inner" id="billing-content">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="overlay" id="m-logout">
+  <div class="modal">
+    <div class="mhd">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--red-bg);border:1px solid #f5c5c3;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="var(--red-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </div>
+      <div class="m-title">Yakin mau logout?</div>
+      <div class="m-sub">Sesi kamu akan diakhiri.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeLogout()">Batal</button>
+      <button class="btn btn-danger btn-sm" onclick="doLogout()">Ya, Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- CANCEL SUBSCRIPTION MODAL -->
+<div class="overlay" id="m-cancel">
+  <div class="modal">
+    <div class="mhd">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--amber-bg);border:1px solid #fcd88a;display:flex;align-items:center;justify-content:center;margin:0 auto 11px;font-size:20px">&#9888;&#65039;</div>
+      <div class="m-title">Batalkan Langganan?</div>
+      <div class="m-sub">Kredit subscription yang tersisa akan hangus. Kredit top-up tetap tersimpan.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeCancelModal()">Tetap Berlangganan</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmCancelSub()">Ya, Batalkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="overlay" id="m-payment" onclick="if(event.target===this&&!payBusy)closePayment()">
+  <div class="modal" style="width:420px">
+    <div class="mhd" id="pay-header">
+      <div class="m-title" id="pay-title">Konfirmasi Top Up</div>
+      <div class="m-sub" id="pay-sub">—</div>
+    </div>
+    <div id="pay-content">
+      <div class="m-body" id="pay-confirm">
+        <div class="pay-summary" id="pay-summary"></div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.5;margin-bottom:4px">Pembayaran via transfer bank / QRIS. Kredit langsung ditambahkan setelah proses selesai.</div>
+      </div>
+      <div class="m-body" id="pay-processing" style="display:none">
+        <div style="text-align:center;padding:20px">
+          <div class="pay-spinner"></div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">Memproses pembayaran...</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:4px">Mohon tunggu sebentar</div>
+        </div>
+      </div>
+      <div class="m-body" id="pay-done" style="display:none">
+        <div style="text-align:center;padding:20px">
+          <div class="pay-check">&#10003;</div>
+          <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px">Berhasil!</div>
+          <div style="font-size:12px;color:var(--ink3)" id="pay-done-msg">Kredit berhasil ditambahkan.</div>
+        </div>
+      </div>
+    </div>
+    <div class="mftr" id="pay-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closePayment()">Batal</button>
+      <button class="btn btn-lime btn-sm" id="pay-btn" onclick="processPayment()">Bayar Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUBSCRIBE MODAL -->
+<div class="overlay" id="m-subscribe" onclick="if(event.target===this&&!subBusy)closeSubscribe()">
+  <div class="modal" style="width:420px">
+    <div class="mhd" id="sub-header">
+      <div class="m-title" id="sub-title">Konfirmasi Subscribe</div>
+      <div class="m-sub">Subscriber — Rp 250.000/bulan (Early Access +50%)</div>
+    </div>
+    <div id="sub-content">
+      <div class="m-body" id="sub-confirm">
+        <div class="pay-summary">
+          <div class="pay-row"><span class="pay-row-k">Paket</span><span class="pay-row-v">Subscriber Bulanan</span></div>
+          <div class="pay-row"><span class="pay-row-k">Kredit per bulan</span><span class="pay-row-v">375 kredit</span></div>
+          <div class="pay-row"><span class="pay-row-k">Harga per kredit</span><span class="pay-row-v">Rp 833</span></div>
+          <div class="pay-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"><span class="pay-row-k" style="font-weight:700;color:var(--ink)">Total/bulan</span><span class="pay-row-v" style="font-size:14px;color:var(--lime-dk)">Rp 250.000</span></div>
+        </div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.5">Pembayaran via transfer bank / QRIS. 375 kredit langsung tersedia setelah aktivasi.</div>
+      </div>
+      <div class="m-body" id="sub-processing" style="display:none">
+        <div style="text-align:center;padding:20px">
+          <div class="pay-spinner"></div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">Mengaktifkan langganan...</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:4px">Mohon tunggu sebentar</div>
+        </div>
+      </div>
+      <div class="m-body" id="sub-done" style="display:none">
+        <div style="text-align:center;padding:20px">
+          <div class="pay-check">&#10003;</div>
+          <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px">Langganan Aktif!</div>
+          <div style="font-size:12px;color:var(--ink3)">375 kredit subscription sudah ditambahkan ke akun kamu.</div>
+        </div>
+      </div>
+    </div>
+    <div class="mftr" id="sub-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeSubscribe()">Batal</button>
+      <button class="btn btn-lime btn-sm" id="sub-btn" onclick="processSubscribe()">Subscribe Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   SHARED UTILITIES
+   ══════════════════════════════════════════════ */
+
+function loadU() {
+  try {
+    var raw = localStorage.getItem('starvio_user')
+    if (!raw) return null
+    var u = JSON.parse(raw)
+    if (u.DATA_VERSION !== 4) return null
+    // Compute remLeft from new billing fields
+    u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    return u
+  } catch(e) { return null }
+}
+
+function saveU(u) {
+  localStorage.setItem('starvio_user', JSON.stringify(u))
+}
+
+function resetDemo() {
+  location.href = 'starvio-seed-data.html?auto=1'
+}
+
+function doLogout() {
+  localStorage.removeItem('starvio_user')
+  location.href = 'starvio-login.html'
+}
+
+/* ── SIDEBAR MOBILE ── */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open')
+  document.getElementById('sidebarOverlay').classList.add('open')
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('sidebarOverlay').classList.remove('open')
+}
+
+/* ── MODALS ── */
+function openLogout() { document.getElementById('m-logout').classList.add('show') }
+function closeLogout() { document.getElementById('m-logout').classList.remove('show') }
+
+/* ── HELPERS ── */
+function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') }
+function fmtRp(n) { return 'Rp ' + fmt(n) }
+
+function fmtDate(iso) {
+  if (!iso) return '—'
+  var d = new Date(iso)
+  var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des']
+  return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear()
+}
+
+function fmtDateShort(iso) {
+  if (!iso) return '—'
+  var d = new Date(iso)
+  var mm = ('0' + (d.getMonth()+1)).slice(-2)
+  var dd = ('0' + d.getDate()).slice(-2)
+  return d.getFullYear() + '-' + mm + '-' + dd
+}
+
+/* ── STATUS LOGIC (for lost count) ── */
+function getStatus(service) {
+  var diff = Math.floor((Date.now() - new Date(service.date)) / 86400000)
+  var pct = (diff / service.days) * 100
+  if (pct >= 100) return 'hilang'
+  if (pct >= 70) return 'mendekati'
+  return 'aktif'
+}
+
+/* ── USAGE RATE ── */
+function calcUsageRate(U) {
+  var rems = U.reminders || []
+  var now = new Date()
+  var thirtyDaysAgo = new Date(now.getTime() - 30 * 86400000)
+  var sentCount = 0
+  rems.forEach(function(r) {
+    var d = new Date(r.sentAt || r.scheduledAt || r.date || '')
+    if (d >= thirtyDaysAgo && d <= now && (r.status === 'terkirim' || r.status === 'sent')) sentCount++
+  })
+  return sentCount > 0 ? sentCount / 30 : 0
+}
+
+/* ══════════════════════════════════════════════
+   BILLING DATA
+   ══════════════════════════════════════════════ */
+
+var SUB_PRICE = 250000
+var SUB_CREDITS = 375 // 250 base + 125 early access bonus
+
+var PACKAGES = [
+  { id: 'p1', amt: 300,  price: 250000,  label: '300',   priceStr: 'Rp 250.000', per: 'Rp 833/kredit', bonus: '+50 bonus (20%)' },
+  { id: 'p2', amt: 625,  price: 500000,  label: '625',   priceStr: 'Rp 500.000', per: 'Rp 800/kredit', popular: true, popLabel: 'Terlaris', bonus: '+125 bonus (25%)' },
+  { id: 'p3', amt: 1500, price: 1000000, label: '1.500', priceStr: 'Rp 1.000.000', per: 'Rp 667/kredit', save: 'Best Value', bonus: '+500 bonus (50%)' }
+]
+
+/* ── Ensure billing fields exist ── */
+function ensureBillingFields(U) {
+  if (typeof U.plan === 'undefined') U.plan = 'free'
+  if (typeof U.subCreditsLeft === 'undefined') U.subCreditsLeft = 0
+  if (typeof U.subCreditsMax === 'undefined') U.subCreditsMax = SUB_CREDITS
+  if (typeof U.topupCreditsLeft === 'undefined') {
+    // Migrate from old remLeft
+    U.topupCreditsLeft = U.remLeft || 0
+  }
+  if (typeof U.subRenewsAt === 'undefined') U.subRenewsAt = null
+  if (typeof U.billingHistory === 'undefined') {
+    U.billingHistory = generateDummyHistory(U)
+  }
+  if (typeof U.billingNotifs === 'undefined') {
+    U.billingNotifs = { lowCredit: true, criticalCredit: true, subLow: true, renewalReminder: true }
+  }
+  if (typeof U.autoTopup === 'undefined') U.autoTopup = false
+  if (typeof U.autoTopupThreshold === 'undefined') U.autoTopupThreshold = 10
+  if (typeof U.autoTopupPackage === 'undefined') U.autoTopupPackage = 'p1'
+  // Recompute
+  U.remLeft = (U.subCreditsLeft || 0) + (U.topupCreditsLeft || 0)
+  return U
+}
+
+function generateDummyHistory(U) {
+  var h = []
+  var bal = (U.subCreditsLeft || 0) + (U.topupCreditsLeft || 0)
+
+  // Welcome bonus entry
+  h.push({ date: '2026-03-01', type: 'welcome', label: 'Welcome Bonus', delta: 100, balAfter: bal + 5, note: 'Bonus kredit pendaftaran' })
+
+  if (U.plan === 'subscriber') {
+    h.push({ date: '2026-03-01', type: 'subscription', label: 'Subscription', delta: 375, balAfter: bal + 8, note: 'Kredit bulanan subscriber (250 base + 125 early access +50%)' })
+  }
+
+  // Some usage entries
+  h.push({ date: '2026-03-25', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal, note: 'Reminder — Patricia Sutanto' })
+  h.push({ date: '2026-03-24', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 1, note: 'Reminder — Quincy Lesmana' })
+  h.push({ date: '2026-03-23', type: 'topup', label: 'Top Up', delta: 300, balAfter: bal + 2 + 300, note: 'Paket 300 kredit — Rp 250.000 (incl. +50 bonus 20%)' })
+  h.push({ date: '2026-03-22', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 2, note: 'Reminder — Valeria Chandra' })
+  h.push({ date: '2026-03-21', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 3, note: 'Reminder — Tabitha Dharmawan' })
+  h.push({ date: '2026-03-20', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 4, note: 'Reminder — Rachel Tandiono' })
+  h.push({ date: '2026-03-19', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 5, note: 'Reminder — Xenia Rachman' })
+
+  return h
+}
+
+/* ══════════════════════════════════════════════
+   PAYMENT STATE
+   ══════════════════════════════════════════════ */
+
+var payBusy = false
+var payPkg = null
+var selectedPkg = 'p2' // default selected
+
+function selectPkg(id) {
+  selectedPkg = id
+  document.querySelectorAll('.pkg-card').forEach(function(c) {
+    c.classList.toggle('sel', c.getAttribute('data-pkg') === id)
+  })
+}
+
+function openPayModal() {
+  payPkg = PACKAGES.find(function(p) { return p.id === selectedPkg })
+  if (!payPkg) return
+  document.getElementById('pay-title').textContent = 'Konfirmasi Top Up'
+  document.getElementById('pay-sub').textContent = payPkg.label + ' kredit'
+  document.getElementById('pay-summary').innerHTML =
+    '<div class="pay-row"><span class="pay-row-k">Paket</span><span class="pay-row-v">' + payPkg.label + ' kredit</span></div>' +
+    '<div class="pay-row"><span class="pay-row-k">Harga per kredit</span><span class="pay-row-v">' + payPkg.per + '</span></div>' +
+    '<div class="pay-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"><span class="pay-row-k" style="font-weight:700;color:var(--ink)">Total</span><span class="pay-row-v" style="font-size:14px;color:var(--lime-dk)">' + payPkg.priceStr + '</span></div>'
+  document.getElementById('pay-confirm').style.display = 'block'
+  document.getElementById('pay-processing').style.display = 'none'
+  document.getElementById('pay-done').style.display = 'none'
+  document.getElementById('pay-footer').style.display = 'flex'
+  document.getElementById('pay-btn').style.display = 'inline-flex'
+  document.getElementById('pay-footer').innerHTML =
+    '<button class="btn btn-ghost btn-sm" onclick="closePayment()">Batal</button>' +
+    '<button class="btn btn-lime btn-sm" id="pay-btn" onclick="processPayment()">Top Up Sekarang</button>'
+  payBusy = false
+  document.getElementById('m-payment').classList.add('show')
+}
+
+function processPayment() {
+  if (payBusy || !payPkg) return
+  payBusy = true
+  document.getElementById('pay-confirm').style.display = 'none'
+  document.getElementById('pay-processing').style.display = 'block'
+  document.getElementById('pay-btn').style.display = 'none'
+
+  setTimeout(function() {
+    var U = loadU()
+    if (!U) return
+    U = ensureBillingFields(U)
+    U.topupCreditsLeft = (U.topupCreditsLeft || 0) + payPkg.amt
+    U.remLeft = (U.subCreditsLeft || 0) + U.topupCreditsLeft
+
+    // Add to history
+    U.billingHistory = U.billingHistory || []
+    U.billingHistory.unshift({
+      date: new Date().toISOString().slice(0,10),
+      type: 'topup',
+      label: 'Top Up',
+      delta: payPkg.amt,
+      balAfter: U.remLeft,
+      note: 'Paket ' + payPkg.label + ' — ' + payPkg.priceStr
+    })
+    saveU(U)
+
+    document.getElementById('pay-processing').style.display = 'none'
+    document.getElementById('pay-done').style.display = 'block'
+    document.getElementById('pay-done-msg').textContent = '+' + payPkg.label + ' kredit berhasil ditambahkan! Saldo sekarang: ' + fmt(U.remLeft) + ' kredit.'
+    document.getElementById('pay-title').textContent = 'Pembayaran Berhasil'
+    document.getElementById('pay-footer').innerHTML = '<button class="btn btn-lime btn-sm" onclick="closePayment();render()">Tutup</button>'
+    payBusy = false
+  }, 2000)
+}
+
+function closePayment() {
+  if (payBusy) return
+  document.getElementById('m-payment').classList.remove('show')
+  payPkg = null
+}
+
+/* ══════════════════════════════════════════════
+   SUBSCRIBE STATE
+   ══════════════════════════════════════════════ */
+
+var subBusy = false
+
+function openSubscribe() {
+  document.getElementById('sub-confirm').style.display = 'block'
+  document.getElementById('sub-processing').style.display = 'none'
+  document.getElementById('sub-done').style.display = 'none'
+  document.getElementById('sub-title').textContent = 'Konfirmasi Subscribe'
+  document.getElementById('sub-footer').innerHTML =
+    '<button class="btn btn-ghost btn-sm" onclick="closeSubscribe()">Batal</button>' +
+    '<button class="btn btn-lime btn-sm" id="sub-btn" onclick="processSubscribe()">Subscribe Sekarang</button>'
+  subBusy = false
+  document.getElementById('m-subscribe').classList.add('show')
+}
+
+function processSubscribe() {
+  if (subBusy) return
+  subBusy = true
+  document.getElementById('sub-confirm').style.display = 'none'
+  document.getElementById('sub-processing').style.display = 'block'
+  var btn = document.getElementById('sub-btn')
+  if (btn) btn.style.display = 'none'
+
+  setTimeout(function() {
+    var U = loadU()
+    if (!U) return
+    U = ensureBillingFields(U)
+    U.plan = 'subscriber'
+    U.subCreditsLeft = SUB_CREDITS
+    U.subCreditsMax = SUB_CREDITS
+    var renew = new Date()
+    renew.setMonth(renew.getMonth() + 1)
+    U.subRenewsAt = renew.toISOString()
+    U.remLeft = U.subCreditsLeft + (U.topupCreditsLeft || 0)
+
+    // Add to history
+    U.billingHistory = U.billingHistory || []
+    U.billingHistory.unshift({
+      date: new Date().toISOString().slice(0,10),
+      type: 'subscription',
+      label: 'Subscription',
+      delta: SUB_CREDITS,
+      balAfter: U.remLeft,
+      note: 'Aktivasi subscriber — Rp 250.000/bulan (375 kredit, incl. early access +50%)'
+    })
+    saveU(U)
+
+    document.getElementById('sub-processing').style.display = 'none'
+    document.getElementById('sub-done').style.display = 'block'
+    document.getElementById('sub-title').textContent = 'Langganan Aktif!'
+    document.getElementById('sub-footer').innerHTML = '<button class="btn btn-lime btn-sm" onclick="closeSubscribe();render()">Tutup</button>'
+    subBusy = false
+  }, 2000)
+}
+
+function closeSubscribe() {
+  if (subBusy) return
+  document.getElementById('m-subscribe').classList.remove('show')
+}
+
+/* ── CANCEL SUBSCRIPTION ── */
+function openCancelModal() {
+  document.getElementById('m-cancel').classList.add('show')
+}
+
+function closeCancelModal() {
+  document.getElementById('m-cancel').classList.remove('show')
+}
+
+function confirmCancelSub() {
+  var U = loadU()
+  if (!U) return
+  U = ensureBillingFields(U)
+  U.plan = 'free'
+  U.subCreditsLeft = 0
+  U.subRenewsAt = null
+  U.remLeft = (U.subCreditsLeft || 0) + (U.topupCreditsLeft || 0)
+  saveU(U)
+  closeCancelModal()
+  render()
+}
+
+/* ══════════════════════════════════════════════
+   AUTO TOP-UP
+   ══════════════════════════════════════════════ */
+
+function toggleAutoTopup(val) {
+  var details = document.getElementById('autoDetails')
+  if (details) details.style.display = val ? 'block' : 'none'
+}
+
+function saveAutoTopup() {
+  var U = loadU()
+  if (!U) return
+  U = ensureBillingFields(U)
+  var toggle = document.getElementById('autoToggle')
+  U.autoTopup = toggle ? toggle.checked : false
+  var thresholdInput = document.querySelector('#autoDetails .threshold-input')
+  if (thresholdInput) {
+    var n = parseInt(thresholdInput.value) || 10
+    U.autoTopupThreshold = Math.max(1, Math.min(500, n))
+  }
+  var pkgSelect = document.querySelector('#autoDetails .threshold-select')
+  if (pkgSelect) U.autoTopupPackage = pkgSelect.value
+  saveU(U)
+  var btn = document.getElementById('autoSaveBtn')
+  if (btn) { btn.textContent = '✓ Tersimpan'; setTimeout(function(){ btn.textContent = 'Simpan Pengaturan' }, 1500) }
+}
+
+/* ══════════════════════════════════════════════
+   NOTIFICATION SETTINGS
+   ══════════════════════════════════════════════ */
+
+function toggleNotif(key, val) {
+  var U = loadU()
+  if (!U) return
+  U = ensureBillingFields(U)
+  U.billingNotifs = U.billingNotifs || {}
+  U.billingNotifs[key] = val
+  saveU(U)
+}
+
+/* ══════════════════════════════════════════════
+   RENDER
+   ══════════════════════════════════════════════ */
+
+function render() {
+  var U = loadU()
+  if (!U) { location.href = 'starvio-login.html'; return }
+  U = ensureBillingFields(U)
+  saveU(U) // persist any migrated fields
+
+  var plan = U.plan || 'free'
+  var subLeft = U.subCreditsLeft || 0
+  var topLeft = U.topupCreditsLeft || 0
+  var remLeft = subLeft + topLeft
+  var usageRate = calcUsageRate(U)
+
+  // Update sidebar
+  document.getElementById('sidebarBizName').textContent = U.bizName || ''
+  var tz = (U.timezone || 'Asia/Jakarta').split('/')[1] || 'Jakarta'
+  document.getElementById('s-biz-t').textContent = (U.bizType || 'Bisnis') + ' \u00B7 ' + tz
+  var av = (U.adminName || 'U').split(' ').map(function(w) { return w[0] }).slice(0, 2).join('').toUpperCase()
+  document.getElementById('s-av').textContent = av
+  document.getElementById('s-uname').textContent = U.adminName || 'Owner'
+
+  var scMax = plan === 'subscriber' ? SUB_CREDITS : 100
+  var scPct = Math.min(100, Math.round(remLeft / scMax * 100))
+  document.getElementById('sc-n').textContent = remLeft
+  document.getElementById('sc-total').textContent = scMax
+  var fill = document.getElementById('sc-fill')
+  fill.style.width = scPct + '%'
+  fill.style.background = scPct <= 10 ? 'var(--red)' : scPct <= 30 ? 'var(--amber-dk)' : 'var(--lime-dk)'
+
+  // Lost count
+  var cxs = U.customers || []
+  var lostN = 0
+  cxs.forEach(function(cx) {
+    (cx.services || []).forEach(function(s) { if (getStatus(s) === 'hilang') lostN++ })
+  })
+  var navLost = document.getElementById('nav-lost-n')
+  if (lostN > 0) { navLost.textContent = lostN; navLost.style.display = 'inline-flex' }
+  else { navLost.style.display = 'none' }
+
+  var html = ''
+
+  /* ─────────────────────────────────────────
+     SECTION 1: STATUS PLAN
+     ───────────────────────────────────────── */
+  html += '<div class="plan-card">'
+  html += '<div class="plan-row">'
+  html += '<div class="plan-info">'
+  if (plan === 'subscriber') {
+    html += '<span class="plan-badge-sub">&#9733; Subscriber Aktif</span>'
+    if (U.subRenewsAt) {
+      html += '<span class="plan-credit">Perpanjangan: <b>' + fmtDate(U.subRenewsAt) + '</b></span>'
+    }
+  } else {
+    html += '<span class="plan-badge-free">Paket Gratis</span>'
+    html += '<span class="plan-credit">Sisa kredit: <b>' + fmt(remLeft) + '</b></span>'
+  }
+  html += '</div>'
+  html += '<div>'
+  if (plan === 'subscriber') {
+    html += '<button class="cancel-link" onclick="openCancelModal()">Batalkan Langganan</button>'
+  } else {
+    html += '<button class="btn btn-lime" onclick="openSubscribe()">Subscribe — Rp 250.000/bulan (375 kredit)</button>'
+  }
+  html += '</div>'
+  html += '</div>'
+  html += '</div>'
+
+  /* ─────────────────────────────────────────
+     SECTION 2: RINGKASAN KREDIT
+     ───────────────────────────────────────── */
+  html += '<div class="sec-header" style="margin-top:6px"><div class="sec-title">Ringkasan Kredit</div></div>'
+  html += '<div class="card" style="padding:4px 19px">'
+
+  // Total usable credits — PRIMARY display at top
+  var totalColor, totalExtraClass = '', totalWarnHtml = ''
+  if (remLeft >= 30) {
+    totalColor = 'var(--lime-dk)'
+  } else if (remLeft >= 10) {
+    totalColor = 'var(--amber-dk)'
+  } else if (remLeft >= 1) {
+    totalColor = 'var(--red)'
+    totalExtraClass = ' style="animation:pulse 1.5s ease-in-out infinite"'
+  } else {
+    totalColor = 'var(--ink3)'
+    totalWarnHtml = '<div class="total-warn" style="color:var(--red)">&#9940; Automation dihentikan &mdash; kredit habis</div>'
+  }
+
+  html += '<div class="total-block" style="border-top:none;padding-top:16px">'
+  html += '<div class="total-num"' + (remLeft < 10 && remLeft >= 1 ? ' style="color:' + totalColor + ';animation:pulse 1.5s ease-in-out infinite"' : ' style="color:' + totalColor + '"') + '>' + fmt(remLeft) + '</div>'
+  html += '<div class="total-label">Total Kredit Tersedia</div>'
+  html += totalWarnHtml
+  html += '</div>'
+
+  // Collapsible detail breakdown
+  html += '<div style="border-top:1px solid var(--border);margin-top:4px;padding-top:0">'
+  html += '<button onclick="var d=document.getElementById(\'credit-detail\');var a=this.querySelector(\'.chevron\');if(d.style.display===\'none\'){d.style.display=\'block\';a.style.transform=\'rotate(180deg)\'}else{d.style.display=\'none\';a.style.transform=\'rotate(0deg)\'}" style="display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;cursor:pointer;padding:10px 0;font-family:inherit;font-size:12px;font-weight:600;color:var(--ink3)">'
+  html += '<svg class="chevron" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s"><path d="M4 6l4 4 4-4"/></svg>'
+  html += 'Detail kredit</button>'
+  html += '<div id="credit-detail" style="display:none;padding-bottom:8px">'
+
+  // Subscription credits row (only for subscribers)
+  if (plan === 'subscriber') {
+    var subPct = Math.round(subLeft / SUB_CREDITS * 100)
+    var subBarColor = subLeft < 30 ? 'var(--amber)' : 'var(--lime)'
+    html += '<div class="credit-row">'
+    html += '<div style="flex:1">'
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'
+    html += '<span class="credit-label">Kredit Subscription</span>'
+    html += '<span class="badge b-blue" style="font-size:9px">Reset tiap bulan</span>'
+    html += '</div>'
+    html += '<div style="display:flex;align-items:center;gap:12px">'
+    html += '<span class="credit-val">' + fmt(subLeft) + '</span>'
+    html += '<span style="font-size:11px;color:var(--ink3)">/ ' + SUB_CREDITS + '</span>'
+    html += '</div>'
+    html += '<div class="progress-bar"><div class="progress-fill" style="width:' + subPct + '%;background:' + subBarColor + '"></div></div>'
+    if (subLeft < 30) {
+      html += '<div style="font-size:11px;color:var(--amber-dk);margin-top:4px">&#9888; Kredit subscription hampir habis</div>'
+    }
+    html += '</div>'
+    html += '</div>'
+  }
+
+  // Top-Up credits row
+  html += '<div class="credit-row">'
+  html += '<div style="flex:1">'
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'
+  html += '<span class="credit-label">Kredit Top-Up</span>'
+  html += '<span class="badge b-lime" style="font-size:9px">Tidak ada expiry &#10003;</span>'
+  html += '</div>'
+  if (topLeft > 0) {
+    html += '<span class="credit-val">' + fmt(topLeft) + '</span>'
+  } else {
+    html += '<span class="credit-val" style="color:var(--ink3)">&ndash;</span>'
+    html += '<span style="font-size:11px;color:var(--ink3);margin-left:8px">Belum punya kredit top-up. <a href="#topup" style="color:var(--lime-dk);font-weight:700;text-decoration:underline" onclick="document.getElementById(\'topup-section\').scrollIntoView({behavior:\'smooth\'});return false">Top up sekarang</a></span>'
+  }
+  html += '</div>'
+  html += '</div>'
+
+  html += '</div>' // end #credit-detail
+  html += '</div>' // end collapsible wrapper
+
+  html += '</div>'
+
+  /* ─────────────────────────────────────────
+     SECTION 3: TOP UP KREDIT EXTRA
+     ───────────────────────────────────────── */
+  html += '<div class="sec-header" id="topup-section"><div class="sec-title">Top Up Kredit Extra</div><div class="sec-sub">Harga normal Rp 1.000/kredit — <b style="color:var(--lime-dk)">Early Access +50% bonus!</b></div></div>'
+  html += '<div class="pkg-grid">'
+  PACKAGES.forEach(function(pkg) {
+    var isSel = pkg.id === selectedPkg
+    html += '<div class="pkg-card' + (isSel ? ' sel' : '') + '" data-pkg="' + pkg.id + '" onclick="selectPkg(\'' + pkg.id + '\')">'
+    if (pkg.popular) html += '<div class="pkg-pop">' + pkg.popLabel + '</div>'
+    if (pkg.save) html += '<div class="pkg-pop" style="background:var(--amber);color:#fff">' + pkg.save + '</div>'
+    html += '<div class="pkg-amt">' + pkg.label + '</div>'
+    html += '<div class="pkg-unit">kredit</div>'
+    if (pkg.bonus) html += '<div style="font-size:10px;font-weight:700;color:var(--lime-dk);background:var(--lime-bg);border:1px solid #c8f07a;border-radius:99px;padding:2px 8px;margin:4px 0;display:inline-block">' + pkg.bonus + '</div>'
+    html += '<div class="pkg-price">' + pkg.priceStr + '</div>'
+    html += '<div class="pkg-per">' + pkg.per + '</div>'
+    html += '</div>'
+  })
+  html += '</div>'
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">'
+  html += '<button class="btn btn-lime" onclick="openPayModal()">Top Up Sekarang</button>'
+  html += '<span style="font-size:11px;color:var(--ink3)">Pembayaran via transfer bank / QRIS</span>'
+  html += '</div>'
+
+  /* ─────────────────────────────────────────
+     SECTION 4: AUTO TOP UP
+     ───────────────────────────────────────── */
+  var autoOn = U.autoTopup || false
+  var autoThreshold = U.autoTopupThreshold || 10
+  var autoPkgId = U.autoTopupPackage || 'p1'
+
+  html += '<div class="auto-topup">'
+  html += '<div class="toggle-row">'
+  html += '<div><div class="toggle-label">Auto Top-Up</div><div class="toggle-sub">Otomatis top up kredit top-up saat di bawah batas tertentu</div></div>'
+  html += '<label class="toggle-switch"><input type="checkbox" id="autoToggle" ' + (autoOn ? 'checked' : '') + ' onchange="toggleAutoTopup(this.checked)"><span class="toggle-track"></span><span class="toggle-knob"></span></label>'
+  html += '</div>'
+  html += '<div id="autoDetails" style="' + (autoOn ? '' : 'display:none') + '">'
+  html += '<div class="threshold-row">'
+  html += '<span style="font-size:12px;color:var(--ink3)">Top up jika kredit top-up &lt;</span>'
+  html += '<input type="number" class="threshold-input" value="' + autoThreshold + '" min="1" max="500">'
+  html += '<span style="font-size:12px;color:var(--ink3)">kredit</span>'
+  html += '</div>'
+  html += '<div class="threshold-row">'
+  html += '<span style="font-size:12px;color:var(--ink3)">Paket auto top-up:</span>'
+  html += '<select class="threshold-select">'
+  PACKAGES.forEach(function(p) {
+    html += '<option value="' + p.id + '"' + (p.id === autoPkgId ? ' selected' : '') + '>' + p.label + ' kredit — ' + p.priceStr + '</option>'
+  })
+  html += '</select>'
+  html += '</div>'
+  html += '<div style="font-size:10px;color:var(--ink3);margin-top:8px;font-style:italic">* Hanya berlaku untuk kredit top-up. Kredit subscription tidak di-auto-top-up.</div>'
+  html += '<div style="margin-top:12px;text-align:right"><button id="autoSaveBtn" class="btn btn-lime btn-sm" onclick="saveAutoTopup()">Simpan Pengaturan</button></div>'
+  html += '</div>'
+  html += '</div>'
+
+  /* ─────────────────────────────────────────
+     SECTION 5: RECOMMENDATION ENGINE
+     ───────────────────────────────────────── */
+  var recoHtml = ''
+  if (remLeft <= 0) {
+    recoHtml += '<div class="reco-banner crit">'
+    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#9940;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit habis &mdash; automation berhenti</div>'
+    recoHtml += '<div class="reco-sub">Reminder otomatis tidak bisa dikirim. Top up sekarang supaya pelanggan kamu tidak lupa balik.</div></div>'
+    recoHtml += '</div>'
+  } else if (remLeft < 10) {
+    recoHtml += '<div class="reco-banner crit">'
+    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#128680;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit hampir habis!</div>'
+    recoHtml += '<div class="reco-sub">Tinggal ' + remLeft + ' kredit. Dengan rata-rata pemakaian saat ini, kredit bisa habis dalam hitungan hari. Top up sekarang biar automation tetap jalan.</div></div>'
+    recoHtml += '</div>'
+  } else if (remLeft < 30) {
+    recoHtml += '<div class="reco-banner warn">'
+    recoHtml += '<div class="reco-icon" style="background:var(--amber-bg);border:1px solid #fcd88a">&#9888;&#65039;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit mulai menipis</div>'
+    recoHtml += '<div class="reco-sub">Sisa ' + remLeft + ' kredit. Pertimbangkan top up supaya reminder tetap jalan tanpa gangguan. 1 kredit = 1 reminder = potensi pelanggan balik.</div></div>'
+    recoHtml += '</div>'
+  } else if (plan === 'free') {
+    recoHtml += '<div class="reco-banner">'
+    recoHtml += '<div class="reco-icon" style="background:var(--lime-bg);border:1px solid #c8f07a">&#128161;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Upgrade ke Subscriber?</div>'
+    recoHtml += '<div class="reco-sub">Dapatkan 375 kredit/bulan hanya Rp 250.000 (Rp 667/kredit). Early access bonus +50%! Setiap reminder punya potensi bawa pelanggan balik.</div></div>'
+    recoHtml += '</div>'
+  }
+  html += recoHtml
+
+  /* ─────────────────────────────────────────
+     SECTION 6: PREDICTION ENGINE
+     ───────────────────────────────────────── */
+  if (remLeft > 0 && usageRate > 0) {
+    // Predict subscription credits
+    if (plan === 'subscriber' && subLeft > 0) {
+      var subDaysLeft = Math.floor(subLeft / usageRate)
+      html += '<div class="pred-card">'
+      html += '<div class="pred-icon">&#9200;</div>'
+      html += '<div class="pred-text">Kredit <b>subscription</b> akan habis dalam <b>~' + subDaysLeft + ' hari</b> (pemakaian ~' + usageRate.toFixed(1) + ' kredit/hari)</div>'
+      html += '</div>'
+    }
+    // Predict top-up credits
+    if (topLeft > 0) {
+      var topDaysLeft = Math.floor(topLeft / usageRate)
+      html += '<div class="pred-card">'
+      html += '<div class="pred-icon">&#9200;</div>'
+      html += '<div class="pred-text">Kredit <b>top-up</b> akan habis dalam <b>~' + topDaysLeft + ' hari</b> (pemakaian ~' + usageRate.toFixed(1) + ' kredit/hari)</div>'
+      html += '</div>'
+    }
+    // Overall
+    var totalDays = Math.floor(remLeft / usageRate)
+    html += '<div class="pred-card">'
+    html += '<div class="pred-icon">&#128202;</div>'
+    html += '<div class="pred-text">Total kredit tersedia cukup untuk <b>~' + totalDays + ' hari</b> ke depan</div>'
+    html += '</div>'
+  } else if (remLeft <= 0) {
+    html += '<div class="pred-card" style="border-color:#f5c5c3">'
+    html += '<div class="pred-icon">&#9940;</div>'
+    html += '<div class="pred-text" style="color:var(--red-dk)"><b>Kredit habis</b> &mdash; reminder otomatis tidak bisa dikirim</div>'
+    html += '</div>'
+  }
+
+  /* ─────────────────────────────────────────
+     SECTION 7: RIWAYAT TRANSAKSI
+     ───────────────────────────────────────── */
+  var history = U.billingHistory || []
+  html += '<div class="sec-header"><div class="sec-title">Riwayat Transaksi</div></div>'
+  html += '<div class="card" style="padding:0;overflow-x:auto">'
+  html += '<table class="tx-table"><thead><tr><th>Tanggal</th><th>Tipe</th><th style="text-align:right">Jumlah</th><th style="text-align:right">Saldo Setelah</th><th>Keterangan</th></tr></thead><tbody>'
+
+  if (history.length === 0) {
+    html += '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--ink3)">Belum ada transaksi</td></tr>'
+  } else {
+    history.forEach(function(tx) {
+      var typeCls = ''
+      if (tx.type === 'topup') typeCls = 'tx-topup'
+      else if (tx.type === 'subscription') typeCls = 'tx-sub'
+      else if (tx.type === 'welcome') typeCls = 'tx-welcome'
+      else typeCls = 'tx-usage'
+
+      var deltaCls = tx.delta > 0 ? 'tx-plus' : 'tx-minus'
+      var sign = tx.delta > 0 ? '+' : ''
+
+      html += '<tr>'
+      html += '<td style="white-space:nowrap;color:var(--ink3)">' + fmtDateShort(tx.date) + '</td>'
+      html += '<td><span class="tx-type ' + typeCls + '">' + tx.label + '</span></td>'
+      html += '<td style="text-align:right" class="' + deltaCls + '">' + sign + tx.delta + '</td>'
+      html += '<td style="text-align:right;font-family:\'JetBrains Mono\',monospace;font-weight:600">' + fmt(tx.balAfter) + '</td>'
+      html += '<td style="color:var(--ink3);font-size:11px">' + (tx.note || '') + '</td>'
+      html += '</tr>'
+    })
+  }
+  html += '</tbody></table></div>'
+
+  /* ─────────────────────────────────────────
+     SECTION 8: PENGATURAN NOTIFIKASI
+     ───────────────────────────────────────── */
+  var ownerWa = U.ownerWa || U.waNum || '\u2014'
+  var nf = U.billingNotifs || {}
+
+  html += '<div class="sec-header"><div class="sec-title">Pengaturan Notifikasi</div></div>'
+  html += '<div class="notif-card">'
+
+  // WA number display (read-only)
+  html += '<div class="notif-row">'
+  html += '<span class="notif-label">Notifikasi dikirim ke WhatsApp owner</span>'
+  html += '<span class="notif-value">' + ownerWa + '</span>'
+  html += '</div>'
+
+  // Checkbox: kredit rendah (<30)
+  html += '<div class="notif-row">'
+  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.lowCredit !== false ? 'checked' : '') + ' onchange="toggleNotif(\'lowCredit\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit rendah (&lt; 30)</span></label>'
+  html += '</div>'
+
+  // Checkbox: kredit kritis (<10)
+  html += '<div class="notif-row">'
+  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.criticalCredit !== false ? 'checked' : '') + ' onchange="toggleNotif(\'criticalCredit\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit kritis (&lt; 10)</span></label>'
+  html += '</div>'
+
+  // Checkbox: sub hampir habis (<50/300)
+  html += '<div class="notif-row">'
+  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.subLow !== false ? 'checked' : '') + ' onchange="toggleNotif(\'subLow\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit subscription hampir habis (&lt; 50/375)</span></label>'
+  html += '</div>'
+
+  // Checkbox: 3 hari sebelum renewal
+  html += '<div class="notif-row">'
+  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.renewalReminder !== false ? 'checked' : '') + ' onchange="toggleNotif(\'renewalReminder\',this.checked)"><span class="notif-label" style="cursor:pointer">Pengingat 3 hari sebelum perpanjangan langganan</span></label>'
+  html += '</div>'
+
+  html += '</div>'
+
+  document.getElementById('billing-content').innerHTML = html
+}
+
+/* ══════════════════════════════════════════════
+   BOOT
+   ══════════════════════════════════════════════ */
+
+/* ── DEV: BILLING CONDITION SWITCHER ── */
+function devSetBilling(preset) {
+  var raw = localStorage.getItem('starvio_user')
+  if (!raw) { alert('Inject data dulu.'); return }
+  var u = JSON.parse(raw)
+  var renewDate = new Date(); renewDate.setMonth(renewDate.getMonth() + 1); renewDate.setDate(15)
+  var states = {
+    'free-full':     { plan:'free', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, remMax:100 },
+    'free-low':      { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
+    'free-critical': { plan:'free', subCreditsLeft:0, topupCreditsLeft:5,   subRenewsAt:null, remMax:100 },
+    'free-empty':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 },
+    'sub-healthy':   { plan:'subscriber', subCreditsLeft:312, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-low':       { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:375 },
+    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:375 }
+  }
+  var s = states[preset]
+  if (!s) return
+  u.plan = s.plan; u.subCreditsLeft = s.subCreditsLeft; u.subCreditsMax = 375
+  u.topupCreditsLeft = s.topupCreditsLeft; u.subRenewsAt = s.subRenewsAt; u.remMax = s.remMax
+  localStorage.setItem('starvio_user', JSON.stringify(u))
+  var t = document.getElementById('dev-billing-toast')
+  t.textContent = '✓ Switched to ' + preset + ' (' + (s.subCreditsLeft + s.topupCreditsLeft) + ' total)'
+  t.style.display = 'block'
+  setTimeout(function(){ t.style.display = 'none' }, 2000)
+  render()
+}
+
+function boot() {
+  var U = loadU()
+  if (!U) { location.href = 'starvio-login.html'; return }
+
+  // Set active nav
+  var page = location.pathname.split('/').pop()
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('href') === page)
+  })
+
+  render()
+}
+
+boot()
+</script>
+</body>
+</html>

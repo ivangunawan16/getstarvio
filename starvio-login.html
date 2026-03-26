@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starvio — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+  --border:#e2e1d9;--border2:#cccbc2;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --blue:#2563eb;--blue-bg:#eff4ff;--blue-dk:#1e3a8a;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+
+html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:var(--bg)}
+
+/* LOADING SCREEN */
+.loading-screen{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  z-index:500;transition:opacity .4s ease;
+}
+.loading-screen.gone{opacity:0;pointer-events:none}
+.loading-logo-mark{
+  width:48px;height:48px;background:var(--lime);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  animation:pulse 1.4s ease infinite;
+}
+.loading-wordmark{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+
+/* LAYOUT */
+.layout{display:flex;height:100vh}
+
+/* LEFT PANEL */
+.left{
+  width:45%;flex-shrink:0;background:var(--ink);
+  padding:48px;display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+.left::before{
+  content:'';position:absolute;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(184,240,74,.1) 0%,transparent 65%);
+  top:-120px;right:-150px;pointer-events:none;border-radius:50%;
+}
+.left::after{
+  content:'';position:absolute;
+  width:350px;height:350px;
+  background:radial-gradient(circle,rgba(184,240,74,.06) 0%,transparent 65%);
+  bottom:-80px;left:-80px;pointer-events:none;border-radius:50%;
+}
+.left-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size:32px 32px;pointer-events:none;
+}
+
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;position:relative;z-index:2}
+.logo-mark{
+  width:32px;height:32px;background:var(--lime);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.logo-name{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.3px}
+
+.left-middle{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  position:relative;z-index:2;
+  animation:fadeUp .8s ease both .1s;
+}
+.badge-row{display:flex;margin-bottom:20px}
+.badge-new{
+  background:rgba(184,240,74,.15);border:1px solid rgba(184,240,74,.25);
+  border-radius:100px;padding:4px 12px;
+  font-size:11px;font-weight:600;color:var(--lime);letter-spacing:.04em;
+}
+.left-headline{
+  font-size:30px;font-weight:700;color:#fff;line-height:1.28;
+  letter-spacing:-.5px;margin-bottom:16px;
+}
+.left-sub{
+  font-size:14px;color:rgba(255,255,255,.45);line-height:1.65;
+  margin-bottom:36px;max-width:310px;
+}
+.stat-chips{display:flex;flex-direction:column;gap:10px}
+.stat-chip{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:100px;padding:9px 16px;width:fit-content;
+  backdrop-filter:blur(4px);
+}
+.chip-dot{width:7px;height:7px;border-radius:50%;background:var(--lime);flex-shrink:0}
+.chip-text{font-size:13px;font-weight:600;color:rgba(255,255,255,.85)}
+
+.left-bottom{position:relative;z-index:2;margin-top:auto}
+.trusted-row{display:flex;align-items:center;gap:10px}
+.avatars{display:flex}
+.av{
+  width:26px;height:26px;border-radius:50%;
+  border:2px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;margin-left:-7px;
+  flex-shrink:0;
+}
+.av:first-child{margin-left:0}
+.av-a{background:linear-gradient(135deg,#b8f04a,#9fd93a);color:#2d4a00}
+.av-b{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#78350f}
+.av-c{background:linear-gradient(135deg,#f9a8d4,#ec4899);color:#831843}
+.av-d{background:linear-gradient(135deg,#93c5fd,#3b82f6);color:#1e3a8a}
+.av-e{background:linear-gradient(135deg,#d8b4fe,#a855f7);color:#581c87}
+.trusted-text{font-size:12px;color:rgba(255,255,255,.3)}
+.trusted-text strong{color:rgba(255,255,255,.55);font-weight:600}
+
+/* RIGHT PANEL */
+.right{
+  flex:1;background:var(--bg);
+  display:flex;flex-direction:column;
+}
+.right-topbar{
+  padding:22px 44px;display:flex;align-items:center;justify-content:flex-end;
+  border-bottom:1px solid transparent;
+}
+.right-wordmark{font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+
+.right-body{
+  flex:1;display:flex;align-items:center;justify-content:center;padding:40px;
+}
+.login-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:40px;
+  width:100%;max-width:384px;
+  box-shadow:0 4px 32px rgba(0,0,0,.07),0 1px 4px rgba(0,0,0,.04);
+  animation:scaleIn .45s ease both .05s;
+}
+.card-eyebrow{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--lime-bg);border:1px solid rgba(184,240,74,.4);
+  border-radius:100px;padding:4px 10px;
+  font-size:11px;font-weight:600;color:var(--lime-dk);
+  letter-spacing:.04em;margin-bottom:16px;
+}
+.card-title{font-size:23px;font-weight:700;color:var(--ink);letter-spacing:-.4px;margin-bottom:6px}
+.card-sub{font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:28px}
+
+.btn{
+  width:100%;padding:12px 20px;border-radius:var(--r-sm);
+  font-family:'Sora',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .15s ease;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  border:none;outline:none;position:relative;
+}
+.btn:active{transform:scale(.98)}
+
+.btn-google{
+  background:#fff;border:1.5px solid var(--border2);color:var(--ink);
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+.btn-google:hover{border-color:#aaa;box-shadow:0 3px 12px rgba(0,0,0,.1)}
+
+.btn-lime{
+  background:var(--lime);color:var(--lime-dk);
+  box-shadow:0 2px 8px rgba(184,240,74,.35);
+}
+.btn-lime:hover{background:var(--lime2);box-shadow:0 4px 18px rgba(184,240,74,.45)}
+
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0}
+.divider-line{flex:1;height:1px;background:var(--border)}
+.divider-label{font-size:12px;color:var(--ink4);font-weight:500;white-space:nowrap}
+
+.demo-box{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:16px 18px;
+}
+.demo-box-label{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.demo-box-desc{font-size:13px;color:var(--ink2);margin-bottom:14px;line-height:1.45}
+
+.card-note{
+  font-size:11px;color:var(--ink4);text-align:center;
+  margin-top:18px;line-height:1.6;
+}
+.card-note a{color:var(--ink3);text-decoration:underline}
+
+/* OVERLAY / ACCOUNT PICKER */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;opacity:0;pointer-events:none;
+  transition:opacity .25s ease;
+}
+.overlay.open{opacity:1;pointer-events:all}
+
+.picker{
+  background:var(--ink);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:28px;width:380px;
+  box-shadow:0 32px 80px rgba(0,0,0,.6),0 8px 24px rgba(0,0,0,.3);
+  transform:translateY(16px) scale(.97);
+  transition:transform .25s ease;
+}
+.overlay.open .picker{transform:translateY(0) scale(1)}
+
+.picker-header{text-align:center;margin-bottom:20px}
+.picker-logo-row{
+  display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;
+}
+.picker-logo-mark{
+  width:28px;height:28px;background:var(--lime);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+}
+.picker-logo-name{font-size:16px;font-weight:700;color:#fff}
+.picker-title{font-size:13px;color:rgba(255,255,255,.4);font-weight:500}
+
+.picker-sep{height:1px;background:rgba(255,255,255,.07);margin:10px 0}
+
+.account-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px;border-radius:12px;cursor:pointer;
+  border:1.5px solid transparent;
+  transition:background .15s,border-color .15s;
+}
+.account-item:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
+.account-item:active{transform:scale(.99)}
+
+.acct-avatar{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;
+}
+.acct-av-c{background:linear-gradient(135deg,#b8f04a,#9fd93a);color:#2d4a00}
+.acct-av-new{background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);border:1.5px dashed rgba(255,255,255,.15)}
+
+.acct-info{flex:1}
+.acct-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.acct-email{font-size:12px;color:rgba(255,255,255,.4)}
+.acct-biz{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(184,240,74,.12);border-radius:100px;
+  padding:2px 8px;font-size:10px;font-weight:600;
+  color:rgba(184,240,74,.8);margin-top:4px;
+}
+.acct-arrow{color:rgba(255,255,255,.2)}
+
+.picker-close-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  margin-top:18px;padding:8px;border-radius:8px;cursor:pointer;
+  font-size:12px;color:rgba(255,255,255,.3);
+  transition:color .15s,background .15s;
+}
+.picker-close-btn:hover{color:rgba(255,255,255,.6);background:rgba(255,255,255,.04)}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:400;pointer-events:none}
+.toast{
+  background:var(--ink);color:#fff;
+  padding:11px 20px;border-radius:100px;
+  font-size:13px;font-weight:500;
+  box-shadow:0 6px 24px rgba(0,0,0,.3);
+  display:flex;align-items:center;gap:8px;
+  animation:fadeUp .3s ease;white-space:nowrap;
+}
+.toast-dot{width:6px;height:6px;border-radius:50%;background:var(--lime);flex-shrink:0}
+
+/* MOBILE */
+@media (max-width:767px){
+  .left{display:none}
+  .right{width:100%}
+  .right-topbar{padding:16px 20px;justify-content:center}
+  .right-body{padding:20px}
+  .login-card{padding:28px 24px}
+  .card-title{font-size:20px}
+  .picker{width:calc(100% - 32px);max-width:380px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo-mark">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12 3l1.8 5.5H19l-4.6 3.3 1.8 5.5L12 14l-4.2 3.3 1.8-5.5L5 8.5h5.2L12 3z" fill="#2d4a00"/>
+    </svg>
+  </div>
+  <div class="loading-wordmark">Starvio</div>
+</div>
+
+<div class="layout" id="mainLayout" style="opacity:0;transition:opacity .4s ease">
+
+  <!-- LEFT PANEL -->
+  <div class="left">
+    <div class="left-grid"></div>
+
+    <a class="logo" href="#">
+      <div class="logo-mark">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M9 2l1.4 4.3H14.5l-3.7 2.7 1.4 4.3L9 10.9 5.8 13.3l1.4-4.3L3.5 6.3H9L9 2z" fill="#2d4a00"/>
+        </svg>
+      </div>
+      <span class="logo-name">Starvio</span>
+    </a>
+
+    <div class="left-middle">
+      <div class="badge-row">
+        <div class="badge-new">✦ Platform #1 untuk Bisnis Wellness</div>
+      </div>
+      <h1 class="left-headline">Pelanggan lama tidak balik? Biarkan kami yang ingatkan.</h1>
+      <p class="left-sub">Platform reminder WA otomatis untuk bisnis kecantikan &amp; wellness</p>
+      <div class="stat-chips">
+        <div class="stat-chip">
+          <div class="chip-dot"></div>
+          <span class="chip-text">+23% repeat customers</span>
+        </div>
+        <div class="stat-chip">
+          <div class="chip-dot"></div>
+          <span class="chip-text">100 reminder gratis di awal</span>
+        </div>
+        <div class="stat-chip">
+          <div class="chip-dot"></div>
+          <span class="chip-text">&lt;15 menit setup selesai</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="left-bottom">
+      <div class="trusted-row">
+        <div class="avatars">
+          <div class="av av-a">A</div>
+          <div class="av av-b">B</div>
+          <div class="av av-c">C</div>
+          <div class="av av-d">D</div>
+          <div class="av av-e">E</div>
+        </div>
+        <div class="trusted-text">Trusted by <strong>500+ bisnis</strong> di Indonesia</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right">
+    <div class="right-topbar">
+      <div class="right-wordmark">Starvio</div>
+    </div>
+
+    <div class="right-body">
+      <div class="login-card">
+        <div class="card-eyebrow">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M5 1l.9 2.8H8.7L6.4 5.5l.9 2.8L5 6.6l-2.3 1.7.9-2.8L1.3 3.8h2.8L5 1z" fill="#2d4a00"/>
+          </svg>
+          Selamat datang
+        </div>
+        <h2 class="card-title">Masuk ke Starvio</h2>
+        <p class="card-sub">Kelola reminder WhatsApp pelanggan kamu dengan mudah</p>
+
+        <button class="btn btn-google" id="btnGoogle">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M17.64 9.2c0-.638-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+            <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          </svg>
+          Lanjut dengan Google
+        </button>
+
+        <div class="divider">
+          <div class="divider-line"></div>
+          <span class="divider-label">atau coba dulu</span>
+          <div class="divider-line"></div>
+        </div>
+
+        <div class="demo-box">
+          <div class="demo-box-label">Mode Demo</div>
+          <div class="demo-box-desc">Coba dengan akun demo — lihat semua fitur langsung</div>
+          <button class="btn btn-lime" id="btnDemo">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1.5l1.2 3.6H13l-3 2.2 1.1 3.6L8 8.7 4.9 10.9 6 7.3 3 5.1h3.8L8 1.5z" fill="#2d4a00"/>
+            </svg>
+            Masuk sebagai Demo
+          </button>
+        </div>
+
+        <p class="card-note">
+          Tidak perlu daftar. Data tersimpan di browser kamu.<br>
+          Dengan masuk, kamu menyetujui <a href="#">Syarat &amp; Ketentuan</a> Starvio.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOUNT PICKER OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="picker">
+    <div class="picker-header">
+      <div class="picker-logo-row">
+        <div class="picker-logo-mark">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 1.5l1.1 3.3H11.5L9 6.6l1 3.3L7 8.1 4 9.9l1-3.3L2.5 4.8H6.1L7 1.5z" fill="#2d4a00"/>
+          </svg>
+        </div>
+        <span class="picker-logo-name">Starvio</span>
+      </div>
+      <div class="picker-title">Pilih akun untuk masuk</div>
+    </div>
+
+    <!-- Existing user: Cynthia → dashboard -->
+    <div class="account-item" id="acctCynthia">
+      <div class="acct-avatar acct-av-c">C</div>
+      <div class="acct-info">
+        <div class="acct-name">Cynthia</div>
+        <div class="acct-email">cynthia@gmail.com</div>
+        <div class="acct-biz">✦ Celestial Spa &amp; Wellness</div>
+      </div>
+      <div class="acct-arrow">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="picker-sep"></div>
+
+    <!-- New user → onboarding -->
+    <div class="account-item" id="acctNew">
+      <div class="acct-avatar acct-av-new">+</div>
+      <div class="acct-info">
+        <div class="acct-name">Buat Akun Baru</div>
+        <div class="acct-email">Mulai dari awal — setup bisnis kamu</div>
+      </div>
+      <div class="acct-arrow">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="picker-close-btn" id="pickerClose">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Tutup
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = '<div class="toast-dot"></div>' + msg;
+  c.appendChild(el);
+  setTimeout(()=>{
+    el.style.transition='opacity .3s';
+    el.style.opacity='0';
+    setTimeout(()=>el.remove(),300);
+  }, 2500);
+}
+
+function openPicker() {
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closePicker() {
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// Cynthia = existing user → load seed data if needed, go to dashboard
+function loginCynthia() {
+  const existing = localStorage.getItem('starvio_user');
+  if (existing) {
+    try {
+      const u = JSON.parse(existing);
+      if (u && u.DATA_VERSION === 4) {
+        closePicker();
+        showToast('Masuk sebagai Cynthia...');
+        setTimeout(()=>{ window.location.href = 'starvio-dashboard.html'; }, 750);
+        return;
+      }
+    } catch(e) {}
+  }
+  // No valid data — redirect to seed first
+  closePicker();
+  showToast('Memuat data demo...');
+  setTimeout(()=>{ window.location.href = 'starvio-seed-data.html?auto=1&next=dashboard'; }, 750);
+}
+
+// New account → clear and go to onboarding
+function loginNew() {
+  localStorage.removeItem('starvio_user');
+  closePicker();
+  showToast('Membuat akun baru...');
+  setTimeout(()=>{ window.location.href = 'starvio-onboarding.html'; }, 750);
+}
+
+// Event bindings
+document.getElementById('btnGoogle').addEventListener('click', openPicker);
+document.getElementById('btnDemo').addEventListener('click', openPicker);
+document.getElementById('acctCynthia').addEventListener('click', loginCynthia);
+document.getElementById('acctNew').addEventListener('click', loginNew);
+document.getElementById('pickerClose').addEventListener('click', closePicker);
+document.getElementById('overlay').addEventListener('click', function(e){
+  if (e.target === this) closePicker();
+});
+
+// On load: check if already logged in
+window.addEventListener('DOMContentLoaded', function() {
+  const ls = document.getElementById('loadingScreen');
+  const ml = document.getElementById('mainLayout');
+
+  let loggedIn = false;
+  try {
+    const stored = localStorage.getItem('starvio_user');
+    if (stored) {
+      const u = JSON.parse(stored);
+      if (u && u.DATA_VERSION === 4 && u.bizName) loggedIn = true;
+    }
+  } catch(e) {}
+
+  if (loggedIn) {
+    window.location.href = 'starvio-dashboard.html';
+    return;
+  }
+
+  // Show main layout
+  setTimeout(()=>{
+    ls.classList.add('gone');
+    ml.style.opacity = '1';
+  }, 500);
+});
+</script>
+</body>
+</html>

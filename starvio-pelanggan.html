@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starvio — Pelanggan</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+  --border:#e2e1d9;--border2:#cccbc2;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --blue:#2563eb;--blue-bg:#eff4ff;--blue-dk:#1e3a8a;
+  --r:12px;--r-sm:8px;--r-lg:16px;--sidebar:224px;
+}
+html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidden;background:var(--bg)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh}
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── SIDEBAR ── */
+.s-logo{padding:14px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.s-mark{width:28px;height:28px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s-bname{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.s-biz{padding:10px 16px;border-bottom:1px solid var(--border)}
+.s-biz-n{font-size:12px;font-weight:600;color:var(--ink)}
+.s-biz-t{font-size:10px;color:var(--ink3);margin-top:1px}
+.s-nav{padding:8px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:var(--ink3);font-size:12px;font-weight:500;transition:all .15s;text-decoration:none;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--ink2)}
+.nav-item.active{background:var(--lime);color:var(--lime-dk);font-weight:700}
+.nav-icon{width:18px;text-align:center;flex-shrink:0;font-size:14px}
+.nav-pill{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px}
+.np-red{background:var(--red-bg);color:var(--red-dk)}
+.s-counter{margin:8px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 12px}
+.sc-n{font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.sc-l{font-size:10px;color:var(--lime-dk);opacity:.6;margin-top:2px;line-height:1.3}
+.sc-bar{height:3px;background:rgba(45,74,0,.1);border-radius:99px;margin-top:7px;overflow:hidden}
+.sc-fill{height:100%;background:var(--lime-dk);border-radius:99px;transition:width .5s}
+.s-bottom{padding:8px;border-top:1px solid var(--border)}
+.s-user{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--r-sm)}
+.s-av{width:26px;height:26px;border-radius:50%;background:var(--lime-bg);border:1px solid #c8f07a;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.s-uname{font-size:11px;font-weight:600;color:var(--ink)}
+.s-urole{font-size:10px;color:var(--ink3)}
+.s-logout{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;opacity:.4;transition:opacity .15s;margin-left:auto;flex-shrink:0}
+.s-logout:hover{opacity:1}
+.s-reset{width:100%;margin-top:6px;padding:7px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);font-size:10px;font-weight:600;color:var(--ink3);font-family:inherit;cursor:pointer;transition:all .15s}
+.s-reset:hover{background:var(--bg4);color:var(--ink2)}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.tb-sub{font-size:11px;color:var(--ink3);margin-left:8px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;margin-right:8px}
+
+/* ── CONTENT ── */
+.db-content{flex:1;overflow-y:auto;padding:20px 24px 40px}
+.db-inner{max-width:960px;margin:0 auto}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.b-lime{background:var(--lime-bg);color:var(--lime-dk);border:1px solid #c8f07a}
+.b-amber{background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a}
+.b-red{background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3}
+.b-blue{background:var(--blue-bg);color:var(--blue-dk);border:1px solid #bfcff8}
+.b-gray{background:var(--bg3);color:var(--ink3);border:1px solid var(--border)}
+
+/* ── METRICS ── */
+.met-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px}
+.met{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px;cursor:pointer;transition:all .15s}
+.met:hover{border-color:var(--border2)}
+.met.selected{border-width:2px}
+.met-lbl{font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:7px}
+.met-val{font-size:28px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.met-sub{font-size:11px;color:var(--ink3);margin-top:5px}
+.met.lime{border-color:var(--lime2);background:linear-gradient(135deg,#fff,#f4fde6)}.met.lime .met-val{color:var(--lime-dk)}
+.met.amber{border-color:#fcd88a;background:linear-gradient(135deg,#fff,var(--amber-bg))}.met.amber .met-val{color:var(--amber-dk)}
+.met.red{border-color:#f5c5c3;background:linear-gradient(135deg,#fff,var(--red-bg))}.met.red .met-val{color:var(--red-dk)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}
+.btn-ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}.btn-ghost:hover{background:var(--bg3)}
+.btn-danger{background:var(--red-bg);color:var(--red-dk);border:1.5px solid #f5c5c3}
+.btn-sm{padding:6px 12px;font-size:11px}
+
+/* ── CHIPS / FILTER ── */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:99px;font-size:11px;font-weight:600;background:var(--bg2);border:1.5px solid var(--border);color:var(--ink2);cursor:pointer;transition:all .15s;user-select:none}
+.chip:hover{border-color:var(--border2)}
+.chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sort-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+.sort-btn{padding:5px 11px;border-radius:99px;font-size:11px;font-weight:600;background:var(--bg2);border:1.5px solid var(--border);color:var(--ink2);cursor:pointer;font-family:inherit;transition:all .15s}
+.sort-btn:hover{border-color:var(--border2)}
+.sort-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ── FORM ── */
+.fi{width:100%;padding:9px 12px;border-radius:var(--r-sm);background:var(--bg2);border:1.5px solid var(--border2);color:var(--ink);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
+.fi:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.12)}
+.fi::placeholder{color:var(--ink4)}
+
+/* ── CUSTOMER CARD ── */
+.cx-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;transition:all .15s;animation:fadeUp .18s ease;border-left-width:3px;cursor:pointer}
+.cx-card:hover{border-color:var(--border2);box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.cx-card.st-hilang{border-left-color:var(--red)}
+.cx-card.st-mendekati{border-left-color:var(--amber)}
+.cx-card.st-aktif{border-left-color:var(--lime2)}
+.cx-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cx-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.cx-info{flex:1;min-width:0}
+.cx-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cx-wa{font-size:11px;color:var(--ink3);font-family:'JetBrains Mono',monospace}
+.cx-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.svc-rows{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.svc-row{display:flex;align-items:center;gap:10px}
+.svc-icon{font-size:14px;flex-shrink:0;width:20px;text-align:center}
+.svc-body{flex:1;min-width:0}
+.svc-top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.svc-name{font-size:11px;font-weight:700;color:var(--ink2)}
+.svc-meta{font-size:9px;font-weight:700;color:var(--ink4);letter-spacing:.02em}
+.svc-bar-wrap{height:3px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.svc-bar-fill{height:100%;border-radius:99px}
+.cx-btn-wa{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:6px;font-size:11px;font-weight:700;background:#dcfce7;color:#166534;border:1.5px solid #bbf7d0;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;text-decoration:none}
+.cx-btn-wa:hover{background:#bbf7d0}
+.cx-btn-edit{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:6px;font-size:11px;font-weight:700;background:var(--bg3);color:var(--ink2);border:1.5px solid var(--border2);cursor:pointer;font-family:inherit;transition:all .15s}
+.cx-btn-edit:hover{background:var(--bg4)}
+
+/* ── MODAL / OVERLAY ── */
+.overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px);padding:16px}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease;width:440px;max-width:96vw}
+.mhd{padding:19px 22px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mftr{padding:13px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.m-title{font-size:15px;font-weight:700;color:var(--ink)}
+.m-sub{font-size:12px;color:var(--ink3);margin-top:4px}
+.close-btn{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:none;cursor:pointer;font-size:15px;color:var(--ink3);display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all .15s}
+.close-btn:hover{background:var(--bg4)}
+
+/* ── SERVICE CHECK (Add Modal) ── */
+.svc-check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;user-select:none}
+.svc-check-item:hover{border-color:var(--border2);background:var(--bg3)}
+.svc-check-item.selected{border-color:var(--lime2);background:var(--lime-bg)}
+.svc-check-box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.svc-check-item.selected .svc-check-box{background:var(--lime2);border-color:var(--lime2)}
+.svc-check-label{font-size:12px;font-weight:600;color:var(--ink2);flex:1}
+.svc-check-item.selected .svc-check-label{color:var(--lime-dk)}
+.svc-check-interval{font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace}
+.svc-check-item.selected .svc-check-interval{color:var(--lime-dk);opacity:.7}
+
+/* ── DETAIL PANEL ── */
+.detail-overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;z-index:150;backdrop-filter:blur(3px)}
+.detail-overlay.show{display:block}
+.detail-panel{position:fixed;right:0;top:0;bottom:0;width:440px;max-width:100vw;background:var(--bg2);border-left:1px solid var(--border);z-index:151;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;overflow:hidden}
+.detail-panel.show{transform:translateX(0)}
+.dp-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.dp-body{flex:1;overflow-y:auto;padding:16px 20px 32px}
+.dp-section{margin-bottom:18px}
+.dp-section-title{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+
+/* ── COUNTRY SELECTOR ── */
+.phone-row{display:flex;gap:8px}
+.phone-code{width:90px;flex-shrink:0}
+
+/* ── SIDEBAR OVERLAY (mobile) ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
+.sidebar-overlay.open{display:block}
+
+/* ── MOBILE ── */
+@media(max-width:767px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .hamburger-btn{display:flex}
+  .met-grid{grid-template-columns:repeat(2,1fr)}
+  .db-content{padding:16px 16px 32px}
+  .cx-actions{flex-wrap:wrap}
+  .detail-panel{width:100%}
+}
+@media(min-width:768px) and (max-width:1023px){
+  .sidebar{width:60px}
+  .s-bname,.s-biz,.s-urole,.s-uname,.sc-l,.nav-item span:not(.nav-icon):not(.nav-pill){display:none}
+  .s-logo{justify-content:center;padding:14px 8px}
+  .nav-item{justify-content:center;padding:10px 8px}
+  .s-counter{padding:8px;text-align:center}
+  .s-user{justify-content:center}
+  .s-bottom{text-align:center}
+  .s-reset{font-size:0;padding:8px}
+  .s-reset::after{content:'↺';font-size:14px}
+}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="s-logo">
+    <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
+    <span class="s-bname">Starvio</span>
+  </div>
+  <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
+  <nav class="s-nav">
+    <a id="nav-dashboard" href="starvio-dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a id="nav-catat" href="starvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan" href="starvio-pelanggan.html" class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="starvio-automation.html" class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
+    <a id="nav-log" href="starvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-kategori" href="starvio-kategori.html" class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
+    <a id="nav-billing" href="starvio-billing.html" class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
+    <a id="nav-settings" href="starvio-settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
+  </nav>
+  <div class="s-counter">
+    <div class="sc-n" id="sc-n">0</div>
+    <div class="sc-l">kredit tersisa dari <span id="sc-total">100</span></div>
+    <div class="sc-bar"><div class="sc-fill" id="sc-fill" style="width:100%"></div></div>
+  </div>
+  <div class="s-bottom">
+    <div class="s-user">
+      <div class="s-av" id="s-av">—</div>
+      <div><div class="s-uname" id="s-uname">Owner</div><div class="s-urole">Owner</div></div>
+      <button class="s-logout" onclick="openLogout()" title="Logout">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </button>
+    </div>
+    <button class="s-reset" onclick="resetDemo()">↺ Reset demo data</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center">
+      <button class="hamburger-btn" onclick="openSidebar()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+      </button>
+      <span class="tb-title">Pelanggan</span>
+      <span class="tb-sub" id="tb-sub">—</span>
+    </div>
+    <button class="btn btn-lime btn-sm" onclick="openAddModal()">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+      Tambah Pelanggan
+    </button>
+  </div>
+
+  <div class="db-content">
+    <div class="db-inner">
+
+      <!-- STATS BAR -->
+      <div class="met-grid">
+        <div class="met" id="met-total" onclick="filterByMet('all')">
+          <div class="met-lbl">Total</div>
+          <div class="met-val" id="cx-total">0</div>
+          <div class="met-sub">semua pelanggan</div>
+        </div>
+        <div class="met lime" id="met-aktif" onclick="filterByMet('aktif')">
+          <div class="met-lbl">Aktif</div>
+          <div class="met-val" id="cx-aktif">0</div>
+          <div class="met-sub">dalam interval</div>
+        </div>
+        <div class="met amber" id="met-mendekati" onclick="filterByMet('mendekati')">
+          <div class="met-lbl">Mendekati</div>
+          <div class="met-val" id="cx-near">0</div>
+          <div class="met-sub">≥70% interval</div>
+        </div>
+        <div class="met red" id="met-hilang" onclick="filterByMet('hilang')">
+          <div class="met-lbl">Hilang</div>
+          <div class="met-val" id="cx-lost">0</div>
+          <div class="met-sub">lewat interval</div>
+        </div>
+      </div>
+
+      <!-- FILTER + SEARCH -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+        <div class="chips" style="flex:1">
+          <div class="chip active" data-filter="all" onclick="filterCx(this,'all')">Semua</div>
+          <div class="chip" data-filter="aktif" onclick="filterCx(this,'aktif')">Aktif</div>
+          <div class="chip" data-filter="mendekati" onclick="filterCx(this,'mendekati')">Mendekati</div>
+          <div class="chip" data-filter="hilang" onclick="filterCx(this,'hilang')">Hilang</div>
+        </div>
+        <input class="fi" placeholder="Cari nama atau WA..." id="cx-q" oninput="renderCards()" style="width:200px;font-size:12px;padding:7px 10px;flex-shrink:0">
+      </div>
+
+      <!-- SORT -->
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+        <span class="sort-lbl">Urutkan:</span>
+        <button class="sort-btn active" onclick="setSort(this,'urgency')" title="Pelanggan yang paling lama belum balik untuk layanan apapun">Paling Mendesak ⓘ</button>
+        <button class="sort-btn" onclick="setSort(this,'name')">A–Z Nama</button>
+        <button class="sort-btn" onclick="setSort(this,'oldest')">Terlama</button>
+        <button class="sort-btn" onclick="setSort(this,'newest')">Terbaru</button>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div id="cx-empty" style="display:none;text-align:center;padding:48px 20px;background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r)">
+        <div style="font-size:36px;margin-bottom:12px">👥</div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Belum ada pelanggan</div>
+        <div style="font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:18px">Mulai dengan catat kunjungan pertama atau tambah pelanggan manual.</div>
+        <button class="btn btn-lime btn-sm" onclick="openAddModal()">+ Tambah Pelanggan</button>
+      </div>
+
+      <!-- CARDS -->
+      <div id="cx-cards"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="dp-header">
+    <div id="dp-av" style="width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">—</div>
+    <div style="flex:1;min-width:0">
+      <div id="dp-name" style="font-size:15px;font-weight:700;color:var(--ink)">—</div>
+      <div id="dp-wa" style="font-size:12px;color:var(--ink3);font-family:'JetBrains Mono',monospace;margin-top:2px">—</div>
+    </div>
+    <span class="badge" id="dp-badge">—</span>
+    <button class="close-btn" onclick="closeDetail()">×</button>
+  </div>
+  <div class="dp-body">
+    <!-- Services section -->
+    <div class="dp-section">
+      <div class="dp-section-title">Layanan</div>
+      <div id="dp-services"></div>
+    </div>
+    <!-- Actions -->
+    <div class="dp-section">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a id="dp-wa-link" href="#" target="_blank" class="btn btn-sm" style="background:#dcfce7;color:#166534;border:1.5px solid #bbf7d0;text-decoration:none">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WA
+        </a>
+        <button class="btn btn-ghost btn-sm" onclick="openEditModal(_detailIdx)">Edit</button>
+      </div>
+    </div>
+    <!-- Reminder history -->
+    <div class="dp-section">
+      <div class="dp-section-title">Riwayat Reminder</div>
+      <div id="dp-reminders"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="ecx-modal" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal">
+    <div class="mhd">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="ecx-av" style="width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--ink2);flex-shrink:0">?</div>
+        <div>
+          <div id="ecx-dname" style="font-size:14px;font-weight:700;color:var(--ink)">—</div>
+          <div id="ecx-dwa" style="font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace;margin-top:1px">—</div>
+        </div>
+      </div>
+      <button class="close-btn" onclick="closeEditModal()">×</button>
+    </div>
+    <div style="padding:16px 22px;display:flex;flex-direction:column;gap:14px">
+      <div>
+        <label style="display:block;font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Nama</label>
+        <input id="ecx-name" class="fi" style="font-size:14px;font-weight:600" placeholder="Nama pelanggan...">
+      </div>
+      <div>
+        <label style="display:block;font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Nomor WhatsApp</label>
+        <div class="phone-row">
+          <select id="ecx-cc" class="fi phone-code" style="font-family:'JetBrains Mono',monospace;font-size:12px">
+            <option value="62">+62</option>
+            <option value="60">+60</option>
+            <option value="65">+65</option>
+            <option value="66">+66</option>
+            <option value="63">+63</option>
+            <option value="84">+84</option>
+            <option value="91">+91</option>
+            <option value="1">+1</option>
+            <option value="44">+44</option>
+            <option value="61">+61</option>
+          </select>
+          <input id="ecx-wa" class="fi" style="font-family:'JetBrains Mono',monospace" placeholder="812 xxxx xxxx">
+        </div>
+      </div>
+      <div>
+        <label style="display:block;font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Tanggal Kunjungan</label>
+        <input id="ecx-date" type="date" class="fi" style="font-family:'JetBrains Mono',monospace">
+      </div>
+      <div>
+        <label style="display:block;font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Layanan yang dikerjakan</label>
+        <div id="ecx-svc-checks" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+    </div>
+    <div style="padding:12px 22px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <button class="btn btn-danger btn-sm" onclick="deleteCustomer()">Hapus</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="closeEditModal()">Batal</button>
+        <button class="btn btn-lime btn-sm" onclick="saveEditModal()">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="overlay" id="add-modal" onclick="if(event.target===this)closeAddModal()">
+  <div class="modal">
+    <div class="mhd">
+      <div>
+        <div class="m-title">Tambah Pelanggan</div>
+        <div class="m-sub">Daftarkan pelanggan baru</div>
+      </div>
+      <button class="close-btn" onclick="closeAddModal()">×</button>
+    </div>
+    <div style="padding:16px 22px;display:flex;flex-direction:column;gap:12px">
+      <div>
+        <label style="display:block;font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Nama Pelanggan</label>
+        <input id="add-name" class="fi" placeholder="Nama lengkap...">
+      </div>
+      <div>
+        <label style="display:block;font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Nomor WhatsApp</label>
+        <div class="phone-row">
+          <select id="add-cc" class="fi phone-code" style="font-family:'JetBrains Mono',monospace;font-size:12px">
+            <option value="62">+62</option>
+            <option value="60">+60</option>
+            <option value="65">+65</option>
+            <option value="66">+66</option>
+            <option value="63">+63</option>
+            <option value="84">+84</option>
+            <option value="91">+91</option>
+            <option value="1">+1</option>
+            <option value="44">+44</option>
+            <option value="61">+61</option>
+          </select>
+          <input id="add-wa" class="fi" style="font-family:'JetBrains Mono',monospace" placeholder="812 xxxx xxxx">
+        </div>
+      </div>
+      <div>
+        <label style="display:block;font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Tanggal Kunjungan</label>
+        <input id="add-date" type="date" class="fi">
+      </div>
+      <div>
+        <label style="display:block;font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Layanan (pilih satu atau lebih)</label>
+        <div id="add-svc-list" style="display:flex;flex-direction:column;gap:7px"></div>
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeAddModal()">Batal</button>
+      <button class="btn btn-lime btn-sm" onclick="saveAdd()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="overlay" id="m-logout">
+  <div class="modal" style="width:360px">
+    <div style="padding:19px 22px 15px;border-bottom:1px solid var(--border);text-align:center">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--red-bg);border:1px solid #f5c5c3;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="var(--red-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </div>
+      <div class="m-title">Yakin mau logout?</div>
+      <div class="m-sub">Sesi kamu akan diakhiri.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeLogout()">Batal</button>
+      <button class="btn btn-danger btn-sm" onclick="doLogout()">Ya, Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="overlay" id="m-delete">
+  <div class="modal" style="width:360px">
+    <div style="padding:19px 22px 15px;border-bottom:1px solid var(--border)">
+      <div class="m-title" id="del-title">Hapus pelanggan?</div>
+      <div class="m-sub">Data kunjungan dan reminder akan dihapus permanen.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeDeleteModal()">Batal</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmDelete()">Ya, hapus</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── SHARED ── */
+function loadU() {
+  try {
+    var raw = localStorage.getItem('starvio_user')
+    if (!raw) return null
+    var u = JSON.parse(raw)
+    if (u.DATA_VERSION !== 4) return null
+    u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    return u
+  } catch(e) { return null }
+}
+
+function saveU(u) {
+  localStorage.setItem('starvio_user', JSON.stringify(u))
+}
+
+function resetDemo() {
+  location.href = 'starvio-seed-data.html?auto=1'
+}
+
+function doLogout() {
+  localStorage.removeItem('starvio_user')
+  location.href = 'starvio-login.html'
+}
+
+/* ── STATUS LOGIC ── */
+function getStatus(service) {
+  var diff = Math.floor((Date.now() - new Date(service.date)) / 86400000)
+  var pct = (diff / service.days) * 100
+  if (pct >= 100) return 'hilang'
+  if (pct >= 70) return 'mendekati'
+  return 'aktif'
+}
+
+function worstStatus(customer) {
+  var order = { hilang: 0, mendekati: 1, aktif: 2 }
+  return (customer.services || []).reduce(function(worst, svc) {
+    var s = getStatus(svc)
+    return order[s] < order[worst] ? s : worst
+  }, 'aktif')
+}
+
+function worstService(customer) {
+  var worst = null, worstScore = -1
+  ;(customer.services || []).forEach(function(svc) {
+    var diff = Math.floor((Date.now() - new Date(svc.date)) / 86400000)
+    var pct = diff / svc.days
+    if (pct > worstScore) { worstScore = pct; worst = { name: svc.name || svc.cat, icon: svc.icon || '', date: svc.date, days: svc.days, diff: diff, pct: pct } }
+  })
+  return worst
+}
+
+function svcPct(svc) {
+  return (Date.now() - new Date(svc.date)) / 86400000 / svc.days * 100
+}
+
+function cxTopPct(cx) {
+  var svcs = cx.services || []
+  if (!svcs.length) return 0
+  return Math.max.apply(null, svcs.map(svcPct))
+}
+
+function catInfo(catName, u) {
+  return (u.cats || []).find(function(c) { return c.name === catName }) || { icon: '✨', name: catName, interval: 30 }
+}
+
+/* ── SIDEBAR & TOPBAR ── */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open')
+  document.getElementById('sidebarOverlay').classList.add('open')
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('sidebarOverlay').classList.remove('open')
+}
+
+function openLogout() { document.getElementById('m-logout').classList.add('show') }
+function closeLogout() { document.getElementById('m-logout').classList.remove('show') }
+
+function bootSidebar(u) {
+  // Active nav
+  var page = location.pathname.split('/').pop()
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('href') === page)
+  })
+  // Biz info
+  document.getElementById('sidebarBizName').textContent = u.bizName || ''
+  var tz = (u.timezone || 'Asia/Jakarta').split('/')[1] || 'Jakarta'
+  document.getElementById('s-biz-t').textContent = (u.bizType || 'Bisnis') + ' · ' + tz
+  // Avatar
+  var av = (u.adminName || 'U').split(' ').map(function(w){return w[0]}).slice(0,2).join('').toUpperCase()
+  document.getElementById('s-av').textContent = av
+  document.getElementById('s-uname').textContent = u.adminName || 'Owner'
+  // Credit counter
+  var remLeft = u.remLeft || 0
+  var remMax = u.remMax || 100
+  document.getElementById('sc-n').textContent = remLeft
+  document.getElementById('sc-total').textContent = remMax
+  var pct = Math.round(remLeft / remMax * 100)
+  var fill = document.getElementById('sc-fill')
+  fill.style.width = pct + '%'
+  fill.style.background = pct <= 10 ? 'var(--red)' : pct <= 30 ? 'var(--amber-dk)' : 'var(--lime-dk)'
+  // Lost badge
+  var cxs = u.customers || []
+  var lostN = cxs.filter(function(cx) { return worstStatus(cx) === 'hilang' }).length
+  var navLost = document.getElementById('nav-lost-n')
+  if (lostN > 0) { navLost.textContent = lostN; navLost.style.display = 'inline-flex' }
+}
+
+/* ── PAGE STATE ── */
+var U = null
+var cxFilter = 'all'
+var cxSort = 'urgency'
+var _ecxMap = {}
+var _editWa = null
+var _detailIdx = null
+
+var ST = {
+  hilang:    { color: 'var(--red)',    bg: 'var(--red-bg)',    bd: '#f5c5c3', txt: 'var(--red-dk)',    label: 'Hilang',    badge: 'b-red' },
+  mendekati: { color: 'var(--amber)',  bg: 'var(--amber-bg)',  bd: '#fcd88a', txt: 'var(--amber-dk)',  label: 'Mendekati', badge: 'b-amber' },
+  aktif:     { color: 'var(--lime2)',  bg: 'var(--lime-bg)',   bd: '#c8f07a', txt: 'var(--lime-dk)',   label: 'Aktif',     badge: 'b-lime' }
+}
+
+var WA_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>'
+/* ── PHONE HELPERS ── */
+function stripPhone(wa) {
+  var raw = (wa || '').replace(/[\s\-\(\)]/g, '')
+  if (raw.startsWith('0')) raw = '62' + raw.substring(1)
+  if (raw.startsWith('+')) raw = raw.substring(1)
+  return raw
+}
+
+function formatPhone(wa) {
+  var raw = stripPhone(wa)
+  if (raw.startsWith('62')) return '+62 ' + raw.substring(2)
+  return '+' + raw
+}
+
+function parsePhoneForEdit(wa) {
+  var raw = stripPhone(wa)
+  var codes = ['62','60','65','66','63','84','91','1','44','61']
+  for (var i = 0; i < codes.length; i++) {
+    if (raw.startsWith(codes[i])) return { cc: codes[i], num: raw.substring(codes[i].length) }
+  }
+  return { cc: '62', num: raw }
+}
+
+/* ── RENDER CARDS ── */
+function renderCards() {
+  var cxs = U.customers || []
+  var q = ((document.getElementById('cx-q') || {}).value || '').toLowerCase()
+
+  var a = 0, n = 0, l = 0
+  cxs.forEach(function(cx) {
+    var s = worstStatus(cx)
+    if (s === 'aktif') a++
+    else if (s === 'mendekati') n++
+    else l++
+  })
+  document.getElementById('cx-aktif').textContent = a
+  document.getElementById('cx-near').textContent = n
+  document.getElementById('cx-lost').textContent = l
+  document.getElementById('cx-total').textContent = cxs.length
+  document.getElementById('tb-sub').textContent = cxs.length + ' pelanggan terdaftar'
+
+  var filtered = cxs.filter(function(cx) {
+    var matchF = cxFilter === 'all' || cxFilter === worstStatus(cx)
+    var matchQ = !q || cx.name.toLowerCase().indexOf(q) >= 0 || (cx.wa || '').indexOf(q) >= 0
+    return matchF && matchQ
+  })
+
+  filtered.sort(function(a, b) {
+    if (cxSort === 'urgency') return cxTopPct(b) - cxTopPct(a)
+    if (cxSort === 'name') return a.name.localeCompare(b.name, 'id')
+    if (cxSort === 'oldest') {
+      var aMin = Math.min.apply(null, (a.services || []).map(function(s) { return new Date(s.date).getTime() }))
+      var bMin = Math.min.apply(null, (b.services || []).map(function(s) { return new Date(s.date).getTime() }))
+      return aMin - bMin
+    }
+    if (cxSort === 'newest') {
+      var aMax = Math.max.apply(null, (a.services || []).map(function(s) { return new Date(s.date).getTime() }))
+      var bMax = Math.max.apply(null, (b.services || []).map(function(s) { return new Date(s.date).getTime() }))
+      return bMax - aMax
+    }
+    return 0
+  })
+
+  _ecxMap = {}
+  filtered.forEach(function(cx, i) { _ecxMap[i] = cx })
+
+  var empty = document.getElementById('cx-empty')
+  var cards = document.getElementById('cx-cards')
+
+  if (!cxs.length) { empty.style.display = 'block'; cards.innerHTML = ''; return }
+  empty.style.display = 'none'
+  if (!filtered.length) { cards.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink3);font-size:13px">Tidak ada pelanggan ditemukan.</div>'; return }
+
+  var html = ''
+  filtered.forEach(function(cx, i) {
+    var topSt = worstStatus(cx)
+    var s = ST[topSt]
+    var init = cx.name.split(' ').map(function(w) { return w[0] }).slice(0, 2).join('').toUpperCase()
+    var waClean = stripPhone(cx.wa)
+    var waLink = 'https://wa.me/' + waClean
+    var waDisplay = formatPhone(cx.wa)
+    var svcs = cx.services || []
+    var svcName = svcs[0] ? (svcs[0].name || svcs[0].cat || '') : ''
+
+    html += '<div class="cx-card st-' + topSt + '" data-idx="' + i + '">'
+
+    // TOP ROW
+    html += '<div class="cx-top">'
+    html += '<div class="cx-av" style="background:' + s.bg + ';border:1.5px solid ' + s.bd + ';color:' + s.txt + '">' + init + '</div>'
+    html += '<div class="cx-info"><div class="cx-name">' + cx.name + '</div><div class="cx-wa">' + waDisplay + '</div></div>'
+    html += '<span class="badge ' + s.badge + '">' + s.label + '</span>'
+    html += '<div class="cx-actions">'
+    html += '<a href="' + waLink + '" target="_blank" class="cx-btn-wa" onclick="event.stopPropagation()">' + WA_ICON + ' WA</a>'
+    html += '<button class="cx-btn-edit" onclick="event.stopPropagation();openEditModal(' + i + ')">Edit</button>'
+    html += '</div></div>'
+
+    // PER-SERVICE ROWS
+    html += '<div class="svc-rows">'
+    svcs.forEach(function(svc) {
+      var ci = catInfo(svc.name || svc.cat, U)
+      var pctVal = svcPct(svc)
+      var st = getStatus(svc)
+      var ss = ST[st]
+      var barW = Math.min(Math.round(pctVal), 100)
+      var diff = Math.floor((Date.now() - new Date(svc.date)) / 86400000)
+      var sisa = svc.days - diff
+      var sisaLabel = sisa > 0 ? sisa + ' hari lagi' : Math.abs(sisa) + ' hari lewat'
+      var nextDate = new Date(svc.date)
+      nextDate.setDate(nextDate.getDate() + svc.days)
+      var nextStr = nextDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+
+      html += '<div class="svc-row">'
+      html += '<div class="svc-icon">' + (svc.icon || ci.icon) + '</div>'
+      html += '<div class="svc-body">'
+      html += '<div class="svc-top-row">'
+      html += '<span class="svc-name">' + (svc.name || svc.cat) + '</span>'
+      html += '<span class="svc-meta" style="color:' + ss.txt + '">' + nextStr + ' · ' + sisaLabel + '</span>'
+      html += '</div>'
+      html += '<div class="svc-bar-wrap"><div class="svc-bar-fill" style="width:' + barW + '%;background:' + ss.color + '"></div></div>'
+      html += '</div></div>'
+    })
+    html += '</div>'
+
+    html += '</div>'
+  })
+
+  cards.innerHTML = html
+  cards.onclick = handleCardClick
+}
+
+function handleCardClick(e) {
+  var el = e.target
+  // Check for action buttons first
+  while (el && el !== e.currentTarget && !el.getAttribute('data-action') && !el.getAttribute('data-idx')) el = el.parentNode
+  if (!el) return
+
+  if (el.getAttribute('data-action')) {
+    var card = el
+    while (card && !card.getAttribute('data-idx')) card = card.parentNode
+    if (!card) return
+    var idx = parseInt(card.getAttribute('data-idx'))
+    var action = el.getAttribute('data-action')
+    if (action === 'edit') openEditModal(idx)
+    return
+  }
+
+  // Click on card itself -> open detail
+  if (el.getAttribute('data-idx')) {
+    openDetail(parseInt(el.getAttribute('data-idx')))
+  }
+}
+
+/* ── FILTER & SORT ── */
+function filterCx(el, f) {
+  cxFilter = f
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active') })
+  el.classList.add('active')
+  renderCards()
+}
+
+function filterByMet(f) {
+  cxFilter = f
+  document.querySelectorAll('.chip').forEach(function(c) {
+    c.classList.toggle('active', c.getAttribute('data-filter') === f)
+  })
+  renderCards()
+}
+
+function setSort(el, s) {
+  cxSort = s
+  document.querySelectorAll('.sort-btn').forEach(function(b) { b.classList.remove('active') })
+  el.classList.add('active')
+  renderCards()
+}
+
+/* ── DETAIL PANEL ── */
+function openDetail(idx) {
+  var cx = _ecxMap[idx]
+  if (!cx) return
+  _detailIdx = idx
+
+  var topSt = worstStatus(cx)
+  var s = ST[topSt]
+  var init = cx.name.split(' ').map(function(w) { return w[0] }).slice(0, 2).join('').toUpperCase()
+  var waClean = stripPhone(cx.wa)
+
+  document.getElementById('dp-av').textContent = init
+  document.getElementById('dp-av').style.cssText = 'width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;background:' + s.bg + ';border:1.5px solid ' + s.bd + ';color:' + s.txt
+  document.getElementById('dp-name').textContent = cx.name
+  document.getElementById('dp-wa').textContent = formatPhone(cx.wa)
+  var badge = document.getElementById('dp-badge')
+  badge.className = 'badge ' + s.badge
+  badge.textContent = s.label
+  document.getElementById('dp-wa-link').href = 'https://wa.me/' + waClean
+
+  // Services
+  var svcHtml = ''
+  ;(cx.services || []).forEach(function(svc) {
+    var ci = catInfo(svc.name || svc.cat, U)
+    var st = getStatus(svc)
+    var ss = ST[st]
+    var diff = Math.floor((Date.now() - new Date(svc.date)) / 86400000)
+    var pctVal = svcPct(svc)
+    var barW = Math.min(Math.round(pctVal), 100)
+    var sisa = svc.days - diff
+    var sisaLabel = sisa > 0 ? sisa + ' hari lagi' : Math.abs(sisa) + ' hari lewat'
+    var lastDate = new Date(svc.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+
+    svcHtml += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;margin-bottom:8px">'
+    svcHtml += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+    svcHtml += '<span style="font-size:16px">' + (svc.icon || ci.icon) + '</span>'
+    svcHtml += '<span style="font-size:12px;font-weight:700;color:var(--ink);flex:1">' + (svc.name || svc.cat) + '</span>'
+    svcHtml += '<span class="badge ' + ss.badge + '">' + ss.label + '</span>'
+    svcHtml += '</div>'
+    svcHtml += '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:4px">'
+    svcHtml += '<span>Terakhir: ' + lastDate + '</span>'
+    svcHtml += '<span style="font-weight:700;color:' + ss.txt + '">' + diff + ' hari lalu · ' + sisaLabel + '</span>'
+    svcHtml += '</div>'
+    svcHtml += '<div class="svc-bar-wrap"><div class="svc-bar-fill" style="width:' + barW + '%;background:' + ss.color + '"></div></div>'
+    svcHtml += '</div>'
+  })
+  document.getElementById('dp-services').innerHTML = svcHtml
+
+  // Reminder history
+  var remHtml = ''
+  var rems = U.reminders || []
+  var cxRems = rems.filter(function(r) { return r.wa === cx.wa || r.cxWa === cx.wa || r.cxName === cx.name || r.name === cx.name })
+  if (cxRems.length === 0) {
+    remHtml = '<div style="text-align:center;padding:20px;color:var(--ink3);font-size:12px">Belum ada riwayat reminder.</div>'
+  } else {
+    cxRems.sort(function(a, b) { return new Date(b.date || b.sentAt || b.scheduledAt || 0) - new Date(a.date || a.sentAt || a.scheduledAt || 0) })
+    cxRems.slice(0, 10).forEach(function(r) {
+      var dt = r.date || r.sentAt || r.scheduledAt || ''
+      var dtDisplay = dt ? new Date(dt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
+      var status = r.status || 'unknown'
+      var chipClass = 'b-gray'
+      var chipText = status
+      if (status === 'sent' || status === 'terkirim') { chipClass = 'b-lime'; chipText = 'Terkirim' }
+      else if (status === 'failed' || status === 'gagal') { chipClass = 'b-red'; chipText = 'Gagal' }
+      else if (status === 'sched' || status === 'pending') { chipClass = 'b-amber'; chipText = 'Terjadwal' }
+      var svcName = r.kat || r.svc || ''
+
+      remHtml += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">'
+      remHtml += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--ink)">' + svcName + '</div>'
+      remHtml += '<div style="font-size:10px;color:var(--ink3);margin-top:1px">' + dtDisplay + '</div></div>'
+      remHtml += '<span class="badge ' + chipClass + '">' + chipText + '</span>'
+      remHtml += '</div>'
+    })
+  }
+  document.getElementById('dp-reminders').innerHTML = remHtml
+
+  document.getElementById('detailOverlay').classList.add('show')
+  document.getElementById('detailPanel').classList.add('show')
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('show')
+  document.getElementById('detailPanel').classList.remove('show')
+  _detailIdx = null
+}
+
+/* ── EDIT MODAL ── */
+function openEditModal(idx) {
+  // Support both index-based and direct customer lookup
+  var cx = _ecxMap[idx]
+  if (!cx && typeof idx === 'number') {
+    // Fallback: try to find by iterating customers
+    var cxs = U.customers || []
+    if (idx >= 0 && idx < cxs.length) cx = cxs[idx]
+  }
+  if (!cx) return
+  _editWa = cx.wa
+  var init = cx.name.split(' ').map(function(w) { return w[0] }).slice(0, 2).join('').toUpperCase()
+  document.getElementById('ecx-av').textContent = init
+  document.getElementById('ecx-dname').textContent = cx.name
+  document.getElementById('ecx-dwa').textContent = formatPhone(cx.wa)
+  document.getElementById('ecx-name').value = cx.name
+
+  var parsed = parsePhoneForEdit(cx.wa)
+  document.getElementById('ecx-cc').value = parsed.cc
+  document.getElementById('ecx-wa').value = parsed.num
+
+  // Set date to today
+  document.getElementById('ecx-date').value = new Date().toISOString().split('T')[0]
+
+  // Build service checkboxes from cats[]
+  var cont = document.getElementById('ecx-svc-checks')
+  cont.innerHTML = ''
+  var cats = U.cats || []
+  var existingSvcs = (cx.services || []).map(function(s) { return s.name })
+  cats.forEach(function(cat) {
+    var checked = existingSvcs.indexOf(cat.name) > -1
+    var row = document.createElement('label')
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s'
+    row.innerHTML =
+      '<input type="checkbox" value="' + cat.id + '" data-cat-name="' + cat.name + '" data-cat-icon="' + cat.icon + '" data-cat-interval="' + cat.interval + '"' + (checked ? ' checked' : '') + ' style="width:16px;height:16px;accent-color:var(--lime2);flex-shrink:0">' +
+      '<span style="font-size:16px;flex-shrink:0">' + cat.icon + '</span>' +
+      '<span style="font-size:12px;font-weight:600;color:var(--ink);flex:1">' + cat.name + '</span>' +
+      '<span style="font-size:10px;font-family:JetBrains Mono,monospace;color:var(--ink3)">tiap ' + cat.interval + ' hr</span>'
+    cont.appendChild(row)
+  })
+
+  if (!cats.length) {
+    cont.innerHTML = '<div style="font-size:11px;color:var(--ink3);text-align:center;padding:8px">Belum ada kategori layanan. Tambah di halaman Kategori.</div>'
+  }
+
+  document.getElementById('ecx-modal').classList.add('show')
+}
+
+function closeEditModal() {
+  document.getElementById('ecx-modal').classList.remove('show')
+  _editWa = null
+}
+
+function saveEditModal() {
+  var nm = document.getElementById('ecx-name').value.trim()
+  var cc = document.getElementById('ecx-cc').value
+  var waNum = document.getElementById('ecx-wa').value.trim().replace(/[\s\-\(\)]/g, '')
+  if (waNum.startsWith('0')) waNum = waNum.substring(1)
+  var wa = cc + waNum
+  if (!nm) { alert('Nama wajib diisi.'); return }
+  if (!waNum) { alert('Nomor WhatsApp wajib diisi.'); return }
+
+  var visitDate = document.getElementById('ecx-date').value || new Date().toISOString().split('T')[0]
+  var checkedSvcs = []
+  document.querySelectorAll('#ecx-svc-checks input[type="checkbox"]:checked').forEach(function(cb) {
+    checkedSvcs.push({
+      name: cb.getAttribute('data-cat-name'),
+      icon: cb.getAttribute('data-cat-icon'),
+      days: parseInt(cb.getAttribute('data-cat-interval')) || 30
+    })
+  })
+
+  for (var i = 0; i < (U.customers || []).length; i++) {
+    if (U.customers[i].wa === _editWa) {
+      U.customers[i].name = nm
+      U.customers[i].wa = wa
+      // Update services: keep existing dates for unchecked, set new date for checked
+      var existing = U.customers[i].services || []
+      var updated = []
+      checkedSvcs.forEach(function(cs) {
+        var found = existing.find(function(e) { return e.name === cs.name })
+        updated.push({
+          name: cs.name,
+          icon: cs.icon,
+          date: visitDate,
+          days: cs.days
+        })
+      })
+      U.customers[i].services = updated
+      break
+    }
+  }
+  saveU(U)
+  closeEditModal()
+  renderCards()
+}
+
+/* ── DELETE ── */
+function deleteCustomer() {
+  var cx = (U.customers || []).find(function(c) { return c.wa === _editWa })
+  var name = cx ? cx.name : 'pelanggan ini'
+  document.getElementById('del-title').textContent = 'Hapus ' + name + '?'
+  document.getElementById('m-delete').classList.add('show')
+}
+
+function closeDeleteModal() {
+  document.getElementById('m-delete').classList.remove('show')
+}
+
+function confirmDelete() {
+  U.customers = (U.customers || []).filter(function(c) { return c.wa !== _editWa })
+  saveU(U)
+  closeDeleteModal()
+  closeEditModal()
+  renderCards()
+}
+
+/* ── ADD MODAL ── */
+function openAddModal() {
+  document.getElementById('add-date').value = new Date().toISOString().split('T')[0]
+  document.getElementById('add-name').value = ''
+  document.getElementById('add-wa').value = ''
+  document.getElementById('add-cc').value = '62'
+  var list = document.getElementById('add-svc-list')
+  list.innerHTML = ''
+  ;(U.cats || []).forEach(function(cat) {
+    var el = document.createElement('div')
+    el.className = 'svc-check-item'
+    el.setAttribute('data-cat', cat.name)
+    el.setAttribute('data-days', cat.interval)
+    el.innerHTML =
+      '<div class="svc-check-box"></div>' +
+      '<span style="font-size:15px">' + cat.icon + '</span>' +
+      '<span class="svc-check-label">' + cat.name + '</span>' +
+      '<span class="svc-check-interval">setiap ' + cat.interval + ' hari</span>'
+    el.onclick = function() {
+      el.classList.toggle('selected')
+      el.querySelector('.svc-check-box').innerHTML = el.classList.contains('selected')
+        ? '<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="var(--lime-dk)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 4 6-6"/></svg>'
+        : ''
+    }
+    list.appendChild(el)
+  })
+  document.getElementById('add-modal').classList.add('show')
+  setTimeout(function() { document.getElementById('add-name').focus() }, 150)
+}
+
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('show')
+}
+
+function saveAdd() {
+  var name = document.getElementById('add-name').value.trim()
+  var cc = document.getElementById('add-cc').value
+  var waNum = document.getElementById('add-wa').value.trim().replace(/[\s\-\(\)]/g, '')
+  if (waNum.startsWith('0')) waNum = waNum.substring(1)
+  var wa = cc + waNum
+  var date = document.getElementById('add-date').value
+  if (!name || !waNum || !date) { alert('Nama, WA, dan tanggal wajib diisi.'); return }
+  var services = []
+  document.querySelectorAll('#add-svc-list .svc-check-item.selected').forEach(function(el) {
+    var catName = el.getAttribute('data-cat')
+    var ci = catInfo(catName, U)
+    services.push({ name: catName, icon: ci.icon, date: date, days: parseInt(el.getAttribute('data-days')) || 30 })
+  })
+  if (!services.length) { alert('Pilih minimal satu layanan.'); return }
+  if (!U.customers) U.customers = []
+  U.customers.push({ name: name, wa: wa, services: services, via: 'manual' })
+  saveU(U)
+  closeAddModal()
+  renderCards()
+}
+
+/* ── BOOT ── */
+function boot() {
+  U = loadU()
+  if (!U) { location.href = 'starvio-login.html'; return }
+  bootSidebar(U)
+  renderCards()
+
+  // Check ?action=add
+  var params = new URLSearchParams(window.location.search)
+  if (params.get('action') === 'add') {
+    openAddModal()
+  }
+
+  // Check ?cx=WA_NUMBER — open detail panel for that customer
+  var cxParam = params.get('cx')
+  if (cxParam) {
+    var cxClean = stripPhone(cxParam)
+    for (var key in _ecxMap) {
+      if (stripPhone(_ecxMap[key].wa) === cxClean) {
+        openDetail(parseInt(key))
+        break
+      }
+    }
+  }
+}
+
+window.addEventListener('DOMContentLoaded', boot)
+</script>
+</body>
+</html>

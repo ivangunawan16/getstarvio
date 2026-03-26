@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starvio — Kategori Layanan</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+  --border:#e2e1d9;--border2:#cccbc2;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --blue:#2563eb;--blue-bg:#eff4ff;--blue-dk:#1e3a8a;
+  --r:12px;--r-sm:8px;--r-lg:16px;--sidebar:224px;
+}
+html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidden;background:var(--bg)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh}
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── SIDEBAR ── */
+.s-logo{padding:14px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.s-mark{width:28px;height:28px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s-bname{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.s-biz{padding:10px 16px;border-bottom:1px solid var(--border)}
+.s-biz-n{font-size:12px;font-weight:600;color:var(--ink)}
+.s-biz-t{font-size:10px;color:var(--ink3);margin-top:1px}
+.s-nav{padding:8px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:var(--ink3);font-size:12px;font-weight:500;transition:all .15s;text-decoration:none;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--ink2)}
+.nav-item.active{background:var(--lime);color:var(--lime-dk);font-weight:700}
+.nav-icon{width:18px;text-align:center;flex-shrink:0;font-size:14px}
+.nav-pill{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px}
+.np-red{background:var(--red-bg);color:var(--red-dk)}
+.s-counter{margin:8px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 12px}
+.sc-n{font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.sc-l{font-size:10px;color:var(--lime-dk);opacity:.6;margin-top:2px;line-height:1.3}
+.sc-bar{height:3px;background:rgba(45,74,0,.1);border-radius:99px;margin-top:7px;overflow:hidden}
+.sc-fill{height:100%;background:var(--lime-dk);border-radius:99px;transition:width .5s}
+.s-bottom{padding:8px;border-top:1px solid var(--border)}
+.s-user{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--r-sm)}
+.s-av{width:26px;height:26px;border-radius:50%;background:var(--lime-bg);border:1px solid #c8f07a;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.s-uname{font-size:11px;font-weight:600;color:var(--ink)}
+.s-urole{font-size:10px;color:var(--ink3)}
+.s-logout{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;opacity:.4;transition:opacity .15s;margin-left:auto;flex-shrink:0}
+.s-logout:hover{opacity:1}
+.s-reset{width:100%;margin-top:6px;padding:7px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);font-size:10px;font-weight:600;color:var(--ink3);font-family:inherit;cursor:pointer;transition:all .15s}
+.s-reset:hover{background:var(--bg4);color:var(--ink2)}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.tb-sub{font-size:11px;color:var(--ink3);margin-left:8px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;margin-right:8px}
+
+/* ── CONTENT ── */
+.db-content{flex:1;overflow-y:auto;padding:20px 24px 40px}
+.page{max-width:840px;margin:0 auto}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}
+.btn-ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}.btn-ghost:hover{background:var(--bg3)}
+.btn-danger{background:var(--red-bg);color:var(--red-dk);border:1.5px solid #f5c5c3}.btn-danger:hover{background:#fcd0ce}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-xs{display:inline-flex;align-items:center;justify-content:center;padding:3px 9px;font-size:10px;font-weight:700;border-radius:var(--r-sm);cursor:pointer;font-family:inherit;border:none;transition:all .15s}
+
+/* ── DEFAULT INTERVAL BAR (light theme) ── */
+.def-bar{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+.def-info{flex:1}
+.def-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.def-sub{font-size:11px;color:var(--ink3)}
+.def-inputs{display:flex;align-items:center;gap:8px}
+
+/* ── KAT GRID ── */
+.kat-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+
+/* ── KAT CARD ── */
+.kat-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:border-color .15s}
+.kat-card:hover{border-color:var(--border2)}
+.kc-head{padding:14px 16px;display:flex;align-items:center;gap:10px}
+.kc-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.kc-info{flex:1;min-width:0}
+.kc-name{font-size:14px;font-weight:700;color:var(--ink)}
+.kc-sub{font-size:11px;color:var(--ink3);margin-top:1px}
+.kc-pill{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;flex-shrink:0}
+.kc-stats{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.kc-stat{padding:10px 16px;text-align:center}
+.kc-stat:first-child{border-right:1px solid var(--border)}
+.kc-stat-n{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--ink);line-height:1}
+.kc-stat-l{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;margin-top:3px}
+.kc-msg{padding:11px 16px;background:var(--bg3);border-top:1px solid var(--border)}
+.kc-msg-lbl{font-size:10px;font-weight:700;color:var(--lime-dk);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.kc-msg-text{font-size:11px;color:var(--ink2);line-height:1.6}
+.kc-footer{padding:9px 16px;display:flex;align-items:center;gap:7px;border-top:1px solid var(--border)}
+
+/* ── ADD CARD ── */
+.kat-add{border:2px dashed var(--border2);border-radius:var(--r-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px;min-height:200px;cursor:pointer;transition:all .2s}
+.kat-add:hover{border-color:var(--lime2);background:var(--lime-bg)}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.b-lime{background:var(--lime-bg);color:var(--lime-dk);border:1px solid #c8f07a}
+
+/* ── INPUT / SELECT ── */
+.fi{width:100%;padding:9px 12px;border-radius:var(--r-sm);background:var(--bg2);border:1.5px solid var(--border2);color:var(--ink);font-size:13px;font-family:inherit;outline:none;transition:all .15s}
+.fi:focus{border-color:var(--lime2);background:#fff;box-shadow:0 0 0 3px rgba(184,240,74,.12)}
+.fi::placeholder{color:var(--ink4)}
+select.fi{cursor:pointer;appearance:auto}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px)}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease}
+.modal-md{width:460px;max-width:96vw;max-height:92vh;overflow-y:auto}
+.modal-sm{width:360px;max-width:96vw}
+.mhd{padding:18px 22px 14px;border-bottom:1px solid var(--border)}
+.mbody{padding:18px 22px}
+.mftr{padding:13px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--bg2)}
+.m-title{font-size:15px;font-weight:700;color:var(--ink)}
+.m-sub{font-size:12px;color:var(--ink3);margin-top:3px;line-height:1.5}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── PREVIEW BOX ── */
+.msg-preview{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 13px;font-size:12px;color:var(--ink2);line-height:1.7;margin-top:8px}
+.msg-var{color:var(--blue);font-weight:600;background:var(--blue-bg);padding:0 3px;border-radius:3px;font-size:11px}
+
+/* ── COLOR SCHEMES for cards ── */
+.col-0{background:#fde8e7;border:1.5px solid #f5c5c3} .pill-0{background:#fde8e7;border:1.5px solid #f5c5c3;color:#7a1a16}
+.col-1{background:var(--lime-bg);border:1.5px solid #c8f07a} .pill-1{background:var(--lime-bg);border:1.5px solid #c8f07a;color:var(--lime-dk)}
+.col-2{background:var(--amber-bg);border:1.5px solid #fcd88a} .pill-2{background:var(--amber-bg);border:1.5px solid #fcd88a;color:var(--amber-dk)}
+.col-3{background:var(--blue-bg);border:1.5px solid #bfcff8} .pill-3{background:var(--blue-bg);border:1.5px solid #bfcff8;color:var(--blue-dk)}
+.col-4{background:#f5f3ff;border:1.5px solid #e9d5ff} .pill-4{background:#f5f3ff;border:1.5px solid #e9d5ff;color:#4c1d95}
+.col-5{background:#ecfdf5;border:1.5px solid #a7f3d0} .pill-5{background:#ecfdf5;border:1.5px solid #a7f3d0;color:#064e3b}
+
+/* ── SIDEBAR OVERLAY (mobile) ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
+.sidebar-overlay.open{display:block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:767px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .hamburger-btn{display:flex}
+  .kat-grid{grid-template-columns:1fr}
+  .db-content{padding:16px 16px 32px}
+  .def-bar{flex-direction:column;align-items:stretch;gap:10px}
+  .def-inputs{justify-content:flex-end}
+  .g2{grid-template-columns:1fr}
+}
+@media(min-width:768px) and (max-width:1023px){
+  .sidebar{width:60px}
+  .s-bname,.s-biz,.s-urole,.s-uname,.sc-l,.nav-item span:not(.nav-icon):not(.nav-pill){display:none}
+  .s-logo{justify-content:center;padding:14px 8px}
+  .nav-item{justify-content:center;padding:10px 8px}
+  .s-counter{padding:8px;text-align:center}
+  .s-user{justify-content:center}
+  .s-bottom{text-align:center}
+  .s-reset{font-size:0;padding:8px}
+  .s-reset::after{content:'↺';font-size:14px}
+}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR (v3 light design, copied from dashboard) -->
+<div class="sidebar" id="sidebar">
+  <div class="s-logo">
+    <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
+    <span class="s-bname">Starvio</span>
+  </div>
+  <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
+  <nav class="s-nav">
+    <a id="nav-dashboard"  href="starvio-dashboard.html"       class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a id="nav-catat"      href="starvio-catat-kunjungan.html"  class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan"  href="starvio-pelanggan.html"       class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="starvio-automation.html"      class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
+    <a id="nav-log"        href="starvio-log-reminder.html"    class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-kategori"   href="starvio-kategori.html"        class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
+    <a id="nav-billing"    href="starvio-billing.html"         class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
+    <a id="nav-settings"   href="starvio-settings.html"       class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
+  </nav>
+  <div class="s-counter">
+    <div class="sc-n" id="sc-n">0</div>
+    <div class="sc-l">kredit tersisa dari <span id="sc-total">100</span></div>
+    <div class="sc-bar"><div class="sc-fill" id="sc-fill" style="width:100%"></div></div>
+  </div>
+  <div class="s-bottom">
+    <div class="s-user">
+      <div class="s-av" id="s-av">—</div>
+      <div><div class="s-uname" id="s-uname">Owner</div><div class="s-urole">Owner</div></div>
+      <button class="s-logout" onclick="openLogout()" title="Logout">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </button>
+    </div>
+    <button class="s-reset" onclick="resetDemo()">↺ Reset demo data</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center">
+      <button class="hamburger-btn" onclick="openSidebar()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+      </button>
+      <span class="tb-title">Kategori Layanan</span>
+      <span class="tb-sub" id="tb-sub"></span>
+    </div>
+    <div style="display:flex;gap:7px">
+      <button class="btn btn-lime btn-sm" onclick="openAdd()">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg> Tambah Kategori
+      </button>
+    </div>
+  </div>
+
+  <div class="db-content">
+    <div class="page">
+
+      <!-- DEFAULT INTERVAL BAR (light theme) -->
+      <div class="def-bar">
+        <div class="def-info">
+          <div class="def-name">Default Interval — Fallback</div>
+          <div class="def-sub">Dipakai jika pelanggan tidak punya kategori layanan.</div>
+        </div>
+        <div class="def-inputs">
+          <input type="number" value="30" min="1" max="365" id="def-intv"
+            style="width:62px;padding:7px 9px;border-radius:var(--r-sm);background:var(--bg3);border:1.5px solid var(--border2);color:var(--ink);font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:center;outline:none">
+          <span style="font-size:12px;color:var(--ink3)">hari</span>
+          <button id="def-btn" onclick="saveDef()" class="btn btn-lime btn-sm">Simpan</button>
+        </div>
+      </div>
+
+      <!-- KAT GRID -->
+      <div class="kat-grid" id="kat-grid"></div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ADD KATEGORI MODAL -->
+<div class="overlay" id="m-addkat">
+  <div class="modal modal-md">
+    <div class="mhd">
+      <div class="m-title">Tambah Kategori Layanan</div>
+      <div class="m-sub">Atur nama, ikon, interval reminder, dan template pesan untuk kategori ini.</div>
+    </div>
+    <div class="mbody">
+      <div class="fg">
+        <label class="fl">Nama Kategori <span style="color:var(--red-dk);font-size:10px">*</span></label>
+        <input id="kat-name" class="fi" placeholder="Contoh: Facial, Potong Rambut, Cuci Mobil...">
+      </div>
+      <div class="g2" style="margin-bottom:14px">
+        <div>
+          <label class="fl">Ikon</label>
+          <select id="kat-icon" class="fi" style="font-size:20px;text-align:center;padding:7px">
+            <option value="✨">✨</option><option value="💆">💆</option><option value="🤲">🤲</option>
+            <option value="💅">💅</option><option value="💇">💇</option><option value="🛁">🛁</option>
+            <option value="🧖">🧖</option><option value="🌸">🌸</option><option value="💈">💈</option>
+            <option value="🦶">🦶</option><option value="🎨">🎨</option><option value="🔧">🔧</option>
+            <option value="🛢️">🛢️</option><option value="⚡">⚡</option><option value="⚗️">⚗️</option>
+            <option value="🧴">🧴</option><option value="🩺">🩺</option><option value="🦷">🦷</option>
+            <option value="🪒">🪒</option><option value="👁️">👁️</option><option value="🌟">🌟</option>
+            <option value="🎯">🎯</option><option value="💫">💫</option><option value="🪄">🪄</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl">Interval (hari)</label>
+          <input id="kat-days" type="number" class="fi" value="30" min="1" max="365"
+            style="font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:center;padding:7px">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Template Pesan WA</label>
+        <select id="kat-tpl" class="fi" onchange="updateAddPreview()">
+          <option value="reminder_return">Reminder balik</option>
+          <option value="soft_invite">Ajakan santai</option>
+          <option value="promo_nudge">Reminder + penawaran</option>
+          <option value="care_checkin">Check-in personal</option>
+          <option value="urgency_light">Gentle urgency</option>
+        </select>
+        <div class="msg-preview" id="msg-preview-add"></div>
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeM('m-addkat')">Batal</button>
+      <button class="btn btn-lime btn-sm" onclick="saveKat()">Simpan Kategori</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT KATEGORI MODAL -->
+<div class="overlay" id="m-editkat">
+  <div class="modal modal-md">
+    <div class="mhd">
+      <div class="m-title" id="edit-modal-title">Edit Kategori</div>
+    </div>
+    <div class="mbody">
+      <input type="hidden" id="edit-kat-id">
+      <div class="fg">
+        <label class="fl">Nama Kategori</label>
+        <input id="edit-name" class="fi">
+      </div>
+      <div class="g2" style="margin-bottom:14px">
+        <div>
+          <label class="fl">Ikon</label>
+          <select id="edit-icon" class="fi" style="font-size:20px;text-align:center;padding:7px">
+            <option value="✨">✨</option><option value="💆">💆</option><option value="🤲">🤲</option>
+            <option value="💅">💅</option><option value="💇">💇</option><option value="🛁">🛁</option>
+            <option value="🧖">🧖</option><option value="🌸">🌸</option><option value="💈">💈</option>
+            <option value="🦶">🦶</option><option value="🎨">🎨</option><option value="🔧">🔧</option>
+            <option value="🛢️">🛢️</option><option value="⚡">⚡</option><option value="⚗️">⚗️</option>
+            <option value="🧴">🧴</option><option value="🩺">🩺</option><option value="🦷">🦷</option>
+            <option value="🪒">🪒</option><option value="👁️">👁️</option><option value="🌟">🌟</option>
+            <option value="🎯">🎯</option><option value="💫">💫</option><option value="🪄">🪄</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl">Interval (hari)</label>
+          <input id="edit-days" type="number" class="fi" min="1" max="365"
+            style="font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:center;padding:7px">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Template Pesan</label>
+        <select id="edit-tpl" class="fi" onchange="updateEditPreview()">
+          <option value="reminder_return">Reminder balik</option>
+          <option value="soft_invite">Ajakan santai</option>
+          <option value="promo_nudge">Reminder + penawaran</option>
+          <option value="care_checkin">Check-in personal</option>
+          <option value="urgency_light">Gentle urgency</option>
+        </select>
+        <div class="msg-preview" id="msg-preview-edit"></div>
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeM('m-editkat')">Batal</button>
+      <button class="btn btn-lime btn-sm" onclick="saveEditKat()">Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="overlay" id="m-delkat">
+  <div class="modal modal-sm">
+    <div class="mhd" style="text-align:center">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--red-bg);border:1px solid #f5c5c3;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="var(--red-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M3 4h10M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5"/><path d="M4 4l.5 9a1 1 0 001 1h5a1 1 0 001-1L12 4"/></svg>
+      </div>
+      <div class="m-title" id="del-title">Hapus kategori?</div>
+      <div class="m-sub" id="del-sub">Pelanggan di kategori ini tidak akan mendapat reminder kategori ini lagi.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeM('m-delkat')">Batal</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmDel()">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="overlay" id="m-logout">
+  <div class="modal modal-sm">
+    <div class="mhd" style="text-align:center">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--red-bg);border:1px solid #f5c5c3;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="var(--red-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </div>
+      <div class="m-title">Yakin mau logout?</div>
+      <div class="m-sub">Sesi kamu akan diakhiri.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeM('m-logout')">Batal</button>
+      <button class="btn btn-danger btn-sm" onclick="doLogout()">Ya, Logout</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   SHARED: loadU / saveU / sidebar boot
+   ══════════════════════════════════════════ */
+function loadU() {
+  try {
+    var raw = localStorage.getItem('starvio_user')
+    if (!raw) return null
+    var u = JSON.parse(raw)
+    if (u.DATA_VERSION !== 4) return null
+    u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    return u
+  } catch(e) { return null }
+}
+
+function saveU(u) {
+  localStorage.setItem('starvio_user', JSON.stringify(u))
+}
+
+function bootSidebar(u) {
+  // Active nav
+  var page = location.pathname.split('/').pop()
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('href') === page)
+  })
+  if (!u) return
+  var el = document.getElementById('sidebarBizName')
+  if (el) el.textContent = u.bizName || ''
+  var tz = (u.timezone || 'Asia/Jakarta').split('/')[1] || 'Jakarta'
+  var et = document.getElementById('s-biz-t')
+  if (et) et.textContent = (u.bizType || 'Bisnis') + ' \u00b7 ' + tz
+  var av = (u.adminName || 'U').split(' ').map(function(w){return w[0]}).slice(0,2).join('').toUpperCase()
+  document.getElementById('s-av').textContent = av
+  document.getElementById('s-uname').textContent = u.adminName || 'Owner'
+  // Credits
+  var remLeft = u.remLeft || 0, remMax = u.remMax || 100
+  document.getElementById('sc-n').textContent = remLeft
+  document.getElementById('sc-total').textContent = remMax
+  var pct = Math.round(remLeft / remMax * 100)
+  var fill = document.getElementById('sc-fill')
+  fill.style.width = pct + '%'
+  fill.style.background = pct <= 10 ? 'var(--red)' : pct <= 30 ? 'var(--amber-dk)' : 'var(--lime-dk)'
+  // Lost badge
+  var cxs = u.customers || [], lostN = 0
+  cxs.forEach(function(cx) {
+    (cx.services || []).forEach(function(s) {
+      var diff = Math.floor((Date.now() - new Date(s.date)) / 86400000)
+      if (diff / s.days >= 1) lostN++
+    })
+  })
+  var navLost = document.getElementById('nav-lost-n')
+  if (lostN > 0) { navLost.textContent = lostN; navLost.style.display = 'inline-flex' }
+}
+
+function resetDemo() { location.href = 'starvio-seed-data.html?auto=1' }
+function doLogout() { localStorage.removeItem('starvio_user'); location.href = 'starvio-login.html' }
+
+/* ── SIDEBAR MOBILE ── */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open')
+  document.getElementById('sidebarOverlay').classList.add('open')
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('sidebarOverlay').classList.remove('open')
+}
+
+/* ── MODALS ── */
+function openM(id) { document.getElementById(id).classList.add('show') }
+function closeM(id) { document.getElementById(id).classList.remove('show') }
+function openLogout() { openM('m-logout') }
+
+/* ══════════════════════════════════════════
+   TEMPLATE SYSTEM
+   ══════════════════════════════════════════ */
+var TEMPLATES = {
+  reminder_return: 'Halo {customer_name}! Sudah {days} hari sejak {service} terakhir kamu di {business_name}. Yuk balik lagi \u2014 kami tunggu! \ud83d\ude0a',
+  soft_invite: 'Hai {customer_name}! Kangen nih sama kamu \ud83d\ude04 Udah {days} hari lho sejak terakhir {service} di {business_name}. Kapan mau mampir lagi?',
+  promo_nudge: 'Halo {customer_name}! Udah {days} hari sejak {service} di {business_name}. Pas banget, lagi ada promo spesial buat kamu \u2014 chat kami ya! \ud83c\udf89',
+  care_checkin: 'Hi {customer_name}, gimana kabarnya? \ud83d\ude0a Semoga {service} terakhir di {business_name} hasilnya masih oke. Kalau butuh perawatan lagi, kabarin aja ya!',
+  urgency_light: 'Hai {customer_name}! Udah {days} hari sejak {service} di {business_name}. Biar hasilnya tetap maksimal, yuk jadwalkan kunjungan berikutnya sebelum terlambat \u23f0'
+}
+
+var TEMPLATE_LABELS = {
+  reminder_return: 'Reminder balik',
+  soft_invite: 'Ajakan santai',
+  promo_nudge: 'Reminder + penawaran',
+  care_checkin: 'Check-in personal',
+  urgency_light: 'Gentle urgency'
+}
+
+function tplKeyFromMsg(msg) {
+  // Try to match existing msg to a template key
+  for (var k in TEMPLATES) {
+    if (TEMPLATES[k] === msg) return k
+  }
+  return 'reminder_return' // default fallback
+}
+
+/* ══════════════════════════════════════════
+   COLOR SCHEMES
+   ══════════════════════════════════════════ */
+var COLS = [
+  {bg:'#fde8e7',bd:'#f5c5c3',tx:'#7a1a16'},
+  {bg:'#edfac8',bd:'#c8f07a',tx:'#2d4a00'},
+  {bg:'#fff4e0',bd:'#fcd88a',tx:'#7a4f00'},
+  {bg:'#eff4ff',bd:'#bfcff8',tx:'#1e3a8a'},
+  {bg:'#f5f3ff',bd:'#e9d5ff',tx:'#4c1d95'},
+  {bg:'#ecfdf5',bd:'#a7f3d0',tx:'#064e3b'}
+]
+
+/* ══════════════════════════════════════════
+   RENDER HELPERS
+   ══════════════════════════════════════════ */
+function renderMsgHtml(msg, days, serviceName, bizName) {
+  return (msg || '')
+    .replace(/{customer_name}/g, '<span class="msg-var">Pelanggan</span>')
+    .replace(/{business_name}/g, '<span class="msg-var">' + (bizName || 'Bisnis') + '</span>')
+    .replace(/{days}/g, '<span class="msg-var">' + days + '</span>')
+    .replace(/{service}/g, '<span class="msg-var">' + serviceName + '</span>')
+}
+
+/* ══════════════════════════════════════════
+   PAGE LOGIC
+   ══════════════════════════════════════════ */
+var U = null
+var pendingDelId = null
+
+function boot() {
+  U = loadU()
+  if (!U) { location.href = 'starvio-login.html'; return }
+  bootSidebar(U)
+  document.getElementById('def-intv').value = U.defaultInterval || 30
+  renderKat()
+  updateAddPreview()
+}
+
+function renderKat() {
+  var cats = U.cats || []
+  var cxs = U.customers || []
+  var rems = U.reminders || []
+  var biz = U.bizName || 'Bisnis Kamu'
+
+  document.getElementById('tb-sub').textContent = '\u00b7 ' + cats.length + ' kategori'
+
+  var html = cats.map(function(cat, i) {
+    var col = COLS[i % COLS.length]
+
+    // Count pelanggan in this category
+    var custCount = cxs.filter(function(c) {
+      return (c.services || []).some(function(s) { return s.name === cat.name })
+    }).length
+
+    // Count reminders sent for this category
+    var sentCount = rems.filter(function(r) {
+      return (r.status === 'sent' || r.status === 'terkirim') && (r.kat === cat.name || r.svc === cat.name)
+    }).length
+
+    // Template label
+    var tplKey = cat.tplKey || tplKeyFromMsg(cat.msg)
+    var tplLabel = TEMPLATE_LABELS[tplKey] || 'Reminder balik'
+
+    // Message preview
+    var msgBody = TEMPLATES[tplKey] || cat.msg || TEMPLATES.reminder_return
+    var msgHtml = renderMsgHtml(msgBody, cat.interval, cat.name, biz)
+
+    return '<div class="kat-card">' +
+      '<div class="kc-head">' +
+        '<div class="kc-icon" style="background:' + col.bg + ';border:1.5px solid ' + col.bd + '">' + cat.icon + '</div>' +
+        '<div class="kc-info">' +
+          '<div class="kc-name">' + cat.name + '</div>' +
+          '<div class="kc-sub">' + tplLabel + '</div>' +
+        '</div>' +
+        '<div class="kc-pill" style="background:' + col.bg + ';border:1.5px solid ' + col.bd + ';color:' + col.tx + '">' + cat.interval + ' hari</div>' +
+      '</div>' +
+      '<div class="kc-stats">' +
+        '<div class="kc-stat"><div class="kc-stat-n">' + custCount + '</div><div class="kc-stat-l">Pelanggan</div></div>' +
+        '<div class="kc-stat"><div class="kc-stat-n">' + sentCount + '</div><div class="kc-stat-l">Terkirim</div></div>' +
+      '</div>' +
+      '<div class="kc-msg">' +
+        '<div class="kc-msg-lbl">Template Pesan</div>' +
+        '<div class="kc-msg-text">' + msgHtml + '</div>' +
+      '</div>' +
+      '<div class="kc-footer">' +
+        '<span class="badge b-lime" style="font-size:9px">Aktif</span>' +
+        '<div style="flex:1"></div>' +
+        '<button class="btn-xs" style="background:transparent;border:1.5px solid var(--border2);color:var(--ink2)" onclick="openEdit(\'' + cat.id + '\')">Edit</button>' +
+        '<button class="btn-xs" style="background:var(--red-bg);color:var(--red-dk);border:1.5px solid #f5c5c3" onclick="delKat(\'' + cat.id + '\')">Hapus</button>' +
+      '</div>' +
+    '</div>'
+  }).join('')
+
+  // Add card
+  html += '<div class="kat-add" onclick="openAdd()">' +
+    '<div style="width:38px;height:38px;background:var(--bg3);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:10px">' +
+      '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="2"><path d="M8 3v10M3 8h10"/></svg>' +
+    '</div>' +
+    '<div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:3px">Tambah Kategori Baru</div>' +
+    '<div style="font-size:11px;color:var(--ink3);text-align:center">Nama, ikon, interval, template pesan</div>' +
+  '</div>'
+
+  document.getElementById('kat-grid').innerHTML = html
+}
+
+/* ── ADD ── */
+function openAdd() {
+  document.getElementById('kat-name').value = ''
+  document.getElementById('kat-icon').value = '✨'
+  document.getElementById('kat-days').value = 30
+  document.getElementById('kat-tpl').value = 'reminder_return'
+  updateAddPreview()
+  openM('m-addkat')
+}
+
+function updateAddPreview() {
+  var tplKey = document.getElementById('kat-tpl').value
+  var name = document.getElementById('kat-name').value.trim() || 'Layanan'
+  var days = document.getElementById('kat-days').value || '30'
+  var msg = TEMPLATES[tplKey] || ''
+  var el = document.getElementById('msg-preview-add')
+  el.innerHTML = renderMsgHtml(msg, days, name, U ? U.bizName : 'Bisnis Kamu')
+}
+
+function saveKat() {
+  var name = document.getElementById('kat-name').value.trim()
+  if (!name) {
+    document.getElementById('kat-name').focus()
+    document.getElementById('kat-name').style.borderColor = 'var(--red)'
+    setTimeout(function() { document.getElementById('kat-name').style.borderColor = '' }, 1500)
+    return
+  }
+  var icon = document.getElementById('kat-icon').value
+  var days = parseInt(document.getElementById('kat-days').value) || 30
+  var tplKey = document.getElementById('kat-tpl').value
+  var msg = TEMPLATES[tplKey]
+  var id = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now()
+
+  if (!U.cats) U.cats = []
+  U.cats.push({ id: id, name: name, icon: icon, interval: days, tplKey: tplKey, msg: msg })
+  saveU(U)
+  renderKat()
+  closeM('m-addkat')
+}
+
+/* ── EDIT ── */
+function openEdit(id) {
+  var cat = (U.cats || []).find(function(c) { return c.id === id })
+  if (!cat) return
+  document.getElementById('edit-kat-id').value = id
+  document.getElementById('edit-modal-title').textContent = cat.icon + ' Edit ' + cat.name
+  document.getElementById('edit-name').value = cat.name
+  document.getElementById('edit-icon').value = cat.icon
+  document.getElementById('edit-days').value = cat.interval
+  var tplKey = cat.tplKey || tplKeyFromMsg(cat.msg)
+  document.getElementById('edit-tpl').value = tplKey
+  updateEditPreview()
+  openM('m-editkat')
+}
+
+function updateEditPreview() {
+  var tplKey = document.getElementById('edit-tpl').value
+  var name = document.getElementById('edit-name').value.trim() || 'Layanan'
+  var days = document.getElementById('edit-days').value || '30'
+  var msg = TEMPLATES[tplKey] || ''
+  var el = document.getElementById('msg-preview-edit')
+  el.innerHTML = renderMsgHtml(msg, days, name, U ? U.bizName : 'Bisnis Kamu')
+}
+
+function saveEditKat() {
+  var id = document.getElementById('edit-kat-id').value
+  var cat = (U.cats || []).find(function(c) { return c.id === id })
+  if (!cat) return
+  var oldName = cat.name
+  cat.name = document.getElementById('edit-name').value.trim() || cat.name
+  cat.icon = document.getElementById('edit-icon').value || cat.icon
+  cat.interval = parseInt(document.getElementById('edit-days').value) || cat.interval
+  cat.tplKey = document.getElementById('edit-tpl').value
+  cat.msg = TEMPLATES[cat.tplKey]
+  // Update customer service names if category was renamed
+  if (oldName !== cat.name) {
+    (U.customers || []).forEach(function(c) {
+      (c.services || []).forEach(function(s) {
+        if (s.name === oldName) s.name = cat.name
+      })
+    })
+  }
+  saveU(U)
+  renderKat()
+  closeM('m-editkat')
+}
+
+/* ── DELETE ── */
+function delKat(id) {
+  var cat = (U.cats || []).find(function(c) { return c.id === id })
+  if (!cat) return
+  pendingDelId = id
+  document.getElementById('del-title').textContent = 'Hapus "' + cat.name + '"?'
+  document.getElementById('del-sub').textContent = 'Pelanggan di kategori ini tidak akan mendapat reminder kategori ini lagi.'
+  openM('m-delkat')
+}
+
+function confirmDel() {
+  if (!pendingDelId) return
+  U.cats = (U.cats || []).filter(function(c) { return c.id !== pendingDelId })
+  pendingDelId = null
+  saveU(U)
+  renderKat()
+  closeM('m-delkat')
+}
+
+/* ── DEFAULT INTERVAL ── */
+function saveDef() {
+  var v = parseInt(document.getElementById('def-intv').value)
+  if (v > 0) { U.defaultInterval = v; saveU(U) }
+  var btn = document.getElementById('def-btn')
+  btn.textContent = '\u2713 Tersimpan'
+  setTimeout(function() { btn.textContent = 'Simpan' }, 1500)
+}
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded', boot)
+</script>
+</body>
+</html>

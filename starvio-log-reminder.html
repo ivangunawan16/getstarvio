@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starvio — Log Reminder</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+  --border:#e2e1d9;--border2:#cccbc2;
+  --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
+  --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --blue:#2563eb;--blue-bg:#eff4ff;--blue-dk:#1e3a8a;
+  --r:12px;--r-sm:8px;--r-lg:16px;--sidebar:224px;
+}
+html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidden;background:var(--bg)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh}
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── SIDEBAR ── */
+.s-logo{padding:14px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.s-mark{width:28px;height:28px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s-bname{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.s-biz{padding:10px 16px;border-bottom:1px solid var(--border)}
+.s-biz-n{font-size:12px;font-weight:600;color:var(--ink)}
+.s-biz-t{font-size:10px;color:var(--ink3);margin-top:1px}
+.s-nav{padding:8px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:var(--ink3);font-size:12px;font-weight:500;transition:all .15s;text-decoration:none;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--ink2)}
+.nav-item.active{background:var(--lime);color:var(--lime-dk);font-weight:700}
+.nav-icon{width:18px;text-align:center;flex-shrink:0;font-size:14px}
+.nav-pill{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px}
+.np-red{background:var(--red-bg);color:var(--red-dk)}
+.s-counter{margin:8px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 12px}
+.sc-n{font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.sc-l{font-size:10px;color:var(--lime-dk);opacity:.6;margin-top:2px;line-height:1.3}
+.sc-bar{height:3px;background:rgba(45,74,0,.1);border-radius:99px;margin-top:7px;overflow:hidden}
+.sc-fill{height:100%;background:var(--lime-dk);border-radius:99px;transition:width .5s}
+.s-bottom{padding:8px;border-top:1px solid var(--border)}
+.s-user{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--r-sm)}
+.s-av{width:26px;height:26px;border-radius:50%;background:var(--lime-bg);border:1px solid #c8f07a;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.s-uname{font-size:11px;font-weight:600;color:var(--ink)}
+.s-urole{font-size:10px;color:var(--ink3)}
+.s-logout{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;opacity:.4;transition:opacity .15s;margin-left:auto;flex-shrink:0}
+.s-logout:hover{opacity:1}
+.s-reset{width:100%;margin-top:6px;padding:7px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);font-size:10px;font-weight:600;color:var(--ink3);font-family:inherit;cursor:pointer;transition:all .15s}
+.s-reset:hover{background:var(--bg4);color:var(--ink2)}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;margin-right:8px}
+
+/* ── CONTENT ── */
+.db-content{flex:1;overflow-y:auto;padding:20px 24px 40px}
+.db-inner{max-width:960px;margin:0 auto}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.b-lime{background:var(--lime-bg);color:var(--lime-dk);border:1px solid #c8f07a}
+.b-amber{background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a}
+.b-red{background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3}
+.b-blue{background:var(--blue-bg);color:var(--blue-dk);border:1px solid #bfcff8}
+.b-gray{background:var(--bg3);color:var(--ink3);border:1px solid var(--border)}
+
+/* ── METRICS ── */
+.met-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px}
+.met{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px}
+.met-lbl{font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:7px}
+.met-val{font-size:28px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1}
+.met-sub{font-size:11px;color:var(--ink3);margin-top:5px}
+.met.lime{border-color:var(--lime2);background:linear-gradient(135deg,#fff,#f4fde6)}.met.lime .met-val{color:var(--lime-dk)}
+.met.red{border-color:#f5c5c3;background:linear-gradient(135deg,#fff,var(--red-bg))}.met.red .met-val{color:var(--red-dk)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}
+.btn-ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}.btn-ghost:hover{background:var(--bg3)}
+.btn-danger{background:var(--red-bg);color:var(--red-dk);border:1.5px solid #f5c5c3}
+.btn-sm{padding:6px 12px;font-size:11px}
+
+/* ── FILTER ── */
+.filter-bar{display:flex;align-items:center;gap:9px;margin-bottom:14px;flex-wrap:wrap}
+.filter-tab{padding:6px 14px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);transition:all .15s;user-select:none;display:inline-flex;align-items:center;gap:5px}
+.filter-tab:hover{background:var(--bg3)}
+.filter-tab.active{background:var(--lime-bg);border-color:var(--lime2);color:var(--lime-dk)}
+.filter-tab .ft-count{font-size:10px;font-weight:800;background:rgba(0,0,0,.06);padding:1px 6px;border-radius:99px;min-width:18px;text-align:center}
+.filter-tab.active .ft-count{background:rgba(45,74,0,.1)}
+.date-chip{padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);transition:all .15s;user-select:none}
+.date-chip:hover{background:var(--bg3)}
+.date-chip.active{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:.05em;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg)}
+.td-b{font-weight:700;color:var(--ink)}
+.td-m{font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap}
+
+/* ── PAGINATION ── */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--ink3)}
+.page-btns{display:flex;gap:6px}
+.page-btn{padding:5px 11px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--bg2);color:var(--ink2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.page-btn:hover{background:var(--bg3)}
+.page-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.page-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* ── RETRY BTN ── */
+.retry-btn{padding:4px 10px;border-radius:var(--r-sm);border:1.5px solid #f5c5c3;background:var(--red-bg);color:var(--red-dk);font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.retry-btn:hover{background:#fcd0ce}
+.retry-btn:disabled{opacity:.5;cursor:not-allowed}
+.retry-btn .spinner{display:inline-block;width:10px;height:10px;border:2px solid rgba(122,26,22,.2);border-top-color:var(--red-dk);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:48px 20px;background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r-lg)}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px)}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease;width:360px}
+.mhd{padding:19px 22px 15px;border-bottom:1px solid var(--border);text-align:center}
+.mftr{padding:13px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.m-title{font-size:15px;font-weight:700;color:var(--ink)}
+.m-sub{font-size:12px;color:var(--ink3);margin-top:4px}
+
+/* ── SIDEBAR OVERLAY (mobile) ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
+.sidebar-overlay.open{display:block}
+
+/* ── MOBILE ── */
+@media(max-width:767px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .hamburger-btn{display:flex}
+  .met-grid{grid-template-columns:1fr}
+  .db-content{padding:16px 16px 32px}
+  .tbl th:nth-child(4),.tbl td:nth-child(4){display:none}
+  .filter-bar{gap:6px}
+}
+@media(min-width:768px) and (max-width:1023px){
+  .sidebar{width:60px}
+  .s-bname,.s-biz,.s-urole,.s-uname,.sc-l,.nav-item span:not(.nav-icon):not(.nav-pill){display:none}
+  .s-logo{justify-content:center;padding:14px 8px}
+  .nav-item{justify-content:center;padding:10px 8px}
+  .s-counter{padding:8px;text-align:center}
+  .s-user{justify-content:center}
+  .s-bottom{text-align:center}
+  .s-reset{font-size:0;padding:8px}
+  .s-reset::after{content:'↺';font-size:14px}
+}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="s-logo">
+    <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
+    <span class="s-bname">Starvio</span>
+  </div>
+  <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
+  <nav class="s-nav">
+    <a id="nav-dashboard"  href="starvio-dashboard.html"    class="nav-item"><span class="nav-icon">&#127968;</span><span>Dashboard</span></a>
+    <a id="nav-catat"      href="starvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan"  href="starvio-pelanggan.html"    class="nav-item"><span class="nav-icon">&#128101;</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="starvio-automation.html"   class="nav-item"><span class="nav-icon">&#129302;</span><span>Automation</span></a>
+    <a id="nav-log"        href="starvio-log-reminder.html" class="nav-item"><span class="nav-icon">&#128220;</span><span>Log Reminder</span></a>
+    <a id="nav-kategori"   href="starvio-kategori.html"     class="nav-item"><span class="nav-icon">&#127991;&#65039;</span><span>Kategori</span></a>
+    <a id="nav-billing"    href="starvio-billing.html"      class="nav-item"><span class="nav-icon">&#128179;</span><span>Billing</span></a>
+    <a id="nav-settings"   href="starvio-settings.html"     class="nav-item"><span class="nav-icon">&#9881;&#65039;</span><span>Settings</span></a>
+  </nav>
+  <div class="s-counter">
+    <div class="sc-n" id="sc-n">0</div>
+    <div class="sc-l">kredit tersisa dari <span id="sc-total">100</span></div>
+    <div class="sc-bar"><div class="sc-fill" id="sc-fill" style="width:100%"></div></div>
+  </div>
+  <div class="s-bottom">
+    <div class="s-user">
+      <div class="s-av" id="s-av">—</div>
+      <div><div class="s-uname" id="s-uname">Owner</div><div class="s-urole">Owner</div></div>
+      <button class="s-logout" onclick="openLogout()" title="Logout">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </button>
+    </div>
+    <button class="s-reset" onclick="resetDemo()">&#8634; Reset demo data</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center">
+      <button class="hamburger-btn" onclick="openSidebar()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+      </button>
+      <span class="tb-title">Log Reminder</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 10v3h10v-3"/><path d="M8 2v8M5 7l3 3 3-3"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <div class="db-content">
+    <div class="db-inner">
+
+      <!-- METRICS -->
+      <div class="met-grid">
+        <div class="met lime">
+          <div class="met-lbl">Terkirim Bulan Ini</div>
+          <div class="met-val" id="m-sent">0</div>
+          <div class="met-sub">reminder berhasil</div>
+        </div>
+        <div class="met">
+          <div class="met-lbl">Kredit Terpakai</div>
+          <div class="met-val" id="m-credit">0</div>
+          <div class="met-sub">dari total penggunaan</div>
+        </div>
+        <div class="met red" id="m-fail-card">
+          <div class="met-lbl">Gagal</div>
+          <div class="met-val" id="m-fail">0</div>
+          <div class="met-sub">perlu di-retry</div>
+        </div>
+      </div>
+
+      <!-- FILTER TABS -->
+      <div class="filter-bar">
+        <div class="filter-tab active" data-filter="semua" onclick="setStatusFilter(this,'semua')">Semua <span class="ft-count" id="fc-all">0</span></div>
+        <div class="filter-tab" data-filter="terkirim" onclick="setStatusFilter(this,'terkirim')">Terkirim <span class="ft-count" id="fc-sent">0</span></div>
+        <div class="filter-tab" data-filter="gagal" onclick="setStatusFilter(this,'gagal')">Gagal <span class="ft-count" id="fc-fail">0</span></div>
+        <div class="filter-tab" data-filter="pending" onclick="setStatusFilter(this,'pending')">Pending <span class="ft-count" id="fc-pending">0</span></div>
+
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <div class="date-chip active" onclick="setDateRange(this,'week')">Minggu Ini</div>
+          <div class="date-chip" onclick="setDateRange(this,'month')">Bulan Ini</div>
+          <div class="date-chip" onclick="setDateRange(this,'all')">Semua</div>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrap" id="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Waktu</th>
+              <th>Pelanggan</th>
+              <th>Layanan</th>
+              <th>Status</th>
+              <th style="text-align:right">Kredit</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="log-tbody"></tbody>
+        </table>
+        <div class="pagination" id="pag-wrap">
+          <span id="pag-info"></span>
+          <div class="page-btns" id="pag-btns"></div>
+        </div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div class="empty-state" id="empty-state" style="display:none">
+        <div style="font-size:36px;margin-bottom:12px">&#128220;</div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Belum ada log reminder</div>
+        <div style="font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:16px">Log akan muncul setelah reminder pertama dikirim.<br>Aktifkan automation untuk mulai kirim reminder otomatis.</div>
+        <a href="starvio-automation.html" class="btn btn-lime" style="text-decoration:none">Atur Automation</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="overlay" id="m-logout">
+  <div class="modal">
+    <div class="mhd">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--red-bg);border:1px solid #f5c5c3;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="var(--red-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h7M10 5l3 3-3 3"/><path d="M9 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5"/></svg>
+      </div>
+      <div class="m-title">Yakin mau logout?</div>
+      <div class="m-sub">Sesi kamu akan diakhiri.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeLogout()">Batal</button>
+      <button class="btn btn-danger btn-sm" onclick="doLogout()">Ya, Logout</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   STARVIO v3 — LOG REMINDER
+   ══════════════════════════════════════ */
+
+/* ── SHARED ── */
+function loadU() {
+  try {
+    const raw = localStorage.getItem('starvio_user')
+    if (!raw) return null
+    const u = JSON.parse(raw)
+    if (u.DATA_VERSION !== 4) return null
+    u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    return u
+  } catch(e) { return null }
+}
+
+function saveU(u) {
+  localStorage.setItem('starvio_user', JSON.stringify(u))
+}
+
+function bootSidebar() {
+  const page = location.pathname.split('/').pop()
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('href') === page)
+  })
+  const u = loadU()
+  if (!u) return
+  document.getElementById('sidebarBizName').textContent = u.bizName || ''
+  const tz = (u.timezone || 'Asia/Jakarta').split('/')[1] || 'Jakarta'
+  document.getElementById('s-biz-t').textContent = (u.bizType || 'Bisnis') + ' \u00b7 ' + tz
+  const av = (u.adminName || 'U').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()
+  document.getElementById('s-av').textContent = av
+  document.getElementById('s-uname').textContent = u.adminName || 'Owner'
+  document.getElementById('sc-n').textContent = u.remLeft || 0
+  document.getElementById('sc-total').textContent = u.remMax || 100
+  const pct = Math.round((u.remLeft || 0) / (u.remMax || 100) * 100)
+  const fill = document.getElementById('sc-fill')
+  fill.style.width = pct + '%'
+  fill.style.background = pct <= 10 ? 'var(--red)' : pct <= 30 ? 'var(--amber-dk)' : 'var(--lime-dk)'
+
+  // Lost badge
+  const cxs = u.customers || []
+  let lostN = 0
+  cxs.forEach(cx => {
+    (cx.services || []).forEach(s => {
+      const diff = Math.floor((Date.now() - new Date(s.date)) / 86400000)
+      if (diff / s.days >= 1) lostN++
+    })
+  })
+  const navLost = document.getElementById('nav-lost-n')
+  if (lostN > 0) { navLost.textContent = lostN; navLost.style.display = 'inline-flex' }
+}
+
+function resetDemo() { location.href = 'starvio-seed-data.html?auto=1' }
+function doLogout() { localStorage.removeItem('starvio_user'); location.href = 'starvio-login.html' }
+function openLogout() { document.getElementById('m-logout').classList.add('show') }
+function closeLogout() { document.getElementById('m-logout').classList.remove('show') }
+function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
+
+/* ── STATE ── */
+let statusFilter = 'semua'
+let dateRange = 'week'
+let currentPage = 1
+const PER_PAGE = 10
+
+/* ── HELPERS ── */
+function fmtDate(iso) {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  return d.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' })
+}
+function fmtTime(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0')
+}
+function fmtDateTime(iso) {
+  if (!iso) return '—'
+  return fmtDate(iso) + ' ' + fmtTime(iso)
+}
+
+function getWeekStart() {
+  const d = new Date()
+  d.setHours(0,0,0,0)
+  const day = d.getDay()
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+  d.setDate(diff)
+  return d
+}
+function getMonthStart() {
+  const d = new Date()
+  d.setHours(0,0,0,0)
+  d.setDate(1)
+  return d
+}
+
+/* ── FILTER / RENDER ── */
+function getFilteredReminders(u) {
+  const rems = u.reminders || []
+
+  // date range filter
+  let rangeStart = null
+  if (dateRange === 'week') rangeStart = getWeekStart()
+  else if (dateRange === 'month') rangeStart = getMonthStart()
+
+  let filtered = rems
+  if (rangeStart) {
+    filtered = filtered.filter(r => {
+      const d = new Date(r.scheduledAt || r.sentAt)
+      return d >= rangeStart
+    })
+  }
+
+  // status filter
+  if (statusFilter !== 'semua') {
+    filtered = filtered.filter(r => r.status === statusFilter)
+  }
+
+  // sort by date desc
+  filtered.sort((a, b) => {
+    const da = new Date(a.sentAt || a.scheduledAt)
+    const db = new Date(b.sentAt || b.scheduledAt)
+    return db - da
+  })
+
+  return filtered
+}
+
+function countByStatus(u) {
+  const rems = u.reminders || []
+  let rangeStart = null
+  if (dateRange === 'week') rangeStart = getWeekStart()
+  else if (dateRange === 'month') rangeStart = getMonthStart()
+
+  let filtered = rems
+  if (rangeStart) {
+    filtered = filtered.filter(r => {
+      const d = new Date(r.scheduledAt || r.sentAt)
+      return d >= rangeStart
+    })
+  }
+
+  const counts = { semua: filtered.length, terkirim: 0, gagal: 0, pending: 0 }
+  filtered.forEach(r => { if (counts[r.status] !== undefined) counts[r.status]++ })
+  return counts
+}
+
+function renderMetrics(u) {
+  const rems = u.reminders || []
+  const thisMonth = new Date().toISOString().slice(0,7)
+
+  const sentThisMonth = rems.filter(r => r.status === 'terkirim' && (r.sentAt || '').startsWith(thisMonth)).length
+  const creditUsed = rems.filter(r => r.status === 'terkirim').reduce((s, r) => s + (r.kredit || 0), 0)
+  const failCount = rems.filter(r => r.status === 'gagal').length
+
+  document.getElementById('m-sent').textContent = sentThisMonth
+  document.getElementById('m-credit').textContent = creditUsed
+  document.getElementById('m-fail').textContent = failCount
+
+  const failCard = document.getElementById('m-fail-card')
+  if (failCount === 0) { failCard.classList.remove('red') }
+}
+
+function renderBadgeCounts(u) {
+  const counts = countByStatus(u)
+  document.getElementById('fc-all').textContent = counts.semua
+  document.getElementById('fc-sent').textContent = counts.terkirim
+  document.getElementById('fc-fail').textContent = counts.gagal
+  document.getElementById('fc-pending').textContent = counts.pending
+}
+
+function renderTable() {
+  const u = loadU()
+  if (!u) return
+
+  const filtered = getFilteredReminders(u)
+  const total = filtered.length
+  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
+  if (currentPage > totalPages) currentPage = 1
+  const start = (currentPage - 1) * PER_PAGE
+  const pageRows = filtered.slice(start, start + PER_PAGE)
+
+  const tbody = document.getElementById('log-tbody')
+  const tableWrap = document.getElementById('table-wrap')
+  const emptyState = document.getElementById('empty-state')
+
+  // Check if ALL reminders are empty (not just filtered)
+  if ((u.reminders || []).length === 0) {
+    tableWrap.style.display = 'none'
+    emptyState.style.display = 'block'
+    return
+  } else {
+    tableWrap.style.display = 'block'
+    emptyState.style.display = 'none'
+  }
+
+  if (pageRows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada log ditemukan untuk filter ini.</td></tr>'
+    document.getElementById('pag-info').textContent = ''
+    document.getElementById('pag-btns').innerHTML = ''
+    return
+  }
+
+  tbody.innerHTML = pageRows.map(r => {
+    const init = (r.cxName || '?').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()
+    const timeStr = r.status === 'terkirim' ? fmtDateTime(r.sentAt) : fmtDateTime(r.scheduledAt)
+
+    let chipHtml = ''
+    if (r.status === 'terkirim') chipHtml = '<span class="badge b-lime">Terkirim</span>'
+    else if (r.status === 'gagal') chipHtml = '<span class="badge b-red">Gagal</span>'
+    else if (r.status === 'pending') chipHtml = '<span class="badge b-amber">Pending</span>'
+
+    let actionHtml = ''
+    if (r.status === 'gagal') {
+      actionHtml = '<button class="retry-btn" onclick="retryReminder(\'' + r.id + '\',this)">Coba Kirim Ulang</button>'
+    }
+
+    // Failure reason info for gagal rows
+    let failInfoHtml = ''
+    if (r.status === 'gagal') {
+      failInfoHtml = '<div style="font-size:10px;color:var(--red-dk);margin-top:3px;line-height:1.4">Kemungkinan: nomor WA tidak aktif atau koneksi terputus</div>'
+    }
+
+    return '<tr>' +
+      '<td class="td-m">' + timeStr + '</td>' +
+      '<td><div style="display:flex;align-items:center;gap:8px">' +
+        '<div style="width:26px;height:26px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--ink3);flex-shrink:0">' + init + '</div>' +
+        '<span class="td-b">' + (r.cxName || '—') + '</span>' +
+      '</div></td>' +
+      '<td><span style="font-size:11px;color:var(--ink2)">' + (r.svc || '—') + '</span></td>' +
+      '<td>' + chipHtml + failInfoHtml + '</td>' +
+      '<td class="td-m" style="text-align:right">' + (r.kredit || 0) + '</td>' +
+      '<td style="text-align:right">' + actionHtml + '</td>' +
+    '</tr>'
+  }).join('')
+
+  // Pagination
+  document.getElementById('pag-info').textContent = 'Menampilkan ' + (start+1) + '\u2013' + Math.min(start+PER_PAGE, total) + ' dari ' + total + ' log'
+  const btns = document.getElementById('pag-btns')
+  let html = '<button class="page-btn" onclick="changePage(' + (currentPage-1) + ')" ' + (currentPage <= 1 ? 'disabled' : '') + '>\u2190 Prev</button>'
+  const maxPgs = Math.min(totalPages, 5)
+  for (let i = 1; i <= maxPgs; i++) {
+    html += '<button class="page-btn' + (i === currentPage ? ' active' : '') + '" onclick="changePage(' + i + ')">' + i + '</button>'
+  }
+  html += '<button class="page-btn" onclick="changePage(' + (currentPage+1) + ')" ' + (currentPage >= totalPages ? 'disabled' : '') + '>Next \u2192</button>'
+  btns.innerHTML = html
+}
+
+function setStatusFilter(el, val) {
+  statusFilter = val
+  currentPage = 1
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'))
+  el.classList.add('active')
+  renderTable()
+}
+
+function setDateRange(el, val) {
+  dateRange = val
+  currentPage = 1
+  document.querySelectorAll('.date-chip').forEach(t => t.classList.remove('active'))
+  el.classList.add('active')
+  const u = loadU()
+  if (u) renderBadgeCounts(u)
+  renderTable()
+}
+
+function changePage(p) {
+  const u = loadU()
+  if (!u) return
+  const filtered = getFilteredReminders(u)
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
+  if (p < 1 || p > totalPages) return
+  currentPage = p
+  renderTable()
+}
+
+/* ── RETRY ── */
+function retryReminder(remId, btnEl) {
+  const u = loadU()
+  if (!u) return
+  if ((u.remLeft || 0) <= 0) {
+    alert('Kredit habis! Silakan top up dulu.')
+    return
+  }
+
+  // Show spinner
+  btnEl.disabled = true
+  btnEl.innerHTML = '<span class="spinner"></span>Mengirim...'
+
+  setTimeout(() => {
+    const u2 = loadU()
+    if (!u2) return
+    const rem = (u2.reminders || []).find(r => r.id === remId)
+    if (!rem) return
+
+    rem.status = 'terkirim'
+    rem.sentAt = new Date().toISOString()
+    u2.topupCreditsLeft = Math.max(0, (u2.topupCreditsLeft || 0) - 1)
+    u2.remLeft = (u2.subCreditsLeft || 0) + (u2.topupCreditsLeft || 0)
+    saveU(u2)
+
+    // Refresh everything
+    bootSidebar()
+    renderMetrics(u2)
+    renderBadgeCounts(u2)
+    renderTable()
+  }, 1500)
+}
+
+/* ── EXPORT CSV ── */
+function exportCSV() {
+  const u = loadU()
+  if (!u) return
+  const rems = getFilteredReminders(u)
+  let csv = 'Waktu,Pelanggan,Layanan,Status,Kredit\n'
+  rems.forEach(r => {
+    const time = r.sentAt || r.scheduledAt || ''
+    const st = r.status === 'terkirim' ? 'Terkirim' : r.status === 'gagal' ? 'Gagal' : 'Pending'
+    csv += '"' + time + '","' + (r.cxName||'') + '","' + (r.svc||'') + '","' + st + '",' + (r.kredit||0) + '\n'
+  })
+  const a = document.createElement('a')
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv)
+  a.download = 'log-reminder-starvio.csv'
+  a.click()
+}
+
+/* ── BOOT ── */
+function boot() {
+  const u = loadU()
+  if (!u) { location.href = 'starvio-login.html'; return }
+
+  bootSidebar()
+  renderMetrics(u)
+  renderBadgeCounts(u)
+  renderTable()
+}
+
+window.addEventListener('DOMContentLoaded', boot)
+</script>
+</body>
+</html>
