@@ -165,6 +165,8 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
 .date-row{display:flex;flex-direction:column;gap:4px}
 .date-label{font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase}
 .date-input{width:100%;height:48px;padding:0 14px;background:var(--bg2);border:2px solid var(--border);border-radius:var(--r-sm);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--ink)}
+.date-toggle{font-size:11px;color:var(--blue);font-weight:600;margin-top:4px;cursor:pointer;text-decoration:none;display:inline-block}
+.date-toggle:hover{text-decoration:underline}
 
 /* ── SUMMARY ── */
 .summary-card{background:var(--bg3);border-radius:var(--r-sm);padding:16px}
@@ -355,6 +357,7 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
           <div class="date-row" style="margin-top:8px">
             <span class="date-label">Tanggal Kunjungan</span>
             <input type="date" class="date-input" id="visit-date" readonly style="background:var(--bg3);color:var(--ink3)">
+            <a href="#" class="date-toggle" id="date-toggle" onclick="enableDateEdit(event)">Bukan hari ini?</a>
           </div>
           <div style="font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-top:14px">Pilih layanan hari ini:</div>
           <div class="svc-list" id="service-checklist" style="margin-top:8px"></div>
@@ -651,6 +654,26 @@ function saveNewCustomer() {
   goStep(2)
 }
 
+/* ── DATE TOGGLE ── */
+function enableDateEdit(e) {
+  e.preventDefault()
+  var input = document.getElementById('visit-date')
+  var toggle = document.getElementById('date-toggle')
+  input.removeAttribute('readonly')
+  input.style.background = 'var(--bg2)'
+  input.style.color = 'var(--ink)'
+  input.style.borderColor = 'var(--lime2)'
+  input.focus()
+  input.max = todayISO()
+  var minDate = new Date()
+  minDate.setDate(minDate.getDate() - 7)
+  input.min = minDate.toISOString().split('T')[0]
+  toggle.textContent = 'Maks 7 hari ke belakang'
+  toggle.style.color = 'var(--ink3)'
+  toggle.style.cursor = 'default'
+  toggle.onclick = null
+}
+
 /* ── STEP 2: PICK SERVICES ── */
 function renderStep2() {
   if (!selectedCustomer) return
@@ -676,8 +699,20 @@ function renderStep2() {
     cl.appendChild(div)
   })
 
-  // Set date to today
+  // Set date to today + reset toggle
   document.getElementById('visit-date').value = todayISO()
+  var dateInput = document.getElementById('visit-date')
+  dateInput.setAttribute('readonly', true)
+  dateInput.style.background = 'var(--bg3)'
+  dateInput.style.color = 'var(--ink3)'
+  dateInput.style.borderColor = 'var(--border)'
+  dateInput.removeAttribute('max')
+  dateInput.removeAttribute('min')
+  var toggle = document.getElementById('date-toggle')
+  toggle.textContent = 'Bukan hari ini?'
+  toggle.style.color = 'var(--blue)'
+  toggle.style.cursor = 'pointer'
+  toggle.onclick = function(e) { enableDateEdit(e) }
 
   updateSelectedServices()
 }
@@ -705,10 +740,18 @@ function renderStep3() {
     return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;background:var(--lime-bg);color:var(--lime-dk);font-weight:500">' + s.icon + ' ' + escHtml(s.name) + '</span>'
   }).join(' ')
 
+  var isBackdate = (date !== todayISO())
+  var backdateHtml = ''
+  if (isBackdate) {
+    backdateHtml = '<div style="margin-top:8px;padding:8px 10px;background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);font-size:11px;color:var(--amber-dk);font-weight:600">' +
+      '⚠️ Kunjungan akan dicatat untuk tanggal ' + date + ' (bukan hari ini)</div>'
+  }
+
   card.innerHTML =
     '<div class="summary-row"><span class="summary-label">Pelanggan</span><span class="summary-val">' + escHtml(selectedCustomer.name) + '</span></div>' +
     '<div class="summary-row"><span class="summary-label">Layanan</span><span class="summary-val" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end">' + svcHtml + '</span></div>' +
-    '<div class="summary-row"><span class="summary-label">Tanggal</span><span class="summary-val" style="font-family:\'JetBrains Mono\',monospace">' + date + '</span></div>'
+    '<div class="summary-row"><span class="summary-label">Tanggal</span><span class="summary-val" style="font-family:\'JetBrains Mono\',monospace">' + date + '</span></div>' +
+    backdateHtml
 }
 
 /* ── SAVE VISIT ── */
