@@ -409,22 +409,31 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           </div>
           <div style="padding:10px 16px;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Paket Tiers</div>
           <div class="plan-tier">
-            <span style="font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;min-width:90px">Rp 250.000</span>
+            <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">1.</span>
+            <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
+            <input class="plan-field-inp" id="pc-tier1-price" value="250000" type="number" min="0" style="width:100px" oninput="recalcTier(1)">
             <span style="color:var(--ink3)">→</span>
-            <span style="font-weight:600;color:var(--ink)">300 kredit</span>
-            <span class="plan-tier-badge">+20%</span>
+            <input class="plan-field-inp" id="pc-tier1-credits" value="300" type="number" min="1" style="width:70px" oninput="recalcTier(1)">
+            <span style="font-size:11px;color:var(--ink3)">kredit</span>
+            <span class="plan-tier-badge" id="pc-tier1-bonus">+20%</span>
           </div>
           <div class="plan-tier">
-            <span style="font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;min-width:90px">Rp 500.000</span>
+            <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">2.</span>
+            <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
+            <input class="plan-field-inp" id="pc-tier2-price" value="500000" type="number" min="0" style="width:100px" oninput="recalcTier(2)">
             <span style="color:var(--ink3)">→</span>
-            <span style="font-weight:600;color:var(--ink)">625 kredit</span>
-            <span class="plan-tier-badge">+25%</span>
+            <input class="plan-field-inp" id="pc-tier2-credits" value="625" type="number" min="1" style="width:70px" oninput="recalcTier(2)">
+            <span style="font-size:11px;color:var(--ink3)">kredit</span>
+            <span class="plan-tier-badge" id="pc-tier2-bonus">+25%</span>
           </div>
           <div class="plan-tier">
-            <span style="font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;min-width:90px">Rp 1.000.000</span>
+            <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">3.</span>
+            <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
+            <input class="plan-field-inp" id="pc-tier3-price" value="1000000" type="number" min="0" style="width:100px" oninput="recalcTier(3)">
             <span style="color:var(--ink3)">→</span>
-            <span style="font-weight:600;color:var(--ink)">1.500 kredit</span>
-            <span class="plan-tier-badge">+50%</span>
+            <input class="plan-field-inp" id="pc-tier3-credits" value="1500" type="number" min="1" style="width:70px" oninput="recalcTier(3)">
+            <span style="font-size:11px;color:var(--ink3)">kredit</span>
+            <span class="plan-tier-badge" id="pc-tier3-bonus">+50%</span>
           </div>
         </div>
 
@@ -546,6 +555,7 @@ function tryLogin(e) {
     renderChurnRisks();
     updateStats();
     startClock();
+    loadPlanConfig();
   } else {
     pw.classList.add('error');
     err.textContent = 'Password salah. Coba lagi.';
@@ -880,10 +890,65 @@ function switchTab(tab, el) {
 // ══════════════════════════════
 // PLAN CONFIG
 // ══════════════════════════════
+function recalcTier(n) {
+  var pricePerCredit = parseInt(document.getElementById('pc-topup-price').value) || 1000
+  var price = parseInt(document.getElementById('pc-tier' + n + '-price').value) || 0
+  var credits = parseInt(document.getElementById('pc-tier' + n + '-credits').value) || 0
+  var baseCredits = Math.floor(price / pricePerCredit)
+  var bonusPct = baseCredits > 0 ? Math.round((credits - baseCredits) / baseCredits * 100) : 0
+  document.getElementById('pc-tier' + n + '-bonus').textContent = bonusPct > 0 ? '+' + bonusPct + '%' : '0%'
+}
+
+function loadPlanConfig() {
+  try {
+    var raw = localStorage.getItem('starvio_user')
+    if (!raw) return
+    var u = JSON.parse(raw)
+    var pc = u.planConfig
+    if (!pc) return
+    if (pc.freeBonus !== undefined) document.getElementById('pc-free-bonus').value = pc.freeBonus
+    if (pc.subCredits !== undefined) document.getElementById('pc-sub-credit').value = pc.subCredits
+    if (pc.subPrice !== undefined) document.getElementById('pc-sub-price').value = pc.subPrice
+    if (pc.topupPrice !== undefined) document.getElementById('pc-topup-price').value = pc.topupPrice
+    var tiers = pc.tiers || []
+    for (var i = 0; i < tiers.length && i < 3; i++) {
+      document.getElementById('pc-tier' + (i+1) + '-price').value = tiers[i].price
+      document.getElementById('pc-tier' + (i+1) + '-credits').value = tiers[i].credits
+      recalcTier(i+1)
+    }
+  } catch(e) {}
+}
+
 function savePlanConfig() {
   var btn = event.target;
   btn.textContent = 'Menyimpan...';
   btn.disabled = true;
+
+  var tiers = []
+  for (var i = 1; i <= 3; i++) {
+    tiers.push({
+      price: parseInt(document.getElementById('pc-tier' + i + '-price').value) || 0,
+      credits: parseInt(document.getElementById('pc-tier' + i + '-credits').value) || 0
+    })
+  }
+
+  var planConfig = {
+    freeBonus: parseInt(document.getElementById('pc-free-bonus').value) || 100,
+    subCredits: parseInt(document.getElementById('pc-sub-credit').value) || 250,
+    subPrice: parseInt(document.getElementById('pc-sub-price').value) || 250000,
+    topupPrice: parseInt(document.getElementById('pc-topup-price').value) || 1000,
+    tiers: tiers
+  }
+
+  try {
+    var raw = localStorage.getItem('starvio_user')
+    if (raw) {
+      var u = JSON.parse(raw)
+      u.planConfig = planConfig
+      localStorage.setItem('starvio_user', JSON.stringify(u))
+    }
+  } catch(e) {}
+
   setTimeout(function() {
     btn.textContent = 'Simpan Konfigurasi';
     btn.disabled = false;

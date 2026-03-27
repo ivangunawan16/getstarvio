@@ -504,14 +504,50 @@ function calcUsageRate(U) {
    BILLING DATA
    ══════════════════════════════════════════════ */
 
-var SUB_PRICE = 250000
-var SUB_CREDITS = 250
+var _pc = (function(){ try { var u=JSON.parse(localStorage.getItem('starvio_user')); return u && u.planConfig ? u.planConfig : {} } catch(e){ return {} } })()
+var SUB_PRICE = _pc.subPrice || 250000
+var SUB_CREDITS = _pc.subCredits || 250
 
-var PACKAGES = [
-  { id: 'p1', amt: 300,  price: 250000,  label: '300',   priceStr: 'Rp 250.000', per: 'Rp 833/kredit', bonus: '+50 bonus (20%)' },
-  { id: 'p2', amt: 625,  price: 500000,  label: '625',   priceStr: 'Rp 500.000', per: 'Rp 800/kredit', popular: true, popLabel: 'Terlaris', bonus: '+125 bonus (25%)' },
-  { id: 'p3', amt: 1500, price: 1000000, label: '1.500', priceStr: 'Rp 1.000.000', per: 'Rp 667/kredit', save: 'Best Value', bonus: '+500 bonus (50%)' }
+/* Default packages — overridden by admin planConfig if present */
+var DEF_PACKAGES = [
+  { id: 'p1', amt: 300,  price: 250000,  popular: false, popLabel: '', save: '' },
+  { id: 'p2', amt: 625,  price: 500000,  popular: true,  popLabel: 'Terlaris', save: '' },
+  { id: 'p3', amt: 1500, price: 1000000, popular: false, popLabel: '', save: 'Best Value' }
 ]
+
+function buildPackages() {
+  var u = loadU()
+  var pc = u && u.planConfig ? u.planConfig : null
+  var basePrice = pc && pc.topupPrice ? pc.topupPrice : 1000
+  var tiers = pc && pc.tiers && pc.tiers.length === 3 ? pc.tiers : null
+
+  var defs = DEF_PACKAGES
+  var pkgs = []
+  for (var i = 0; i < 3; i++) {
+    var d = defs[i]
+    var tierPrice = tiers ? tiers[i].price : d.price
+    var tierCredits = tiers ? tiers[i].credits : d.amt
+    var baseCredits = Math.floor(tierPrice / basePrice)
+    var bonusCredits = tierCredits - baseCredits
+    var bonusPct = baseCredits > 0 ? Math.round(bonusCredits / baseCredits * 100) : 0
+    var perCredit = tierCredits > 0 ? Math.round(tierPrice / tierCredits) : 0
+    pkgs.push({
+      id: d.id,
+      amt: tierCredits,
+      price: tierPrice,
+      label: tierCredits.toLocaleString('id-ID'),
+      priceStr: 'Rp ' + tierPrice.toLocaleString('id-ID'),
+      per: 'Rp ' + perCredit.toLocaleString('id-ID') + '/kredit',
+      popular: d.popular,
+      popLabel: d.popLabel,
+      save: d.save,
+      bonus: bonusCredits > 0 ? '+' + bonusCredits + ' bonus (' + bonusPct + '%)' : ''
+    })
+  }
+  return pkgs
+}
+
+var PACKAGES = buildPackages()
 
 /* ── Ensure billing fields exist ── */
 function ensureBillingFields(U) {

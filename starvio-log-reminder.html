@@ -141,6 +141,9 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
 .sidebar-overlay.open{display:block}
 
+/* ── LOG CARD (mobile) ── */
+.log-card{display:none}
+
 /* ── MOBILE ── */
 @media(max-width:767px){
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
@@ -148,8 +151,27 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   .hamburger-btn{display:flex}
   .met-grid{grid-template-columns:1fr}
   .db-content{padding:16px 16px 32px}
-  .tbl th:nth-child(4),.tbl td:nth-child(4){display:none}
   .filter-bar{gap:6px}
+  .filter-bar{flex-direction:column;align-items:stretch}
+  .filter-bar > div:last-child{margin-left:0;justify-content:flex-start}
+
+  /* Hide table, show cards on mobile */
+  .table-wrap .tbl{display:none}
+  .log-cards-mobile{display:block!important}
+  .log-card{display:block;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;animation:fadeUp .18s ease;border-left-width:3px}
+  .log-card.st-terkirim{border-left-color:var(--lime2)}
+  .log-card.st-gagal{border-left-color:var(--red)}
+  .log-card.st-pending{border-left-color:var(--amber)}
+  .lc-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .lc-av{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--ink3);flex-shrink:0}
+  .lc-info{flex:1;min-width:0}
+  .lc-name{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lc-svc{font-size:11px;color:var(--ink3);margin-top:1px}
+  .lc-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .lc-time{font-size:11px;color:var(--ink3);font-family:'JetBrains Mono',monospace}
+  .lc-right{display:flex;align-items:center;gap:8px}
+  .lc-kredit{font-size:11px;font-weight:700;color:var(--ink3);font-family:'JetBrains Mono',monospace}
+  .lc-fail-info{font-size:10px;color:var(--red-dk);line-height:1.4;margin-top:6px}
 }
 @media(min-width:768px) and (max-width:1023px){
   .sidebar{width:60px}
@@ -273,6 +295,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
           </thead>
           <tbody id="log-tbody"></tbody>
         </table>
+        <!-- Mobile cards -->
+        <div class="log-cards-mobile" id="log-cards-mobile" style="display:none"></div>
         <div class="pagination" id="pag-wrap">
           <span id="pag-info"></span>
           <div class="page-btns" id="pag-btns"></div>
@@ -507,14 +531,21 @@ function renderTable() {
     emptyState.style.display = 'none'
   }
 
+  const mobileWrap = document.getElementById('log-cards-mobile')
+
   if (pageRows.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada log ditemukan untuk filter ini.</td></tr>'
+    mobileWrap.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada log ditemukan untuk filter ini.</div>'
     document.getElementById('pag-info').textContent = ''
     document.getElementById('pag-btns').innerHTML = ''
     return
   }
 
-  tbody.innerHTML = pageRows.map(r => {
+  // Build both table rows AND mobile cards
+  let tableHtml = ''
+  let cardHtml = ''
+
+  pageRows.forEach(r => {
     const init = (r.cxName || '?').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()
     const timeStr = r.status === 'terkirim' ? fmtDateTime(r.sentAt) : fmtDateTime(r.scheduledAt)
 
@@ -528,13 +559,13 @@ function renderTable() {
       actionHtml = '<button class="retry-btn" onclick="retryReminder(\'' + r.id + '\',this)">Coba Kirim Ulang</button>'
     }
 
-    // Failure reason info for gagal rows
     let failInfoHtml = ''
     if (r.status === 'gagal') {
       failInfoHtml = '<div style="font-size:10px;color:var(--red-dk);margin-top:3px;line-height:1.4">Kemungkinan: nomor WA tidak aktif atau koneksi terputus</div>'
     }
 
-    return '<tr>' +
+    // Desktop table row
+    tableHtml += '<tr>' +
       '<td class="td-m">' + timeStr + '</td>' +
       '<td><div style="display:flex;align-items:center;gap:8px">' +
         '<div style="width:26px;height:26px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--ink3);flex-shrink:0">' + init + '</div>' +
@@ -545,7 +576,30 @@ function renderTable() {
       '<td class="td-m" style="text-align:right">' + (r.kredit || 0) + '</td>' +
       '<td style="text-align:right">' + actionHtml + '</td>' +
     '</tr>'
-  }).join('')
+
+    // Mobile card
+    cardHtml += '<div class="log-card st-' + r.status + '">' +
+      '<div class="lc-top">' +
+        '<div class="lc-av">' + init + '</div>' +
+        '<div class="lc-info">' +
+          '<div class="lc-name">' + (r.cxName || '—') + '</div>' +
+          '<div class="lc-svc">' + (r.svc || '—') + '</div>' +
+        '</div>' +
+        chipHtml +
+      '</div>' +
+      '<div class="lc-bottom">' +
+        '<span class="lc-time">' + timeStr + '</span>' +
+        '<div class="lc-right">' +
+          '<span class="lc-kredit">' + (r.kredit || 0) + ' kredit</span>' +
+          actionHtml +
+        '</div>' +
+      '</div>' +
+      (r.status === 'gagal' ? '<div class="lc-fail-info">Kemungkinan: nomor WA tidak aktif atau koneksi terputus</div>' : '') +
+    '</div>'
+  })
+
+  tbody.innerHTML = tableHtml
+  mobileWrap.innerHTML = cardHtml
 
   // Pagination
   document.getElementById('pag-info').textContent = 'Menampilkan ' + (start+1) + '\u2013' + Math.min(start+PER_PAGE, total) + ' dari ' + total + ' log'
