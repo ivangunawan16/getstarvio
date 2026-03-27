@@ -1,13 +1,13 @@
-# Starvio UI/UX Design System Prompt
+# getstarvio UI/UX Design System Prompt
 **Version 2 — Source of truth for all page builds and redesigns**
 
-> Paste this prompt at the start of every Claude Code session that touches Starvio HTML. It tells the AI exactly which design tokens, components, and layout rules to use so the visual language stays locked across all pages.
+> Paste this prompt at the start of every Claude Code session that touches getstarvio HTML. It tells the AI exactly which design tokens, components, and layout rules to use so the visual language stays locked across all pages.
 
 ---
 
 ## ROLE
 
-You are building pages for **Starvio** — a WhatsApp-based customer return reminder SaaS for Indonesian beauty/wellness SMBs. Every page must strictly follow this design system. **Do not invent new colors, fonts, radii, or component variants** that are not defined here. If a design decision is not covered, ask before deciding.
+You are building pages for **getstarvio** — a WhatsApp-based customer return reminder SaaS for Indonesian beauty/wellness SMBs. Every page must strictly follow this design system. **Do not invent new colors, fonts, radii, or component variants** that are not defined here. If a design decision is not covered, ask before deciding.
 
 ---
 
@@ -129,7 +129,7 @@ body { display:flex; height:100vh; overflow:hidden; }
 ```css
 .sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
 .logo-text { font-size:18px; font-weight:700; color:var(--ink); letter-spacing:-0.3px; }
-.logo-text span { color: var(--lime-dk); }   /* "vio" in Starvio is lime-dk */
+.logo-text span { color: var(--lime-dk); }   /* "vio" in getstarvio is lime-dk */
 .biz-name { font-size:11px; color:var(--ink3); margin-top:2px; }
 ```
 
@@ -150,14 +150,14 @@ Nav section structure:
 ```html
 <nav class="nav-section" style="flex:1">
   <div class="nav-label">Menu</div>
-  <a href="starvio-dashboard.html"      class="nav-item [active]"><span class="nav-icon">🏠</span>Dashboard</a>
-  <a href="starvio-catat-kunjungan.html"      class="nav-item"><span class="nav-icon">📋</span>Catat Kunjungan</a>
-  <a href="starvio-pelanggan.html"      class="nav-item"><span class="nav-icon">👥</span>Pelanggan</a>
-  <a href="starvio-automation.html"     class="nav-item"><span class="nav-icon">🤖</span>Automation</a>
-  <a href="starvio-log-reminder.html"   class="nav-item"><span class="nav-icon">📜</span>Log Reminder</a>
-  <a href="starvio-kategori.html"       class="nav-item"><span class="nav-icon">🏷️</span>Kategori</a>
-  <a href="starvio-billing.html"        class="nav-item"><span class="nav-icon">💳</span>Billing</a>
-  <a href="starvio-command-center.html" class="nav-item"><span class="nav-icon">⚡</span>Command Center</a>
+  <a href="getstarvio-dashboard.html"      class="nav-item [active]"><span class="nav-icon">🏠</span>Dashboard</a>
+  <a href="getstarvio-catat-kunjungan.html"      class="nav-item"><span class="nav-icon">📋</span>Catat Kunjungan</a>
+  <a href="getstarvio-pelanggan.html"      class="nav-item"><span class="nav-icon">👥</span>Pelanggan</a>
+  <a href="getstarvio-automation.html"     class="nav-item"><span class="nav-icon">🤖</span>Automation</a>
+  <a href="getstarvio-log-reminder.html"   class="nav-item"><span class="nav-icon">📜</span>Log Reminder</a>
+  <a href="getstarvio-kategori.html"       class="nav-item"><span class="nav-icon">🏷️</span>Kategori</a>
+  <a href="getstarvio-billing.html"        class="nav-item"><span class="nav-icon">💳</span>Billing</a>
+  <a href="getstarvio-command-center.html" class="nav-item"><span class="nav-icon">⚡</span>Command Center</a>
 </nav>
 ```
 
@@ -425,7 +425,7 @@ The credit chip in the topbar must reflect this state dynamically on every page.
 
 ## 7. DATA LAYER — localStorage
 
-**Key:** `starvio_user` (single JSON object, `JSON.parse/stringify`)
+**Key:** `getstarvio_user` (single JSON object, `JSON.parse/stringify`)
 
 **Schema:**
 ```js
@@ -481,17 +481,17 @@ All pages link to each other via their sidebar (or topbar on pages without full 
 
 | File | Page Title | Nav Label |
 |---|---|---|
-| `starvio-login.html` | Login | (no nav) |
-| `starvio-onboarding.html` | Onboarding | (no nav) |
-| `starvio-dashboard.html` | Dashboard | Dashboard |
-| `starvio-catat-kunjungan.html` | Catat Kunjungan | Catat Kunjungan |
-| `starvio-pelanggan.html` | Pelanggan | Pelanggan |
-| `starvio-automation.html` | Automation | Automation |
-| `starvio-log-reminder.html` | Log Reminder | Log Reminder |
-| `starvio-kategori.html` | Kategori Layanan | Kategori |
-| `starvio-billing.html` | Billing & Kredit | Billing |
-| `starvio-command-center.html` | Command Center | Command Center |
-| `starvio-checkin.html` | QR Check-in | (accessed via catat kunjungan) |
+| `getstarvio-login.html` | Login | (no nav) |
+| `getstarvio-onboarding.html` | Onboarding | (no nav) |
+| `getstarvio-dashboard.html` | Dashboard | Dashboard |
+| `getstarvio-catat-kunjungan.html` | Catat Kunjungan | Catat Kunjungan |
+| `getstarvio-pelanggan.html` | Pelanggan | Pelanggan |
+| `getstarvio-automation.html` | Automation | Automation |
+| `getstarvio-log-reminder.html` | Log Reminder | Log Reminder |
+| `getstarvio-kategori.html` | Kategori Layanan | Kategori |
+| `getstarvio-billing.html` | Billing & Kredit | Billing |
+| `getstarvio-command-center.html` | Command Center | Command Center |
+| `getstarvio-checkin.html` | QR Check-in | (accessed via catat kunjungan) |
 
 ---
 
@@ -527,7 +527,7 @@ transition: transform 0.2s;         /* box slides up from translateY(10px) → 0
 3. **Never use a different font.** Only Sora and JetBrains Mono.
 4. **Never use border-radius outside of `--r`, `--r-sm`, `--r-lg`.** Pill shapes use `border-radius:20px` (allowed for badges/chips only).
 5. **Never store computed customer status in localStorage.** Always compute from `service.date` and `service.days` at render time.
-6. **Always read from `starvio_user` in localStorage.** Never rely on hardcoded demo data in production-path code.
+6. **Always read from `getstarvio_user` in localStorage.** Never rely on hardcoded demo data in production-path code.
 7. **Always set `nav-item.active` to match the current page.**
 8. **Lime on lime:** text on `var(--lime)` background must always be `var(--lime-dk)` — never white, never black.
 9. **JetBrains Mono for numbers:** all stat numbers, WA numbers, kredit counts, and interval values use `font-family:'JetBrains Mono',monospace`.
@@ -535,4 +535,4 @@ transition: transform 0.2s;         /* box slides up from translateY(10px) → 0
 
 ---
 
-*This file is the canonical design source for Starvio. Update it when version 3 changes are approved — not before.*
+*This file is the canonical design source for getstarvio. Update it when version 3 changes are approved — not before.*

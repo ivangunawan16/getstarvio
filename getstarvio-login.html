@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Starvio — Login</title>
+<title>getstarvio — Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -291,7 +291,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
       <path d="M12 3l1.8 5.5H19l-4.6 3.3 1.8 5.5L12 14l-4.2 3.3 1.8-5.5L5 8.5h5.2L12 3z" fill="#2d4a00"/>
     </svg>
   </div>
-  <div class="loading-wordmark">Starvio</div>
+  <div class="loading-wordmark">getstarvio</div>
 </div>
 
 <div class="layout" id="mainLayout" style="opacity:0;transition:opacity .4s ease">
@@ -306,7 +306,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
           <path d="M9 2l1.4 4.3H14.5l-3.7 2.7 1.4 4.3L9 10.9 5.8 13.3l1.4-4.3L3.5 6.3H9L9 2z" fill="#2d4a00"/>
         </svg>
       </div>
-      <span class="logo-name">Starvio</span>
+      <span class="logo-name">getstarvio</span>
     </a>
 
     <div class="left-middle">
@@ -348,7 +348,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
   <!-- RIGHT PANEL -->
   <div class="right">
     <div class="right-topbar">
-      <div class="right-wordmark">Starvio</div>
+      <div class="right-wordmark">getstarvio</div>
     </div>
 
     <div class="right-body">
@@ -359,7 +359,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
           </svg>
           Selamat datang
         </div>
-        <h2 class="card-title">Masuk ke Starvio</h2>
+        <h2 class="card-title">Masuk ke getstarvio</h2>
         <p class="card-sub">Kelola reminder WhatsApp pelanggan kamu dengan mudah</p>
 
         <button class="btn btn-google" id="btnGoogle">
@@ -391,7 +391,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
 
         <p class="card-note">
           Tidak perlu daftar. Data tersimpan di browser kamu.<br>
-          Dengan masuk, kamu menyetujui <a href="#">Syarat &amp; Ketentuan</a> Starvio.
+          Dengan masuk, kamu menyetujui <a href="#">Syarat &amp; Ketentuan</a> getstarvio.
         </p>
       </div>
     </div>
@@ -408,7 +408,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
             <path d="M7 1.5l1.1 3.3H11.5L9 6.6l1 3.3L7 8.1 4 9.9l1-3.3L2.5 4.8H6.1L7 1.5z" fill="#2d4a00"/>
           </svg>
         </div>
-        <span class="picker-logo-name">Starvio</span>
+        <span class="picker-logo-name">getstarvio</span>
       </div>
       <div class="picker-title">Pilih akun untuk masuk</div>
     </div>
@@ -474,14 +474,14 @@ function closePicker() {
 
 // Cynthia = existing user → load seed data if needed, go to dashboard
 function loginCynthia() {
-  const existing = localStorage.getItem('starvio_user');
+  const existing = localStorage.getItem('getstarvio_user');
   if (existing) {
     try {
       const u = JSON.parse(existing);
       if (u && u.DATA_VERSION === 4) {
         closePicker();
         showToast('Masuk sebagai Cynthia...');
-        setTimeout(()=>{ window.location.href = 'starvio-dashboard.html'; }, 750);
+        setTimeout(()=>{ window.location.href = 'getstarvio-dashboard.html'; }, 750);
         return;
       }
     } catch(e) {}
@@ -489,15 +489,15 @@ function loginCynthia() {
   // No valid data — redirect to seed first
   closePicker();
   showToast('Memuat data demo...');
-  setTimeout(()=>{ window.location.href = 'starvio-seed-data.html?auto=1&next=dashboard'; }, 750);
+  setTimeout(()=>{ window.location.href = 'getstarvio-seed-data.html?auto=1&next=dashboard'; }, 750);
 }
 
 // New account → clear and go to onboarding
 function loginNew() {
-  localStorage.removeItem('starvio_user');
+  localStorage.removeItem('getstarvio_user');
   closePicker();
   showToast('Membuat akun baru...');
-  setTimeout(()=>{ window.location.href = 'starvio-onboarding.html'; }, 750);
+  setTimeout(()=>{ window.location.href = 'getstarvio-onboarding.html'; }, 750);
 }
 
 // Event bindings
@@ -517,7 +517,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   let loggedIn = false;
   try {
-    const stored = localStorage.getItem('starvio_user');
+    const stored = localStorage.getItem('getstarvio_user');
     if (stored) {
       const u = JSON.parse(stored);
       if (u && u.DATA_VERSION === 4 && u.bizName) loggedIn = true;
@@ -525,7 +525,7 @@ window.addEventListener('DOMContentLoaded', function() {
   } catch(e) {}
 
   if (loggedIn) {
-    window.location.href = 'starvio-dashboard.html';
+    window.location.href = 'getstarvio-dashboard.html';
     return;
   }
 

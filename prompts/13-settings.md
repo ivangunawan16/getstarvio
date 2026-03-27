@@ -1,4 +1,4 @@
-# Page: SETTINGS (`starvio-settings.html`)
+# Page: SETTINGS (`getstarvio-settings.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -16,7 +16,7 @@ Konfigurasi akun dan bisnis + QR Check-in management. Dibangun di v3 — tidak a
 
 ### Section 1: QR Check-in (paling atas, default open)
 Konten QR check-in yang dulu ada di halaman Kumpulkan sekarang ada di sini:
-- **QR Code display** — tampilkan QR code untuk URL `starvio.app/checkin/[bizSlug]`
+- **QR Code display** — tampilkan QR code untuk URL `getstarvio.com/checkin/[bizSlug]`
 - **Tombol:** Print QR, Unduh QR
 - **Link check-in** — tampilkan URL lengkap + tombol Salin + Share WA
 - **Cara pakai — 4 langkah** (numbered steps):
@@ -42,15 +42,15 @@ Konten QR check-in yang dulu ada di halaman Kumpulkan sekarang ada di sini:
 - Tombol "Simpan WhatsApp"
 
 ### Section 4: Danger Zone (collapsible, paling bawah)
-- "Reset semua data" → konfirmasi modal → `localStorage.removeItem('starvio_user')` → redirect ke login
-- "Export data" → download `starvio_user` sebagai JSON file
+- "Reset semua data" → konfirmasi modal → `localStorage.removeItem('getstarvio_user')` → redirect ke login
+- "Export data" → download `getstarvio_user` sebagai JSON file
 
 ---
 
 ## Yang TIDAK Ada di Halaman Ini
 
 - WA reconnect untuk automation — itu ada di halaman **Automation** (master card)
-- Catat kunjungan — itu ada di **Catat Kunjungan** (`starvio-catat-kunjungan.html`)
+- Catat kunjungan — itu ada di **Catat Kunjungan** (`getstarvio-catat-kunjungan.html`)
 
 > Note: Settings punya QR reconnect modal untuk owner WA, tapi Automation punya QR reconnect terpisah untuk nomor yang dipakai kirim reminder.
 
@@ -62,7 +62,7 @@ Konten QR check-in yang dulu ada di halaman Kumpulkan sekarang ada di sini:
 - Design mengikuti design system global (`00-global.md`) + sidebar standard
 - Jenis Bisnis di edit profil: gunakan visual grid yang sama persis seperti di onboarding Step 2
 - Danger Zone: wajib pakai collapsible/accordion — jangan langsung terbuka
-- Reset data → redirect ke `starvio-login.html` (bukan onboarding)
+- Reset data → redirect ke `getstarvio-login.html` (bukan onboarding)
 - Section order: QR Check-in → Profil Bisnis → WhatsApp → Danger Zone
 
 ---

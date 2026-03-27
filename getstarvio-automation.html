@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Starvio — Automation</title>
+<title>getstarvio — Automation</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -176,18 +176,18 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
 <div class="sidebar" id="sidebar">
   <div class="s-logo">
     <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
-    <span class="s-bname">Starvio</span>
+    <span class="s-bname">getstarvio</span>
   </div>
   <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
   <nav class="s-nav">
-    <a id="nav-dashboard" href="starvio-dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
-    <a id="nav-catat" href="starvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
-    <a id="nav-pelanggan" href="starvio-pelanggan.html" class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
-    <a id="nav-automation" href="starvio-automation.html" class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log" href="starvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
-    <a id="nav-kategori" href="starvio-kategori.html" class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
-    <a id="nav-billing" href="starvio-billing.html" class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
-    <a id="nav-settings" href="starvio-settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
+    <a id="nav-dashboard" href="getstarvio-dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a id="nav-catat" href="getstarvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan" href="getstarvio-pelanggan.html" class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="getstarvio-automation.html" class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
+    <a id="nav-log" href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-kategori" href="getstarvio-kategori.html" class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
+    <a id="nav-billing" href="getstarvio-billing.html" class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
+    <a id="nav-settings" href="getstarvio-settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
   </nav>
   <div class="s-counter">
     <div class="sc-n" id="sc-n">0</div>
@@ -262,7 +262,7 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
             <span style="font-size:16px">💳</span>
             <span style="font-size:13px;font-weight:700;color:var(--ink)">Kredit Reminder</span>
           </div>
-          <a href="starvio-billing.html" style="font-size:11px;font-weight:700;color:var(--lime-dk);text-decoration:none;background:var(--lime-bg);border:1px solid #c8f07a;padding:4px 10px;border-radius:99px">Top Up Kredit</a>
+          <a href="getstarvio-billing.html" style="font-size:11px;font-weight:700;color:var(--lime-dk);text-decoration:none;background:var(--lime-bg);border:1px solid #c8f07a;padding:4px 10px;border-radius:99px">Top Up Kredit</a>
         </div>
         <div style="display:flex;align-items:baseline;gap:6px;margin-top:8px">
           <span style="font-size:28px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1" id="credit-left">0</span>
@@ -364,7 +364,7 @@ var TEMPLATES = [
 /* == SHARED == */
 function loadU() {
   try {
-    var raw = localStorage.getItem('starvio_user')
+    var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     var u = JSON.parse(raw)
     if (u.DATA_VERSION !== 4) return null
@@ -374,7 +374,7 @@ function loadU() {
 }
 
 function saveU(u) {
-  localStorage.setItem('starvio_user', JSON.stringify(u))
+  localStorage.setItem('getstarvio_user', JSON.stringify(u))
 }
 
 function bootSidebar() {
@@ -411,8 +411,8 @@ function bootSidebar() {
   if (lostN > 0) { navLost.textContent = lostN; navLost.style.display = 'inline-flex' }
 }
 
-function resetDemo() { location.href = 'starvio-seed-data.html?auto=1' }
-function doLogout() { localStorage.removeItem('starvio_user'); location.href = 'starvio-login.html' }
+function resetDemo() { location.href = 'getstarvio-seed-data.html?auto=1' }
+function doLogout() { localStorage.removeItem('getstarvio_user'); location.href = 'getstarvio-login.html' }
 
 /* == SIDEBAR MOBILE == */
 function openSidebar() {
@@ -629,7 +629,7 @@ function renderFlows(U) {
   var el = document.getElementById('auto-flows')
 
   if (cats.length === 0) {
-    el.innerHTML = '<div class="empty">Belum ada kategori layanan. Buat di halaman <a href="starvio-kategori.html" style="color:var(--ink2);font-weight:600">Kategori</a>.</div>'
+    el.innerHTML = '<div class="empty">Belum ada kategori layanan. Buat di halaman <a href="getstarvio-kategori.html" style="color:var(--ink2);font-weight:600">Kategori</a>.</div>'
     return
   }
 
@@ -694,7 +694,7 @@ function renderFlows(U) {
 /* == BOOT == */
 function boot() {
   var U = loadU()
-  if (!U) { location.href = 'starvio-login.html'; return }
+  if (!U) { location.href = 'getstarvio-login.html'; return }
 
   // Timezone display
   var tzCity = (U.timezone || 'Asia/Jakarta').split('/')[1] || 'Jakarta'

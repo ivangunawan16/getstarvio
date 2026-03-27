@@ -1,4 +1,4 @@
-# Page: QR CHECK-IN (`starvio-checkin.html`)
+# Page: QR CHECK-IN (`getstarvio-checkin.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -12,7 +12,7 @@ Halaman publik — pelanggan scan QR dan self-register/check-in. Buka di HP pela
 
 ## Design
 
-- **Tidak ada sidebar.** Topbar hanya tampilkan logo Starvio + nama bisnis.
+- **Tidak ada sidebar.** Topbar hanya tampilkan logo getstarvio + nama bisnis.
 - Center-aligned, max-width 480px
 - Mobile-first — tombol besar, input nyaman di HP
 
@@ -64,7 +64,7 @@ Halaman publik — pelanggan scan QR dan self-register/check-in. Buka di HP pela
 
 ## Data
 
-- Baca `bizName` dari localStorage `starvio_user.bizName`
+- Baca `bizName` dari localStorage `getstarvio_user.bizName`
 - Jika tidak ada data: tampilkan error state "Bisnis ini belum setup layanan. Silakan hubungi staff."
 - Simpan langsung ke localStorage — update `customer.services[].date` atau tambah customer baru
 
@@ -72,7 +72,7 @@ Halaman publik — pelanggan scan QR dan self-register/check-in. Buka di HP pela
 
 ## Reference
 
-- **Version acuan:** `version 2.1/starvio-checkin.html` — satu-satunya version yang punya halaman checkin (tidak ada di v2.0)
+- **Version acuan:** `version 2.1/getstarvio-checkin.html` — satu-satunya version yang punya halaman checkin (tidak ada di v2.0)
 - **Tidak ada sidebar** — halaman publik, tampilan standalone
 - Auto-search setelah ≥10 digit — tidak perlu tekan tombol (ini penting untuk UX mobile)
 - `via: "qr"` bukan `"link"` — perbedaan kecil tapi krusial untuk analytics

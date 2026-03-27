@@ -1,4 +1,4 @@
-# Page: PELANGGAN (`starvio-pelanggan.html`)
+# Page: PELANGGAN (`getstarvio-pelanggan.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -10,7 +10,7 @@
 
 Halaman ini adalah CRM view — bukan untuk catat kunjungan. Catat kunjungan ada di **Catat Kunjungan**.
 
-> ⚠️ Halaman ini TIDAK punya tombol "Catat Kunjungan" atau "Kunjungan Hari Ini". Semua pencatatan terpusat di `starvio-catat-kunjungan.html`.
+> ⚠️ Halaman ini TIDAK punya tombol "Catat Kunjungan" atau "Kunjungan Hari Ini". Semua pencatatan terpusat di `getstarvio-catat-kunjungan.html`.
 
 ---
 
@@ -86,16 +86,16 @@ Per baris:
 - List kunjungan hari ini
 - Pre-select services modal
 
-> Semua itu ada di halaman **Catat Kunjungan** (`starvio-catat-kunjungan.html`)
+> Semua itu ada di halaman **Catat Kunjungan** (`getstarvio-catat-kunjungan.html`)
 
 ---
 
 ## Reference
 
-- **Version acuan:** `version 2.0/starvio-pelanggan.html` — v2.1 memotong ~39% (hilang progress bar per service, riwayat reminder, edit modal)
+- **Version acuan:** `version 2.0/getstarvio-pelanggan.html` — v2.1 memotong ~39% (hilang progress bar per service, riwayat reminder, edit modal)
 - **Jangan pakai v2.1** sebagai acuan — terlalu stripped
 - Edit modal = untuk record/koreksi services (date picker + service checklist), bukan interval customization
-- nav-catat href = starvio-catat-kunjungan.html
+- nav-catat href = getstarvio-catat-kunjungan.html
 - **Perubahan v3:** Tombol "Kunjungan Hari Ini" dan semua aksi catat kunjungan dihapus dari halaman ini — dipindah ke Catat Kunjungan
 
 ---
@@ -107,4 +107,4 @@ Per baris:
 | 2026-03-26 | File dibuat, spec awal |
 | 2026-03-26 | Tambah Reference section — acuan v2.0, pre-select logic, tombol utama |
 | 2026-03-26 | **Update v3:** Hapus semua aksi catat kunjungan (tombol "Kunjungan Hari Ini", pre-select modal, shortcut dari detail panel). Halaman ini murni CRM view. Tambah "Yang TIDAK Ada" section untuk clarity |
-| 2026-03-26 | Sync: Edit modal = date picker + service checklist (recording services), bukan interval customization. Detail panel has Edit button only — no "Catat Kunjungan" shortcut. nav-catat href = starvio-catat-kunjungan.html. |
+| 2026-03-26 | Sync: Edit modal = date picker + service checklist (recording services), bukan interval customization. Detail panel has Edit button only — no "Catat Kunjungan" shortcut. nav-catat href = getstarvio-catat-kunjungan.html. |

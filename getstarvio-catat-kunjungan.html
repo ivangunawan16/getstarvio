@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Starvio — Catat Kunjungan</title>
+<title>getstarvio — Catat Kunjungan</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -235,18 +235,18 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
 <div class="sidebar" id="sidebar">
   <div class="s-logo">
     <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
-    <span class="s-bname">Starvio</span>
+    <span class="s-bname">getstarvio</span>
   </div>
   <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
   <nav class="s-nav">
-    <a id="nav-dashboard"  href="starvio-dashboard.html"         class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
-    <a id="nav-catat"      href="starvio-catat-kunjungan.html"   class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
-    <a id="nav-pelanggan"  href="starvio-pelanggan.html"         class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
-    <a id="nav-automation" href="starvio-automation.html"        class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log"        href="starvio-log-reminder.html"      class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
-    <a id="nav-kategori"   href="starvio-kategori.html"          class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
-    <a id="nav-billing"    href="starvio-billing.html"           class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
-    <a id="nav-settings"   href="starvio-settings.html"          class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
+    <a id="nav-dashboard"  href="getstarvio-dashboard.html"         class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a id="nav-catat"      href="getstarvio-catat-kunjungan.html"   class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan"  href="getstarvio-pelanggan.html"         class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="getstarvio-automation.html"        class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
+    <a id="nav-log"        href="getstarvio-log-reminder.html"      class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-kategori"   href="getstarvio-kategori.html"          class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
+    <a id="nav-billing"    href="getstarvio-billing.html"           class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
+    <a id="nav-settings"   href="getstarvio-settings.html"          class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
   </nav>
   <div class="s-counter">
     <div class="sc-n" id="sc-n">0</div>
@@ -406,7 +406,7 @@ var U = null
 
 function loadU() {
   try {
-    var raw = localStorage.getItem('starvio_user')
+    var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     var u = JSON.parse(raw)
     if (u.DATA_VERSION !== 4) return null
@@ -416,7 +416,7 @@ function loadU() {
 }
 
 function saveU(u) {
-  localStorage.setItem('starvio_user', JSON.stringify(u))
+  localStorage.setItem('getstarvio_user', JSON.stringify(u))
 }
 
 function bootSidebar() {
@@ -429,12 +429,12 @@ function bootSidebar() {
 }
 
 function resetDemo() {
-  location.href = 'starvio-seed-data.html?auto=1'
+  location.href = 'getstarvio-seed-data.html?auto=1'
 }
 
 function doLogout() {
-  localStorage.removeItem('starvio_user')
-  location.href = 'starvio-login.html'
+  localStorage.removeItem('getstarvio_user')
+  location.href = 'getstarvio-login.html'
 }
 
 /* ── SIDEBAR MOBILE ── */
@@ -820,7 +820,7 @@ function renderTodayVisits() {
     html += '<div class="visit-row">' +
       '<div class="avatar">' + initials(cx.name) + '</div>' +
       '<div class="visit-info">' +
-        '<div class="visit-name"><a href="starvio-pelanggan.html?cx=' + encodeURIComponent(cx.wa) + '">' + escHtml(cx.name) + '</a></div>' +
+        '<div class="visit-name"><a href="getstarvio-pelanggan.html?cx=' + encodeURIComponent(cx.wa) + '">' + escHtml(cx.name) + '</a></div>' +
         '<div class="visit-chips">' + chips + '</div>' +
       '</div></div>'
   })
@@ -873,7 +873,7 @@ document.getElementById('m-logout').addEventListener('click', function(e) {
 /* ── INIT ── */
 window.addEventListener('DOMContentLoaded', function() {
   U = loadU()
-  if (!U) { location.href = 'starvio-login.html'; return }
+  if (!U) { location.href = 'getstarvio-login.html'; return }
 
   bootSidebarData()
   bootSidebar()

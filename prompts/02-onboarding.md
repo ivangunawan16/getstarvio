@@ -1,4 +1,4 @@
-# Page: ONBOARDING (`starvio-onboarding.html`)
+# Page: ONBOARDING (`getstarvio-onboarding.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -39,10 +39,10 @@
 
 ### Step 4 — Selesai + QR Check-in (merged)
 - Tampilkan success message: "[nama], sistem aktif!"
-- QR Check-in preview: QR code + URL `starvio.app/checkin/[bizSlug]`
+- QR Check-in preview: QR code + URL `getstarvio.com/checkin/[bizSlug]`
 - Tombol: Salin link, Share WA, Print QR
 - Reminder credit pill: tampilkan 100 kredit gratis
-- CTA: "Mulai pakai Starvio →" → redirect ke dashboard
+- CTA: "Mulai pakai getstarvio →" → redirect ke dashboard
 
 ---
 
@@ -58,7 +58,7 @@
 
 ## Reference
 
-Flow & struktur mengacu ke built `starvio-onboarding.html`. Old v2.0 had 5 steps — v3 merged Step 3 (QR Check-in) and Step 5 (Done) into Step 4.
+Flow & struktur mengacu ke built `getstarvio-onboarding.html`. Old v2.0 had 5 steps — v3 merged Step 3 (QR Check-in) and Step 5 (Done) into Step 4.
 
 ---
 

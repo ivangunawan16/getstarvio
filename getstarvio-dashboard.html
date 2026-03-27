@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Starvio — Dashboard</title>
+<title>getstarvio — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -175,18 +175,18 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 <div class="sidebar" id="sidebar">
   <div class="s-logo">
     <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
-    <span class="s-bname">Starvio</span>
+    <span class="s-bname">getstarvio</span>
   </div>
   <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
   <nav class="s-nav">
-    <a id="nav-dashboard"  href="starvio-dashboard.html"    class="nav-item active"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
-    <a id="nav-catat"      href="starvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
-    <a id="nav-pelanggan"  href="starvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
-    <a id="nav-automation" href="starvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log"        href="starvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
-    <a id="nav-kategori"   href="starvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
-    <a id="nav-billing"    href="starvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
-    <a id="nav-settings"   href="starvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
+    <a id="nav-dashboard"  href="getstarvio-dashboard.html"    class="nav-item active"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a id="nav-catat"      href="getstarvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan"  href="getstarvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="getstarvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
+    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-kategori"   href="getstarvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
+    <a id="nav-billing"    href="getstarvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
+    <a id="nav-settings"   href="getstarvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
   </nav>
   <div class="s-counter">
     <div class="sc-n" id="sc-n">0</div>
@@ -238,7 +238,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
           <div>
             <div style="font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.3px" id="h-greeting">Selamat pagi 👋</div>
             <div style="font-size:12px;color:var(--ink3);margin-top:4px" id="h-date"></div>
-            <a href="starvio-automation.html" id="h-auto-badge" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;text-decoration:none;cursor:pointer;transition:opacity .15s" title="Klik untuk buka pengaturan Automation"></a>
+            <a href="getstarvio-automation.html" id="h-auto-badge" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;text-decoration:none;cursor:pointer;transition:opacity .15s" title="Klik untuk buka pengaturan Automation"></a>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;text-align:center;min-width:80px">
@@ -259,17 +259,17 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
       <!-- ⑤ QUICK LINKS (action cards) -->
       <div class="ql-grid" style="margin-bottom:14px">
-        <a href="starvio-catat-kunjungan.html" class="ql-card">
+        <a href="getstarvio-catat-kunjungan.html" class="ql-card">
           <div class="ql-icon">📋</div>
           <div class="ql-title">Catat Kunjungan</div>
           <div class="ql-sub">Catat pelanggan yang datang hari ini</div>
         </a>
-        <a href="starvio-pelanggan.html?action=add" class="ql-card">
+        <a href="getstarvio-pelanggan.html?action=add" class="ql-card">
           <div class="ql-icon">👥</div>
           <div class="ql-title">Tambah Pelanggan</div>
           <div class="ql-sub">Daftarkan pelanggan baru manual</div>
         </a>
-        <a href="starvio-automation.html" class="ql-card">
+        <a href="getstarvio-automation.html" class="ql-card">
           <div class="ql-icon">🤖</div>
           <div class="ql-title">Atur Automation</div>
           <div class="ql-sub">Konfigurasi reminder otomatis</div>
@@ -280,7 +280,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
       <div class="credit-alert" id="credit-alert">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><path d="M8 2l6 11H2L8 2z"/><path d="M8 7v3M8 11.5v.5"/></svg>
         <span id="credit-alert-text"></span>
-        <a href="starvio-billing.html" style="font-weight:700;color:inherit;margin-left:auto;white-space:nowrap">Top up →</a>
+        <a href="getstarvio-billing.html" style="font-weight:700;color:inherit;margin-left:auto;white-space:nowrap">Top up →</a>
       </div>
 
       <!-- ② METRICS GRID -->
@@ -314,7 +314,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"><path d="M8 2l6 11H2L8 2z"/><path d="M8 7v3M8 11.5v.5"/></svg>
             Pelanggan Perlu Perhatian
           </div>
-          <a href="starvio-pelanggan.html" style="font-size:11px;font-weight:600;color:var(--ink3);text-decoration:underline">Lihat semua →</a>
+          <a href="getstarvio-pelanggan.html" style="font-size:11px;font-weight:600;color:var(--ink3);text-decoration:underline">Lihat semua →</a>
         </div>
         <div id="attn-list" style="display:flex;flex-direction:column;gap:7px"></div>
       </div>
@@ -323,7 +323,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
       <div id="reminder-section" style="display:none;margin-bottom:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <div style="font-size:13px;font-weight:700;color:var(--ink)">Jadwal Reminder Hari Ini</div>
-          <a href="starvio-log-reminder.html" style="font-size:11px;font-weight:600;color:var(--ink3);text-decoration:underline">Lihat log →</a>
+          <a href="getstarvio-log-reminder.html" style="font-size:11px;font-weight:600;color:var(--ink3);text-decoration:underline">Lihat log →</a>
         </div>
         <div id="reminder-list" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden"></div>
       </div>
@@ -333,7 +333,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
         <div style="font-size:36px;margin-bottom:12px">🎯</div>
         <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Belum ada pelanggan</div>
         <div style="font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:16px">Pasang QR di kasir kamu atau tambah pelanggan manual.</div>
-        <a href="starvio-catat-kunjungan.html" class="btn btn-lime" style="text-decoration:none">Mulai Kumpulkan Pelanggan</a>
+        <a href="getstarvio-catat-kunjungan.html" class="btn btn-lime" style="text-decoration:none">Mulai Kumpulkan Pelanggan</a>
       </div>
 
     </div>
@@ -362,7 +362,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 /* ── SHARED ── */
 function loadU() {
   try {
-    const raw = localStorage.getItem('starvio_user')
+    const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
     if (u.DATA_VERSION !== 4) return null
@@ -382,12 +382,12 @@ function bootSidebar() {
 }
 
 function resetDemo() {
-  location.href = 'starvio-seed-data.html?auto=1'
+  location.href = 'getstarvio-seed-data.html?auto=1'
 }
 
 function doLogout() {
-  localStorage.removeItem('starvio_user')
-  location.href = 'starvio-login.html'
+  localStorage.removeItem('getstarvio_user')
+  location.href = 'getstarvio-login.html'
 }
 
 /* ── STATUS LOGIC ── */
@@ -454,10 +454,10 @@ function renderFeed(U) {
   // Reminder events
   rems.forEach(function(r) {
     if (r.status === 'terkirim' && r.sentAt) {
-      events.push({ type: 'reminder_sent', icon: '\uD83D\uDCE9', text: 'Reminder terkirim ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: r.sentAt, link: 'starvio-log-reminder.html', gagal: false })
+      events.push({ type: 'reminder_sent', icon: '\uD83D\uDCE9', text: 'Reminder terkirim ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: r.sentAt, link: 'getstarvio-log-reminder.html', gagal: false })
     } else if (r.status === 'gagal') {
       var d = r.sentAt || r.scheduledAt
-      events.push({ type: 'reminder_gagal', icon: '\u274C', text: 'Reminder gagal ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: d, link: 'starvio-log-reminder.html', gagal: true })
+      events.push({ type: 'reminder_gagal', icon: '\u274C', text: 'Reminder gagal ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: d, link: 'getstarvio-log-reminder.html', gagal: true })
     }
   })
 
@@ -466,7 +466,7 @@ function renderFeed(U) {
     if (cx.via === 'qr' && cx.services && cx.services.length > 0) {
       // Use earliest service date as join date
       var earliest = cx.services.reduce(function(min, s) { return s.date < min ? s.date : min }, cx.services[0].date)
-      events.push({ type: 'new_cx', icon: '\uD83D\uDC64', text: 'Pelanggan baru: <strong>' + cx.name + '</strong> via QR check-in', date: earliest, link: 'starvio-pelanggan.html', gagal: false })
+      events.push({ type: 'new_cx', icon: '\uD83D\uDC64', text: 'Pelanggan baru: <strong>' + cx.name + '</strong> via QR check-in', date: earliest, link: 'getstarvio-pelanggan.html', gagal: false })
     }
   })
 
@@ -474,7 +474,7 @@ function renderFeed(U) {
   cxs.forEach(function(cx) {
     (cx.services || []).forEach(function(svc) {
       if (svc.date) {
-        events.push({ type: 'visit', icon: '\uD83D\uDCCB', text: 'Kunjungan dicatat: <strong>' + cx.name + '</strong> — ' + (svc.icon || '') + ' ' + svc.name, date: svc.date, link: 'starvio-pelanggan.html', gagal: false })
+        events.push({ type: 'visit', icon: '\uD83D\uDCCB', text: 'Kunjungan dicatat: <strong>' + cx.name + '</strong> — ' + (svc.icon || '') + ' ' + svc.name, date: svc.date, link: 'getstarvio-pelanggan.html', gagal: false })
       }
     })
   })
@@ -500,7 +500,7 @@ function renderFeed(U) {
 /* ── BOOT ── */
 function boot() {
   const U = loadU()
-  if (!U) { location.href = 'starvio-login.html'; return }
+  if (!U) { location.href = 'getstarvio-login.html'; return }
 
   const cxs = U.customers || []
   const cats = U.cats || []
@@ -642,7 +642,7 @@ function boot() {
         '<div style="font-size:11px;color:var(--ink2);margin-top:1px">' + svcName + ' · ' + label + '</div></div></div>'
     }).join('')
     if (attnCxs.length > 5) {
-      attnList.innerHTML += '<div style="font-size:11px;color:var(--ink3);padding:4px 2px">+' + (attnCxs.length - 5) + ' lainnya — <a href="starvio-pelanggan.html" style="color:var(--ink3);text-decoration:underline">lihat semua</a></div>'
+      attnList.innerHTML += '<div style="font-size:11px;color:var(--ink3);padding:4px 2px">+' + (attnCxs.length - 5) + ' lainnya — <a href="getstarvio-pelanggan.html" style="color:var(--ink3);text-decoration:underline">lihat semua</a></div>'
     }
   }
 

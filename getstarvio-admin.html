@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Starvio Admin · Command Center</title>
+<title>getstarvio Admin · Command Center</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -213,7 +213,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
     <div class="gate-mark">
       <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5L10 6.5H15L11 9.5L12.5 14L8 11L3.5 14L5 9.5L1 6.5H6L8 1.5Z" fill="#1a1917"/></svg>
     </div>
-    <div class="gate-title">Starvio Admin</div>
+    <div class="gate-title">getstarvio Admin</div>
     <div class="gate-sub">Command Center · Internal Only</div>
     <form onsubmit="return tryLogin(event)">
       <input class="gate-inp" id="gate-pw" type="password" placeholder="Password" autofocus>
@@ -232,7 +232,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
       <div class="tb-mark">
         <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5L10 6.5H15L11 9.5L12.5 14L8 11L3.5 14L5 9.5L1 6.5H6L8 1.5Z" fill="#1a1917"/></svg>
       </div>
-      <span class="tb-title">Starvio Admin</span>
+      <span class="tb-title">getstarvio Admin</span>
       <span class="tb-badge">INTERNAL</span>
     </div>
     <div class="tb-right">
@@ -548,7 +548,7 @@ function tryLogin(e) {
   e.preventDefault();
   var pw = document.getElementById('gate-pw');
   var err = document.getElementById('gate-error');
-  if (pw.value === 'starvio2026') {
+  if (pw.value === 'getstarvio2026') {
     document.getElementById('gate').classList.add('hidden');
     document.getElementById('shell').classList.remove('hidden');
     renderTable();
@@ -901,7 +901,7 @@ function recalcTier(n) {
 
 function loadPlanConfig() {
   try {
-    var raw = localStorage.getItem('starvio_user')
+    var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return
     var u = JSON.parse(raw)
     var pc = u.planConfig
@@ -941,11 +941,11 @@ function savePlanConfig() {
   }
 
   try {
-    var raw = localStorage.getItem('starvio_user')
+    var raw = localStorage.getItem('getstarvio_user')
     if (raw) {
       var u = JSON.parse(raw)
       u.planConfig = planConfig
-      localStorage.setItem('starvio_user', JSON.stringify(u))
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
     }
   } catch(e) {}
 

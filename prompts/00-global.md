@@ -1,22 +1,22 @@
-# Starvio v3 — GLOBAL RULES
+# getstarvio v3 — GLOBAL RULES
 **Paste file ini PERTAMA sebelum file page manapun.**
 
 ---
 
 ## PRIME DIRECTIVE
 
-Kamu sedang membangun halaman untuk **Starvio** — WhatsApp-based customer return reminder SaaS untuk bisnis beauty/wellness Indonesia (salon, spa, klinik, barbershop, dll.).
+Kamu sedang membangun halaman untuk **getstarvio** — WhatsApp-based customer return reminder SaaS untuk bisnis beauty/wellness Indonesia (salon, spa, klinik, barbershop, dll.).
 
 **Tiga aturan yang override segalanya:**
-1. **Lock design.** Setiap pixel ikuti `starvio-design-system.md`. Jangan ciptakan warna, font, spacing, atau komponen yang tidak ada di sana. Kalau tidak yakin, tanya — jangan tebak.
-2. **Lock data schema.** Semua page baca dari dan tulis ke satu localStorage key: `starvio_user`. Schema ada di bawah. Jangan tambah key baru atau ubah nama field.
+1. **Lock design.** Setiap pixel ikuti `getstarvio-design-system.md`. Jangan ciptakan warna, font, spacing, atau komponen yang tidak ada di sana. Kalau tidak yakin, tanya — jangan tebak.
+2. **Lock data schema.** Semua page baca dari dan tulis ke satu localStorage key: `getstarvio_user`. Schema ada di bawah. Jangan tambah key baru atau ubah nama field.
 3. **Lock flow.** Flow per page didefinisikan di file masing-masing. Jangan tambah step, hapus step, atau ubah urutan tanpa diminta.
 
 ---
 
 ## PRODUCT CONTEXT
 
-**Yang dilakukan Starvio:** Membantu bisnis beauty/wellness kecil melacak kapan tiap pelanggan terakhir kali datang untuk tiap layanan, lalu otomatis kirim reminder WhatsApp saat waktunya balik.
+**Yang dilakukan getstarvio:** Membantu bisnis beauty/wellness kecil melacak kapan tiap pelanggan terakhir kali datang untuk tiap layanan, lalu otomatis kirim reminder WhatsApp saat waktunya balik.
 
 **Billing model:**
 - 1 kredit = 1 WhatsApp reminder terkirim
@@ -38,7 +38,7 @@ Kamu sedang membangun halaman untuk **Starvio** — WhatsApp-based customer retu
 
 ## DESIGN SYSTEM
 
-**Selalu load `starvio-design-system.md` sebelum nulis CSS atau HTML apapun.**
+**Selalu load `getstarvio-design-system.md` sebelum nulis CSS atau HTML apapun.**
 
 Key rules yang tidak boleh dilanggar:
 - Sidebar background = `var(--bg2)` — LIGHT, tidak pernah dark
@@ -52,7 +52,7 @@ Key rules yang tidak boleh dilanggar:
 
 ---
 
-## DATA SCHEMA — localStorage key: `starvio_user`
+## DATA SCHEMA — localStorage key: `getstarvio_user`
 
 ```js
 {
@@ -109,7 +109,16 @@ Key rules yang tidak boleh dilanggar:
       status: "terkirim" | "gagal" | "pending",
       kredit: number           // selalu 1
     }
-  ]
+  ],
+  planConfig: {                // opsional — di-set dari admin page, dibaca oleh billing page
+    freeBonus: number,         // welcome bonus credits (default 100)
+    subCredits: number,        // subscription credits/bulan (default 250)
+    subPrice: number,          // subscription price/bulan (default 250000)
+    topupPrice: number,        // base harga per kredit (default 1000)
+    tiers: [                   // 3 top-up package tiers
+      { price: number, credits: number }
+    ]
+  }
 }
 ```
 
@@ -138,24 +147,24 @@ function worstStatus(customer) {
 
 | File | Title | Nav Label | Nav Pattern |
 |---|---|---|---|
-| `starvio-login.html` | Login | — | No nav |
-| `starvio-onboarding.html` | Setup Awal | — | No nav |
-| `starvio-dashboard.html` | Dashboard | 🏠 Dashboard | Sidebar |
-| `starvio-catat-kunjungan.html` | Catat Kunjungan | 📋 Catat Kunjungan | Sidebar |
-| `starvio-pelanggan.html` | Pelanggan | 👥 Pelanggan | Sidebar |
-| `starvio-automation.html` | Automation | 🤖 Automation | Sidebar |
-| `starvio-log-reminder.html` | Log Reminder | 📜 Log Reminder | Sidebar |
-| `starvio-kategori.html` | Kategori Layanan | 🏷️ Kategori | Sidebar |
-| `starvio-billing.html` | Billing & Kredit | 💳 Billing | Sidebar |
-| `starvio-settings.html` | Settings | ⚙️ Settings | Sidebar |
-| `starvio-checkin.html` | QR Check-in | — | Topbar only (public-facing) |
-| `starvio-seed-data.html` | Seed Data | — | No nav (dev tool) |
-| `starvio-admin.html` | Command Center | — | **INTERNAL ONLY** — tidak ada di sidebar user |
+| `getstarvio-login.html` | Login | — | No nav |
+| `getstarvio-onboarding.html` | Setup Awal | — | No nav |
+| `getstarvio-dashboard.html` | Dashboard | 🏠 Dashboard | Sidebar |
+| `getstarvio-catat-kunjungan.html` | Catat Kunjungan | 📋 Catat Kunjungan | Sidebar |
+| `getstarvio-pelanggan.html` | Pelanggan | 👥 Pelanggan | Sidebar |
+| `getstarvio-automation.html` | Automation | 🤖 Automation | Sidebar |
+| `getstarvio-log-reminder.html` | Log Reminder | 📜 Log Reminder | Sidebar |
+| `getstarvio-kategori.html` | Kategori Layanan | 🏷️ Kategori | Sidebar |
+| `getstarvio-billing.html` | Billing & Kredit | 💳 Billing | Sidebar |
+| `getstarvio-settings.html` | Settings | ⚙️ Settings | Sidebar |
+| `getstarvio-checkin.html` | QR Check-in | — | Topbar only (public-facing) |
+| `getstarvio-seed-data.html` | Seed Data | — | No nav (dev tool) |
+| `getstarvio-admin.html` | Command Center | — | **INTERNAL ONLY** — tidak ada di sidebar user |
 
 **Sidebar nav order** (exact, setiap sidebar page):
 Dashboard → Catat Kunjungan → Pelanggan → Automation → Log Reminder → Kategori → Billing → Settings
 
-> ⚠️ `starvio-admin.html` TIDAK ada di sidebar user. Ini tool internal tim Starvio saja.
+> ⚠️ `getstarvio-admin.html` TIDAK ada di sidebar user. Ini tool internal tim getstarvio saja.
 
 ---
 
@@ -166,7 +175,7 @@ Setiap page harus link ke halaman lain dengan benar. Tidak ada broken `href`.
 | From | Action | Goes to |
 |---|---|---|
 | Login | Setelah auth | Onboarding (baru) atau Dashboard (returning) |
-| Onboarding Step 4 | CTA "Mulai pakai Starvio" | Dashboard |
+| Onboarding Step 4 | CTA "Mulai pakai getstarvio" | Dashboard |
 | Dashboard | "Lihat semua" (pelanggan) | Pelanggan |
 | Dashboard | "Lihat log" | Log Reminder |
 | Dashboard | Quick Link: Catat Kunjungan | Catat Kunjungan |
@@ -225,9 +234,9 @@ phoneInput.addEventListener('input', function () {
 6. **Jangan taruh jenis bisnis (Salon, Spa, dll.) di free-text input.** Selalu dropdown/select.
 7. **Jangan izinkan input icon manual.** Icon selalu dipilih dari emoji dropdown pre-made.
 8. **Jangan buat template WA bisa diedit.** Template pre-made dan read-only — admin hanya bisa SELECT, tidak bisa edit teks.
-9. **Jangan hardcode demo data sebagai sumber data.** Selalu baca dari `localStorage.getItem('starvio_user')`. Jika null, tampilkan empty states atau redirect ke onboarding.
+9. **Jangan hardcode demo data sebagai sumber data.** Selalu baca dari `localStorage.getItem('getstarvio_user')`. Jika null, tampilkan empty states atau redirect ke onboarding.
 10. **Jangan campur navigation pattern.** Sidebar pages pakai sidebar. Checkin pakai topbar-only. Login/Onboarding tidak ada nav.
-11. **Jangan taruh Command Center di sidebar user.** `starvio-admin.html` adalah tool internal Starvio — tidak pernah dilink dari app user.
+11. **Jangan taruh Command Center di sidebar user.** `getstarvio-admin.html` adalah tool internal getstarvio — tidak pernah dilink dari app user.
 12. **Jangan simpan nomor HP dengan leading `0`.** Selalu normalize sebelum save: `081234` → `6281234`. Selalu apply `normalizePhone()` di setiap WA input field pada event `input`.
 
 ---
@@ -237,10 +246,10 @@ phoneInput.addEventListener('input', function () {
 Nama fungsi harus sama persis di setiap halaman:
 
 ```js
-// Load starvio_user dari localStorage. Return null jika tidak ada atau schema lama.
+// Load getstarvio_user dari localStorage. Return null jika tidak ada atau schema lama.
 function loadU() {
   try {
-    const raw = localStorage.getItem('starvio_user')
+    const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
     if (u.DATA_VERSION !== 4) return null  // force reset jika schema lama
@@ -263,13 +272,13 @@ function bootSidebar() {
 
 // Redirect ke seed page untuk reset data.
 function resetDemo() {
-  location.href = 'starvio-seed-data.html?auto=1'
+  location.href = 'getstarvio-seed-data.html?auto=1'
 }
 
 // Logout: clear localStorage + redirect ke login.
 function doLogout() {
-  localStorage.removeItem('starvio_user')
-  location.href = 'starvio-login.html'
+  localStorage.removeItem('getstarvio_user')
+  location.href = 'getstarvio-login.html'
 }
 ```
 
@@ -289,14 +298,14 @@ Versi saat ini: **4**. Selalu include di DUMMY object seed data.
 Setiap `<a>` nav item harus punya `id` yang sama persis di semua halaman:
 
 ```html
-<a id="nav-dashboard"  href="starvio-dashboard.html"    class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
-<a id="nav-catat"      href="starvio-catat-kunjungan.html"    class="nav-item"><span class="nav-icon">📋</span>Catat Kunjungan</a>
-<a id="nav-pelanggan"  href="starvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span>Pelanggan</a>
-<a id="nav-automation" href="starvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span>Automation</a>
-<a id="nav-log"        href="starvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span>Log Reminder</a>
-<a id="nav-kategori"   href="starvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span>Kategori</a>
-<a id="nav-billing"    href="starvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span>Billing</a>
-<a id="nav-settings"   href="starvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span>Settings</a>
+<a id="nav-dashboard"  href="getstarvio-dashboard.html"    class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
+<a id="nav-catat"      href="getstarvio-catat-kunjungan.html"    class="nav-item"><span class="nav-icon">📋</span>Catat Kunjungan</a>
+<a id="nav-pelanggan"  href="getstarvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span>Pelanggan</a>
+<a id="nav-automation" href="getstarvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span>Automation</a>
+<a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span>Log Reminder</a>
+<a id="nav-kategori"   href="getstarvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span>Kategori</a>
+<a id="nav-billing"    href="getstarvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span>Billing</a>
+<a id="nav-settings"   href="getstarvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span>Settings</a>
 ```
 
 ---
@@ -349,18 +358,18 @@ V3 rebuild dari scratch tapi referensi konten/flow dari versi yang paling baik p
 
 | Halaman | Reference | Alasan |
 |---|---|---|
-| `starvio-login.html` | **v2.1** | Login v2.1 lebih polish (216→554 baris) |
-| `starvio-onboarding.html` | **v3** ⚠️ FLOW LOCKED (4 steps) | v2.0 had 5 steps, v3 merged to 4 steps |
-| `starvio-dashboard.html` | **v2.0** | v2.1 dipotong 42% — banyak fitur hilang |
-| `starvio-catat-kunjungan.html` | **v2.0** | Halaman utama Catat Kunjungan (3-step modal) |
-| `starvio-pelanggan.html` | **v2.0** | v2.1 dipotong 39% |
-| `starvio-automation.html` | **v2.0** | Lebih lengkap |
-| `starvio-log-reminder.html` | **v2.0** | Lebih lengkap |
-| `starvio-kategori.html` | **v2.1** | v2.1 lebih baik di sini |
-| `starvio-billing.html` | **v2.0** | v2.1 dipotong 53% — jauh lebih buruk |
-| `starvio-checkin.html` | **v2.1** | Hanya ada di v2.1 |
-| `starvio-settings.html` | **v3** | Sudah dibangun. Includes QR check-in (dari old Kumpulkan) |
-| `starvio-admin.html` | **v2.0** `starvio-command-center.html` | v2.0 lebih lengkap (972 baris) |
+| `getstarvio-login.html` | **v2.1** | Login v2.1 lebih polish (216→554 baris) |
+| `getstarvio-onboarding.html` | **v3** ⚠️ FLOW LOCKED (4 steps) | v2.0 had 5 steps, v3 merged to 4 steps |
+| `getstarvio-dashboard.html` | **v2.0** | v2.1 dipotong 42% — banyak fitur hilang |
+| `getstarvio-catat-kunjungan.html` | **v2.0** | Halaman utama Catat Kunjungan (3-step modal) |
+| `getstarvio-pelanggan.html` | **v2.0** | v2.1 dipotong 39% |
+| `getstarvio-automation.html` | **v2.0** | Lebih lengkap |
+| `getstarvio-log-reminder.html` | **v2.0** | Lebih lengkap |
+| `getstarvio-kategori.html` | **v2.1** | v2.1 lebih baik di sini |
+| `getstarvio-billing.html` | **v2.0** | v2.1 dipotong 53% — jauh lebih buruk |
+| `getstarvio-checkin.html` | **v2.1** | Hanya ada di v2.1 |
+| `getstarvio-settings.html` | **v3** | Sudah dibangun. Includes QR check-in (dari old Kumpulkan) |
+| `getstarvio-admin.html` | **v2.0** `getstarvio-command-center.html` | v2.0 lebih lengkap (972 baris) |
 
 **Cara pakai reference:** Baca file reference untuk memahami fitur yang perlu ada, tapi **jangan copy CSS-nya**. Rebuild UI dari design system v3. Yang diambil: logic JS, data flow, dan daftar fitur.
 
@@ -375,7 +384,7 @@ Build satu halaman per sesi. Untuk setiap halaman:
 4. Tambah CSS mobile responsive (hamburger, breakpoints)
 5. Build HTML structure
 6. Tambah JS: `loadU()` → render functions → `bootSidebar()`
-7. Test dengan seed data dari `starvio-seed-data.html`
+7. Test dengan seed data dari `getstarvio-seed-data.html`
 
 **Penamaan file:** Exact filename seperti di Page Directory. Jangan rename.
 **Fonts:** Selalu include Google Fonts import. Jangan embed atau dihilangkan.
@@ -389,6 +398,7 @@ Build satu halaman per sesi. Untuk setiap halaman:
 
 | Tanggal | Perubahan |
 |---|---|
-| 2026-03-26 | Sync with built HTML: `starvio-catat-kunjungan.html` is "Catat Kunjungan" page (halaman utama, bukan redirect). Nav ID = `nav-catat` pointing to `starvio-catat-kunjungan.html`. Onboarding = 4 steps (not 5). Settings includes QR check-in section. loadU() computes remLeft = subCreditsLeft + topupCreditsLeft. |
+| 2026-03-26 | Sync with built HTML: `getstarvio-catat-kunjungan.html` is "Catat Kunjungan" page (halaman utama, bukan redirect). Nav ID = `nav-catat` pointing to `getstarvio-catat-kunjungan.html`. Onboarding = 4 steps (not 5). Settings includes QR check-in section. loadU() computes remLeft = subCreditsLeft + topupCreditsLeft. |
 | 2026-03-26 | Sync: subCreditsMax=375 (was 300), content max-width=960px (was 900px), subscription=375 kredit/bulan (250 base + 125 early access +50%), top-up base Rp 1.000/kredit |
 | 2026-03-27 | Subscription credits changed: 375 → 250 (flat, no early access bonus). subCreditsMax=250, remMax=250 for subscribers. Early access +50% bonus now applies ONLY to top-up packages. |
+| 2026-03-27 | Added `planConfig` to data schema — optional field set by admin page, read by billing page for dynamic pricing. Log Reminder table mobile responsive (card layout <768px). |

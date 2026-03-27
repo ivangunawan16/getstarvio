@@ -1,4 +1,4 @@
-# Page: SEED DATA (`starvio-seed-data.html`)
+# Page: SEED DATA (`getstarvio-seed-data.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -13,10 +13,10 @@ Dev/demo tool untuk inject dummy data ke localStorage. Dipakai untuk testing sem
 ## Must-Have
 
 ### Tombol Utama
-- Tombol "Inject Data" → `localStorage.setItem('starvio_user', JSON.stringify(DUMMY))`
-- Tombol "Clear Data" → `localStorage.removeItem('starvio_user')`
+- Tombol "Inject Data" → `localStorage.setItem('getstarvio_user', JSON.stringify(DUMMY))`
+- Tombol "Clear Data" → `localStorage.removeItem('getstarvio_user')`
 - Status feedback setelah aksi: "✅ Data berhasil diinjeksi" / "🗑️ Data dihapus"
-- Link ke semua halaman untuk quick navigation setelah inject
+- Link ke semua halaman untuk quick navigation setelah inject — nama link harus match sidebar (contoh: "Catat Kunjungan" bukan "Catat", "Log Reminder" bukan "Log")
 
 ---
 
@@ -52,7 +52,7 @@ function applyState(state) {
   const u = loadU()
   if (!u) return alert('Inject data dulu!')
   Object.assign(u, state)   // override hanya billing fields
-  localStorage.setItem('starvio_user', JSON.stringify(u))
+  localStorage.setItem('getstarvio_user', JSON.stringify(u))
   // update UI label + highlight tab aktif
 }
 ```
@@ -125,3 +125,4 @@ notifSettings: { lowCredit:true, criticalCredit:true, subLow:true, preRenewal:tr
 | 2026-03-26 | Sync: plan=subscriber, subCreditsLeft=237, topupCreditsLeft=50, remMax=300. Has billingHistory array (5 entries) and notifSettings. remLeft is computed (not stored). |
 | 2026-03-26 | Sync: subCreditsMax=375. 9 billing presets (not 6). billingHistory format: delta/balAfter/label/note. Dev panel has billing condition switcher. |
 | 2026-03-27 | Subscription credits: 375 → 250 (flat, no early access bonus). subCreditsMax=250, remMax=250. |
+| 2026-03-27 | Quick nav link names updated to match sidebar: "Catat Kunjungan" (was "Catat"), "Log Reminder" (was "Log"). |

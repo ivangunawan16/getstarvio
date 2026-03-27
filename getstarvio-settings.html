@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Starvio — Settings</title>
+<title>getstarvio — Settings</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -237,18 +237,18 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 <div class="sidebar" id="sidebar">
   <div class="s-logo">
     <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
-    <span class="s-bname">Starvio</span>
+    <span class="s-bname">getstarvio</span>
   </div>
   <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
   <nav class="s-nav">
-    <a id="nav-dashboard"  href="starvio-dashboard.html"    class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
-    <a id="nav-catat"      href="starvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
-    <a id="nav-pelanggan"  href="starvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
-    <a id="nav-automation" href="starvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log"        href="starvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
-    <a id="nav-kategori"   href="starvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
-    <a id="nav-billing"    href="starvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
-    <a id="nav-settings"   href="starvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
+    <a id="nav-dashboard"  href="getstarvio-dashboard.html"    class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a id="nav-catat"      href="getstarvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan"  href="getstarvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="getstarvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
+    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-kategori"   href="getstarvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
+    <a id="nav-billing"    href="getstarvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
+    <a id="nav-settings"   href="getstarvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
   </nav>
   <div class="s-counter">
     <div class="sc-n" id="sc-n">0</div>
@@ -347,7 +347,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
                   <rect x="62" y="62" width="24" height="24" rx="4" fill="#b8f04a"/>
                   <path d="M74 65L76.5 71H80.5L77.5 73.5L78.5 78L74 75.5L69.5 78L70.5 73.5L67.5 71H71.5L74 65Z" fill="#1a1917"/>
                 </svg>
-                <div style="text-align:center;margin-top:8px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--ink3)" id="qr-slug">starvio.app/checkin/—</div>
+                <div style="text-align:center;margin-top:8px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--ink3)" id="qr-slug">getstarvio.com/checkin/—</div>
               </div>
 
               <!-- ACTIONS -->
@@ -356,7 +356,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
                   Scan QR ini untuk daftar dan dapat reminder kunjungan otomatis via WhatsApp.
                 </div>
                 <div class="link-row">
-                  <div class="link-display" id="link-display">starvio.app/checkin/—</div>
+                  <div class="link-display" id="link-display">getstarvio.com/checkin/—</div>
                   <button class="btn btn-lime btn-sm" onclick="copyLink()" id="copy-link-btn">Salin</button>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:7px">
@@ -434,7 +434,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
               </div>
               <div class="copy-block" id="text-blast">
                 Halo! Daftarkan dirimu untuk dapat reminder kunjungan otomatis dari kami 😊<br>
-                → <span id="blast-link">starvio.app/checkin/—</span>
+                → <span id="blast-link">getstarvio.com/checkin/—</span>
                 <button class="copy-btn" id="btn-blast" onclick="copyText('text-blast','btn-blast')">Salin</button>
               </div>
             </div>
@@ -708,7 +708,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 /* ── SHARED ── */
 function loadU() {
   try {
-    const raw = localStorage.getItem('starvio_user')
+    const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
     if (u.DATA_VERSION !== 4) return null
@@ -718,7 +718,7 @@ function loadU() {
 }
 
 function saveU(u) {
-  localStorage.setItem('starvio_user', JSON.stringify(u))
+  localStorage.setItem('getstarvio_user', JSON.stringify(u))
 }
 
 function bootSidebar() {
@@ -765,8 +765,8 @@ function worstStatus(customer) {
   }, 'aktif')
 }
 
-function resetDemo() { location.href = 'starvio-seed-data.html?auto=1' }
-function doLogout() { localStorage.removeItem('starvio_user'); location.href = 'starvio-login.html' }
+function resetDemo() { location.href = 'getstarvio-seed-data.html?auto=1' }
+function doLogout() { localStorage.removeItem('getstarvio_user'); location.href = 'getstarvio-login.html' }
 
 /* ── SIDEBAR MOBILE ── */
 function openSidebar() {
@@ -867,8 +867,8 @@ function simulateQrConnect() {
 function openResetModal() { document.getElementById('m-reset').classList.add('show') }
 function closeResetModal() { document.getElementById('m-reset').classList.remove('show') }
 function doReset() {
-  localStorage.removeItem('starvio_user')
-  location.href = 'starvio-login.html'
+  localStorage.removeItem('getstarvio_user')
+  location.href = 'getstarvio-login.html'
 }
 
 /* ── EXPORT DATA ── */
@@ -917,7 +917,7 @@ function renderWaStatus(u) {
 function copyLink() {
   var u = loadU()
   var slug = (u && u.bizSlug) || 'bisnis-kamu'
-  var link = 'https://starvio.app/checkin/' + slug
+  var link = 'https://getstarvio.com/checkin/' + slug
   if (navigator.clipboard) { navigator.clipboard.writeText(link) }
   flashBtn('copy-link-btn', '✓ Disalin', 'Salin')
 }
@@ -954,7 +954,7 @@ function flashBtn(btnId, flashText, origText) {
 function shareWA() {
   var u = loadU()
   var slug = (u && u.bizSlug) || 'bisnis-kamu'
-  var link = 'https://starvio.app/checkin/' + slug
+  var link = 'https://getstarvio.com/checkin/' + slug
   var msg = 'Halo! Daftarkan dirimu untuk dapat reminder kunjungan otomatis dari kami 😊\n→ ' + link
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
 }
@@ -985,7 +985,7 @@ function printQR() {
       '<div class="qr-box">' +
         document.getElementById('qr-svg').outerHTML +
       '</div>' +
-      '<div class="slug">starvio.app/checkin/'+slug+'</div>' +
+      '<div class="slug">getstarvio.com/checkin/'+slug+'</div>' +
       '<div class="cta">📱 Scan QR ini — gratis, &lt;10 detik</div>' +
     '</div>' +
     '</body></html>')
@@ -1023,11 +1023,11 @@ function downloadQR() {
 /* ── BOOT ── */
 function boot() {
   var U = loadU()
-  if (!U) { location.href = 'starvio-login.html'; return }
+  if (!U) { location.href = 'getstarvio-login.html'; return }
 
   // ── QR Check-in section ──
   var slug = U.bizSlug || 'bisnis-kamu'
-  var link = 'starvio.app/checkin/' + slug
+  var link = 'getstarvio.com/checkin/' + slug
   document.getElementById('qr-slug').textContent = link
   document.getElementById('link-display').textContent = link
   document.getElementById('blast-link').textContent = link

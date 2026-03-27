@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Check-in — Starvio</title>
+<title>Check-in — getstarvio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -387,7 +387,7 @@ html,body{
       <path d="M10 2L12.4 7.6H18.5L13.6 11.3L15.5 17L10 13.5L4.5 17L6.4 11.3L1.5 7.6H7.6L10 2Z" fill="#b8f04a"/>
     </svg>
   </div>
-  <div class="topbar-name" id="topbarBizName">Starvio</div>
+  <div class="topbar-name" id="topbarBizName">getstarvio</div>
 </div>
 
 <div class="page-wrap">
@@ -501,14 +501,14 @@ html,body{
 
   </div>
 
-  <div class="page-footer">Powered by <span>Starvio</span></div>
+  <div class="page-footer">Powered by <span>getstarvio</span></div>
 </div>
 
 <script>
 /* ── SHARED ── */
 function loadU() {
   try {
-    const raw = localStorage.getItem('starvio_user')
+    const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
     if (u.DATA_VERSION !== 4) return null
@@ -527,7 +527,7 @@ let checkedInServices = []
 let checkedInDate = ''
 
 // ---- UTILS ----
-function saveU() { localStorage.setItem('starvio_user', JSON.stringify(U)) }
+function saveU() { localStorage.setItem('getstarvio_user', JSON.stringify(U)) }
 
 function todayStr() {
   return new Date().toISOString().split('T')[0]

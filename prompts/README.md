@@ -1,4 +1,4 @@
-# Starvio v3 — Prompt Files
+# getstarvio v3 — Prompt Files
 
 ## Cara Pakai
 
@@ -17,19 +17,19 @@ Tidak perlu paste file page lain yang tidak dikerjakan.
 | File | Halaman | Keterangan |
 |---|---|---|
 | `00-global.md` | — | Rules global, data schema, must-not-do list |
-| `01-login.md` | `starvio-login.html` | Google OAuth, 2-kolom layout |
-| `02-onboarding.md` | `starvio-onboarding.html` | 5 step: WA → Profil → QR → Kategori → Selesai |
-| `03-dashboard.md` | `starvio-dashboard.html` | Greeting card, metrics, quick links |
-| `04-catat-kunjungan.md` | `starvio-catat-kunjungan.html` | Catat kunjungan harian — search first, no CRM |
-| `05-pelanggan.md` | `starvio-pelanggan.html` | Daftar pelanggan, filter, detail |
-| `06-automation.md` | `starvio-automation.html` | Toggle, jadwal, template per kategori |
-| `07-log-reminder.md` | `starvio-log-reminder.html` | Riwayat reminder, filter, retry |
-| `08-kategori.md` | `starvio-kategori.html` | Kelola kategori layanan, ikon dropdown, template |
-| `09-billing.md` | `starvio-billing.html` | Top up kredit, auto top up, riwayat |
-| `10-checkin.md` | `starvio-checkin.html` | Halaman publik QR check-in pelanggan |
-| `11-seed-data.md` | `starvio-seed-data.html` | Dev tool inject dummy data (Celestial Spa / Cynthia) |
-| `12-admin.md` | `starvio-admin.html` | Internal dashboard tim Starvio (bukan untuk user) |
-| `13-settings.md` | `starvio-settings.html` | Profil bisnis, WA reconnect, danger zone |
+| `01-login.md` | `getstarvio-login.html` | Google OAuth, 2-kolom layout |
+| `02-onboarding.md` | `getstarvio-onboarding.html` | 5 step: WA → Profil → QR → Kategori → Selesai |
+| `03-dashboard.md` | `getstarvio-dashboard.html` | Greeting card, metrics, quick links |
+| `04-catat-kunjungan.md` | `getstarvio-catat-kunjungan.html` | Catat kunjungan harian — search first, no CRM |
+| `05-pelanggan.md` | `getstarvio-pelanggan.html` | Daftar pelanggan, filter, detail |
+| `06-automation.md` | `getstarvio-automation.html` | Toggle, jadwal, template per kategori |
+| `07-log-reminder.md` | `getstarvio-log-reminder.html` | Riwayat reminder, filter, retry |
+| `08-kategori.md` | `getstarvio-kategori.html` | Kelola kategori layanan, ikon dropdown, template |
+| `09-billing.md` | `getstarvio-billing.html` | Top up kredit, auto top up, riwayat |
+| `10-checkin.md` | `getstarvio-checkin.html` | Halaman publik QR check-in pelanggan |
+| `11-seed-data.md` | `getstarvio-seed-data.html` | Dev tool inject dummy data (Celestial Spa / Cynthia) |
+| `12-admin.md` | `getstarvio-admin.html` | Internal dashboard tim getstarvio (bukan untuk user) |
+| `13-settings.md` | `getstarvio-settings.html` | Profil bisnis, WA reconnect, danger zone |
 
 ---
 
@@ -46,4 +46,4 @@ Tidak perlu ubah file lain.
 
 ## Design System
 
-Selalu baca juga: `../starvio-design-system.md` sebelum nulis CSS apapun.
+Selalu baca juga: `../getstarvio-design-system.md` sebelum nulis CSS apapun.

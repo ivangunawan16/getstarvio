@@ -1,4 +1,4 @@
-# Page: COMMAND CENTER — INTERNAL ADMIN (`starvio-admin.html`)
+# Page: COMMAND CENTER — INTERNAL ADMIN (`getstarvio-admin.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 > ⚠️ Halaman ini TIDAK dilink dari app user manapun. Akses langsung via URL.
@@ -7,13 +7,13 @@
 
 ## Tujuan Halaman
 
-Dashboard internal untuk **tim Starvio** (developer/founder) untuk monitor dan kelola semua bisnis subscriber. Bukan untuk user end (pemilik salon/spa).
+Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor dan kelola semua bisnis subscriber. Bukan untuk user end (pemilik salon/spa).
 
 ---
 
 ## Access
 
-- URL terpisah: `starvio-admin.html`
+- URL terpisah: `getstarvio-admin.html`
 - Password gate sederhana (hardcoded untuk prototype)
 - Tidak dilink dari sidebar atau halaman manapun
 
@@ -23,7 +23,7 @@ Dashboard internal untuk **tim Starvio** (developer/founder) untuk monitor dan k
 
 - Pakai token design system yang sama (CSS variables, fonts)
 - Layout standalone — **tidak ada sidebar user**
-- Topbar internal sendiri dengan label "Starvio Admin ⚡" + badge "Internal"
+- Topbar internal sendiri dengan label "getstarvio Admin ⚡" + badge "Internal"
 
 ---
 
@@ -36,7 +36,7 @@ Dashboard internal untuk **tim Starvio** (developer/founder) untuk monitor dan k
 - Bisnis churn bulan ini — variant red (jika ada)
 
 ### Tabel Subscriber (main section)
-- List semua bisnis dari `ADMIN_DATA[]` (bukan dari `starvio_user`)
+- List semua bisnis dari `ADMIN_DATA[]` (bukan dari `getstarvio_user`)
 - Kolom: Nama Bisnis | Jenis | Tgl Daftar | Status | Kredit Tersisa | Reminder (bln ini) | WA Status
 - Status badge per baris: `Aktif` (lime) / `Trial` (blue) / `Suspended` (amber) / `Churned` (red)
 - WA status chip: `Connected` (lime pulse) / `Disconnected` (red)
@@ -62,9 +62,42 @@ Dashboard internal untuk **tim Starvio** (developer/founder) untuk monitor dan k
 
 ---
 
+### Tab: Plan Config — Top-Up Pricing (editable)
+
+Top-Up Pricing card memiliki field yang bisa diedit:
+- **Harga per kredit** — input number, default 1000 IDR
+- **3 Paket Tiers** — masing-masing punya:
+  - Harga (Rp) — input number
+  - Jumlah kredit — input number
+  - Bonus % — auto-calculated badge (recalc saat input berubah)
+- Default tiers: Rp 250.000 → 300 kredit (+20%), Rp 500.000 → 625 kredit (+25%), Rp 1.000.000 → 1.500 kredit (+50%)
+
+**Simpan Konfigurasi button:**
+- Menyimpan semua plan config (freeBonus, subCredits, subPrice, topupPrice, tiers) ke `getstarvio_user.planConfig` di localStorage
+- Billing page membaca `planConfig` secara dinamis — perubahan di admin langsung tercermin di billing
+
+**planConfig schema yang disimpan:**
+```js
+{
+  freeBonus: 100,        // welcome bonus credits
+  subCredits: 250,       // subscription credits per month
+  subPrice: 250000,      // subscription price per month
+  topupPrice: 1000,      // base price per credit
+  tiers: [
+    { price: 250000, credits: 300 },
+    { price: 500000, credits: 625 },
+    { price: 1000000, credits: 1500 }
+  ]
+}
+```
+
+**Boot:** `loadPlanConfig()` dipanggil setelah login berhasil untuk populate input fields dari localStorage.
+
+---
+
 ## Data
 
-Gunakan array `ADMIN_DATA` hardcoded dengan 10–15 dummy bisnis subscriber, variasi status, level kredit, dan usage. **Jangan pakai localStorage `starvio_user`** — data admin terpisah.
+Gunakan array `ADMIN_DATA` hardcoded dengan 10–15 dummy bisnis subscriber, variasi status, level kredit, dan usage. **Jangan pakai localStorage `getstarvio_user`** untuk data subscriber — data admin terpisah. Tapi `planConfig` disimpan ke `getstarvio_user` karena dipakai oleh billing page.
 
 Contoh entry:
 ```js
@@ -91,10 +124,10 @@ Contoh entry:
 
 ## Reference
 
-- **Version acuan:** `version 2.0/starvio-command-center.html` (972 lines — paling lengkap, tapi namanya sudah diubah jadi `starvio-admin.html` di v3)
+- **Version acuan:** `version 2.0/getstarvio-command-center.html` (972 lines — paling lengkap, tapi namanya sudah diubah jadi `getstarvio-admin.html` di v3)
 - **Theme berbeda dari halaman user:** halaman admin boleh pakai dark accent, topbar internal sendiri — tapi tetap pakai CSS variables yang sama
 - **Tidak ada sidebar user** — layout standalone, bukan extend dari `bootSidebar()`
-- `ADMIN_DATA[]` terpisah dari `localStorage starvio_user` — jangan dicampur
+- `ADMIN_DATA[]` terpisah dari `localStorage getstarvio_user` — jangan dicampur
 - Password gate hardcoded untuk prototype — bukan production auth
 
 ---
@@ -104,4 +137,5 @@ Contoh entry:
 | Tanggal | Perubahan |
 |---|---|
 | 2026-03-26 | File dibuat. Command Center adalah internal tool — bukan di sidebar user |
-| 2026-03-26 | Tambah Reference section — acuan v2.0 command-center, renamed jadi starvio-admin.html |
+| 2026-03-26 | Tambah Reference section — acuan v2.0 command-center, renamed jadi getstarvio-admin.html |
+| 2026-03-27 | Top-Up Pricing tiers now editable (price + credits inputs). Bonus % auto-recalculates. savePlanConfig() persists to getstarvio_user.planConfig in localStorage. loadPlanConfig() populates fields on boot. Billing page reads planConfig dynamically. |

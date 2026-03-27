@@ -8,7 +8,7 @@
 
 ## TASK
 
-Kamu akan membangun ulang **Starvio v3** dari scratch — multi-page HTML prototype yang terhubung via localStorage.
+Kamu akan membangun ulang **getstarvio v3** dari scratch — multi-page HTML prototype yang terhubung via localStorage.
 
 Sebelum nulis satu baris kode apapun, kamu WAJIB membaca semua file berikut secara berurutan. Ini bukan opsional.
 
@@ -26,7 +26,7 @@ Lalu baca file-file ini satu per satu secara berurutan:
 
 ### Global Rules (WAJIB DIBACA PERTAMA)
 1. `version 3.0/prompts/00-global.md` — Prime directive, design system rules, data schema, shared JS functions, phone rules, mobile responsive pattern, version reference strategy
-2. `starvio-design-system.md` — Complete CSS design system (variables, typography, components)
+2. `getstarvio-design-system.md` — Complete CSS design system (variables, typography, components)
 
 ### Per-Page Specs (baca semua sebelum mulai build)
 3. `version 3.0/prompts/01-login.md`
@@ -58,19 +58,19 @@ Semua file HTML output disimpan di folder: `version 3.0/`
 
 Nama file harus exact (lihat Page Directory di `00-global.md`):
 ```
-starvio-login.html
-starvio-onboarding.html
-starvio-dashboard.html
-starvio-catat-kunjungan.html
-starvio-pelanggan.html
-starvio-automation.html
-starvio-log-reminder.html
-starvio-kategori.html
-starvio-billing.html
-starvio-settings.html
-starvio-checkin.html
-starvio-seed-data.html
-starvio-admin.html
+getstarvio-login.html
+getstarvio-onboarding.html
+getstarvio-dashboard.html
+getstarvio-catat-kunjungan.html
+getstarvio-pelanggan.html
+getstarvio-automation.html
+getstarvio-log-reminder.html
+getstarvio-kategori.html
+getstarvio-billing.html
+getstarvio-settings.html
+getstarvio-checkin.html
+getstarvio-seed-data.html
+getstarvio-admin.html
 ```
 
 ---
@@ -82,37 +82,37 @@ Build dalam urutan ini. **Jangan loncat phase.** Tiap phase bergantung pada phas
 ### Phase 1 — Foundation (build ini dulu, verifikasi sebelum lanjut)
 | Order | File | Kenapa duluan |
 |---|---|---|
-| 1 | `starvio-seed-data.html` | Inject dummy data ke localStorage — dipakai untuk test semua halaman lain |
-| 2 | `starvio-login.html` | Entry point — semua mulai dari sini |
-| 3 | `starvio-onboarding.html` | Wajib selesai sebelum dashboard bisa test dengan data kosong |
-| 4 | `starvio-dashboard.html` | Hub utama — verifikasi sidebar, nav, dan data flow benar |
+| 1 | `getstarvio-seed-data.html` | Inject dummy data ke localStorage — dipakai untuk test semua halaman lain |
+| 2 | `getstarvio-login.html` | Entry point — semua mulai dari sini |
+| 3 | `getstarvio-onboarding.html` | Wajib selesai sebelum dashboard bisa test dengan data kosong |
+| 4 | `getstarvio-dashboard.html` | Hub utama — verifikasi sidebar, nav, dan data flow benar |
 
-**Checkpoint Phase 1:** Setelah selesai, buka `starvio-seed-data.html` → data masuk localStorage → buka `starvio-login.html` → flow ke dashboard → semua nav link di sidebar harus ada (walaupun halaman belum dibangun).
+**Checkpoint Phase 1:** Setelah selesai, buka `getstarvio-seed-data.html` → data masuk localStorage → buka `getstarvio-login.html` → flow ke dashboard → semua nav link di sidebar harus ada (walaupun halaman belum dibangun).
 
 ### Phase 2 — Core Daily Actions
 | Order | File | Kenapa |
 |---|---|---|
-| 5 | `starvio-catat-kunjungan.html` | Aksi harian utama — catat kunjungan |
-| 6 | `starvio-pelanggan.html` | Manajemen pelanggan — linked dari dashboard |
-| 7 | `starvio-kategori.html` | Konfigurasi layanan — dibutuhkan oleh catat kunjungan dan pelanggan |
+| 5 | `getstarvio-catat-kunjungan.html` | Aksi harian utama — catat kunjungan |
+| 6 | `getstarvio-pelanggan.html` | Manajemen pelanggan — linked dari dashboard |
+| 7 | `getstarvio-kategori.html` | Konfigurasi layanan — dibutuhkan oleh catat kunjungan dan pelanggan |
 
 ### Phase 3 — Automation & Billing
 | Order | File |
 |---|---|
-| 8 | `starvio-automation.html` |
-| 9 | `starvio-log-reminder.html` |
-| 10 | `starvio-billing.html` |
+| 8 | `getstarvio-automation.html` |
+| 9 | `getstarvio-log-reminder.html` |
+| 10 | `getstarvio-billing.html` |
 
 ### Phase 4 — Additional Pages
 | Order | File |
 |---|---|
-| 11 | `starvio-settings.html` |
-| 12 | `starvio-checkin.html` |
+| 11 | `getstarvio-settings.html` |
+| 12 | `getstarvio-checkin.html` |
 
 ### Phase 5 — Internal Tool
 | Order | File |
 |---|---|
-| 13 | `starvio-admin.html` |
+| 13 | `getstarvio-admin.html` |
 
 ---
 
@@ -149,8 +149,8 @@ Ini sudah ada di `00-global.md` bagian MUST-NOT DO LIST, tapi repeat di sini kar
 2. **Template WA = SELECT ONLY** — tidak bisa diedit teksnya
 3. **Icon emoji = dropdown pre-made** — bukan input manual
 4. **Nomor HP** — strip leading 0 real-time, simpan dengan country code (628xxx)
-5. **Semua data dari localStorage `starvio_user`** — tidak ada hardcoded dummy di halaman production
-6. **`starvio-admin.html` tidak pernah dilink dari app user**
+5. **Semua data dari localStorage `getstarvio_user`** — tidak ada hardcoded dummy di halaman production
+6. **`getstarvio-admin.html` tidak pernah dilink dari app user**
 7. **Onboarding flow = LOCKED** — jangan ubah flow 5-step tanpa instruksi eksplisit
 8. **`DATA_VERSION: 4`** — harus match di seed data dan di `loadU()` check
 9. **Bahasa UI = Indonesia informal** — "Kamu", "Yuk", bukan "Anda"

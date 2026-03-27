@@ -1,4 +1,4 @@
-# Page: DASHBOARD (`starvio-dashboard.html`)
+# Page: DASHBOARD (`getstarvio-dashboard.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -29,19 +29,19 @@ Halaman utama setelah login. **Action-first** — elemen utama adalah aksi apa y
 ### Section: Pelanggan Perlu Perhatian
 - Tampilkan customer dengan status `hilang` atau `mendekati` (berdasarkan `worstStatus()`)
 - Per baris: avatar, nama, status badge, nama layanan terburuk + berapa hari overdue
-- Link "Lihat semua →" ke `starvio-pelanggan.html`
+- Link "Lihat semua →" ke `getstarvio-pelanggan.html`
 - Empty state jika semua pelanggan aktif
 
 ### Section: Jadwal Reminder Hari Ini
 - List reminder dari `reminders[]` yang `scheduledAt` = hari ini
 - Per baris: nama pelanggan, layanan, status chip (terkirim/pending/gagal)
-- Link "Lihat log →" ke `starvio-log-reminder.html`
+- Link "Lihat log →" ke `getstarvio-log-reminder.html`
 - Empty state jika tidak ada reminder hari ini
 
 ### Quick Links (3 kartu)
-- Catat Kunjungan → `starvio-catat-kunjungan.html`
-- Tambah Pelanggan → `starvio-pelanggan.html` (dengan add modal langsung terbuka via URL param `?action=add`)
-- Atur Automation → `starvio-automation.html`
+- Catat Kunjungan → `getstarvio-catat-kunjungan.html`
+- Tambah Pelanggan → `getstarvio-pelanggan.html` (dengan add modal langsung terbuka via URL param `?action=add`)
+- Atur Automation → `getstarvio-automation.html`
 
 ### Topbar
 - WA status chip: Aktif (lime pulse) / Terputus (red)
@@ -55,7 +55,7 @@ Halaman utama setelah login. **Action-first** — elemen utama adalah aksi apa y
 
 ## Reference
 
-- **Version acuan:** `version 2.0/starvio-dashboard.html` — v2.1 memotong ~42% konten dashboard (sections hilang, metric cards berkurang)
+- **Version acuan:** `version 2.0/getstarvio-dashboard.html` — v2.1 memotong ~42% konten dashboard (sections hilang, metric cards berkurang)
 - **Jangan pakai v2.1 dashboard** sebagai acuan — terlalu stripped down
 - Section yang harus ada tapi sering dihilangkan AI: "Pelanggan Perlu Perhatian", "Jadwal Reminder Hari Ini", Quick Links 3 kartu
 - Credit Alert banner (remLeft < 10) harus muncul — sering terlewat di iteration sebelumnya

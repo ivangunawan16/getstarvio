@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Starvio — Billing & Kredit</title>
+<title>getstarvio — Billing & Kredit</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -239,18 +239,18 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 <div class="sidebar" id="sidebar">
   <div class="s-logo">
     <div class="s-mark"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 1.5L10 6H14.5L11 9L12.5 13.5L8 11L3.5 13.5L5 9L1.5 6H6L8 1.5Z" fill="#1a1917"/></svg></div>
-    <span class="s-bname">Starvio</span>
+    <span class="s-bname">getstarvio</span>
   </div>
   <div class="s-biz"><div class="s-biz-n" id="sidebarBizName">—</div><div class="s-biz-t" id="s-biz-t">—</div></div>
   <nav class="s-nav">
-    <a id="nav-dashboard"  href="starvio-dashboard.html"    class="nav-item"><span class="nav-icon">&#127968;</span><span>Dashboard</span></a>
-    <a id="nav-catat"      href="starvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
-    <a id="nav-pelanggan"  href="starvio-pelanggan.html"    class="nav-item"><span class="nav-icon">&#128101;</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
-    <a id="nav-automation" href="starvio-automation.html"   class="nav-item"><span class="nav-icon">&#129302;</span><span>Automation</span></a>
-    <a id="nav-log"        href="starvio-log-reminder.html" class="nav-item"><span class="nav-icon">&#128220;</span><span>Log Reminder</span></a>
-    <a id="nav-kategori"   href="starvio-kategori.html"     class="nav-item"><span class="nav-icon">&#127991;&#65039;</span><span>Kategori</span></a>
-    <a id="nav-billing"    href="starvio-billing.html"      class="nav-item active"><span class="nav-icon">&#128179;</span><span>Billing</span></a>
-    <a id="nav-settings"   href="starvio-settings.html"     class="nav-item"><span class="nav-icon">&#9881;&#65039;</span><span>Settings</span></a>
+    <a id="nav-dashboard"  href="getstarvio-dashboard.html"    class="nav-item"><span class="nav-icon">&#127968;</span><span>Dashboard</span></a>
+    <a id="nav-catat"      href="getstarvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
+    <a id="nav-pelanggan"  href="getstarvio-pelanggan.html"    class="nav-item"><span class="nav-icon">&#128101;</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
+    <a id="nav-automation" href="getstarvio-automation.html"   class="nav-item"><span class="nav-icon">&#129302;</span><span>Automation</span></a>
+    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">&#128220;</span><span>Log Reminder</span></a>
+    <a id="nav-kategori"   href="getstarvio-kategori.html"     class="nav-item"><span class="nav-icon">&#127991;&#65039;</span><span>Kategori</span></a>
+    <a id="nav-billing"    href="getstarvio-billing.html"      class="nav-item active"><span class="nav-icon">&#128179;</span><span>Billing</span></a>
+    <a id="nav-settings"   href="getstarvio-settings.html"     class="nav-item"><span class="nav-icon">&#9881;&#65039;</span><span>Settings</span></a>
   </nav>
   <div class="s-counter">
     <div class="sc-n" id="sc-n">0</div>
@@ -422,7 +422,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 function loadU() {
   try {
-    var raw = localStorage.getItem('starvio_user')
+    var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     var u = JSON.parse(raw)
     if (u.DATA_VERSION !== 4) return null
@@ -433,16 +433,16 @@ function loadU() {
 }
 
 function saveU(u) {
-  localStorage.setItem('starvio_user', JSON.stringify(u))
+  localStorage.setItem('getstarvio_user', JSON.stringify(u))
 }
 
 function resetDemo() {
-  location.href = 'starvio-seed-data.html?auto=1'
+  location.href = 'getstarvio-seed-data.html?auto=1'
 }
 
 function doLogout() {
-  localStorage.removeItem('starvio_user')
-  location.href = 'starvio-login.html'
+  localStorage.removeItem('getstarvio_user')
+  location.href = 'getstarvio-login.html'
 }
 
 /* ── SIDEBAR MOBILE ── */
@@ -504,7 +504,7 @@ function calcUsageRate(U) {
    BILLING DATA
    ══════════════════════════════════════════════ */
 
-var _pc = (function(){ try { var u=JSON.parse(localStorage.getItem('starvio_user')); return u && u.planConfig ? u.planConfig : {} } catch(e){ return {} } })()
+var _pc = (function(){ try { var u=JSON.parse(localStorage.getItem('getstarvio_user')); return u && u.planConfig ? u.planConfig : {} } catch(e){ return {} } })()
 var SUB_PRICE = _pc.subPrice || 250000
 var SUB_CREDITS = _pc.subCredits || 250
 
@@ -804,7 +804,7 @@ function toggleNotif(key, val) {
 
 function render() {
   var U = loadU()
-  if (!U) { location.href = 'starvio-login.html'; return }
+  if (!U) { location.href = 'getstarvio-login.html'; return }
   U = ensureBillingFields(U)
   saveU(U) // persist any migrated fields
 
@@ -1140,7 +1140,7 @@ function render() {
 
 /* ── DEV: BILLING CONDITION SWITCHER ── */
 function devSetBilling(preset) {
-  var raw = localStorage.getItem('starvio_user')
+  var raw = localStorage.getItem('getstarvio_user')
   if (!raw) { alert('Inject data dulu.'); return }
   var u = JSON.parse(raw)
   var renewDate = new Date(); renewDate.setMonth(renewDate.getMonth() + 1); renewDate.setDate(15)
@@ -1159,7 +1159,7 @@ function devSetBilling(preset) {
   if (!s) return
   u.plan = s.plan; u.subCreditsLeft = s.subCreditsLeft; u.subCreditsMax = 250
   u.topupCreditsLeft = s.topupCreditsLeft; u.subRenewsAt = s.subRenewsAt; u.remMax = s.remMax
-  localStorage.setItem('starvio_user', JSON.stringify(u))
+  localStorage.setItem('getstarvio_user', JSON.stringify(u))
   var t = document.getElementById('dev-billing-toast')
   t.textContent = '✓ Switched to ' + preset + ' (' + (s.subCreditsLeft + s.topupCreditsLeft) + ' total)'
   t.style.display = 'block'
@@ -1169,7 +1169,7 @@ function devSetBilling(preset) {
 
 function boot() {
   var U = loadU()
-  if (!U) { location.href = 'starvio-login.html'; return }
+  if (!U) { location.href = 'getstarvio-login.html'; return }
 
   // Set active nav
   var page = location.pathname.split('/').pop()

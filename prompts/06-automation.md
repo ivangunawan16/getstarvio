@@ -1,4 +1,4 @@
-# Page: AUTOMATION (`starvio-automation.html`)
+# Page: AUTOMATION (`getstarvio-automation.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -16,7 +16,7 @@ Konfigurasi pengiriman reminder otomatis via WhatsApp — kapan dikirim, pakai t
 - Card background = `var(--bg2)` (putih) — **bukan** dark `var(--ink)`
 - Label: "Automation" + badge ON/OFF
 - Toggle switch on/off global. Jika off, tidak ada reminder yang dijadwalkan.
-- Simpan state ke localStorage (`starvio_user.automationEnabled`)
+- Simpan state ke localStorage (`getstarvio_user.automationEnabled`)
 - Tampilkan "Kirim pukul" waktu + timezone di sebelah toggle
 - **WA Connection Status** ada DI DALAM master card (border-top separator):
   - Dot status (hijau/merah), label "WhatsApp terhubung/terputus", nomor WA
@@ -49,13 +49,13 @@ Konfigurasi pengiriman reminder otomatis via WhatsApp — kapan dikirim, pakai t
 ### Card: Status Kredit
 - Saldo saat ini `remLeft` dengan warna state (lime/amber/red/dark)
 - Progress bar: `remLeft / remMax`
-- Tombol "Top Up Kredit" → `starvio-billing.html`
+- Tombol "Top Up Kredit" → `getstarvio-billing.html`
 
 ---
 
 ## Reference
 
-- **Version acuan:** `version 2.0/starvio-automation.html`
+- **Version acuan:** `version 2.0/getstarvio-automation.html`
 - **Template WA:** pre-made, SELECT only — AI sering mencoba tambahkan textarea untuk edit konten, jangan
 - Master toggle card = LIGHT theme (`var(--bg2)` background) — AI sering membuat dark, jangan
 - WA reconnect button + QR modal ada DI master card (bukan di Settings)

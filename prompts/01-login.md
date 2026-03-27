@@ -1,4 +1,4 @@
-# Page: LOGIN (`starvio-login.html`)
+# Page: LOGIN (`getstarvio-login.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -8,10 +8,10 @@
 
 Landing → klik "Lanjut dengan Google" → Google account picker modal muncul → pilih akun:
 - Pilih **Cynthia** (existing user):
-  - Cek `starvio_user` di localStorage, jika ada & `DATA_VERSION === 4` → redirect ke `starvio-dashboard.html`
-  - Jika tidak ada → redirect ke `starvio-seed-data.html?auto=1&next=dashboard` (inject data dulu)
+  - Cek `getstarvio_user` di localStorage, jika ada & `DATA_VERSION === 4` → redirect ke `getstarvio-dashboard.html`
+  - Jika tidak ada → redirect ke `getstarvio-seed-data.html?auto=1&next=dashboard` (inject data dulu)
 - Pilih **Buat Akun Baru**:
-  - `localStorage.removeItem('starvio_user')` → redirect ke `starvio-onboarding.html`
+  - `localStorage.removeItem('getstarvio_user')` → redirect ke `getstarvio-onboarding.html`
 
 Tidak ada link manual ke onboarding. Semua masuk lewat Google OAuth.
 
@@ -40,7 +40,7 @@ Dua kolom:
 
 ## Reference
 
-- **Version acuan:** `version 2.1/starvio-login.html` — v2.1 punya login yang lebih clean (v2.0 ada email/password, v2.1 sudah pure Google OAuth)
+- **Version acuan:** `version 2.1/getstarvio-login.html` — v2.1 punya login yang lebih clean (v2.0 ada email/password, v2.1 sudah pure Google OAuth)
 - **Mobile layout:** single-column — sembunyikan hero kiri di layar kecil, hanya tampilkan form kanan
 - **Demo mode:** tetap ada di v3 (2 opsi: Cynthia existing + Buat Akun Baru)
 

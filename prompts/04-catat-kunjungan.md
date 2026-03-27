@@ -1,4 +1,4 @@
-# Page: CATAT KUNJUNGAN (`starvio-catat-kunjungan.html`)
+# Page: CATAT KUNJUNGAN (`getstarvio-catat-kunjungan.html`)
 
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
@@ -64,7 +64,7 @@ Dua section, vertikal dari atas ke bawah:
 ### Section: Kunjungan Hari Ini
 
 - List semua customer yang punya `service.date = hari ini`
-- Per baris: avatar (inisial), nama (link ke `starvio-pelanggan.html?cx=[wa]`), ikon + nama layanan yang dikerjakan, jam dicatat
+- Per baris: avatar (inisial), nama (link ke `getstarvio-pelanggan.html?cx=[wa]`), ikon + nama layanan yang dikerjakan, jam dicatat
 - Badge count di header: "Hari ini (X)"
 - **Empty state:** ilustrasi + "Belum ada kunjungan hari ini" + CTA tombol "Catat Kunjungan"
 - Tidak ada tombol edit atau aksi lain di baris ini — read only
@@ -79,13 +79,13 @@ Dua section, vertikal dari atas ke bawah:
 - Filter by status (aktif/mendekati/hilang)
 - Akses ke riwayat reminder
 
-> Semua itu ada di halaman **Pelanggan** (`starvio-pelanggan.html`)
+> Semua itu ada di halaman **Pelanggan** (`getstarvio-pelanggan.html`)
 
 ---
 
 ## Reference
 
-- **Version acuan:** `version 2.0/starvio-catat-kunjungan.html`
+- **Version acuan:** `version 2.0/getstarvio-catat-kunjungan.html`
 - **Search-first** adalah aturan v3 — v2.0 masih bisa direct input, v3 wajib search dulu
 - Dropdown "Tambah pelanggan baru" harus selalu ada sebagai opsi di autocomplete
 - Section "Kunjungan Hari Ini" di bawah — jangan dihilangkan
@@ -100,7 +100,7 @@ Dua section, vertikal dari atas ke bawah:
 | 2026-03-26 | File dibuat. Catat kunjungan harus pakai search dulu |
 | 2026-03-26 | Tambah Reference section — acuan v2.0 |
 | 2026-03-26 | **Update v3:** Halaman ini satu-satunya tempat catat kunjungan. Semua CRM/edit ada di Pelanggan. Tambah "Yang TIDAK Ada" section untuk clarity |
-| 2026-03-26 | Cleanup: `starvio-kumpulkan.html` dihapus. `starvio-catat-kunjungan.html` adalah halaman utama. nav-catat href=starvio-catat-kunjungan.html. No QR/how-to content (moved to Settings). Customer names link to pelanggan page. |
-| 2026-03-26 | **FINAL:** starvio-kumpulkan.html dihapus. starvio-catat-kunjungan.html adalah halaman utama (bukan redirect). nav-catat href = starvio-catat-kunjungan.html |
+| 2026-03-26 | Cleanup: `starvio-kumpulkan.html` dihapus. `getstarvio-catat-kunjungan.html` adalah halaman utama. nav-catat href=getstarvio-catat-kunjungan.html. No QR/how-to content (moved to Settings). Customer names link to pelanggan page. |
+| 2026-03-26 | **FINAL:** starvio-kumpulkan.html dihapus. getstarvio-catat-kunjungan.html adalah halaman utama (bukan redirect). nav-catat href = getstarvio-catat-kunjungan.html |
 | 2026-03-26 | **Sync Step 2 UI:** found-card with greeting, date inside card, service list inside card, circular checks (matches checkin page). Modal 560px wide, min-height 500px. Autocomplete dropdown inline. |
 

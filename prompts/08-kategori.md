@@ -1,4 +1,4 @@
-# Page: KATEGORI LAYANAN (`starvio-kategori.html`)
+# Page: KATEGORI LAYANAN (`getstarvio-kategori.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -52,7 +52,7 @@ Tampilkan sebagai tombol quick-add berdasarkan `bizType`:
 
 ## Reference
 
-- **Version acuan:** `version 2.1/starvio-kategori.html` — v2.1 punya icon picker dan template selector yang lebih baik dari v2.0
+- **Version acuan:** `version 2.1/getstarvio-kategori.html` — v2.1 punya icon picker dan template selector yang lebih baik dari v2.0
 - **Ikon = dropdown pre-made** — AI sering generate text input atau emoji picker bebas, jangan. List emoji sudah fixed di spec ini.
 - **Template = SELECT only** — konten template tidak bisa diedit pengguna
 - Pre-fill suggestions hanya muncul saat `cats[]` kosong — jangan selalu tampil

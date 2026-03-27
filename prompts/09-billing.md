@@ -1,4 +1,4 @@
-# Page: BILLING (`starvio-billing.html`)
+# Page: BILLING (`getstarvio-billing.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
 
@@ -43,7 +43,7 @@ Kelola subscription dan kredit reminder. **ROI framing** — reminder bukan "bia
 
 ## DATA SCHEMA TAMBAHAN (field baru untuk billing)
 
-Tambahkan field ini ke `starvio_user`:
+Tambahkan field ini ke `getstarvio_user`:
 
 ```js
 {
@@ -107,10 +107,16 @@ Tampilkan dua baris kredit secara visual terpisah:
 
 Header: "Tambah Kredit Top-Up" dengan subtext "Tidak ada expiry — dipakai setelah kredit bulanan habis"
 
-3 pilihan paket (card) — base Rp 1.000/kredit + bonus:
-- **300 kredit** — Rp 250.000 (Rp 833/kredit, +20% bonus)
-- **625 kredit** — Rp 500.000 (Rp 800/kredit, +25% bonus) — badge "Terlaris"
-- **1.500 kredit** — Rp 1.000.000 (Rp 667/kredit, +50% bonus) — badge "Best Value"
+3 pilihan paket (card) — **dinamis dari `getstarvio_user.planConfig`** (fallback ke default jika tidak ada):
+- Default: 300 kredit — Rp 250.000 (+20%), 625 kredit — Rp 500.000 (+25%, "Terlaris"), 1.500 kredit — Rp 1.000.000 (+50%, "Best Value")
+- Jika admin mengubah pricing via `getstarvio-admin.html` Plan Config, billing otomatis reflect perubahan
+- Label bonus, harga per kredit, dan total kredit dihitung dari `planConfig.tiers[]` dan `planConfig.topupPrice`
+
+**Implementasi:**
+```js
+var PACKAGES = buildPackages()  // reads planConfig from localStorage, falls back to defaults
+// SUB_PRICE and SUB_CREDITS also read from planConfig
+```
 
 - Card yang dipilih: highlight lime border
 - Tombol "Top Up Sekarang" (prototype: simulasikan, update `topupCreditsLeft`, tambah ke riwayat)
@@ -187,7 +193,7 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 
 ## Reference
 
-- **Version acuan:** `version 2.0/starvio-billing.html` — v2.1 memotong ~53% konten billing (ROI framing, prediction engine, auto top up hilang)
+- **Version acuan:** `version 2.0/getstarvio-billing.html` — v2.1 memotong ~53% konten billing (ROI framing, prediction engine, auto top up hilang)
 - **Jangan pakai v2.1 billing** — terlalu stripped
 - Credit state colors harus konsisten dengan global: lime/amber/red+pulse/dark
 - Known bugs di atas harus di-fix saat build v3
@@ -205,3 +211,4 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 | 2026-03-26 | **MAJOR UPDATE:** Tambah subscription model Rp 250.000/bulan + 300 kredit (no rollover) + top-up pay-as-you-go (no expiry) + welcome bonus 100 kredit. Update data schema, semua sections billing, resolve known bug #3 |
 | 2026-03-26 | Sync with HTML: subCreditsMax=375 (250 base + 125 early access +50%). Top-up packages: 300 (Rp 250k, +20%), 625 (Rp 500k, +25%), 1500 (Rp 1jt, +50%). Base price Rp 1.000/kredit. Auto top-up has explicit "Simpan Pengaturan" button. |
 | 2026-03-27 | Subscription credits: 375 → 250 (flat, no early access bonus on subscription). subCreditsMax=250. Early access +50% applies ONLY to top-up packages. |
+| 2026-03-27 | Top-up packages now dynamic: reads from `getstarvio_user.planConfig` (set by admin page). `buildPackages()` computes labels/bonuses/per-kredit from planConfig. SUB_PRICE and SUB_CREDITS also read from planConfig. Falls back to hardcoded defaults if no planConfig. |
