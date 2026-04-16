@@ -47,3 +47,9 @@ Tidak perlu ubah file lain.
 ## Design System
 
 Selalu baca juga: `../getstarvio-design-system.md` sebelum nulis CSS apapun.
+
+
+## tree
+```
+pm2 start http-server --name starvio-html -- -p 8000 .
+```
