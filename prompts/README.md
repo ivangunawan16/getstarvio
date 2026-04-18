@@ -36,7 +36,10 @@ Tidak perlu paste file page lain yang tidak dikerjakan.
 | `12-admin.md` | `getstarvio-admin.html` | Internal dashboard tim getstarvio (bukan untuk user) |
 | `13-settings.md` | `getstarvio-settings.html` | Profil, logo upload, QR print, danger zone |
 
-**Reference doc:** `getstarvio-design-system.md` — CSS variables, typography, komponen (selalu baca sebelum nulis CSS).
+**Reference doc:**
+- `AGENT-PROFILE.md` — **Cara kerja Claude** untuk getstarvio (UIUX expert mode, conventions, banned behaviors). Paste di pesan pertama saat session baru.
+- `BACKLOG.md` — Roadmap features yang BELUM dieksekusi (multi-loc, staff admin, referral, dll). Cek saat user tanya "apa yang bisa ditambah?"
+- `getstarvio-design-system.md` — CSS variables, typography, komponen (selalu baca sebelum nulis CSS).
 
 ---
 
