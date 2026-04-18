@@ -33,7 +33,7 @@ Halaman publik — pelanggan scan QR dan self-register/check-in. Buka di HP pela
 - Label: "Pilih layanan hari ini:"
 - Checklist semua `cats[]` — bisa pilih lebih dari satu
 - **Tidak ada interval badge** pada service items — pelanggan tidak perlu tahu interval
-- **Tidak ada reminder preview/schedule** — pelanggan cukup pilih layanan saja
+- **Tidak ada pengingat preview/schedule** — pelanggan cukup pilih layanan saja
 - Tombol "Check-in Sekarang" (disabled sampai minimal 1 layanan dipilih)
 - Link "Bukan saya" → kembali ke State 1
 
@@ -44,7 +44,7 @@ Halaman publik — pelanggan scan QR dan self-register/check-in. Buka di HP pela
 - Label "Layanan apa hari ini?"
 - Checklist semua `cats[]`
 - **Tidak ada interval badge** pada service items
-- **Tidak ada reminder preview/schedule**
+- **Tidak ada pengingat preview/schedule**
 - Tombol "Daftar & Check-in" (disabled sampai nama + minimal 1 layanan)
 - Set `via: "qr"` saat simpan ke localStorage
 - Link "Coba nomor lain" → kembali ke State 1
@@ -52,8 +52,8 @@ Halaman publik — pelanggan scan QR dan self-register/check-in. Buka di HP pela
 ### State 4: Sukses
 - Animasi checkmark hijau (SVG animated stroke)
 - "Terima kasih, [nama]!"
-- "Kami akan kirim reminder ke WA kamu saat waktunya kembali."
-- **Tidak ada reminder list/schedule** — cukup pesan sederhana saja
+- "Kami akan kirim pengingat ke WA kamu saat waktunya kembali."
+- **Tidak ada pengingat list/schedule** — cukup pesan sederhana saja
 - Tombol "Scan lagi" → kembali ke State 1 (untuk pelanggan berikutnya)
 
 ### Dev Panel (development only)

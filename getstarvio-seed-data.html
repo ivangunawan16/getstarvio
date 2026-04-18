@@ -101,7 +101,7 @@ body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a19
         <a href="getstarvio-catat-kunjungan.html" class="nav-link"><span class="nav-emoji">📋</span>Catat Kunjungan</a>
         <a href="getstarvio-pelanggan.html" class="nav-link"><span class="nav-emoji">👥</span>Pelanggan</a>
         <a href="getstarvio-automation.html" class="nav-link"><span class="nav-emoji">🤖</span>Automation</a>
-        <a href="getstarvio-log-reminder.html" class="nav-link"><span class="nav-emoji">📜</span>Log Reminder</a>
+        <a href="getstarvio-log-reminder.html" class="nav-link"><span class="nav-emoji">📜</span>Log Pengingat</a>
         <a href="getstarvio-kategori.html" class="nav-link"><span class="nav-emoji">🏷️</span>Kategori</a>
         <a href="getstarvio-billing.html" class="nav-link"><span class="nav-emoji">💳</span>Billing</a>
         <a href="getstarvio-settings.html" class="nav-link"><span class="nav-emoji">⚙️</span>Settings</a>
@@ -119,7 +119,7 @@ body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a19
     <div class="card">
       <div class="card-hd">
         <div class="card-title">Inject Dummy Data</div>
-        <div class="card-sub">50 pelanggan, 6 kategori, 42 reminder — pilih kondisi billing</div>
+        <div class="card-sub">50 pelanggan, 6 kategori, 42 pengingat — pilih kondisi billing</div>
       </div>
       <div class="card-body">
         <div class="biz-preview">
@@ -132,8 +132,8 @@ body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a19
 
         <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px">Pilih kondisi saat inject:</div>
         <div class="inject-opts">
-          <label class="inject-opt sel" id="io-sub-healthy"><input type="radio" name="inject-plan" value="sub-healthy" checked><span class="io-dot"></span><div><strong>Subscriber — Sehat</strong><br><span class="io-sub">187 sub + 50 topup = 237 kredit</span></div></label>
-          <label class="inject-opt" id="io-sub-low"><input type="radio" name="inject-plan" value="sub-low"><span class="io-dot"></span><div><strong>Subscriber — Low</strong><br><span class="io-sub">18 sub + 50 topup = 68 kredit</span></div></label>
+          <label class="inject-opt sel" id="io-sub-healthy"><input type="radio" name="inject-plan" value="sub-healthy" checked><span class="io-dot"></span><div><strong>Subscriber — Sehat</strong><br><span class="io-sub">225 sub + 50 topup = 275 kredit</span></div></label>
+          <label class="inject-opt" id="io-sub-low"><input type="radio" name="inject-plan" value="sub-low"><span class="io-dot"></span><div><strong>Subscriber — Low</strong><br><span class="io-sub">22 sub + 50 topup = 72 kredit</span></div></label>
           <label class="inject-opt" id="io-sub-empty"><input type="radio" name="inject-plan" value="sub-empty"><span class="io-dot"></span><div><strong>Subscriber — Habis</strong><br><span class="io-sub">0 sub + 0 topup = 0 kredit</span></div></label>
           <label class="inject-opt" id="io-free-full"><input type="radio" name="inject-plan" value="free-full"><span class="io-dot"></span><div><strong>Free — Full</strong><br><span class="io-sub">Welcome bonus 100 kredit</span></div></label>
           <label class="inject-opt" id="io-free-low"><input type="radio" name="inject-plan" value="free-low"><span class="io-dot"></span><div><strong>Free — Hampir Habis</strong><br><span class="io-sub">22 kredit tersisa</span></div></label>
@@ -166,10 +166,10 @@ body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a19
           <button class="billing-btn" onclick="setBilling('free-critical')"><span class="bb-icon">🔴</span><div><div class="bb-label">Critical (5)</div><div class="bb-sub">Urgent topup</div></div></button>
           <button class="billing-btn" onclick="setBilling('free-empty')"><span class="bb-icon">⛔</span><div><div class="bb-label">Empty (0)</div><div class="bb-sub">Automation stop</div></div></button>
         </div>
-        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Subscriber (Rp 250k/bln)</div>
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Subscriber (Rp 249k/bln · Early Access)</div>
         <div class="billing-grid">
-          <button class="billing-btn" style="border-color:var(--lime2)" onclick="setBilling('sub-healthy')"><span class="bb-icon">✅</span><div><div class="bb-label">Healthy (287)</div><div class="bb-sub">237 sub + 50 topup</div></div></button>
-          <button class="billing-btn" onclick="setBilling('sub-low')"><span class="bb-icon">📉</span><div><div class="bb-label">Sub Low (68)</div><div class="bb-sub">18 sub + 50 topup</div></div></button>
+          <button class="billing-btn" style="border-color:var(--lime2)" onclick="setBilling('sub-healthy')"><span class="bb-icon">✅</span><div><div class="bb-label">Healthy (275)</div><div class="bb-sub">225 sub + 50 topup</div></div></button>
+          <button class="billing-btn" onclick="setBilling('sub-low')"><span class="bb-icon">📉</span><div><div class="bb-label">Sub Low (72)</div><div class="bb-sub">22 sub + 50 topup</div></div></button>
           <button class="billing-btn" onclick="setBilling('sub-depleted')"><span class="bb-icon">🔄</span><div><div class="bb-label">Sub Habis (30)</div><div class="bb-sub">0 sub + 30 topup</div></div></button>
           <button class="billing-btn" onclick="setBilling('sub-critical')"><span class="bb-icon">🚨</span><div><div class="bb-label">Critical (7)</div><div class="bb-sub">0 sub + 7 topup</div></div></button>
           <button class="billing-btn" onclick="setBilling('sub-empty')"><span class="bb-icon">💀</span><div><div class="bb-label">Empty (0)</div><div class="bb-sub">Semua habis</div></div></button>
@@ -212,19 +212,19 @@ var DUMMY = {
   country: 'ID',
   defaultInterval: 30,
   plan: 'subscriber',
-  subCreditsLeft: 187,
-  subCreditsMax: 250,
+  subCreditsLeft: 225,
+  subCreditsMax: 300,
   topupCreditsLeft: 50,
   subRenewsAt: (function(){ var d=new Date(); d.setMonth(d.getMonth()+1); d.setDate(15); return d.toISOString() })(),
-  remMax: 250,
+  remMax: 300,
   automationEnabled: true,
   billingHistory: [
     { date: (function(){ var d=new Date(); d.setDate(d.getDate()-28); return d.toISOString().slice(0,10) })(), type:'welcome', label:'Welcome Bonus', delta:100, balAfter:100, note:'Bonus kredit pendaftaran' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-25); return d.toISOString().slice(0,10) })(), type:'subscription', label:'Subscription', delta:250, balAfter:350, note:'Aktivasi subscriber — Rp 250.000/bulan (250 kredit/bulan)' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-20); return d.toISOString().slice(0,10) })(), type:'topup', label:'Top Up', delta:300, balAfter:650, note:'Paket 300 kredit — Rp 250.000 (incl. +50 bonus 20%)' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-15); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-22, balAfter:303, note:'22 reminder terkirim' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-8); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-80, balAfter:223, note:'80 reminder terkirim' },
-    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-2); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-61, balAfter:162, note:'61 reminder terkirim' }
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-25); return d.toISOString().slice(0,10) })(), type:'subscription', label:'Subscription', delta:300, balAfter:400, note:'Aktivasi subscriber — Rp 249.000/bulan (300 kredit/bulan, Early Access 50% off)' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-20); return d.toISOString().slice(0,10) })(), type:'topup', label:'Top Up', delta:200, balAfter:600, note:'Paket 200 kredit — Rp 399.000' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-15); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-22, balAfter:303, note:'22 pengingat terkirim' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-8); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-80, balAfter:223, note:'80 pengingat terkirim' },
+    { date: (function(){ var d=new Date(); d.setDate(d.getDate()-2); return d.toISOString().slice(0,10) })(), type:'usage', label:'Penggunaan', delta:-61, balAfter:162, note:'61 pengingat terkirim' }
   ],
   billingNotifs: { lowCredit:true, criticalCredit:true, subLow:true, renewalReminder:true },
 
@@ -429,7 +429,7 @@ function checkStatus() {
       '<div class="status-item"><span class="si-label">Owner</span><span class="si-val">' + (d.adminName || '—') + ' · ' + (d.adminEmail || '—') + '</span><span class="si-badge badge-ok">Ada</span></div>' +
       '<div class="status-item"><span class="si-label">Pelanggan</span><span class="si-val">' + cx + ' pelanggan · ' + totalSvc + ' services</span><span class="si-badge ' + (cx > 0 ? 'badge-ok' : 'badge-empty') + '">' + (cx > 0 ? 'Ada' : 'Kosong') + '</span></div>' +
       '<div class="status-item"><span class="si-label">Kategori</span><span class="si-val">' + cats + ' kategori</span><span class="si-badge ' + (cats > 0 ? 'badge-ok' : 'badge-empty') + '">' + (cats > 0 ? 'Ada' : 'Kosong') + '</span></div>' +
-      '<div class="status-item"><span class="si-label">Log Reminder</span><span class="si-val">' + rems + ' records</span><span class="si-badge ' + (rems > 0 ? 'badge-ok' : 'badge-empty') + '">' + (rems > 0 ? 'Ada' : 'Kosong') + '</span></div>' +
+      '<div class="status-item"><span class="si-label">Log Pengingat</span><span class="si-val">' + rems + ' records</span><span class="si-badge ' + (rems > 0 ? 'badge-ok' : 'badge-empty') + '">' + (rems > 0 ? 'Ada' : 'Kosong') + '</span></div>' +
       (function(){
         var plan = d.plan || 'free';
         var planLabel = plan === 'subscriber' ? 'Subscriber' : plan.charAt(0).toUpperCase() + plan.slice(1);
@@ -487,9 +487,9 @@ function injectData() {
 
   var renewDate = new Date(); renewDate.setMonth(renewDate.getMonth() + 1); renewDate.setDate(15);
   var billingPresets = {
-    'sub-healthy':  { plan:'subscriber', subCreditsLeft:187, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-low':      { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-empty':    { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:250 },
+    'sub-healthy':  { plan:'subscriber', subCreditsLeft:225, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-low':      { plan:'subscriber', subCreditsLeft:22,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-empty':    { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:300 },
     'free-full':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, remMax:100 },
     'free-low':     { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
     'free-empty':   { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 }
@@ -504,7 +504,7 @@ function injectData() {
       var data = JSON.parse(JSON.stringify(DUMMY));
       data.plan = bp.plan;
       data.subCreditsLeft = bp.subCreditsLeft;
-      data.subCreditsMax = bp.plan === 'subscriber' ? 250 : 0;
+      data.subCreditsMax = bp.plan === 'subscriber' ? 300 : 0;
       data.topupCreditsLeft = bp.topupCreditsLeft;
       data.subRenewsAt = bp.subRenewsAt;
       data.remMax = bp.remMax;
@@ -539,18 +539,18 @@ function setBilling(preset) {
     'free-low':      { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
     'free-critical': { plan:'free', subCreditsLeft:0, topupCreditsLeft:5,   subRenewsAt:null, remMax:100 },
     'free-empty':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 },
-    'sub-healthy':   { plan:'subscriber', subCreditsLeft:187, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-low':       { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:250 }
+    'sub-healthy':   { plan:'subscriber', subCreditsLeft:225, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-low':       { plan:'subscriber', subCreditsLeft:22,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:300 }
   };
 
   var s = states[preset];
   if (!s) return;
   u.plan = s.plan;
   u.subCreditsLeft = s.subCreditsLeft;
-  u.subCreditsMax = 250;
+  u.subCreditsMax = 300;
   u.topupCreditsLeft = s.topupCreditsLeft;
   u.subRenewsAt = s.subRenewsAt;
   u.remMax = s.remMax;

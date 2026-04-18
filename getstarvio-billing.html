@@ -381,17 +381,18 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   <div class="modal" style="width:420px">
     <div class="mhd" id="sub-header">
       <div class="m-title" id="sub-title">Konfirmasi Subscribe</div>
-      <div class="m-sub">Subscriber — Rp 250.000/bulan (Early Access +50%)</div>
+      <div class="m-sub">Subscriber Bulanan — Early Access 50% off</div>
     </div>
     <div id="sub-content">
       <div class="m-body" id="sub-confirm">
         <div class="pay-summary">
           <div class="pay-row"><span class="pay-row-k">Paket</span><span class="pay-row-v">Subscriber Bulanan</span></div>
-          <div class="pay-row"><span class="pay-row-k">Kredit per bulan</span><span class="pay-row-v">250 kredit</span></div>
-          <div class="pay-row"><span class="pay-row-k">Harga per kredit</span><span class="pay-row-v">Rp 1.000</span></div>
-          <div class="pay-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"><span class="pay-row-k" style="font-weight:700;color:var(--ink)">Total/bulan</span><span class="pay-row-v" style="font-size:14px;color:var(--lime-dk)">Rp 250.000</span></div>
+          <div class="pay-row"><span class="pay-row-k">Kredit per bulan</span><span class="pay-row-v">300 kredit</span></div>
+          <div class="pay-row"><span class="pay-row-k">Harga normal</span><span class="pay-row-v" style="text-decoration:line-through;color:var(--ink3)">Rp 499.000</span></div>
+          <div class="pay-row"><span class="pay-row-k">Diskon Early Access</span><span class="pay-row-v" style="color:var(--lime-dk)">&minus;50%</span></div>
+          <div class="pay-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"><span class="pay-row-k" style="font-weight:700;color:var(--ink)">Total/bulan</span><span class="pay-row-v" style="font-size:14px;color:var(--lime-dk)">Rp 249.000</span></div>
         </div>
-        <div style="font-size:11px;color:var(--ink3);line-height:1.5">Pembayaran via transfer bank / QRIS. 250 kredit langsung tersedia setelah aktivasi.</div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.5">Pembayaran via transfer bank / QRIS. 300 kredit langsung tersedia setelah aktivasi. Kredit subscription hangus tiap bulan (tidak rollover).</div>
       </div>
       <div class="m-body" id="sub-processing" style="display:none">
         <div style="text-align:center;padding:20px">
@@ -404,7 +405,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
         <div style="text-align:center;padding:20px">
           <div class="pay-check">&#10003;</div>
           <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px">Langganan Aktif!</div>
-          <div style="font-size:12px;color:var(--ink3)">250 kredit subscription sudah ditambahkan ke akun kamu.</div>
+          <div style="font-size:12px;color:var(--ink3)">300 kredit subscription sudah ditambahkan ke akun kamu.</div>
         </div>
       </div>
     </div>
@@ -505,31 +506,27 @@ function calcUsageRate(U) {
    ══════════════════════════════════════════════ */
 
 var _pc = (function(){ try { var u=JSON.parse(localStorage.getItem('getstarvio_user')); return u && u.planConfig ? u.planConfig : {} } catch(e){ return {} } })()
-var SUB_PRICE = _pc.subPrice || 250000
-var SUB_CREDITS = _pc.subCredits || 250
+var SUB_PRICE = _pc.subPrice || 249000              // Early Access 50% off (normal Rp 499.000)
+var SUB_PRICE_NORMAL = 499000
+var SUB_CREDITS = _pc.subCredits || 300
 
-/* Default packages — overridden by admin planConfig if present */
+/* Default top-up packages — flat tier pricing, lebih banyak = lebih murah/kredit */
 var DEF_PACKAGES = [
-  { id: 'p1', amt: 300,  price: 250000,  popular: false, popLabel: '', save: '' },
-  { id: 'p2', amt: 625,  price: 500000,  popular: true,  popLabel: 'Terlaris', save: '' },
-  { id: 'p3', amt: 1500, price: 1000000, popular: false, popLabel: '', save: 'Best Value' }
+  { id: 'p1', amt: 200,  price: 399000,   popular: false, popLabel: '',         save: '' },
+  { id: 'p2', amt: 500,  price: 749000,   popular: true,  popLabel: 'Terlaris', save: 'Hemat 25%' },
+  { id: 'p3', amt: 1000, price: 1299000,  popular: false, popLabel: '',         save: 'Hemat 35%' }
 ]
 
 function buildPackages() {
   var u = loadU()
   var pc = u && u.planConfig ? u.planConfig : null
-  var basePrice = pc && pc.topupPrice ? pc.topupPrice : 1000
   var tiers = pc && pc.tiers && pc.tiers.length === 3 ? pc.tiers : null
 
-  var defs = DEF_PACKAGES
   var pkgs = []
   for (var i = 0; i < 3; i++) {
-    var d = defs[i]
+    var d = DEF_PACKAGES[i]
     var tierPrice = tiers ? tiers[i].price : d.price
     var tierCredits = tiers ? tiers[i].credits : d.amt
-    var baseCredits = Math.floor(tierPrice / basePrice)
-    var bonusCredits = tierCredits - baseCredits
-    var bonusPct = baseCredits > 0 ? Math.round(bonusCredits / baseCredits * 100) : 0
     var perCredit = tierCredits > 0 ? Math.round(tierPrice / tierCredits) : 0
     pkgs.push({
       id: d.id,
@@ -540,8 +537,7 @@ function buildPackages() {
       per: 'Rp ' + perCredit.toLocaleString('id-ID') + '/kredit',
       popular: d.popular,
       popLabel: d.popLabel,
-      save: d.save,
-      bonus: bonusCredits > 0 ? '+' + bonusCredits + ' bonus (' + bonusPct + '%)' : ''
+      save: d.save
     })
   }
   return pkgs
@@ -581,17 +577,17 @@ function generateDummyHistory(U) {
   h.push({ date: '2026-03-01', type: 'welcome', label: 'Welcome Bonus', delta: 100, balAfter: bal + 5, note: 'Bonus kredit pendaftaran' })
 
   if (U.plan === 'subscriber') {
-    h.push({ date: '2026-03-01', type: 'subscription', label: 'Subscription', delta: 250, balAfter: bal + 8, note: 'Kredit bulanan subscriber (250 kredit/bulan)' })
+    h.push({ date: '2026-03-01', type: 'subscription', label: 'Subscription', delta: 300, balAfter: bal + 8, note: 'Kredit bulanan subscriber (300 kredit/bulan, Early Access 50% off)' })
   }
 
   // Some usage entries
-  h.push({ date: '2026-03-25', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal, note: 'Reminder — Patricia Sutanto' })
-  h.push({ date: '2026-03-24', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 1, note: 'Reminder — Quincy Lesmana' })
-  h.push({ date: '2026-03-23', type: 'topup', label: 'Top Up', delta: 300, balAfter: bal + 2 + 300, note: 'Paket 300 kredit — Rp 250.000 (incl. +50 bonus 20%)' })
-  h.push({ date: '2026-03-22', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 2, note: 'Reminder — Valeria Chandra' })
-  h.push({ date: '2026-03-21', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 3, note: 'Reminder — Tabitha Dharmawan' })
-  h.push({ date: '2026-03-20', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 4, note: 'Reminder — Rachel Tandiono' })
-  h.push({ date: '2026-03-19', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 5, note: 'Reminder — Xenia Rachman' })
+  h.push({ date: '2026-03-25', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal, note: 'Pengingat — Patricia Sutanto' })
+  h.push({ date: '2026-03-24', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 1, note: 'Pengingat — Quincy Lesmana' })
+  h.push({ date: '2026-03-23', type: 'topup', label: 'Top Up', delta: 200, balAfter: bal + 2 + 200, note: 'Paket 200 kredit — Rp 399.000' })
+  h.push({ date: '2026-03-22', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 2, note: 'Pengingat — Valeria Chandra' })
+  h.push({ date: '2026-03-21', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 3, note: 'Pengingat — Tabitha Dharmawan' })
+  h.push({ date: '2026-03-20', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 4, note: 'Pengingat — Rachel Tandiono' })
+  h.push({ date: '2026-03-19', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 5, note: 'Pengingat — Xenia Rachman' })
 
   return h
 }
@@ -719,7 +715,7 @@ function processSubscribe() {
       label: 'Subscription',
       delta: SUB_CREDITS,
       balAfter: U.remLeft,
-      note: 'Aktivasi subscriber — Rp 250.000/bulan (250 kredit/bulan)'
+      note: 'Aktivasi subscriber — Rp 249.000/bulan (300 kredit/bulan, Early Access 50% off)'
     })
     saveU(U)
 
@@ -862,7 +858,7 @@ function render() {
   if (plan === 'subscriber') {
     html += '<button class="cancel-link" onclick="openCancelModal()">Batalkan Langganan</button>'
   } else {
-    html += '<button class="btn btn-lime" onclick="openSubscribe()">Subscribe — Rp 250.000/bulan (250 kredit)</button>'
+    html += '<button class="btn btn-lime" onclick="openSubscribe()">Subscribe — <span style="text-decoration:line-through;opacity:.6;font-weight:500">Rp 499.000</span> Rp 249.000/bulan (300 kredit)</button>'
   }
   html += '</div>'
   html += '</div>'
@@ -947,7 +943,7 @@ function render() {
   /* ─────────────────────────────────────────
      SECTION 3: TOP UP KREDIT EXTRA
      ───────────────────────────────────────── */
-  html += '<div class="sec-header" id="topup-section"><div class="sec-title">Top Up Kredit Extra</div><div class="sec-sub">Harga normal Rp 1.000/kredit — <b style="color:var(--lime-dk)">Early Access +50% bonus!</b></div></div>'
+  html += '<div class="sec-header" id="topup-section"><div class="sec-title">Top Up Kredit Extra</div><div class="sec-sub">Beli paket sekali, kredit <b style="color:var(--lime-dk)">tidak ada expiry</b> — semakin besar paket, semakin murah per kreditnya.</div></div>'
   html += '<div class="pkg-grid">'
   PACKAGES.forEach(function(pkg) {
     var isSel = pkg.id === selectedPkg
@@ -956,7 +952,6 @@ function render() {
     if (pkg.save) html += '<div class="pkg-pop" style="background:var(--amber);color:#fff">' + pkg.save + '</div>'
     html += '<div class="pkg-amt">' + pkg.label + '</div>'
     html += '<div class="pkg-unit">kredit</div>'
-    if (pkg.bonus) html += '<div style="font-size:10px;font-weight:700;color:var(--lime-dk);background:var(--lime-bg);border:1px solid #c8f07a;border-radius:99px;padding:2px 8px;margin:4px 0;display:inline-block">' + pkg.bonus + '</div>'
     html += '<div class="pkg-price">' + pkg.priceStr + '</div>'
     html += '<div class="pkg-per">' + pkg.per + '</div>'
     html += '</div>'
@@ -1018,13 +1013,13 @@ function render() {
     recoHtml += '<div class="reco-banner warn">'
     recoHtml += '<div class="reco-icon" style="background:var(--amber-bg);border:1px solid #fcd88a">&#9888;&#65039;</div>'
     recoHtml += '<div class="reco-text"><div class="reco-title">Kredit mulai menipis</div>'
-    recoHtml += '<div class="reco-sub">Sisa ' + remLeft + ' kredit. Pertimbangkan top up supaya reminder tetap jalan tanpa gangguan. 1 kredit = 1 reminder = potensi pelanggan balik.</div></div>'
+    recoHtml += '<div class="reco-sub">Sisa ' + remLeft + ' kredit. Pertimbangkan top up supaya pengingat tetap jalan tanpa gangguan. 1 kredit = 1 pengingat = potensi pelanggan balik.</div></div>'
     recoHtml += '</div>'
   } else if (plan === 'free') {
     recoHtml += '<div class="reco-banner">'
     recoHtml += '<div class="reco-icon" style="background:var(--lime-bg);border:1px solid #c8f07a">&#128161;</div>'
-    recoHtml += '<div class="reco-text"><div class="reco-title">Upgrade ke Subscriber?</div>'
-    recoHtml += '<div class="reco-sub">Dapatkan 250 kredit/bulan hanya Rp 250.000 (Rp 1.000/kredit). Setiap reminder punya potensi bawa pelanggan balik.</div></div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Upgrade ke Subscriber? Hemat 50% Early Access!</div>'
+    recoHtml += '<div class="reco-sub">Dapatkan <b>300 kredit/bulan</b> — <span style="text-decoration:line-through;color:var(--ink3)">Rp 499.000</span> hanya <b style="color:var(--lime-dk)">Rp 249.000/bulan</b> (Rp 830/kredit). Setiap pengingat punya potensi bawa pelanggan balik.</div></div>'
     recoHtml += '</div>'
   }
   html += recoHtml
@@ -1149,11 +1144,11 @@ function devSetBilling(preset) {
     'free-low':      { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
     'free-critical': { plan:'free', subCreditsLeft:0, topupCreditsLeft:5,   subRenewsAt:null, remMax:100 },
     'free-empty':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 },
-    'sub-healthy':   { plan:'subscriber', subCreditsLeft:187, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-low':       { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:250 }
+    'sub-healthy':   { plan:'subscriber', subCreditsLeft:225, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-low':       { plan:'subscriber', subCreditsLeft:22,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:300 },
+    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:300 }
   }
   var s = states[preset]
   if (!s) return

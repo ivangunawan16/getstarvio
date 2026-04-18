@@ -370,16 +370,19 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           </div>
           <div class="plan-field">
             <div class="plan-field-lbl">Kredit per bulan</div>
-            <input class="plan-field-inp" id="pc-sub-credit" value="250" type="number" min="0">
+            <input class="plan-field-inp" id="pc-sub-credit" value="300" type="number" min="0">
             <div class="plan-field-unit">kredit / bulan</div>
           </div>
-          <div class="plan-field" style="padding-left:32px">
-            <div class="plan-field-lbl" style="font-size:11px;color:var(--ink3);font-style:italic">250 kredit/bulan (flat)</div>
+          <div class="plan-field">
+            <div class="plan-field-lbl">Harga normal</div>
+            <input class="plan-field-inp" id="pc-sub-price-normal" value="499000" type="number" min="0" oninput="recalcSubDiscount()">
+            <div class="plan-field-unit">IDR / bulan</div>
           </div>
           <div class="plan-field">
-            <div class="plan-field-lbl">Harga</div>
-            <input class="plan-field-inp" id="pc-sub-price" value="250000" type="number" min="0">
+            <div class="plan-field-lbl">Harga Early Access</div>
+            <input class="plan-field-inp" id="pc-sub-price" value="249000" type="number" min="0" oninput="recalcSubDiscount()">
             <div class="plan-field-unit">IDR / bulan</div>
+            <span class="plan-tier-badge" id="pc-sub-discount" style="background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3">-50%</span>
           </div>
           <div class="plan-field">
             <div class="plan-field-lbl">Reset otomatis</div>
@@ -398,42 +401,37 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           <div class="plan-config-hd">
             <div>
               <div class="plan-config-name">Top-Up Pricing</div>
-              <div style="font-size:11px;color:var(--ink3);margin-top:2px">Tidak kadaluarsa · digunakan setelah kuota habis</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:2px">Tidak kadaluarsa · digunakan setelah kuota habis · flat tier pricing</div>
             </div>
             <span class="badge b-blue">Add-on</span>
           </div>
-          <div class="plan-field">
-            <div class="plan-field-lbl">Harga per kredit</div>
-            <input class="plan-field-inp" id="pc-topup-price" value="1000" type="number" min="0">
-            <div class="plan-field-unit">IDR / kredit</div>
-          </div>
-          <div style="padding:10px 16px;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Paket Tiers</div>
+          <div style="padding:10px 16px;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Paket Tiers (per-kredit auto-calculated)</div>
           <div class="plan-tier">
             <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">1.</span>
             <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
-            <input class="plan-field-inp" id="pc-tier1-price" value="250000" type="number" min="0" style="width:100px" oninput="recalcTier(1)">
+            <input class="plan-field-inp" id="pc-tier1-price" value="399000" type="number" min="0" style="width:100px" oninput="recalcTier(1)">
             <span style="color:var(--ink3)">→</span>
-            <input class="plan-field-inp" id="pc-tier1-credits" value="300" type="number" min="1" style="width:70px" oninput="recalcTier(1)">
+            <input class="plan-field-inp" id="pc-tier1-credits" value="200" type="number" min="1" style="width:70px" oninput="recalcTier(1)">
             <span style="font-size:11px;color:var(--ink3)">kredit</span>
-            <span class="plan-tier-badge" id="pc-tier1-bonus">+20%</span>
+            <span class="plan-tier-badge" id="pc-tier1-bonus">Rp 1.995/kredit</span>
           </div>
           <div class="plan-tier">
             <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">2.</span>
             <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
-            <input class="plan-field-inp" id="pc-tier2-price" value="500000" type="number" min="0" style="width:100px" oninput="recalcTier(2)">
+            <input class="plan-field-inp" id="pc-tier2-price" value="749000" type="number" min="0" style="width:100px" oninput="recalcTier(2)">
             <span style="color:var(--ink3)">→</span>
-            <input class="plan-field-inp" id="pc-tier2-credits" value="625" type="number" min="1" style="width:70px" oninput="recalcTier(2)">
+            <input class="plan-field-inp" id="pc-tier2-credits" value="500" type="number" min="1" style="width:70px" oninput="recalcTier(2)">
             <span style="font-size:11px;color:var(--ink3)">kredit</span>
-            <span class="plan-tier-badge" id="pc-tier2-bonus">+25%</span>
+            <span class="plan-tier-badge" id="pc-tier2-bonus">Rp 1.498/kredit</span>
           </div>
           <div class="plan-tier">
             <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">3.</span>
             <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
-            <input class="plan-field-inp" id="pc-tier3-price" value="1000000" type="number" min="0" style="width:100px" oninput="recalcTier(3)">
+            <input class="plan-field-inp" id="pc-tier3-price" value="1299000" type="number" min="0" style="width:100px" oninput="recalcTier(3)">
             <span style="color:var(--ink3)">→</span>
-            <input class="plan-field-inp" id="pc-tier3-credits" value="1500" type="number" min="1" style="width:70px" oninput="recalcTier(3)">
+            <input class="plan-field-inp" id="pc-tier3-credits" value="1000" type="number" min="1" style="width:70px" oninput="recalcTier(3)">
             <span style="font-size:11px;color:var(--ink3)">kredit</span>
-            <span class="plan-tier-badge" id="pc-tier3-bonus">+50%</span>
+            <span class="plan-tier-badge" id="pc-tier3-bonus">Rp 1.299/kredit</span>
           </div>
         </div>
 
@@ -891,12 +889,18 @@ function switchTab(tab, el) {
 // PLAN CONFIG
 // ══════════════════════════════
 function recalcTier(n) {
-  var pricePerCredit = parseInt(document.getElementById('pc-topup-price').value) || 1000
+  // Flat tier pricing — display per-credit (price ÷ credits), no more bonus calculation
   var price = parseInt(document.getElementById('pc-tier' + n + '-price').value) || 0
   var credits = parseInt(document.getElementById('pc-tier' + n + '-credits').value) || 0
-  var baseCredits = Math.floor(price / pricePerCredit)
-  var bonusPct = baseCredits > 0 ? Math.round((credits - baseCredits) / baseCredits * 100) : 0
-  document.getElementById('pc-tier' + n + '-bonus').textContent = bonusPct > 0 ? '+' + bonusPct + '%' : '0%'
+  var perCredit = credits > 0 ? Math.round(price / credits) : 0
+  document.getElementById('pc-tier' + n + '-bonus').textContent = 'Rp ' + perCredit.toLocaleString('id-ID') + '/kredit'
+}
+
+function recalcSubDiscount() {
+  var normal = parseInt(document.getElementById('pc-sub-price-normal').value) || 0
+  var early = parseInt(document.getElementById('pc-sub-price').value) || 0
+  var pct = normal > 0 ? Math.round((1 - early / normal) * 100) : 0
+  document.getElementById('pc-sub-discount').textContent = pct > 0 ? '-' + pct + '%' : ''
 }
 
 function loadPlanConfig() {
@@ -909,13 +913,14 @@ function loadPlanConfig() {
     if (pc.freeBonus !== undefined) document.getElementById('pc-free-bonus').value = pc.freeBonus
     if (pc.subCredits !== undefined) document.getElementById('pc-sub-credit').value = pc.subCredits
     if (pc.subPrice !== undefined) document.getElementById('pc-sub-price').value = pc.subPrice
-    if (pc.topupPrice !== undefined) document.getElementById('pc-topup-price').value = pc.topupPrice
+    if (pc.subPriceNormal !== undefined) document.getElementById('pc-sub-price-normal').value = pc.subPriceNormal
     var tiers = pc.tiers || []
     for (var i = 0; i < tiers.length && i < 3; i++) {
       document.getElementById('pc-tier' + (i+1) + '-price').value = tiers[i].price
       document.getElementById('pc-tier' + (i+1) + '-credits').value = tiers[i].credits
       recalcTier(i+1)
     }
+    recalcSubDiscount()
   } catch(e) {}
 }
 
@@ -934,9 +939,9 @@ function savePlanConfig() {
 
   var planConfig = {
     freeBonus: parseInt(document.getElementById('pc-free-bonus').value) || 100,
-    subCredits: parseInt(document.getElementById('pc-sub-credit').value) || 250,
-    subPrice: parseInt(document.getElementById('pc-sub-price').value) || 250000,
-    topupPrice: parseInt(document.getElementById('pc-topup-price').value) || 1000,
+    subCredits: parseInt(document.getElementById('pc-sub-credit').value) || 300,
+    subPrice: parseInt(document.getElementById('pc-sub-price').value) || 249000,
+    subPriceNormal: parseInt(document.getElementById('pc-sub-price-normal').value) || 499000,
     tiers: tiers
   }
 
@@ -987,11 +992,11 @@ var TX_DATA = [];
       var amt = Math.floor(Math.random()*15)+5;
       balance += amt;
       TX_DATA.push({
-        company: b.name, type:'usage', label:'Penggunaan Reminder',
+        company: b.name, type:'usage', label:'Penggunaan Pengingat',
         icon:'−', cls:'sub', sign:'-', amount: amt,
         date: d.toISOString().split('T')[0],
         balanceAfter: Math.max(0, b.creditLeft + Math.floor(Math.random()*50)),
-        keterangan: amt+' reminder terkirim'
+        keterangan: amt+' pengingat terkirim'
       });
     }
 
@@ -1000,9 +1005,9 @@ var TX_DATA = [];
       var sd = new Date('2026-03-01');
       TX_DATA.push({
         company: b.name, type:'subscription', label:'Langganan Bulanan',
-        icon:'↺', cls:'reset', sign:'+', amount:250,
+        icon:'↺', cls:'reset', sign:'+', amount:300,
         date: sd.toISOString().split('T')[0],
-        balanceAfter: 250, keterangan:'Reset + kredit bulanan Maret'
+        balanceAfter: 300, keterangan:'Reset + kredit bulanan Maret (Early Access 50% off)'
       });
     }
 
@@ -1012,10 +1017,10 @@ var TX_DATA = [];
       td.setDate(td.getDate() - ci*2);
       TX_DATA.push({
         company: b.name, type:'topup', label:'Top Up Kredit',
-        icon:'+', cls:'add', sign:'+', amount:300,
+        icon:'+', cls:'add', sign:'+', amount:200,
         date: td.toISOString().split('T')[0],
-        balanceAfter: b.creditLeft + 300,
-        keterangan:'Paket Rp 250.000 (+20% bonus)'
+        balanceAfter: b.creditLeft + 200,
+        keterangan:'Paket 200 kredit — Rp 399.000'
       });
     }
   });

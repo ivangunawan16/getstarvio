@@ -6,26 +6,31 @@
 
 ## Tujuan Halaman
 
-Kelola subscription dan kredit reminder. **ROI framing** — reminder bukan "biaya" tapi "peluang membawa pelanggan balik". Lihat status plan, top up kredit extra, rekomendasi cerdas, riwayat transaksi.
+Kelola subscription dan kredit pengingat. **ROI framing** — pengingat bukan "biaya" tapi "peluang membawa pelanggan balik". Lihat status plan, top up kredit extra, rekomendasi cerdas, riwayat transaksi.
 
 ---
 
 ## BILLING MODEL (wajib dipahami sebelum build)
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  WELCOME BONUS    │  100 kredit gratis saat join         │
-│                   │  Berlaku 1x, tidak ada expiry        │
-├─────────────────────────────────────────────────────────┤
-│  SUBSCRIPTION     │  Rp 250.000 / bulan                  │
-│  (opsional)       │  Include 250 kredit/bulan            │
-│                   │  ⚠️ TIDAK rollover ke bulan berikutnya│
-│                   │  Reset tanggal yang sama tiap bulan  │
-├─────────────────────────────────────────────────────────┤
-│  TOP-UP           │  Beli kredit extra kapan saja        │
-│  (pay-as-you-go)  │  ✅ TIDAK ada expiry                 │
-│                   │  Dipakai setelah kredit sub habis    │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│  WELCOME BONUS    │  100 kredit gratis saat join             │
+│                   │  Berlaku 1x, tidak ada expiry            │
+├─────────────────────────────────────────────────────────────┤
+│  SUBSCRIPTION     │  Rp 249.000 / bulan (Early Access 50%)   │
+│  (opsional)       │  Harga normal Rp 499.000 (coret)         │
+│                   │  Include 300 kredit/bulan                │
+│                   │  ⚠️ TIDAK rollover ke bulan berikutnya   │
+│                   │  Reset tanggal yang sama tiap bulan      │
+│                   │  Garansi 30 hari uang kembali            │
+├─────────────────────────────────────────────────────────────┤
+│  TOP-UP           │  Beli kredit extra kapan saja            │
+│  (pay-as-you-go)  │  ✅ TIDAK ada expiry                     │
+│                   │  Dipakai setelah kredit sub habis        │
+│                   │  200 kredit  — Rp 399.000  (Rp 1.995/k)  │
+│                   │  500 kredit  — Rp 749.000  (Rp 1.498/k)  │
+│                   │  1000 kredit — Rp 1.299.000(Rp 1.299/k)  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 **Urutan pemakaian kredit:**
@@ -36,7 +41,7 @@ Kelola subscription dan kredit reminder. **ROI framing** — reminder bukan "bia
 
 **User states:**
 - **New / Trial:** `plan: "free"` — punya welcome bonus 100 kredit, belum subscribe
-- **Subscriber aktif:** `plan: "subscriber"` — bayar 250k/bulan, dapat 250 kredit di-refresh tiap bulan
+- **Subscriber aktif:** `plan: "subscriber"` — bayar 249k/bulan (Early Access), dapat 300 kredit di-refresh tiap bulan
 - **Subscriber + top-up:** punya kedua tipe kredit sekaligus
 
 ---
@@ -49,7 +54,7 @@ Tambahkan field ini ke `getstarvio_user`:
 {
   plan: "free" | "subscriber",       // status subscription
   subCreditsLeft: number,            // sisa kredit dari subscription bulan ini (reset bulanan)
-  subCreditsMax: 250,
+  subCreditsMax: 300,
   topupCreditsLeft: number,          // kredit top-up (tidak ada expiry)
   subRenewsAt: "ISO string | null",  // tanggal renewal berikutnya (null jika free)
   // remLeft = subCreditsLeft + topupCreditsLeft (computed, bukan disimpan)
@@ -68,8 +73,8 @@ Tambahkan field ini ke `getstarvio_user`:
 **Jika `plan === "free"`:**
 - Badge: "Paket Gratis" (grey)
 - Teks: "Kamu sedang memakai welcome bonus — `remLeft` kredit tersisa"
-- CTA prominent: tombol **"Subscribe Sekarang — Rp 250.000/bulan"**
-- Subtext: "Dapatkan 250 reminder/bulan + akses semua fitur"
+- CTA prominent: tombol **"Subscribe — ~~Rp 499.000~~ Rp 249.000/bulan (300 kredit)"** dengan harga normal coret + diskon Early Access
+- Subtext: "Dapatkan 300 pengingat/bulan + akses semua fitur. Garansi 30 hari uang kembali."
 
 **Jika `plan === "subscriber"`:**
 - Badge: "Subscriber Aktif" (lime)
@@ -84,7 +89,7 @@ Tampilkan dua baris kredit secara visual terpisah:
 
 **Kredit Subscription** (hanya tampil jika `plan === "subscriber"`)
 - Label: "Kredit Bulanan" + badge "Reset tiap bulan"
-- Angka: `subCreditsLeft` dari `subCreditsMax` (250)
+- Angka: `subCreditsLeft` dari `subCreditsMax` (300)
 - Progress bar
 - Warning jika < 30: "Kredit bulanan hampir habis — tidak rollover ke bulan depan"
 
@@ -105,17 +110,20 @@ Tampilkan dua baris kredit secara visual terpisah:
 
 ### Section 3: Top Up Kredit Extra
 
-Header: "Tambah Kredit Top-Up" dengan subtext "Tidak ada expiry — dipakai setelah kredit bulanan habis"
+Header: "Top Up Kredit Extra" dengan subtext "Beli paket sekali, kredit tidak ada expiry — semakin besar paket, semakin murah per kreditnya."
 
 3 pilihan paket (card) — **dinamis dari `getstarvio_user.planConfig`** (fallback ke default jika tidak ada):
-- Default: 300 kredit — Rp 250.000 (+20%), 625 kredit — Rp 500.000 (+25%, "Terlaris"), 1.500 kredit — Rp 1.000.000 (+50%, "Best Value")
+- Default tiers (flat pricing, NO bonus calculation):
+  - 200 kredit  — Rp 399.000   (Rp 1.995/kredit)
+  - 500 kredit  — Rp 749.000   (Rp 1.498/kredit) — badge "Terlaris" + "Hemat 25%"
+  - 1.000 kredit — Rp 1.299.000 (Rp 1.299/kredit) — badge "Hemat 35%"
 - Jika admin mengubah pricing via `getstarvio-admin.html` Plan Config, billing otomatis reflect perubahan
-- Label bonus, harga per kredit, dan total kredit dihitung dari `planConfig.tiers[]` dan `planConfig.topupPrice`
+- Per-credit dan label dihitung dari `planConfig.tiers[]` (tidak ada lagi `topupPrice`/basePrice/bonus concept)
 
 **Implementasi:**
 ```js
-var PACKAGES = buildPackages()  // reads planConfig from localStorage, falls back to defaults
-// SUB_PRICE and SUB_CREDITS also read from planConfig
+var PACKAGES = buildPackages()  // reads planConfig.tiers[], falls back to flat defaults
+// SUB_PRICE, SUB_PRICE_NORMAL, SUB_CREDITS also read from planConfig
 ```
 
 - Card yang dipilih: highlight lime border
@@ -141,12 +149,12 @@ Tampilkan banner rekomendasi berdasarkan kondisi:
 
 | Kondisi | Rekomendasi |
 |---|---|
-| `plan === "free"` + `remLeft` < 30 | "Subscribe sekarang — dapat 250 kredit fresh tiap bulan" |
+| `plan === "free"` + `remLeft` < 30 | "Subscribe sekarang — dapat 300 kredit fresh tiap bulan (Early Access 50% off)" |
 | `plan === "subscriber"` + sub habis + topup > 0 | "Kredit bulanan habis — kredit top-up kamu akan dipakai" |
 | `plan === "subscriber"` + topup = 0 + sub < 30 | "Mau ada cadangan? Top up kredit extra sekarang" |
 | `remLeft` = 0 | 🚨 Banner merah: "Automation dihentikan — isi kredit untuk lanjutkan" |
 
-Copy harus ROI-framed: **"Setiap reminder = peluang pelanggan balik"** — bukan "kredit hampir habis"
+Copy harus ROI-framed: **"Setiap pengingat = peluang pelanggan balik"** — bukan "kredit hampir habis"
 
 ---
 
@@ -164,10 +172,10 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 
 | Tipe | Warna | Contoh Keterangan |
 |---|---|---|
-| Top Up | hijau + | "Top Up 500 kredit" |
-| Subscription | biru + | "Renewal bulanan — 250 kredit" |
+| Top Up | hijau + | "Top Up 500 kredit — Rp 749.000" |
+| Subscription | biru + | "Renewal bulanan — 300 kredit (Early Access 50% off)" |
 | Welcome Bonus | lime + | "Welcome bonus 100 kredit" |
-| Penggunaan | merah – | "Reminder terkirim ke Mia" |
+| Penggunaan | merah – | "Pengingat terkirim ke Mia" |
 
 ---
 
@@ -177,7 +185,7 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 - Checkbox:
   - ☑ Saat kredit total Rendah (< 30)
   - ☑ Saat kredit total Kritis (< 10)
-  - ☑ Saat kredit subscription hampir habis (< 50 dari 250)
+  - ☑ Saat kredit subscription hampir habis (< 60 dari 300)
   - ☑ 3 hari sebelum renewal
 
 ---
@@ -212,3 +220,4 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 | 2026-03-26 | Sync with HTML: subCreditsMax=375 (250 base + 125 early access +50%). Top-up packages: 300 (Rp 250k, +20%), 625 (Rp 500k, +25%), 1500 (Rp 1jt, +50%). Base price Rp 1.000/kredit. Auto top-up has explicit "Simpan Pengaturan" button. |
 | 2026-03-27 | Subscription credits: 375 → 250 (flat, no early access bonus on subscription). subCreditsMax=250. Early access +50% applies ONLY to top-up packages. |
 | 2026-03-27 | Top-up packages now dynamic: reads from `getstarvio_user.planConfig` (set by admin page). `buildPackages()` computes labels/bonuses/per-kredit from planConfig. SUB_PRICE and SUB_CREDITS also read from planConfig. Falls back to hardcoded defaults if no planConfig. |
+| 2026-04-18 | **MAJOR PRICING UPDATE.** Subscription Rp 249.000/bulan (Early Access 50% off, normal Rp 499.000) for 300 kredit/bulan (was 250). subCreditsMax=300. Top-up: flat tier pricing — 200/500/1.000 kredit @ Rp 399k/749k/1.299k (no more "+X% bonus" claim). Per-credit Rp 1.995/1.498/1.299. Removed `topupPrice`/basePrice concept. Added `subPriceNormal` to planConfig. Subscribe modal shows price-old strikethrough + Early Access discount line. UI copy "reminder" → "pengingat". Trust line: "Garansi 30 hari uang kembali". |

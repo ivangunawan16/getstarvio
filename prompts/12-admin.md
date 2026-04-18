@@ -32,12 +32,12 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 ### Summary Cards (atas, 4 kartu)
 - Total bisnis aktif — variant lime
 - Total kredit terjual bulan ini — variant blue
-- Total reminder terkirim bulan ini — variant neutral
+- Total pengingat terkirim bulan ini — variant neutral
 - Bisnis churn bulan ini — variant red (jika ada)
 
 ### Tabel Subscriber (main section)
 - List semua bisnis dari `ADMIN_DATA[]` (bukan dari `getstarvio_user`)
-- Kolom: Nama Bisnis | Jenis | Tgl Daftar | Status | Kredit Tersisa | Reminder (bln ini) | WA Status
+- Kolom: Nama Bisnis | Jenis | Tgl Daftar | Status | Kredit Tersisa | Pengingat (bln ini) | WA Status
 - Status badge per baris: `Aktif` (lime) / `Trial` (blue) / `Suspended` (amber) / `Churned` (red)
 - WA status chip: `Connected` (lime pulse) / `Disconnected` (red)
 - Tombol "Lihat Detail" per baris → buka modal detail
@@ -46,7 +46,7 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 - Nama bisnis, jenis, bizSlug, tanggal daftar
 - Nama + email admin
 - Kredit: `remLeft` dari `remMax` — progress bar
-- Total reminder all time + bulan ini
+- Total pengingat all time + bulan ini
 - Tanggal top up terakhir
 - Nomor WA + status koneksi + last connected timestamp
 - **Aksi:**
@@ -62,31 +62,40 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 
 ---
 
-### Tab: Plan Config — Top-Up Pricing (editable)
+### Tab: Plan Config — Subscription & Top-Up Pricing (editable)
 
-Top-Up Pricing card memiliki field yang bisa diedit:
-- **Harga per kredit** — input number, default 1000 IDR
-- **3 Paket Tiers** — masing-masing punya:
+**Subscription card** (editable):
+- Harga normal (Rp) — input number, default 499.000
+- Harga Early Access (Rp) — input number, default 249.000
+- Kredit per bulan — input number, default 300
+- Auto-show: diskon % (auto-calculated dari normal vs early access)
+
+**Top-Up Pricing card** (editable):
+- **3 Paket Tiers** — flat pricing, masing-masing punya:
   - Harga (Rp) — input number
   - Jumlah kredit — input number
-  - Bonus % — auto-calculated badge (recalc saat input berubah)
-- Default tiers: Rp 250.000 → 300 kredit (+20%), Rp 500.000 → 625 kredit (+25%), Rp 1.000.000 → 1.500 kredit (+50%)
+  - Per-kredit (Rp) — auto-calculated display (price ÷ credits)
+- Default tiers (no bonus calculation):
+  - Tier 1: Rp 399.000 → 200 kredit (Rp 1.995/kredit)
+  - Tier 2: Rp 749.000 → 500 kredit (Rp 1.498/kredit) — label "Terlaris"
+  - Tier 3: Rp 1.299.000 → 1.000 kredit (Rp 1.299/kredit) — label "Hemat 35%"
 
 **Simpan Konfigurasi button:**
-- Menyimpan semua plan config (freeBonus, subCredits, subPrice, topupPrice, tiers) ke `getstarvio_user.planConfig` di localStorage
+- Menyimpan plan config (freeBonus, subCredits, subPrice, subPriceNormal, tiers) ke `getstarvio_user.planConfig` di localStorage
 - Billing page membaca `planConfig` secara dinamis — perubahan di admin langsung tercermin di billing
+- Removed `topupPrice` (basePrice concept) — tier pricing sudah flat
 
 **planConfig schema yang disimpan:**
 ```js
 {
-  freeBonus: 100,        // welcome bonus credits
-  subCredits: 250,       // subscription credits per month
-  subPrice: 250000,      // subscription price per month
-  topupPrice: 1000,      // base price per credit
+  freeBonus: 100,           // welcome bonus credits
+  subCredits: 300,          // subscription credits per month
+  subPrice: 249000,         // subscription price per month (Early Access)
+  subPriceNormal: 499000,   // subscription price normal (untuk display coret)
   tiers: [
-    { price: 250000, credits: 300 },
-    { price: 500000, credits: 625 },
-    { price: 1000000, credits: 1500 }
+    { price: 399000,  credits: 200 },
+    { price: 749000,  credits: 500,  label: "Terlaris" },
+    { price: 1299000, credits: 1000, label: "Hemat 35%" }
   ]
 }
 ```
@@ -111,8 +120,8 @@ Contoh entry:
   status: "aktif",           // "aktif" | "trial" | "suspended" | "churned"
   remLeft: 42,
   remMax: 100,
-  reminderThisMonth: 18,
-  reminderAllTime: 134,
+  reminderThisMonth: 18,    // count of pengingat sent this month
+  reminderAllTime: 134,     // count of pengingat all-time
   waStatus: "connected",     // "connected" | "disconnected"
   lastConnected: "2026-03-25T10:30:00",
   lastTopUp: "2026-03-10",
@@ -139,3 +148,4 @@ Contoh entry:
 | 2026-03-26 | File dibuat. Command Center adalah internal tool — bukan di sidebar user |
 | 2026-03-26 | Tambah Reference section — acuan v2.0 command-center, renamed jadi getstarvio-admin.html |
 | 2026-03-27 | Top-Up Pricing tiers now editable (price + credits inputs). Bonus % auto-recalculates. savePlanConfig() persists to getstarvio_user.planConfig in localStorage. loadPlanConfig() populates fields on boot. Billing page reads planConfig dynamically. |
+| 2026-04-18 | **MAJOR PRICING UPDATE.** New tiers: Rp 399k/200, Rp 749k/500 ("Terlaris"), Rp 1.299k/1000 ("Hemat 35%"). FLAT pricing — removed bonus % calculation (no more `topupPrice`/basePrice concept). Subscription card now editable: subPrice (249k Early Access), subPriceNormal (499k coret), subCredits (300). Auto-show diskon % from normal vs early access. Plan config schema adds `subPriceNormal`. UI copy "reminder" → "pengingat". |

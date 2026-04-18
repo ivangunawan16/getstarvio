@@ -11,9 +11,10 @@
   --bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
   --border:#e2e1d9;--border2:#cccbc2;
   --ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;--ink4:#c2c1b8;
-  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+  --lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;--lime-bd:var(--lime-bd);
   --amber:#f5a623;--amber-bg:#fff4e0;--amber-dk:#7a4f00;
   --red:#e8453c;--red-bg:#fde8e7;--red-dk:#7a1a16;
+  --fb:#1877f2;--fb-dk:#166fe5;
   --r:12px;--r-sm:8px;--r-lg:16px;
 }
 html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:var(--bg)}
@@ -49,12 +50,12 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .sb-step.active .sb-label{color:var(--lime-dk);font-weight:700}
 .sb-desc{font-size:10px;color:var(--ink4);margin-top:1px}
 .sb-step.active .sb-desc{color:var(--ink3)}
-.sb-free{margin-top:auto;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:9px}
+.sb-free{margin-top:auto;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:9px}
 .sb-free-n{font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;line-height:1}
 .sb-free-l{font-size:10px;color:var(--ink3);line-height:1.45}
 
 /* ── TYPOGRAPHY ── */
-.ob-tag{display:inline-block;font-size:10px;font-weight:700;color:var(--lime-dk);background:var(--lime-bg);border:1px solid #c8f07a;padding:3px 9px;border-radius:99px;margin-bottom:9px;letter-spacing:.05em}
+.ob-tag{display:inline-block;font-size:10px;font-weight:700;color:var(--lime-dk);background:var(--lime-bg);border:1px solid var(--lime-bd);padding:3px 9px;border-radius:99px;margin-bottom:9px;letter-spacing:.05em}
 .ob-title{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.4px;line-height:1.2;margin-bottom:7px}
 .ob-sub{font-size:13px;color:var(--ink3);line-height:1.65;margin-bottom:22px}
 
@@ -73,7 +74,7 @@ select.fi{cursor:pointer}
 .btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}.btn-lime:disabled{opacity:.4;cursor:not-allowed}
 .btn-ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}.btn-ghost:hover{background:var(--bg3)}
 .btn-row{display:flex;gap:9px;align-items:center;margin-top:20px}
-.coexist{display:flex;align-items:flex-start;gap:9px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 13px;font-size:12px;color:var(--lime-dk);line-height:1.5}
+.coexist{display:flex;align-items:flex-start;gap:9px;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:10px 13px;font-size:12px;color:var(--lime-dk);line-height:1.5}
 
 /* ── QR CONNECT ── */
 .qr-connect-wrap{display:flex;gap:18px;align-items:flex-start;margin-bottom:14px}
@@ -84,10 +85,99 @@ select.fi{cursor:pointer}
 .qr-n{width:19px;height:19px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'JetBrains Mono',monospace}
 .wa-status{display:flex;align-items:center;gap:7px;font-size:12px;margin-top:9px;padding:8px 11px;border-radius:var(--r-sm);transition:all .3s}
 .wa-waiting{color:var(--ink3);background:var(--bg3);border:1px solid var(--border)}
-.wa-done{color:var(--lime-dk);background:var(--lime-bg);border:1px solid #c8f07a;display:none}
+.wa-done{color:var(--lime-dk);background:var(--lime-bg);border:1px solid var(--lime-bd);display:none}
 .spinner{width:12px;height:12px;border:2px solid var(--border2);border-top-color:var(--lime2);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 .bridge-card{background:var(--ink);border-radius:var(--r);padding:16px 18px;margin:14px 0;display:none}
 .bridge-card.show{display:block;animation:fadeUp .3s ease}
+
+/* ── EMBEDDED SIGNUP / COEXIST FLOW ── */
+/* Section labels (consistent uppercase mini-titles) */
+.sec-label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-label .num{width:16px;height:16px;border-radius:50%;background:var(--ink);color:#fff;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* Preview list — "what will happen" mini stepper */
+.preview-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+.pv-item{display:flex;align-items:flex-start;gap:10px;padding:5px 0;font-size:12px;color:var(--ink2);line-height:1.55}
+.pv-num{width:20px;height:20px;border-radius:50%;background:var(--lime-bg);border:1.5px solid var(--lime-bd);color:var(--lime-dk);font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.pv-item strong{color:var(--ink);font-weight:700}
+
+/* Checklist (pre-requisites) */
+.checklist-card{background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
+.cl-title{font-size:10px;font-weight:700;color:var(--lime-dk);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.cl-item{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--lime-dk);line-height:1.55;padding:3px 0}
+.cl-item .cl-ic{font-size:14px;flex-shrink:0;line-height:1.4;margin-top:1px}
+.cl-item strong{color:var(--lime-dk);font-weight:700}
+
+/* Facebook button */
+.btn-fb{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px 18px;background:var(--fb);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(24,119,242,.25)}
+.btn-fb:hover{background:var(--fb-dk);box-shadow:0 4px 14px rgba(24,119,242,.35)}
+.btn-fb:active{transform:scale(.98)}
+.btn-fb-sub{font-size:11px;color:var(--ink3);text-align:center;margin-top:8px}
+
+/* Demo banner — clear "this is what you'll see in Meta's popup" */
+.demo-banner{background:var(--bg3);border:1px dashed var(--border2);border-radius:var(--r-sm);padding:8px 12px;font-size:11px;color:var(--ink3);margin-bottom:10px;display:flex;align-items:center;gap:7px;line-height:1.4}
+.demo-banner .ic{font-size:12px}
+.demo-banner strong{color:var(--ink2);font-weight:700}
+
+/* Meta popup mockup */
+.meta-popup-mock{background:#fff;border:1.5px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:14px;box-shadow:0 8px 28px rgba(0,0,0,.08);animation:fadeUp .3s ease}
+.meta-pop-header{background:var(--ink);padding:9px 13px;display:flex;align-items:center;gap:5px}
+.meta-pop-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18)}
+.meta-pop-url{margin-left:auto;font-size:10px;color:rgba(255,255,255,.45);font-family:'JetBrains Mono',monospace}
+.meta-pop-body{padding:16px 18px}
+.meta-pop-title{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:13px;display:flex;align-items:center;gap:7px}
+.meta-pop-title::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--fb);box-shadow:0 0 0 2px rgba(24,119,242,.15)}
+.meta-pop-steps{display:flex;flex-direction:column;gap:8px}
+.mp-step{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink4);transition:color .2s}
+.mp-step.done{color:var(--lime-dk)}
+.mp-step.active{color:var(--ink);font-weight:600}
+.mp-num{width:22px;height:22px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border2);color:var(--ink4);font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.mp-step.done .mp-num{background:var(--lime-bg);border-color:var(--lime2);color:var(--lime-dk)}
+.mp-step.active .mp-num{background:var(--lime);border-color:var(--lime);color:var(--lime-dk)}
+.mp-spinner{width:11px;height:11px;border:2px solid rgba(45,74,0,.3);border-top-color:var(--lime-dk);border-radius:50%;animation:spin .7s linear infinite}
+
+.mp-phase{margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)}
+.mp-info{background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:10px 12px;font-size:12px;color:var(--lime-dk);margin-bottom:11px;line-height:1.55;display:flex;gap:8px;align-items:flex-start}
+.mp-info .ic{font-size:14px;line-height:1.4;flex-shrink:0;margin-top:1px}
+
+/* Demo simulation button — distinct from real CTAs */
+.mp-action{background:var(--ink);color:#fff;border:none;padding:8px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:opacity .15s}
+.mp-action:hover{opacity:.88}
+.mp-action::before{content:'▶';font-size:9px;opacity:.7}
+
+.mp-qr-wrap{text-align:center}
+.mp-qr-instruct{font-size:12px;color:var(--ink2);line-height:1.65;margin-bottom:12px;text-align:left;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px}
+.mp-qr-instruct strong{color:var(--ink);font-weight:700}
+.mp-qr-box{display:inline-block;padding:10px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r-sm);margin-bottom:12px;position:relative;overflow:hidden}
+.mp-qr-box.scanning::after{content:'';position:absolute;left:6px;right:6px;height:2px;background:var(--lime);box-shadow:0 0 8px var(--lime);animation:scan 1.6s ease-in-out infinite}
+
+/* Success card — cleaner, focus on user-relevant info */
+.success-card{background:linear-gradient(135deg,rgba(184,240,74,.1),rgba(184,240,74,.02));border:1.5px solid var(--lime2);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;animation:fadeUp .35s ease}
+.sc-header{display:flex;gap:12px;margin-bottom:14px;align-items:center}
+.sc-check{flex-shrink:0;animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
+.sc-title{font-size:15px;font-weight:700;color:var(--lime-dk);margin-bottom:3px;letter-spacing:-.2px}
+.sc-sub{font-size:12px;color:var(--lime-dk);opacity:.78;line-height:1.5}
+
+.sc-info{background:var(--bg2);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:10px;display:flex;flex-direction:column;gap:7px}
+.sc-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:10px}
+.sc-k{color:var(--ink3);font-weight:600;font-size:11px;flex-shrink:0}
+.sc-v{color:var(--ink);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:12px;text-align:right}
+.sc-v.coexist-tag{font-family:'Sora',sans-serif;display:inline-flex;align-items:center;gap:5px;background:var(--lime-bg);color:var(--lime-dk);padding:2px 9px;border-radius:99px;font-size:10px;border:1px solid var(--lime-bd)}
+.sc-v.coexist-tag::before{content:'●';font-size:8px;color:var(--lime2)}
+
+.sc-template{display:flex;align-items:center;gap:11px;background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:10px 13px}
+.sct-spinner{width:14px;height:14px;border:2px solid rgba(245,166,35,.25);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.sct-title{font-size:12px;font-weight:700;color:var(--amber-dk);margin-bottom:2px}
+.sct-sub{font-size:10px;color:var(--amber-dk);opacity:.8;line-height:1.45}
+
+/* Test send panel (extracted from inline) */
+.welcome-panel{background:var(--bg2);border:1.5px solid var(--lime2);border-radius:var(--r);overflow:hidden;margin-bottom:12px;animation:fadeUp .3s ease}
+.wp-head{background:linear-gradient(135deg,rgba(184,240,74,.12),rgba(184,240,74,.03));padding:12px 16px;border-bottom:1px solid var(--lime-bd);display:flex;align-items:center;gap:11px}
+.wp-head-ic{font-size:22px;flex-shrink:0;line-height:1}
+.wp-head-title{font-size:13px;font-weight:700;color:var(--lime-dk);margin-bottom:2px}
+.wp-head-sub{font-size:11px;color:var(--lime-dk);opacity:.72;line-height:1.45}
+.wp-body{padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wp-skip{background:none;border:none;font-size:11px;color:var(--ink3);cursor:pointer;text-decoration:underline;margin-left:auto;font-family:inherit}
 
 /* ── PHONE ── */
 .cc-row{display:flex;gap:0}
@@ -111,7 +201,7 @@ select.fi{cursor:pointer}
 .qr-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
 .link-row{display:flex;gap:8px;padding:10px 18px;border-top:1px solid var(--border);align-items:center;background:var(--bg3)}
 .link-url{flex:1;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--ink2);background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.how-works{background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r);padding:14px 16px;margin-bottom:16px}
+.how-works{background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r);padding:14px 16px;margin-bottom:16px}
 .how-step{display:flex;gap:10px;margin-bottom:8px;font-size:12px;color:var(--lime-dk);line-height:1.5}
 .how-step:last-child{margin-bottom:0}
 .how-n{width:18px;height:18px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--lime-dk);flex-shrink:0;border:1px solid rgba(45,74,0,.15)}
@@ -142,11 +232,78 @@ select.fi{cursor:pointer}
 .sel-rm{width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);cursor:pointer;color:var(--ink3);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-family:inherit}
 .sel-rm:hover{background:var(--red-bg);border-color:var(--red-bg);color:var(--red)}
 
-/* ── DONE ── */
-.done-mark{width:56px;height:56px;background:var(--lime);border-radius:15px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
-.rem-pill{display:inline-flex;align-items:center;gap:8px;background:var(--ink);border-radius:99px;padding:8px 16px 8px 8px}
-.rem-n{font-size:18px;font-weight:700;color:var(--lime);font-family:'JetBrains Mono',monospace;background:rgba(184,240,74,.1);border-radius:99px;padding:4px 10px;line-height:1}
-.rem-l{font-size:12px;color:rgba(255,255,255,.5)}
+/* ── FORM SECTIONS (used in S2, S3) ── */
+.fg-section{margin:18px 0 10px;font-size:10px;font-weight:700;color:var(--ink2);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
+.fg-section:first-child{margin-top:0}
+.fg-section::after{content:'';flex:1;height:1px;background:var(--border)}
+.fg-section .num{width:18px;height:18px;border-radius:50%;background:var(--lime-bg);border:1.5px solid var(--lime-bd);color:var(--lime-dk);font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* Form badges (for label annotations) */
+.fl-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.fl-row .fl{margin-bottom:0}
+.badge-info{font-size:9px;font-weight:700;background:var(--bg3);color:var(--ink3);border:1px solid var(--border);padding:1px 7px;border-radius:99px;text-transform:none;letter-spacing:0}
+.badge-amber{font-size:9px;font-weight:700;background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a;padding:1px 7px;border-radius:99px;text-transform:none;letter-spacing:0}
+
+.fi-disabled{opacity:.6;cursor:not-allowed;background:var(--bg3) !important}
+
+/* ── KATEGORI: Add custom card (S3) ── */
+.add-cat-card{background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r);padding:14px;transition:all .15s}
+.add-cat-card:focus-within{border-color:var(--lime2);background:var(--lime-bg)}
+.acc-grid{display:grid;grid-template-columns:60px 1fr 100px;gap:10px;margin-bottom:10px}
+.acc-grid .fg{margin-bottom:0}
+.acc-grid .fl{margin-bottom:4px;font-size:9px}
+.acc-grid .fi{font-size:12px;padding:7px 9px}
+.acc-grid select.fi{font-size:16px;padding:6px 4px;text-align:center}
+.acc-grid input[type=number].fi{text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700}
+.acc-btn{width:100%;padding:9px;font-size:12px}
+@media(max-width:520px){.acc-grid{grid-template-columns:60px 1fr;grid-template-areas:"icon name" "icon int"}.acc-grid .fg:first-child{grid-area:icon}.acc-grid .fg:nth-child(2){grid-area:name}.acc-grid .fg:nth-child(3){grid-area:int}}
+
+/* ── DONE (S4) ── */
+.done-hero{text-align:center;padding:4px 0 16px}
+.done-mark{width:60px;height:60px;background:var(--lime);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:popIn .45s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 24px rgba(184,240,74,.4)}
+.done-title{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.4px;line-height:1.25;margin-bottom:7px}
+.done-sub{font-size:13px;color:var(--ink3);line-height:1.6;max-width:380px;margin:0 auto}
+
+/* What's ready chips */
+.done-stats{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.ds-chip{display:inline-flex;align-items:center;gap:6px;background:var(--lime-bg);border:1px solid var(--lime-bd);color:var(--lime-dk);padding:6px 12px;border-radius:99px;font-size:11px;font-weight:600}
+.ds-chip .ic{font-size:10px;color:var(--lime2)}
+
+/* QR card — main artifact, focused */
+.done-qr-card{background:var(--bg2);border:1.5px solid var(--lime2);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:0 4px 18px rgba(184,240,74,.18)}
+.dqc-header{padding:10px 16px;background:linear-gradient(135deg,rgba(184,240,74,.12),rgba(184,240,74,.04));border-bottom:1px solid var(--lime-bd);display:flex;align-items:center;gap:8px}
+.dqc-pulse{width:8px;height:8px;border-radius:50%;background:var(--lime2);animation:pulse 2s ease-in-out infinite;flex-shrink:0;box-shadow:0 0 0 3px rgba(184,240,74,.25)}
+.dqc-title{font-size:11px;font-weight:700;color:var(--lime-dk);text-transform:uppercase;letter-spacing:.06em}
+.dqc-body{padding:20px 18px 16px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.dqc-qr{padding:12px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r-sm);line-height:0}
+.dqc-name{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.dqc-desc{font-size:12px;color:var(--ink3);line-height:1.55;max-width:300px;margin-top:-6px}
+.dqc-link-wrap{width:100%;display:flex;gap:7px;align-items:center}
+.dqc-link{flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink2);background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 11px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dqc-actions{display:flex;gap:8px;width:100%}
+.dqc-actions .btn{flex:1}
+
+/* Done tip — share via WA */
+.done-tip{display:flex;align-items:center;gap:11px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.done-tip-ic{width:34px;height:34px;border-radius:9px;background:rgba(37,211,102,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#25D366}
+.done-tip-text{flex:1;min-width:0}
+.done-tip-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:1px}
+.done-tip-sub{font-size:11px;color:var(--ink3);line-height:1.45}
+.btn-wa{background:#25D366;color:#fff;display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:700;font-family:inherit;border:none;cursor:pointer;transition:opacity .15s;flex-shrink:0;white-space:nowrap}
+.btn-wa:hover{opacity:.88}
+
+/* Primary big CTA */
+.btn-primary-lg{width:100%;padding:14px;font-size:14px;background:var(--lime);color:var(--lime-dk);border:none;border-radius:var(--r);font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;box-shadow:0 2px 10px rgba(184,240,74,.3)}
+.btn-primary-lg:hover{background:var(--lime2);box-shadow:0 6px 20px rgba(184,240,74,.4)}
+.btn-primary-lg:active{transform:scale(.99)}
+
+@media(max-width:520px){
+  .done-tip{flex-wrap:wrap}
+  .done-tip-text{flex:1 1 100%;order:1}
+  .done-tip-ic{order:0}
+  .btn-wa{order:2;width:100%;justify-content:center;margin-top:6px}
+  .dqc-actions{flex-direction:column}
+}
 
 /* ── MOBILE ── */
 @media(max-width:767px){
@@ -183,12 +340,12 @@ select.fi{cursor:pointer}
     <span class="sb-name">getstarvio</span>
   </div>
   <div class="sb-steps">
-    <div class="sb-step active" id="sl-1"><div class="sb-num" id="sn-1">1</div><div><div class="sb-label">Connect WhatsApp</div><div class="sb-desc">Scan QR · kirim test</div></div></div>
-    <div class="sb-step" id="sl-2"><div class="sb-num" id="sn-2">2</div><div><div class="sb-label">Profil bisnis</div><div class="sb-desc">Nama bisnis & owner</div></div></div>
-    <div class="sb-step" id="sl-3"><div class="sb-num" id="sn-3">3</div><div><div class="sb-label">Kategori layanan</div><div class="sb-desc">Opsional · bisa skip</div></div></div>
-    <div class="sb-step" id="sl-4"><div class="sb-num" id="sn-4">4</div><div><div class="sb-label">Siap mulai!</div><div class="sb-desc">QR check-in & selesai</div></div></div>
+    <div class="sb-step active" id="sl-1"><div class="sb-num" id="sn-1">1</div><div><div class="sb-label">Hubungkan WA Business</div><div class="sb-desc">Login Facebook · scan QR</div></div></div>
+    <div class="sb-step" id="sl-2"><div class="sb-num" id="sn-2">2</div><div><div class="sb-label">Profil Bisnis</div><div class="sb-desc">Nama bisnis & owner</div></div></div>
+    <div class="sb-step" id="sl-3"><div class="sb-num" id="sn-3">3</div><div><div class="sb-label">Kategori Layanan</div><div class="sb-desc">Set interval pengingat</div></div></div>
+    <div class="sb-step" id="sl-4"><div class="sb-num" id="sn-4">4</div><div><div class="sb-label">Siap Mulai</div><div class="sb-desc">QR check-in & selesai</div></div></div>
   </div>
-  <div class="sb-free"><span class="sb-free-n">100</span><div class="sb-free-l">reminder gratis<br>untuk dicoba</div></div>
+  <div class="sb-free"><span class="sb-free-n">100</span><div class="sb-free-l">kredit gratis<br>untuk dicoba</div></div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -196,81 +353,165 @@ select.fi{cursor:pointer}
   <div class="prog-wrap"><div class="prog"><div class="prog-fill" id="prog" style="width:25%"></div></div></div>
   <div class="content">
 
-    <!-- ═══ S1: CONNECT WHATSAPP ═══ -->
+    <!-- ═══ S1: CONNECT WHATSAPP (Embedded Signup + Coexist) ═══ -->
     <div class="screen active" id="s1">
       <div class="ob-tag">LANGKAH 1 DARI 4</div>
-      <div class="ob-title">Hubungkan WhatsApp</div>
-      <div class="ob-sub">Scan QR dari HP kamu. Nomor WA bisnis tersimpan otomatis — tidak perlu ketik apapun.</div>
+      <div class="ob-title">Hubungkan WhatsApp Business</div>
+      <div class="ob-sub">Login Facebook untuk koneksi resmi via Meta Cloud API. Aman, tidak ganggu chat manual kamu di HP.</div>
 
-      <div class="qr-connect-wrap">
-        <div>
-          <div class="qr-box scanning" id="qr-box">
-            <svg width="120" height="120" viewBox="0 0 148 148" fill="none">
-              <rect x="8" y="8" width="36" height="36" rx="3" stroke="var(--ink)" stroke-width="4" fill="none"/>
-              <rect x="16" y="16" width="20" height="20" rx="1" fill="var(--ink)"/>
-              <rect x="104" y="8" width="36" height="36" rx="3" stroke="var(--ink)" stroke-width="4" fill="none"/>
-              <rect x="112" y="16" width="20" height="20" rx="1" fill="var(--ink)"/>
-              <rect x="8" y="104" width="36" height="36" rx="3" stroke="var(--ink)" stroke-width="4" fill="none"/>
-              <rect x="16" y="112" width="20" height="20" rx="1" fill="var(--ink)"/>
-              <rect x="52" y="8" width="8" height="8" fill="var(--ink)"/>
-              <rect x="64" y="8" width="8" height="8" fill="var(--ink)"/>
-              <rect x="52" y="20" width="8" height="8" fill="var(--ink)"/>
-              <rect x="76" y="20" width="8" height="8" fill="var(--ink)"/>
-              <rect x="52" y="52" width="8" height="8" fill="var(--ink)"/>
-              <rect x="64" y="64" width="8" height="8" fill="var(--ink)"/>
-              <rect x="76" y="52" width="8" height="8" fill="var(--ink)"/>
-              <rect x="88" y="64" width="8" height="8" fill="var(--ink)"/>
-              <rect x="100" y="52" width="8" height="8" fill="var(--ink)"/>
-              <rect x="52" y="100" width="8" height="8" fill="var(--ink)"/>
-              <rect x="112" y="52" width="8" height="8" fill="var(--ink)"/>
-              <rect x="128" y="64" width="8" height="8" fill="var(--ink)"/>
-              <rect x="8" y="52" width="8" height="8" fill="var(--ink)"/>
-              <rect x="26" y="64" width="8" height="8" fill="var(--ink)"/>
-            </svg>
-          </div>
-          <div class="wa-status wa-waiting" id="wa-wait"><div class="spinner"></div>Menunggu scan...</div>
-          <div class="wa-status wa-done" id="wa-ok">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="var(--lime)"/><path d="M5 8l2 2 4-4" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Terhubung! Nomor tersimpan.
-          </div>
+      <!-- ── STATE 1: PRE-CONNECTION ── -->
+      <div id="conn-pre">
+
+        <!-- "What will happen" preview — clear expectations -->
+        <div class="sec-label"><span class="num">i</span>Yang akan terjadi setelah klik tombol</div>
+        <div class="preview-card">
+          <div class="pv-item"><span class="pv-num">1</span><span><strong>Popup Meta terbuka</strong> — login pakai akun Facebook pribadi kamu</span></div>
+          <div class="pv-item"><span class="pv-num">2</span><span><strong>Pilih akun bisnis</strong> (Business Portfolio) atau buat baru</span></div>
+          <div class="pv-item"><span class="pv-num">3</span><span><strong>Pilih nomor WhatsApp Business</strong> kamu yang aktif di HP</span></div>
+          <div class="pv-item"><span class="pv-num">4</span><span><strong>Scan QR di popup</strong> pakai WA Business app di HP — selesai!</span></div>
         </div>
-        <div class="qr-steps-col">
-          <div class="qr-step-item"><div class="qr-n">1</div><div>Buka <strong>WhatsApp</strong> di HP</div></div>
-          <div class="qr-step-item"><div class="qr-n">2</div><div>Tap <strong>⋮ → Linked Devices</strong></div></div>
-          <div class="qr-step-item"><div class="qr-n">3</div><div>Tap <strong>"Link a Device"</strong> → scan</div></div>
-          <div class="qr-step-item"><div class="qr-n">4</div><div>Nomor WA tersimpan otomatis ✓</div></div>
-          <button class="btn btn-ghost" style="font-size:11px;padding:5px 11px;margin-top:6px" onclick="simQR()">Simulasi scan →</button>
+
+        <!-- Pre-requisites -->
+        <div class="checklist-card">
+          <div class="cl-title">Sebelum mulai, pastikan kamu punya:</div>
+          <div class="cl-item"><span class="cl-ic">📱</span><span><strong>WhatsApp Business app</strong> di HP (bukan WA biasa)</span></div>
+          <div class="cl-item"><span class="cl-ic">👤</span><span><strong>Akun Facebook</strong> pribadi (untuk login resmi Meta)</span></div>
+          <div class="cl-item"><span class="cl-ic">⏱️</span><span><strong>2–3 menit waktu kosong</strong> untuk selesaikan flow</span></div>
+        </div>
+
+        <button class="btn-fb" id="btn-connect" onclick="openMetaPopup()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Hubungkan dengan Facebook
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+        </button>
+        <div class="btn-fb-sub">🔒 Buka popup Meta resmi · Login terverifikasi</div>
+      </div>
+
+      <!-- ── STATE 2: EMBEDDED SIGNUP IN PROGRESS ── -->
+      <div id="conn-progress" style="display:none">
+        <div class="sec-label"><span class="num">2</span>Popup Meta sedang terbuka</div>
+        <div class="demo-banner"><span class="ic">👁️</span><span><strong>Preview:</strong> Berikut tampilan yang akan kamu lihat di popup Meta. Klik tombol simulasi untuk lihat tiap langkah.</span></div>
+
+        <div class="meta-popup-mock">
+          <div class="meta-pop-header">
+            <div class="meta-pop-dot"></div>
+            <div class="meta-pop-dot"></div>
+            <div class="meta-pop-dot"></div>
+            <div class="meta-pop-url">business.facebook.com</div>
+          </div>
+          <div class="meta-pop-body">
+            <div class="meta-pop-title">Meta · Embedded Signup</div>
+            <div class="meta-pop-steps" id="meta-steps">
+              <div class="mp-step done"><span class="mp-num">✓</span><span>Login Facebook</span></div>
+              <div class="mp-step done" id="mp-2"><span class="mp-num">✓</span><span>Pilih akun bisnis (Business Portfolio)</span></div>
+              <div class="mp-step active" id="mp-3"><span class="mp-num"><div class="mp-spinner"></div></span><span>Pilih nomor WhatsApp Business</span></div>
+              <div class="mp-step" id="mp-4"><span class="mp-num">4</span><span>Scan QR pakai WA Business app di HP</span></div>
+              <div class="mp-step" id="mp-5"><span class="mp-num">5</span><span>Konfirmasi koneksi (Coexist mode)</span></div>
+            </div>
+
+            <!-- Phase A: Phone detected -->
+            <div class="mp-phase" id="phase-phone">
+              <div class="mp-info">
+                <span class="ic">📱</span>
+                <div>Meta detect: <strong>Nomor +62 812-xxxx-xxxx sudah aktif di WhatsApp Business app.</strong> Lanjut ke verifikasi QR untuk aktifkan Coexist mode.</div>
+              </div>
+              <button class="mp-action" onclick="moveToQR()">Simulasi langkah berikutnya</button>
+            </div>
+
+            <!-- Phase B: QR scan -->
+            <div class="mp-phase" id="phase-qr" style="display:none">
+              <div class="mp-qr-instruct">
+                <strong>Di HP kamu:</strong> buka <strong>WhatsApp Business app</strong> → tap <strong>⋮</strong> (kanan atas) → <strong>Linked Devices</strong> → <strong>Link a device</strong> → scan QR ini:
+              </div>
+              <div class="mp-qr-wrap">
+                <div class="mp-qr-box scanning">
+                  <svg width="120" height="120" viewBox="0 0 148 148" fill="none">
+                    <rect x="8" y="8" width="36" height="36" rx="3" stroke="var(--ink)" stroke-width="4" fill="none"/>
+                    <rect x="16" y="16" width="20" height="20" rx="1" fill="var(--ink)"/>
+                    <rect x="104" y="8" width="36" height="36" rx="3" stroke="var(--ink)" stroke-width="4" fill="none"/>
+                    <rect x="112" y="16" width="20" height="20" rx="1" fill="var(--ink)"/>
+                    <rect x="8" y="104" width="36" height="36" rx="3" stroke="var(--ink)" stroke-width="4" fill="none"/>
+                    <rect x="16" y="112" width="20" height="20" rx="1" fill="var(--ink)"/>
+                    <rect x="52" y="8" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="64" y="8" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="52" y="20" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="76" y="20" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="52" y="52" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="64" y="64" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="76" y="52" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="88" y="64" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="100" y="52" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="52" y="100" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="112" y="52" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="128" y="64" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="8" y="52" width="8" height="8" fill="var(--ink)"/>
+                    <rect x="26" y="64" width="8" height="8" fill="var(--ink)"/>
+                  </svg>
+                </div>
+                <div><button class="mp-action" onclick="simScanQR()">Simulasi: QR sudah di-scan</button></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Welcome panel after scan -->
-      <div id="welcome-panel" style="display:none;animation:fadeUp .3s ease;background:var(--bg2);border:1.5px solid var(--lime2);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-        <div style="background:linear-gradient(135deg,rgba(184,240,74,.1),rgba(184,240,74,.03));padding:12px 16px;border-bottom:1px solid #c8f07a;display:flex;align-items:center;gap:10px">
-          <div style="font-size:22px">📱</div>
-          <div>
-            <div style="font-size:13px;font-weight:700;color:var(--lime-dk)">Berhasil! Cobain kirim pesan dulu.</div>
-            <div style="font-size:11px;color:var(--lime-dk);opacity:.7;margin-top:1px">Biar kamu tau rasanya jadi pelangganmu.</div>
+      <!-- ── STATE 3: SUCCESS ── -->
+      <div id="conn-success" style="display:none">
+        <div class="sec-label" style="color:var(--lime-dk)"><span class="num" style="background:var(--lime);color:var(--lime-dk)">✓</span>Koneksi berhasil</div>
+
+        <div class="success-card">
+          <div class="sc-header">
+            <div class="sc-check">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="17" fill="var(--lime)"/><path d="M11 18l4.5 4.5L25 13" stroke="#1a1917" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="sc-title">WhatsApp Business terhubung 🎉</div>
+              <div class="sc-sub">Sistem siap kirim pengingat otomatis ke pelangganmu.</div>
+            </div>
+          </div>
+          <div class="sc-info">
+            <div class="sc-row"><span class="sc-k">Nomor WhatsApp</span><span class="sc-v">+62 812-xxxx-xxxx</span></div>
+            <div class="sc-row"><span class="sc-k">Mode</span><span class="sc-v coexist-tag">Coexist aktif</span></div>
+          </div>
+          <div class="sc-template">
+            <div class="sct-spinner"></div>
+            <div>
+              <div class="sct-title">Menyiapkan template pesan...</div>
+              <div class="sct-sub">Meta sedang review template kamu (1–24 jam). Lanjut setup sambil menunggu, sistem akan aktif otomatis pas template di-approve.</div>
+            </div>
           </div>
         </div>
-        <div style="padding:12px 16px;display:flex;align-items:center;gap:10px">
-          <button class="btn btn-lime" id="send-btn" onclick="sendTest()" style="font-size:12px">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 2L2 7l5 2 2 5 5-12z" fill="var(--lime-dk)"/></svg>
-            Kirim ke WA-ku
-          </button>
-          <div id="sent-ok" style="display:none;font-size:12px;font-weight:700;color:var(--lime-dk)">✓ Terkirim! Cek WA kamu 📲</div>
-          <button onclick="skipTest()" style="background:none;border:none;font-size:11px;color:var(--ink3);cursor:pointer;text-decoration:underline;margin-left:auto;font-family:inherit">Lewati</button>
+
+        <!-- Test send panel -->
+        <div class="welcome-panel">
+          <div class="wp-head">
+            <div class="wp-head-ic">📲</div>
+            <div>
+              <div class="wp-head-title">Coba kirim test ke WA kamu</div>
+              <div class="wp-head-sub">Biar kamu tahu rasanya jadi pelanggan yang dapet pengingat.</div>
+            </div>
+          </div>
+          <div class="wp-body">
+            <button class="btn btn-lime" id="send-btn" onclick="sendTest()" style="font-size:12px">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M14 2L2 7l5 2 2 5 5-12z" fill="var(--lime-dk)"/></svg>
+              Kirim ke WA-ku
+            </button>
+            <div id="sent-ok" style="display:none;font-size:12px;font-weight:700;color:var(--lime-dk)">✓ Terkirim! Cek WA kamu</div>
+            <button class="wp-skip" onclick="skipTest()">Lewati</button>
+          </div>
+        </div>
+
+        <!-- Bridge motivational -->
+        <div class="bridge-card" id="bridge-1">
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:5px">Bayangkan pesan ini dikirim ke semua pelangganmu — otomatis. 🚀</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.65">Tanpa kamu ingat-ingat siapa yang belum balik. Tanpa ketik satu per satu. <span style="color:var(--lime);font-weight:600">getstarvio yang kerjain.</span></div>
         </div>
       </div>
 
-      <!-- Bridge motivational -->
-      <div class="bridge-card" id="bridge-1">
-        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:5px">Bayangkan pesan ini dikirim ke semua pelangganmu — otomatis. 🚀</div>
-        <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.65">Tanpa kamu ingat-ingat siapa yang belum balik. Tanpa ketik satu per satu. <span style="color:var(--lime);font-weight:600">getstarvio yang kerjain.</span></div>
-      </div>
-
+      <!-- Coexist note (always visible — explains the "why") -->
       <div class="coexist">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="7" stroke="var(--lime-dk)" stroke-width="1.5"/><path d="M8 5v4M8 10.5v.5" stroke="var(--lime-dk)" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <div><strong>Coexist mode.</strong> WA kamu tetap bisa dipakai seperti biasa — getstarvio hanya numpang kirim reminder.</div>
+        <div><strong>Coexist mode.</strong> WA Business app kamu tetap jalan normal di HP — chat manual, status, semua aman. getstarvio cuma numpang kirim pengingat otomatis.</div>
       </div>
 
       <div class="btn-row">
@@ -285,7 +526,10 @@ select.fi{cursor:pointer}
     <div class="screen" id="s2">
       <div class="ob-tag">LANGKAH 2 DARI 4</div>
       <div class="ob-title">Cerita dikit soal bisnismu</div>
-      <div class="ob-sub">Nama bisnis akan muncul di setiap pesan reminder yang dikirim ke pelangganmu.</div>
+      <div class="ob-sub">Nama bisnis akan muncul di setiap pesan pengingat yang dikirim ke pelangganmu.</div>
+
+      <!-- Section A: Bisnis -->
+      <div class="fg-section"><span class="num">1</span>Tentang bisnis</div>
 
       <div class="fg">
         <label class="fl">Nama Bisnis</label>
@@ -298,6 +542,9 @@ select.fi{cursor:pointer}
         <div class="biz-grid" id="biz-grid"></div>
       </div>
 
+      <!-- Section B: Owner -->
+      <div class="fg-section"><span class="num">2</span>Tentang kamu (owner)</div>
+
       <div class="fg">
         <label class="fl">Nama Owner / Admin</label>
         <input class="fi" id="i-owner" placeholder="Nama kamu">
@@ -305,13 +552,13 @@ select.fi{cursor:pointer}
       </div>
 
       <div class="fg">
-        <label class="fl" style="display:flex;align-items:center;gap:6px">Email <span style="font-size:9px;font-weight:700;background:var(--bg3);color:var(--ink3);border:1px solid var(--border);padding:1px 7px;border-radius:99px;text-transform:none;letter-spacing:0">Dari Google</span></label>
-        <input class="fi" id="i-email" disabled style="opacity:.5;cursor:not-allowed;background:var(--bg3)">
+        <div class="fl-row"><label class="fl">Email</label><span class="badge-info">Dari Google</span></div>
+        <input class="fi fi-disabled" id="i-email" disabled>
         <div class="fi-hint">Login via Google — email tidak bisa diubah.</div>
       </div>
 
       <div class="fg">
-        <label class="fl" style="display:flex;align-items:center;gap:6px">Nomor WhatsApp Owner <span style="font-size:9px;font-weight:700;background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a;padding:1px 7px;border-radius:99px;text-transform:none;letter-spacing:0">Untuk notif billing</span></label>
+        <div class="fl-row"><label class="fl">Nomor WhatsApp Owner</label><span class="badge-amber">Untuk notif billing</span></div>
         <div class="cc-row">
           <select class="cc-sel" id="i-cc">
             <option value="62">🇮🇩 +62</option>
@@ -329,8 +576,11 @@ select.fi{cursor:pointer}
         <div class="fi-error" id="wa-error">Minimum 9 digit setelah kode negara.</div>
       </div>
 
-      <div class="g2" style="margin-bottom:20px">
-        <div class="fg" style="margin-bottom:0">
+      <!-- Section C: Lokasi -->
+      <div class="fg-section"><span class="num">3</span>Lokasi & waktu</div>
+
+      <div class="g2">
+        <div class="fg">
           <label class="fl">Negara</label>
           <select class="fi" id="i-country" onchange="syncTz()">
             <option value="ID" selected>🇮🇩 Indonesia</option>
@@ -343,16 +593,16 @@ select.fi{cursor:pointer}
             <option value="US">🇺🇸 United States</option>
           </select>
         </div>
-        <div class="fg" style="margin-bottom:0">
+        <div class="fg">
           <label class="fl">Timezone</label>
           <select class="fi" id="i-tz">
             <option value="Asia/Jakarta">Asia/Jakarta (WIB) · UTC+7</option>
             <option value="Asia/Makassar">Asia/Makassar (WITA) · UTC+8</option>
             <option value="Asia/Jayapura">Asia/Jayapura (WIT) · UTC+9</option>
           </select>
-          <div class="fi-hint" id="tz-hint">Reminder dikirim pukul 09:00 waktu Jakarta.</div>
         </div>
       </div>
+      <div class="fi-hint" id="tz-hint" style="margin-top:-4px;margin-bottom:4px">Pengingat dikirim pukul 09:00 waktu Jakarta.</div>
 
       <div class="btn-row">
         <button class="btn btn-ghost" onclick="go(1)">Kembali</button>
@@ -367,23 +617,37 @@ select.fi{cursor:pointer}
     <div class="screen" id="s3">
       <div class="ob-tag">LANGKAH 3 DARI 4</div>
       <div class="ob-title">Layanan apa yang kamu tawarkan?</div>
-      <div class="ob-sub">Pilih kategori dan set interval reminder. Bisa diedit kapan saja dari halaman Kategori.</div>
+      <div class="ob-sub">Pilih kategori dan set interval pengingat. Bisa diedit kapan saja dari halaman Kategori.</div>
+
+      <!-- Section A: Pilih dari preset -->
+      <div class="fg-section"><span class="num">1</span>Pilih dari template</div>
       <div class="min-ind"><div class="min-dot" id="min-dot"></div><span class="min-txt" id="min-txt">Pilih minimal 1 kategori untuk lanjut</span></div>
       <div class="preset-grid" id="preset-grid"></div>
 
       <!-- Selected list -->
-      <div id="sel-wrap" style="display:none;margin-bottom:10px">
-        <div style="font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">Dipilih</div>
+      <div id="sel-wrap" style="display:none;margin-top:14px">
+        <div class="fg-section" style="margin-top:0"><span class="num">✓</span>Yang dipilih</div>
         <div id="sel-items"></div>
       </div>
 
-      <!-- Add custom -->
-      <div style="font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">Tambah sendiri</div>
-      <div class="add-row">
-        <div style="width:60px"><label class="fl" style="margin-bottom:3px">Icon</label><select class="fi" id="add-icon" style="font-size:16px;padding:6px 4px;text-align:center;cursor:pointer"><option value="✨">✨</option><option value="💆">💆</option><option value="💇">💇</option><option value="💅">💅</option><option value="🤲">🤲</option><option value="🧖">🧖</option><option value="🩺">🩺</option><option value="✂️">✂️</option><option value="🎨">🎨</option><option value="🧴">🧴</option><option value="🛁">🛁</option><option value="🌿">🌿</option><option value="⚡">⚡</option><option value="⚗️">⚗️</option><option value="💈">💈</option><option value="🪒">🪒</option><option value="🦶">🦶</option><option value="🛢️">🛢️</option><option value="🔧">🔧</option><option value="🌟">🌟</option><option value="🎯">🎯</option><option value="💫">💫</option><option value="🪄">🪄</option></select></div>
-        <div style="flex:1;min-width:120px"><label class="fl" style="margin-bottom:3px">Nama layanan</label><input class="fi" placeholder="Contoh: Blow Dry, Lash Lift..." id="add-name" style="font-size:12px;padding:7px 8px"></div>
-        <div style="width:90px"><label class="fl" style="margin-bottom:3px">Interval (hr)</label><input type="number" class="fi" value="30" id="add-int" min="1" max="365" style="font-size:12px;padding:7px 8px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700"></div>
-        <div><label class="fl" style="margin-bottom:3px;opacity:0">x</label><button class="btn btn-lime" style="padding:7px 11px;font-size:11px" onclick="addCustomCat()">+ Tambah</button></div>
+      <!-- Section B: Add custom -->
+      <div class="fg-section"><span class="num">+</span>Tambah layanan custom (opsional)</div>
+      <div class="add-cat-card">
+        <div class="acc-grid">
+          <div class="fg">
+            <label class="fl">Icon</label>
+            <select class="fi" id="add-icon"><option value="✨">✨</option><option value="💆">💆</option><option value="💇">💇</option><option value="💅">💅</option><option value="🤲">🤲</option><option value="🧖">🧖</option><option value="🩺">🩺</option><option value="✂️">✂️</option><option value="🎨">🎨</option><option value="🧴">🧴</option><option value="🛁">🛁</option><option value="🌿">🌿</option><option value="⚡">⚡</option><option value="⚗️">⚗️</option><option value="💈">💈</option><option value="🪒">🪒</option><option value="🦶">🦶</option><option value="🛢️">🛢️</option><option value="🔧">🔧</option><option value="🌟">🌟</option><option value="🎯">🎯</option><option value="💫">💫</option><option value="🪄">🪄</option></select>
+          </div>
+          <div class="fg">
+            <label class="fl">Nama layanan</label>
+            <input class="fi" placeholder="Contoh: Blow Dry, Lash Lift..." id="add-name">
+          </div>
+          <div class="fg">
+            <label class="fl">Interval (hari)</label>
+            <input type="number" class="fi" value="30" id="add-int" min="1" max="365">
+          </div>
+        </div>
+        <button class="btn btn-lime acc-btn" onclick="addCustomCat()">+ Tambah Layanan</button>
       </div>
 
       <div class="btn-row">
@@ -396,31 +660,37 @@ select.fi{cursor:pointer}
       </div>
     </div>
 
-    <!-- ═══ S4: QR CHECK-IN + DONE ═══ -->
+    <!-- ═══ S4: SETUP SELESAI — QR CHECK-IN + DASHBOARD ═══ -->
     <div class="screen" id="s4">
       <div class="ob-tag">LANGKAH 4 DARI 4</div>
-      <div style="text-align:center;padding:6px 0 20px">
-        <div class="done-mark"><svg width="27" height="27" viewBox="0 0 36 36" fill="none"><path d="M8 18l6 6 14-14" stroke="#1a1917" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div style="font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.3px;margin-bottom:6px" id="done-title">Setup selesai — sistem aktif!</div>
-        <div style="font-size:13px;color:var(--ink3);line-height:1.6;max-width:360px;margin:0 auto">Pasang QR ini di kasir sekarang. Pelanggan pertama yang scan akan langsung masuk ke sistemmu.</div>
+
+      <!-- Hero: success -->
+      <div class="done-hero">
+        <div class="done-mark">
+          <svg width="30" height="30" viewBox="0 0 36 36" fill="none"><path d="M8 18l6 6 14-14" stroke="#1a1917" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="done-title" id="done-title">Setup selesai!</div>
+        <div class="done-sub">Sistem getstarvio sudah aktif dan siap kirim pengingat otomatis ke pelangganmu.</div>
       </div>
 
-      <div style="text-align:center;margin-bottom:18px">
-        <div class="rem-pill">
-          <span class="rem-n">100</span>
-          <span class="rem-l">reminder gratis menunggu dikirim</span>
-        </div>
+      <!-- Status chips: what's ready -->
+      <div class="done-stats">
+        <span class="ds-chip"><span class="ic">●</span>WhatsApp Coexist aktif</span>
+        <span class="ds-chip"><span class="ic">●</span>100 kredit gratis</span>
+        <span class="ds-chip" id="ds-cats"><span class="ic">●</span>Kategori siap</span>
       </div>
 
-      <!-- QR action card -->
-      <div class="qr-display" style="border-color:var(--lime2);margin-bottom:14px">
-        <div style="background:linear-gradient(135deg,rgba(184,240,74,.08),rgba(184,240,74,.02));padding:11px 16px;border-bottom:1px solid #c8f07a;display:flex;align-items:center;gap:8px">
-          <div style="width:7px;height:7px;border-radius:50%;background:var(--lime2);animation:pulse 2s ease-in-out infinite;flex-shrink:0"></div>
-          <span style="font-size:12px;font-weight:700;color:var(--lime-dk)">QR Check-in kamu — siap dipasang sekarang</span>
+      <!-- Section: Pasang QR check-in -->
+      <div class="fg-section"><span class="num">A</span>Pasang QR check-in di kasir</div>
+
+      <div class="done-qr-card">
+        <div class="dqc-header">
+          <div class="dqc-pulse"></div>
+          <span class="dqc-title">QR Check-in — siap dipasang</span>
         </div>
-        <div class="qr-display-inner">
-          <div class="qr-code-box">
-            <svg width="108" height="108" viewBox="0 0 148 148" fill="none">
+        <div class="dqc-body">
+          <div class="dqc-qr">
+            <svg width="120" height="120" viewBox="0 0 148 148" fill="none">
               <rect x="8" y="8" width="36" height="36" rx="3" fill="#1a1917"/>
               <rect x="13" y="13" width="26" height="26" rx="2" fill="#fff"/>
               <rect x="18" y="18" width="16" height="16" rx="1" fill="#1a1917"/>
@@ -434,31 +704,43 @@ select.fi{cursor:pointer}
               <path d="M74 65L76.5 71H80.5L77.5 73.5L78.5 78L74 75.5L69.5 78L70.5 73.5L67.5 71H71.5L74 65Z" fill="#1a1917"/>
             </svg>
           </div>
-          <div class="qr-info">
-            <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px" id="done-qr-title">QR Check-in</div>
-            <div style="font-size:12px;color:var(--ink3);line-height:1.55">Tempel di kasir. Pelanggan scan → isi nama & nomor → masuk otomatis.</div>
-            <div class="qr-actions">
-              <button class="btn btn-lime" style="font-size:11px;padding:7px 13px" onclick="flashBtn(this,'✓ Membuka...')">
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/></svg> Print QR
-              </button>
-              <button class="btn btn-ghost" style="font-size:11px;padding:7px 13px" onclick="doCopy()"><span id="done-copy-txt">Salin link</span></button>
-            </div>
+          <div class="dqc-name" id="done-qr-title">QR Check-in</div>
+          <div class="dqc-desc">Tempel QR di meja kasir. Pelanggan scan → isi nama &amp; nomor → langsung masuk ke sistem.</div>
+          <div class="dqc-link-wrap">
+            <div class="dqc-link" id="done-link">getstarvio.com/checkin/bisnis-kamu</div>
+            <button class="btn btn-ghost" style="padding:7px 12px;font-size:11px;flex-shrink:0" onclick="doCopy()"><span id="done-copy-txt">Salin</span></button>
           </div>
-        </div>
-        <div class="link-row">
-          <div class="link-url" id="done-link">getstarvio.com/checkin/bisnis-kamu</div>
-          <button class="btn" style="background:var(--bg2);border:1.5px solid var(--border2);color:var(--ink2);font-size:11px;padding:6px 12px;font-family:inherit" onclick="doCopy()">Salin</button>
+          <div class="dqc-actions">
+            <button class="btn btn-lime" onclick="flashBtn(this,'✓ Membuka...')">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/></svg>
+              Print QR
+            </button>
+            <button class="btn btn-ghost" onclick="doCopy()">Salin Link</button>
+          </div>
         </div>
       </div>
 
-      <button onclick="shareWA()" style="width:100%;padding:11px;background:#25D366;color:#fff;border:none;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:10px;transition:opacity .15s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.122 1.528 5.853L.057 23.886a.5.5 0 00.609.61l6.102-1.569A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.87 9.87 0 01-5.031-1.369l-.36-.214-3.733.959.993-3.63-.235-.374A9.867 9.867 0 012.118 12C2.118 6.533 6.533 2.118 12 2.118c5.466 0 9.882 4.415 9.882 9.882 0 5.466-4.416 9.882-9.882 9.882z"/></svg>
-        Bagikan link ke pelanggan lama via WhatsApp
-      </button>
+      <!-- Section: Bagikan ke pelanggan lama (opsional) -->
+      <div class="fg-section"><span class="num">B</span>Bagikan ke pelanggan lama (opsional)</div>
 
-      <button class="btn btn-lime" style="width:100%;padding:13px;font-size:13px" onclick="launchDashboard()">
+      <div class="done-tip">
+        <div class="done-tip-ic">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.122 1.528 5.853L.057 23.886a.5.5 0 00.609.61l6.102-1.569A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+        </div>
+        <div class="done-tip-text">
+          <div class="done-tip-title">Punya pelanggan lama?</div>
+          <div class="done-tip-sub">Bagikan link check-in lewat WA — biar mereka daftar duluan.</div>
+        </div>
+        <button class="btn-wa" onclick="shareWA()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.74.45 3.41 1.31 4.91L2 22l5.25-1.38C8.71 21.51 10.32 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+          Bagikan
+        </button>
+      </div>
+
+      <!-- Final CTA -->
+      <button class="btn-primary-lg" onclick="launchDashboard()">
         Masuk ke Dashboard
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
       </button>
     </div>
 
@@ -569,19 +851,56 @@ function go(n) {
   document.querySelector('.content').scrollTo(0,0)
 }
 
-/* ── S1: WA CONNECT ── */
-function simQR() {
-  document.getElementById('wa-wait').style.opacity='.4'
-  setTimeout(()=>{
-    document.getElementById('wa-wait').style.display='none'
-    document.getElementById('wa-ok').style.display='flex'
-    const box = document.getElementById('qr-box')
-    box.classList.remove('scanning')
-    box.style.cssText='background:var(--lime-bg);border-color:var(--lime2);display:flex;align-items:center;justify-content:center;width:152px;height:152px;border-radius:var(--r);flex-shrink:0'
-    box.innerHTML='<svg width="48" height="48" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" fill="var(--lime)"/><path d="M15 26l8 8 14-14" stroke="#1a1917" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    document.getElementById('welcome-panel').style.display='block'
-    document.getElementById('welcome-panel').scrollIntoView({behavior:'smooth',block:'nearest'})
-  }, 600)
+/* ── S1: EMBEDDED SIGNUP + COEXIST FLOW ── */
+function openMetaPopup() {
+  // Hide pre-state, show progress (simulating Meta popup opened)
+  document.getElementById('conn-pre').style.display = 'none'
+  document.getElementById('conn-progress').style.display = 'block'
+  document.getElementById('conn-progress').scrollIntoView({behavior:'smooth',block:'nearest'})
+}
+
+function moveToQR() {
+  // Step 3 done (phone entered & detected), move active state to step 4 (QR scan)
+  const mp3 = document.getElementById('mp-3')
+  const mp4 = document.getElementById('mp-4')
+  mp3.classList.remove('active')
+  mp3.classList.add('done')
+  mp3.querySelector('.mp-num').innerHTML = '✓'
+  mp4.classList.add('active')
+  mp4.querySelector('.mp-num').innerHTML = '<div class="mp-spinner"></div>'
+
+  // Hide phase A, show phase B (QR scan)
+  document.getElementById('phase-phone').style.display = 'none'
+  document.getElementById('phase-qr').style.display = 'block'
+  document.getElementById('phase-qr').scrollIntoView({behavior:'smooth',block:'nearest'})
+}
+
+function simScanQR() {
+  // Step 4 done, move to step 5 (confirm), then complete
+  const mp4 = document.getElementById('mp-4')
+  const mp5 = document.getElementById('mp-5')
+  mp4.classList.remove('active')
+  mp4.classList.add('done')
+  mp4.querySelector('.mp-num').innerHTML = '✓'
+  mp5.classList.add('active')
+  mp5.querySelector('.mp-num').innerHTML = '<div class="mp-spinner"></div>'
+
+  // Show "scanning" state on QR box
+  const box = document.querySelector('.mp-qr-box')
+  if (box) box.style.opacity = '.5'
+
+  setTimeout(() => {
+    // Mark step 5 done, show success
+    mp5.classList.remove('active')
+    mp5.classList.add('done')
+    mp5.querySelector('.mp-num').innerHTML = '✓'
+
+    setTimeout(() => {
+      document.getElementById('conn-progress').style.display = 'none'
+      document.getElementById('conn-success').style.display = 'block'
+      document.getElementById('conn-success').scrollIntoView({behavior:'smooth',block:'nearest'})
+    }, 500)
+  }, 900)
 }
 
 function sendTest() {
@@ -601,7 +920,8 @@ function sendTest() {
 
 function skipTest() {
   document.getElementById('s1-next').disabled = false
-  document.getElementById('welcome-panel').style.opacity = '.5'
+  const wp = document.querySelector('.welcome-panel')
+  if (wp) wp.style.opacity = '.5'
 }
 
 /* ── S2: PROFIL BISNIS ── */
@@ -707,8 +1027,9 @@ function buildDone() {
   const url = 'getstarvio.com/checkin/' + slug
 
   const linkEl = document.getElementById('done-link'); if(linkEl) linkEl.textContent = url
-  const titleEl = document.getElementById('done-title'); if(titleEl) titleEl.textContent = owner.split(' ')[0] + ', sistem aktif! 🎉'
-  const qrEl = document.getElementById('done-qr-title'); if(qrEl) qrEl.textContent = 'QR Check-in — ' + biz
+  const titleEl = document.getElementById('done-title'); if(titleEl) titleEl.textContent = owner.split(' ')[0] + ', setup selesai! 🎉'
+  const qrEl = document.getElementById('done-qr-title'); if(qrEl) qrEl.textContent = biz
+  const catsChip = document.getElementById('ds-cats'); if(catsChip) catsChip.innerHTML = '<span class="ic">●</span>' + (D.cats.length || 1) + ' kategori siap'
 
   // Build cats for localStorage
   const finalCats = D.cats.length ? D.cats.map(c => ({
@@ -756,7 +1077,7 @@ function doCopy() {
 
 function shareWA() {
   const url = document.getElementById('done-link')?.textContent || 'getstarvio.com/checkin/bisnis-kamu'
-  const msg = encodeURIComponent('Halo! Daftarkan dirimu untuk dapat reminder kunjungan otomatis dari kami 😊\nhttps://'+url)
+  const msg = encodeURIComponent('Halo! Daftarkan dirimu untuk dapat pengingat kunjungan otomatis dari kami 😊\nhttps://'+url)
   window.open('https://wa.me/?text='+msg,'_blank')
 }
 

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>getstarvio — Pelanggan Lama Balik Lagi, Otomatis via WhatsApp</title>
-<meta name="description" content="getstarvio membantu bisnis jasa kecil mengirim reminder otomatis ke pelanggan yang sudah lama tidak berkunjung. WhatsApp reminder tanpa ribet.">
+<title>getstarvio — Pelanggan UMKM Balik Lagi, Otomatis via WhatsApp</title>
+<meta name="description" content="getstarvio bantu UMKM Indonesia kirim pengingat WhatsApp otomatis ke pelanggan. Pelanggan check-in sendiri pakai QR, sistem yang ingatkan mereka balik. Coba gratis, garansi 30 hari uang kembali.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -103,8 +103,15 @@ img,svg{display:block;max-width:100%}
 .price-card.highlight{border:2px solid var(--lime);position:relative}
 .price-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--lime);color:var(--lime-dk);font-size:.75rem;font-weight:700;padding:4px 16px;border-radius:20px;white-space:nowrap}
 .price-card h3{font-size:1.15rem;font-weight:700;margin-bottom:4px}
-.price-card .price{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;margin:12px 0 4px}
+.price-card .price{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;margin:12px 0 4px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.price-card .price-old{font-size:1.1rem;color:var(--ink3);text-decoration:line-through;font-weight:500}
 .price-card .price-sub{font-size:.85rem;color:var(--ink3);margin-bottom:20px}
+.price-card .price-hook{display:inline-block;background:var(--lime-bg);border:1.5px solid var(--lime2);color:var(--lime-dk);font-size:.95rem;font-weight:700;padding:8px 14px;border-radius:var(--r-sm);margin:0 0 20px;line-height:1.4}
+.price-card .price-hook .ic{margin-right:6px}
+.discount-tag{display:inline-block;background:var(--red);color:#fff;font-family:'Sora',sans-serif;font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.3px;vertical-align:middle;margin-left:4px}
+.guarantee-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 24px;max-width:840px;margin:32px auto 0;padding:18px 20px;background:var(--lime-bg);border:1px solid var(--lime2);border-radius:var(--r);text-align:center}
+.guarantee-strip .g-item{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--lime-dk);font-weight:600}
+.guarantee-strip .g-item span.ic{font-size:1.1rem}
 .price-card ul{list-style:none;margin-bottom:auto;padding-bottom:24px}
 .price-card li{font-size:.9rem;color:var(--ink2);padding:6px 0;padding-left:24px;position:relative}
 .price-card li::before{content:"✓";position:absolute;left:0;color:var(--lime2);font-weight:700}
@@ -173,32 +180,32 @@ img,svg{display:block;max-width:100%}
 <section class="hero" id="hero">
   <div class="container">
     <h1>Pelanggan Lama Balik Lagi, Otomatis via WhatsApp</h1>
-    <p>getstarvio membantu bisnis jasa kecil mengirim reminder otomatis ke pelanggan yang sudah lama tidak berkunjung. Tanpa ribet, cukup catat kunjungan.</p>
-    <a href="#daftar" class="btn btn-lime btn-lg">Mulai Gratis — 100 Kredit</a>
-    <p class="sub-cta">Tidak perlu kartu kredit</p>
+    <p>getstarvio bantu UMKM Indonesia kirim pengingat WhatsApp otomatis ke pelanggan — biar mereka balik tepat waktu, tanpa perlu chat satu-satu.</p>
+    <a href="#daftar" class="btn btn-lime btn-lg">Coba Gratis — 100 Kredit</a>
+    <p class="sub-cta">Tanpa kartu kredit · Garansi 30 hari uang kembali</p>
   </div>
 </section>
 
 <!-- Pain Points -->
 <section class="section section-alt">
   <div class="container">
-    <h2 class="section-title">Bisnis Anda Kehilangan Pelanggan Setiap Hari</h2>
-    <p class="section-sub">Ini 3 masalah umum yang sering terjadi di bisnis jasa — dan semuanya bisa diatasi.</p>
+    <h2 class="section-title">Kenapa Pelanggan Tidak Balik Lagi?</h2>
+    <p class="section-sub">3 masalah yang setiap hari bikin UMKM kehilangan pelanggan — dan semuanya bisa diselesaikan otomatis.</p>
     <div class="pain-grid">
       <div class="pain-card">
-        <div class="icon">📅</div>
-        <h3>Pelanggan lupa jadwal perawatan berikutnya</h3>
-        <p>Tanpa pengingat, pelanggan mudah lupa kapan harus kembali untuk perawatan rutin mereka.</p>
+        <div class="icon">😵</div>
+        <h3>Staff lupa follow-up pelanggan</h3>
+        <p>Kerjaan numpuk, akhirnya pelanggan tidak pernah di-chat. Mereka pelan-pelan lupa, lalu pindah ke tempat lain.</p>
       </div>
       <div class="pain-card">
         <div class="icon">⏰</div>
-        <h3>Follow-up manual lewat WhatsApp memakan waktu</h3>
-        <p>Mengirim pesan satu per satu ke ratusan pelanggan bukan pekerjaan yang sustainable.</p>
+        <h3>Chat manual buang banyak waktu</h3>
+        <p>100 pelanggan = 100 chat copy-paste. Sering salah nama, salah nomor, atau malah kirim ke pelanggan yang baru saja datang kemarin.</p>
       </div>
       <div class="pain-card">
-        <div class="icon">📉</div>
-        <h3>Revenue hilang dari pelanggan yang tidak balik</h3>
-        <p>Setiap pelanggan yang tidak kembali adalah potensi pendapatan yang hilang selamanya.</p>
+        <div class="icon">💸</div>
+        <h3>Pelanggan hilang = uang hilang</h3>
+        <p>Cukup diingatkan sekali, banyak yang mau balik. Tapi kalau tidak ada yang ingatkan, pendapatan ikut hilang diam-diam.</p>
       </div>
     </div>
   </div>
@@ -207,25 +214,25 @@ img,svg{display:block;max-width:100%}
 <!-- Cara Kerja -->
 <section class="section" id="cara-kerja">
   <div class="container">
-    <h2 class="section-title">Simpel. 3 Langkah Saja.</h2>
-    <p class="section-sub">Tidak perlu setup rumit. Langsung pakai dalam hitungan menit.</p>
+    <h2 class="section-title">Simpel. Pelanggan Check-in Sendiri.</h2>
+    <p class="section-sub">Tanpa setup rumit. Pelanggan scan QR pas datang, sistem yang kerja sisanya.</p>
     <div class="steps">
       <div class="step">
         <div class="step-connector"></div>
         <div class="step-num">1</div>
-        <h3>Catat Kunjungan</h3>
-        <p>Staff catat setiap kali pelanggan datang. Cukup search nama, pilih layanan, selesai.</p>
+        <h3>Pelanggan Scan QR Sendiri</h3>
+        <p>Pelanggan scan QR pas datang — kunjungan otomatis tercatat tanpa input manual. Staff bisa catat manual juga kalau perlu.</p>
       </div>
       <div class="step">
         <div class="step-connector"></div>
         <div class="step-num">2</div>
-        <h3>Sistem Pantau Otomatis</h3>
-        <p>getstarvio hitung kapan pelanggan harus balik berdasarkan interval tiap layanan.</p>
+        <h3>Sistem Hitung Otomatis</h3>
+        <p>getstarvio pantau interval tiap layanan. Facial 30 hari, potong rambut 21 hari, servis motor 60 hari, dst.</p>
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <h3>WhatsApp Reminder Terkirim</h3>
-        <p>Saat waktunya tiba, reminder otomatis dikirim ke WhatsApp pelanggan.</p>
+        <h3>Pengingat WhatsApp Terkirim</h3>
+        <p>Pas waktunya tiba, pengingat WhatsApp otomatis dikirim. Pelanggan tinggal balas, langsung booking lagi.</p>
       </div>
     </div>
   </div>
@@ -234,18 +241,23 @@ img,svg{display:block;max-width:100%}
 <!-- Fitur -->
 <section class="section section-alt" id="fitur">
   <div class="container">
-    <h2 class="section-title">Semua yang Bisnis Anda Butuhkan</h2>
-    <p class="section-sub">Fitur lengkap untuk mengelola pelanggan dan meningkatkan retensi.</p>
+    <h2 class="section-title">Semua yang UMKM Anda Butuhkan</h2>
+    <p class="section-sub">Fitur lengkap untuk bawa pelanggan balik tanpa repot.</p>
     <div class="features-grid">
       <div class="feature-card">
+        <div class="icon">📱</div>
+        <h3>QR Check-in Mandiri</h3>
+        <p>Pelanggan scan QR saat datang, kunjungan langsung tercatat. Staff tidak terganggu.</p>
+      </div>
+      <div class="feature-card">
         <div class="icon">💬</div>
-        <h3>Reminder Otomatis</h3>
-        <p>WhatsApp reminder terjadwal tanpa perlu kirim manual satu per satu.</p>
+        <h3>Pengingat WhatsApp Otomatis</h3>
+        <p>Pesan pengingat terkirim sendiri di waktu yang tepat. Tidak ada lagi chat manual.</p>
       </div>
       <div class="feature-card">
         <div class="icon">✂️</div>
         <h3>Multi-Layanan</h3>
-        <p>Set interval berbeda per layanan — potong rambut 30 hari, facial 45 hari, dan seterusnya.</p>
+        <p>Setel interval berbeda per layanan — potong rambut 21 hari, facial 30 hari, dst.</p>
       </div>
       <div class="feature-card">
         <div class="icon">📊</div>
@@ -254,18 +266,13 @@ img,svg{display:block;max-width:100%}
       </div>
       <div class="feature-card">
         <div class="icon">⚡</div>
-        <h3>Catat Kunjungan Cepat</h3>
-        <p>Search nama, pilih layanan, 10 detik selesai. Tidak mengganggu operasional.</p>
-      </div>
-      <div class="feature-card">
-        <div class="icon">📱</div>
-        <h3>QR Check-in</h3>
-        <p>Pelanggan scan QR saat datang, kunjungan otomatis tercatat tanpa input manual.</p>
+        <h3>Catat Manual (Opsional)</h3>
+        <p>Kalau pelanggan tidak scan QR, staff bisa catat manual dalam 10 detik.</p>
       </div>
       <div class="feature-card">
         <div class="icon">📈</div>
         <h3>Laporan &amp; Insight</h3>
-        <p>Tahu berapa pelanggan yang balik karena reminder. Ukur efektivitas retensi Anda.</p>
+        <p>Tahu berapa pelanggan yang balik karena pengingat. Ukur dampak ke pendapatan.</p>
       </div>
     </div>
   </div>
@@ -274,34 +281,40 @@ img,svg{display:block;max-width:100%}
 <!-- Harga -->
 <section class="section" id="harga">
   <div class="container">
-    <h2 class="section-title">Harga Transparan, Tanpa Biaya Tersembunyi</h2>
-    <p class="section-sub">Mulai gratis, upgrade kapan saja sesuai kebutuhan bisnis Anda.</p>
+    <h2 class="section-title">Coba Dulu Gratis. Suka? Hemat 50% Early Access.</h2>
+    <p class="section-sub">100 kredit gratis tanpa kartu kredit. Kalau cocok, upgrade ke harga Early Access selama promo masih berjalan.</p>
     <div class="pricing-grid">
       <div class="price-card">
-        <h3>Gratis</h3>
+        <h3>Free Trial</h3>
         <div class="price mono">Rp 0</div>
-        <div class="price-sub">100 kredit gratis untuk mulai</div>
+        <div class="price-hook"><span class="ic">🎁</span>100 KREDIT GRATIS — coba semua fitur tanpa bayar</div>
         <ul>
-          <li>1 kredit = 1 reminder terkirim</li>
-          <li>Semua fitur utama</li>
-          <li>Dashboard &amp; laporan</li>
-          <li>Tanpa batas waktu</li>
+          <li>1 kredit = 1 pengingat WhatsApp terkirim</li>
+          <li>Semua fitur tersedia (tidak ada yang dikunci)</li>
+          <li>Tidak perlu kartu kredit</li>
+          <li>Tanpa batas waktu — pakai sampai kredit habis</li>
         </ul>
-        <a href="#daftar" class="btn btn-outline">Mulai Gratis</a>
+        <a href="#daftar" class="btn btn-outline">Mulai Coba Gratis</a>
       </div>
       <div class="price-card highlight">
-        <div class="price-badge">Recommended</div>
+        <div class="price-badge">🔥 Early Access — Hemat 50%</div>
         <h3>Berlangganan</h3>
-        <div class="price mono">Rp 250.000</div>
-        <div class="price-sub">per bulan — 250 kredit/bulan</div>
+        <div class="price mono"><span class="price-old">Rp 499.000</span> Rp 249.000<span class="discount-tag">-50%</span></div>
+        <div class="price-sub">per bulan — sudah termasuk 300 kredit</div>
         <ul>
-          <li>Semua fitur utama</li>
-          <li>250 kredit setiap bulan</li>
-          <li>Dashboard &amp; laporan</li>
-          <li>Priority support</li>
+          <li><strong>300 kredit setiap bulan</strong> (kirim 300 pengingat)</li>
+          <li>Garansi 30 hari uang kembali — coba tanpa risiko</li>
+          <li>Priority WhatsApp support</li>
+          <li>Top-up kapan saja kalau kredit habis</li>
         </ul>
-        <a href="#daftar" class="btn btn-lime">Berlangganan</a>
+        <a href="#daftar" class="btn btn-lime">Berlangganan Sekarang</a>
       </div>
+    </div>
+    <div class="guarantee-strip">
+      <div class="g-item"><span class="ic">🎁</span> 100 kredit gratis</div>
+      <div class="g-item"><span class="ic">💳</span> Tanpa kartu kredit</div>
+      <div class="g-item"><span class="ic">🛡️</span> Garansi 30 hari uang kembali</div>
+      <div class="g-item"><span class="ic">❌</span> Bisa berhenti kapan saja</div>
     </div>
     <p class="pricing-note">Butuh lebih? Top-up kredit mulai <strong class="mono">Rp 1.000/kredit</strong>, tanpa expiry.</p>
   </div>
@@ -329,8 +342,9 @@ img,svg{display:block;max-width:100%}
 <!-- Final CTA -->
 <section class="final-cta" id="daftar">
   <h2>Mulai Bawa Pelanggan Lama Balik Hari Ini</h2>
-  <p>Daftar gratis, langsung dapat 100 kredit. Setup 5 menit.</p>
-  <a href="#daftar" class="btn btn-lime btn-lg">Daftar Sekarang</a>
+  <p>Daftar gratis, dapat 100 kredit langsung. Setup 5 menit, tanpa kartu kredit.<br>Suka? Upgrade dengan harga Early Access 50% off — garansi uang kembali 30 hari.</p>
+  <a href="#daftar" class="btn btn-lime btn-lg">Daftar Gratis Sekarang</a>
+  <p class="sub-cta" style="margin-top:16px;font-size:.85rem;color:var(--ink3)">🛡️ 30 hari uang kembali · 🎁 100 kredit gratis · 💳 Tanpa kartu kredit</p>
 </section>
 
 <!-- Footer -->
@@ -354,6 +368,7 @@ img,svg{display:block;max-width:100%}
     <div class="footer-links">
       <a href="/privacy.html">Privacy Policy</a>
       <a href="/terms.html">Terms of Service</a>
+      <a href="/data-deletion.html">Data Deletion</a>
       <a href="mailto:hello@getstarvio.com">hello@getstarvio.com</a>
     </div>
   </div>

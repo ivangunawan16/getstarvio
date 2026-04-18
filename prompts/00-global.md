@@ -5,7 +5,7 @@
 
 ## PRIME DIRECTIVE
 
-Kamu sedang membangun halaman untuk **getstarvio** — WhatsApp-based customer return reminder SaaS untuk bisnis beauty/wellness Indonesia (salon, spa, klinik, barbershop, dll.).
+Kamu sedang membangun halaman untuk **getstarvio** — WhatsApp-based customer return reminder SaaS untuk **UMKM Indonesia** dengan pelanggan berulang (salon, spa, klinik, barbershop, nail studio, bengkel, pet grooming, laundry, dll.).
 
 **Tiga aturan yang override segalanya:**
 1. **Lock design.** Setiap pixel ikuti `getstarvio-design-system.md`. Jangan ciptakan warna, font, spacing, atau komponen yang tidak ada di sana. Kalau tidak yakin, tanya — jangan tebak.
@@ -16,13 +16,26 @@ Kamu sedang membangun halaman untuk **getstarvio** — WhatsApp-based customer r
 
 ## PRODUCT CONTEXT
 
-**Yang dilakukan getstarvio:** Membantu bisnis beauty/wellness kecil melacak kapan tiap pelanggan terakhir kali datang untuk tiap layanan, lalu otomatis kirim reminder WhatsApp saat waktunya balik.
+**Yang dilakukan getstarvio:** Membantu UMKM Indonesia melacak kapan tiap pelanggan terakhir kali datang untuk tiap layanan, lalu otomatis kirim **pengingat WhatsApp** saat waktunya balik. Pelanggan check-in mandiri pakai QR (catat manual oleh staff = opsional).
+
+**Terminologi UI:** Selalu pakai **"pengingat"** di user-facing copy (Bahasa Indonesia), bukan "reminder". Variabel/konstanta JS boleh tetap pakai `reminder`.
+
+**WhatsApp integration:** Pakai **Meta Cloud API + Coexistence Mode** (resmi). Customer onboard via Embedded Signup (login FB → pilih nomor WA Business → scan QR di popup Meta). Nomor WA Business customer tetap jalan normal di HP — getstarvio cuma numpang kirim pengingat otomatis.
+
+**Trust commitments (boleh diklaim, ga overpromise):**
+- ✅ Garansi 30 hari uang kembali
+- ✅ Free trial 100 kredit, tanpa kartu kredit
+- ✅ Bisa berhenti kapan saja
+- ❌ JANGAN klaim: "diskon selamanya", "harga dikunci seumur akun", "Platform #1", "Trusted by X+ bisnis", angka spesifik tanpa bukti
 
 **Billing model:**
-- 1 kredit = 1 WhatsApp reminder terkirim
+- 1 kredit = 1 pengingat WhatsApp terkirim
 - **Welcome bonus:** 100 kredit gratis saat pertama join (semua user, 1x saja)
-- **Subscription Rp 250.000/bulan:** include 250 kredit/bulan — ⚠️ TIDAK rollover ke bulan berikutnya
-- **Top-up (pay-as-you-go):** beli kredit extra kapan saja — ✅ tidak ada expiry
+- **Subscription Rp 249.000/bulan (Early Access 50% off, harga normal Rp 499.000):** include **300 kredit/bulan** — ⚠️ TIDAK rollover ke bulan berikutnya
+- **Top-up packages (pay-as-you-go, ✅ tidak ada expiry):** flat tier pricing — semakin besar paket, semakin murah per kredit
+  - 200 kredit — Rp 399.000 (Rp 1.995/kredit)
+  - 500 kredit — Rp 749.000 (Rp 1.498/kredit) · Terlaris · Hemat 25%
+  - 1.000 kredit — Rp 1.299.000 (Rp 1.299/kredit) · Hemat 35%
 - **Urutan pakai:** kredit subscription habis duluan → baru kredit top-up
 - `remLeft` = `subCreditsLeft + topupCreditsLeft` (total usable, selalu computed)
 - Credit states (total): Healthy (≥30), Low (10–29), Critical (1–9), Empty (0)
@@ -70,7 +83,7 @@ Key rules yang tidak boleh dilanggar:
   topupCreditsLeft: number,    // kredit top-up (tidak ada expiry)
   subRenewsAt: "ISO string | null", // tanggal renewal berikutnya (null jika free)
   // remLeft = subCreditsLeft + topupCreditsLeft — SELALU computed, tidak disimpan langsung
-  remMax: number,              // max kredit per bulan (250 untuk subscriber, tidak relevan untuk free)
+  remMax: number,              // max kredit per bulan (300 untuk subscriber, tidak relevan untuk free)
   defaultInterval: number,     // default interval reminder dalam hari
   cats: [
     {
@@ -112,11 +125,15 @@ Key rules yang tidak boleh dilanggar:
   ],
   planConfig: {                // opsional — di-set dari admin page, dibaca oleh billing page
     freeBonus: number,         // welcome bonus credits (default 100)
-    subCredits: number,        // subscription credits/bulan (default 250)
-    subPrice: number,          // subscription price/bulan (default 250000)
-    topupPrice: number,        // base harga per kredit (default 1000)
-    tiers: [                   // 3 top-up package tiers
-      { price: number, credits: number }
+    subCredits: number,        // subscription credits/bulan (default 300)
+    subPrice: number,          // subscription price/bulan early access (default 249000)
+    subPriceNormal: number,    // subscription price/bulan normal/coret (default 499000)
+    tiers: [                   // 3 top-up package tiers (flat pricing, no bonus calculation)
+      { price: number, credits: number, label?: string }
+      // defaults:
+      // { price: 399000,  credits: 200  }
+      // { price: 749000,  credits: 500,  label: "Terlaris" }
+      // { price: 1299000, credits: 1000, label: "Hemat 35%" }
     ]
   }
 }
@@ -402,3 +419,5 @@ Build satu halaman per sesi. Untuk setiap halaman:
 | 2026-03-26 | Sync: subCreditsMax=375 (was 300), content max-width=960px (was 900px), subscription=375 kredit/bulan (250 base + 125 early access +50%), top-up base Rp 1.000/kredit |
 | 2026-03-27 | Subscription credits changed: 375 → 250 (flat, no early access bonus). subCreditsMax=250, remMax=250 for subscribers. Early access +50% bonus now applies ONLY to top-up packages. |
 | 2026-03-27 | Added `planConfig` to data schema — optional field set by admin page, read by billing page for dynamic pricing. Log Reminder table mobile responsive (card layout <768px). |
+| 2026-04-18 | **MAJOR PRICING UPDATE.** Subscription: Rp 249.000/bulan (Early Access 50% off, normal Rp 499.000) for 300 kredit/bulan (was 250). Top-up: flat tier pricing — 200/500/1.000 kredit @ Rp 399k/749k/1.299k (no more "+X% bonus" claim). Per-credit: Rp 1.995/1.498/1.299. Added `subPriceNormal` to planConfig. Removed `topupPrice` (basePrice concept). subCreditsMax=300. |
+| 2026-04-18 | **POSITIONING & COPY UPDATE.** Broaden from "beauty/wellness" to "UMKM Indonesia" (salon, spa, klinik, barbershop, nail studio, bengkel, pet grooming, laundry, dll.). Add WhatsApp Coexistence Mode flow (Embedded Signup, scan QR di popup Meta). UI copy "reminder" → "pengingat". Trust commitments: garansi 30 hari uang kembali, no kartu kredit, bisa berhenti kapan saja. Banned claims: "diskon selamanya", "harga dikunci seumur akun", "Platform #1", "Trusted by X+ bisnis", angka spesifik tanpa bukti. |

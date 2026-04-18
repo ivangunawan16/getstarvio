@@ -1,12 +1,13 @@
 # Page: LOG REMINDER (`getstarvio-log-reminder.html`)
 
 > **Cara pakai:** Paste `00-global.md` dulu, lalu paste file ini, lalu instruksi spesifik kamu.
+> ⚠️ **Note penamaan:** Filename tetap `log-reminder.html` (technical name), tapi UI label = "Log Pengingat".
 
 ---
 
 ## Tujuan Halaman
 
-Riwayat semua reminder yang sudah dikirim, gagal, atau masih pending. Untuk audit dan troubleshooting.
+Riwayat semua pengingat yang sudah dikirim, gagal, atau masih pending. Untuk audit dan troubleshooting.
 
 ---
 
@@ -40,7 +41,7 @@ Per baris:
 - Filter bar stack vertikal di mobile
 
 ### Tombol Retry (di baris/card yang `gagal`)
-- Re-jadwalkan reminder tersebut
+- Re-jadwalkan pengingat tersebut
 - Potong 1 kredit dari `topupCreditsLeft` duluan, baru `subCreditsLeft`
 - Update status jadi `pending` dulu, lalu simulasikan `terkirim` setelah 1.5 detik (setTimeout)
 
