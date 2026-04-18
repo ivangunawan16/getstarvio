@@ -14,19 +14,23 @@ Kelola subscription dan kredit pengingat. **ROI framing** — pengingat bukan "b
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  WELCOME BONUS    │  100 kredit gratis saat join             │
-│                   │  Berlaku 1x, tidak ada expiry            │
+│  FREE TRIAL       │  14 hari ATAU 100 kredit (mana duluan)   │
+│                   │  Auto-aktif saat selesai onboarding      │
+│                   │  Welcome bonus 100 kredit langsung di    │
+│                   │  topupCreditsLeft (permanent)            │
+│                   │  Setelah trial: popup paksa subscribe    │
 ├─────────────────────────────────────────────────────────────┤
-│  SUBSCRIPTION     │  Rp 249.000 / bulan (Early Access 50%)   │
-│  (opsional)       │  Harga normal Rp 499.000 (coret)         │
+│  SUBSCRIPTION     │  Rp 249.000/bulan (Early Access 50%)     │
+│  ⚠️ WAJIB         │  Harga normal Rp 499.000 (coret)         │
 │                   │  Include 300 kredit/bulan                │
 │                   │  ⚠️ TIDAK rollover ke bulan berikutnya   │
 │                   │  Reset tanggal yang sama tiap bulan      │
 │                   │  Garansi 30 hari uang kembali            │
+│                   │  Wajib untuk akses platform & top-up     │
 ├─────────────────────────────────────────────────────────────┤
 │  TOP-UP           │  Beli kredit extra kapan saja            │
-│  (pay-as-you-go)  │  ✅ TIDAK ada expiry                     │
-│                   │  Dipakai setelah kredit sub habis        │
+│  (subscriber-only)│  ✅ TIDAK ada expiry                     │
+│                   │  ⚠️ Hanya bisa beli kalau sudah subscribe │
 │                   │  200 kredit  — Rp 399.000  (Rp 1.995/k)  │
 │                   │  500 kredit  — Rp 749.000  (Rp 1.498/k)  │
 │                   │  1000 kredit — Rp 1.299.000(Rp 1.299/k)  │
@@ -34,15 +38,36 @@ Kelola subscription dan kredit pengingat. **ROI framing** — pengingat bukan "b
 ```
 
 **Urutan pemakaian kredit:**
-1. Kredit subscription (`subCreditsLeft`) — habis duluan (ada expiry)
-2. Kredit top-up (`topupCreditsLeft`) — dipakai setelah sub habis (tidak ada expiry)
+1. Kredit subscription (`subCreditsLeft`) — habis duluan (ada expiry tiap bulan)
+2. Kredit top-up (`topupCreditsLeft`) — dipakai setelah sub habis (tidak ada expiry, termasuk welcome bonus)
 
 **`remLeft` = `subCreditsLeft + topupCreditsLeft`** — total kredit yang bisa dipakai
 
 **User states:**
-- **New / Trial:** `plan: "free"` — punya welcome bonus 100 kredit, belum subscribe
-- **Subscriber aktif:** `plan: "subscriber"` — bayar 249k/bulan (Early Access), dapat 300 kredit di-refresh tiap bulan
-- **Subscriber + top-up:** punya kedua tipe kredit sekaligus
+- **Trial aktif:** `plan: "free"` + `trialStartedAt` < `trialDays` hari + `topupCreditsLeft > 0` — bisa pakai welcome bonus 100 kredit
+- **Trial expired:** `plan: "free"` + (trial >`trialDays` hari ATAU `topupCreditsLeft === 0`) — dashboard accessible, automation OFF, popup paksa subscribe, tombol top-up disabled. Sisa welcome bonus tetap tersimpan (permanent).
+- **Subscriber aktif:** `plan: "subscriber"` — full access, bisa top-up. Welcome bonus + sub credits + topup credits semua bisa dipakai.
+
+**Trial computation (lakukan di `loadU()` atau ensureBillingFields):**
+```js
+function isTrialExpired(U) {
+  if (U.plan === 'subscriber') return false
+  if (!U.trialStartedAt) return false  // never started — shouldn't happen but safe default
+  var trialDays = (U.planConfig?.trialDays) || 14
+  var startMs = new Date(U.trialStartedAt).getTime()
+  var endMs = startMs + trialDays * 86400000
+  var topup = U.topupCreditsLeft || 0
+  return Date.now() > endMs || topup === 0
+}
+
+function trialDaysLeft(U) {
+  if (U.plan === 'subscriber' || !U.trialStartedAt) return null
+  var trialDays = (U.planConfig?.trialDays) || 14
+  var startMs = new Date(U.trialStartedAt).getTime()
+  var endMs = startMs + trialDays * 86400000
+  return Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+}
+```
 
 ---
 
@@ -55,9 +80,12 @@ Tambahkan field ini ke `getstarvio_user`:
   plan: "free" | "subscriber",       // status subscription
   subCreditsLeft: number,            // sisa kredit dari subscription bulan ini (reset bulanan)
   subCreditsMax: 300,
-  topupCreditsLeft: number,          // kredit top-up (tidak ada expiry)
+  topupCreditsLeft: number,          // kredit top-up (tidak ada expiry) — termasuk welcome bonus 100 kredit
   subRenewsAt: "ISO string | null",  // tanggal renewal berikutnya (null jika free)
+  trialStartedAt: "ISO string | null", // kapan trial mulai. Set otomatis saat selesai onboarding.
   // remLeft = subCreditsLeft + topupCreditsLeft (computed, bukan disimpan)
+  // trialEndsAt = trialStartedAt + planConfig.trialDays (computed)
+  // isTrialExpired = plan === 'free' && (now > trialEndsAt || topupCreditsLeft === 0)
 }
 ```
 
@@ -70,11 +98,19 @@ Tambahkan field ini ke `getstarvio_user`:
 
 ### Section 1: Status Plan (paling atas)
 
-**Jika `plan === "free"`:**
-- Badge: "Paket Gratis" (grey)
-- Teks: "Kamu sedang memakai welcome bonus — `remLeft` kredit tersisa"
-- CTA prominent: tombol **"Subscribe — ~~Rp 499.000~~ Rp 249.000/bulan (300 kredit)"** dengan harga normal coret + diskon Early Access
-- Subtext: "Dapatkan 300 pengingat/bulan + akses semua fitur. Garansi 30 hari uang kembali."
+**Jika `plan === "free"` & trial AKTIF (belum expired):**
+- Badge: "Free Trial" (amber/lime)
+- Teks: "Trial: `X hari tersisa` · `Y kredit tersisa`"
+- Show progress: trial countdown (X dari trialDays hari)
+- CTA prominent: tombol **"Subscribe — ~~Rp 499.000~~ Rp 249.000/bulan (300 kredit)"**
+- Subtext: "Subscribe sekarang biar ga ada gangguan saat trial habis."
+
+**Jika `plan === "free"` & trial EXPIRED:**
+- Banner merah/amber prominent: "Trial habis — subscribe untuk lanjut"
+- Sub-text: "Welcome bonus `topupCreditsLeft` kredit kamu masih tersimpan. Subscribe sekarang untuk pakai lagi."
+- Automation OFF indicator
+- Tombol top-up: **DISABLED** dengan tooltip "Subscribe dulu untuk beli top-up"
+- CTA: tombol Subscribe besar di tengah card
 
 **Jika `plan === "subscriber"`:**
 - Badge: "Subscriber Aktif" (lime)
@@ -108,10 +144,16 @@ Tampilkan dua baris kredit secara visual terpisah:
 
 ---
 
-### Section 3: Top Up Kredit Extra
+### Section 3: Top Up Kredit Extra (Subscriber-only)
 
 Header: "Top Up Kredit Extra" dengan subtext "Beli paket sekali, kredit tidak ada expiry — semakin besar paket, semakin murah per kreditnya."
 
+⚠️ **Hanya bisa diakses subscriber.** Jika `plan === 'free'` (baik trial aktif maupun expired):
+- Tampilkan paket-paket dalam state DISABLED (overlay semi-transparent)
+- Tombol "Top Up Sekarang" diganti jadi "Subscribe untuk Top Up" → buka modal subscribe
+- Tooltip di paket: "Top-up hanya untuk subscriber"
+
+Untuk subscriber:
 3 pilihan paket (card) — **dinamis dari `getstarvio_user.planConfig`** (fallback ke default jika tidak ada):
 - Default tiers (flat pricing, NO bonus calculation):
   - 200 kredit  — Rp 399.000   (Rp 1.995/kredit)
@@ -221,3 +263,5 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 | 2026-03-27 | Subscription credits: 375 → 250 (flat, no early access bonus on subscription). subCreditsMax=250. Early access +50% applies ONLY to top-up packages. |
 | 2026-03-27 | Top-up packages now dynamic: reads from `getstarvio_user.planConfig` (set by admin page). `buildPackages()` computes labels/bonuses/per-kredit from planConfig. SUB_PRICE and SUB_CREDITS also read from planConfig. Falls back to hardcoded defaults if no planConfig. |
 | 2026-04-18 | **MAJOR PRICING UPDATE.** Subscription Rp 249.000/bulan (Early Access 50% off, normal Rp 499.000) for 300 kredit/bulan (was 250). subCreditsMax=300. Top-up: flat tier pricing — 200/500/1.000 kredit @ Rp 399k/749k/1.299k (no more "+X% bonus" claim). Per-credit Rp 1.995/1.498/1.299. Removed `topupPrice`/basePrice concept. Added `subPriceNormal` to planConfig. Subscribe modal shows price-old strikethrough + Early Access discount line. UI copy "reminder" → "pengingat". Trust line: "Garansi 30 hari uang kembali". |
+| 2026-04-18 | **BILLING MODEL FINAL.** Subscription jadi **WAJIB** untuk akses platform & beli top-up. Welcome bonus 100 kredit langsung masuk `topupCreditsLeft` (tidak ada field terpisah). Free Trial 14 hari ATAU 100 kredit (mana duluan) — set `trialStartedAt` saat onboarding selesai. Setelah trial expired: Section 1 jadi banner "Trial habis", Section 3 (top-up) di-DISABLE dengan overlay + tombol jadi "Subscribe untuk Top Up". `planConfig.trialDays` editable dari admin. Computation helpers `isTrialExpired()` + `trialDaysLeft()` di docs. |
+| 2026-04-18 | **DATA_VERSION 5 + UIUX HARD LOCK + BUNDLE.** Schema rename `plan: "free"` → `"trial"`. Tambah `trialEndsAt` (snapshot stored) + `trialUsed` (boolean). loadU() auto-migrate v4→v5 (kindest migration: existing user dapat fresh trialStartedAt jika belum ada). Subscribe modal sekarang tampilkan **Bundle** (subscribe + topup auto-checked, default tier 500 kredit) untuk conversion lift. Total dynamic update: `Rp 998.000` (subscription + bundle 500). Bundle bisa di-uncheck untuk subscribe-only. processSubscribe handle dual transaction (subscription + bundle topup). 4 conditional state router: `getBillingState()` returns A (trial active), B (trial expired), C (subscriber normal), D (subscriber low). |

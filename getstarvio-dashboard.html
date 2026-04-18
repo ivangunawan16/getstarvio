@@ -115,6 +115,19 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px)}
 .overlay.show{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease;width:360px}
+/* Trial Hard Lock Overlay */
+.trial-lock-overlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
+.trial-lock-overlay.show{display:flex;animation:fadeUp .3s ease}
+.tlo-card{background:var(--bg2);border-radius:var(--r-lg);padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.tlo-icon{font-size:48px;margin-bottom:14px}
+.tlo-title{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.tlo-sub{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:20px}
+.tlo-pricing{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:12px 16px;margin-bottom:20px;font-size:14px;color:var(--lime-dk)}
+.tlo-pricing strong{font-size:18px;font-weight:700}
+.tlo-tag{font-size:10px;font-weight:700;background:var(--lime);color:var(--lime-dk);padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em}
+.tlo-cta{display:block;width:100%;padding:14px;background:var(--lime);color:var(--lime-dk);border-radius:var(--r-sm);font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;transition:all .15s;box-shadow:0 4px 16px rgba(184,240,74,.3)}
+.tlo-cta:hover{background:var(--lime2);box-shadow:0 6px 20px rgba(184,240,74,.4)}
+.tlo-skip{display:inline-block;font-size:11px;color:var(--ink3);text-decoration:underline}
 .mhd{padding:19px 22px 15px;border-bottom:1px solid var(--border);text-align:center}
 .mftr{padding:13px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
 .m-title{font-size:15px;font-weight:700;color:var(--ink)}
@@ -341,6 +354,22 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 </div>
 </div>
 
+<!-- TRIAL HARD LOCK OVERLAY (no skip — only escape = subscribe) -->
+<div class="trial-lock-overlay" id="trialLockOverlay">
+  <div class="tlo-card">
+    <div class="tlo-icon">🔒</div>
+    <div class="tlo-title">Trial selesai</div>
+    <div class="tlo-sub">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
+    <div class="tlo-pricing">
+      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
+      <strong>Rp 249.000/bulan</strong>
+      <span class="tlo-tag">Early Access 50% off</span>
+    </div>
+    <a href="getstarvio-billing.html" class="tlo-cta">Subscribe Sekarang →</a>
+    <a href="getstarvio-billing.html" class="tlo-skip">Lihat detail di Billing</a>
+  </div>
+</div>
+
 <!-- LOGOUT MODAL -->
 <div class="overlay" id="m-logout">
   <div class="modal">
@@ -365,10 +394,51 @@ function loadU() {
     const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    // Migration v4 → v5
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        const td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      const endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else {
+      u.trialDaysLeft = null
+      u.trialExpired = false
+    }
     return u
   } catch(e) { return null }
+}
+
+function saveU(u) {
+  delete u.remLeft; delete u.trialDaysLeft; delete u.trialExpired
+  localStorage.setItem('getstarvio_user', JSON.stringify(u))
+}
+
+/* ── TRIAL HELPERS (computed di loadU, ini wrapper) ── */
+function isTrialExpired(U) { return !!(U && U.trialExpired) }
+function trialDaysLeft(U) { return U ? U.trialDaysLeft : null }
+
+/* ── TRIAL HARD LOCK OVERLAY ── */
+function showTrialLockOverlay() {
+  const el = document.getElementById('trialLockOverlay')
+  if (el) el.classList.add('show')
+}
+function checkTrialLock() {
+  const u = loadU()
+  if (!u || !u.trialExpired) return
+  if (location.pathname.includes('billing')) return
+  showTrialLockOverlay()
 }
 
 function bootSidebar() {
@@ -582,16 +652,32 @@ function boot() {
   const navLost = document.getElementById('nav-lost-n')
   if (lostCxs.length > 0) { navLost.textContent = lostCxs.length; navLost.style.display = 'inline-flex' }
 
-  // Credit alert
+  // Trial / credit alert (priority: trial expired > credit critical > credit low > trial countdown)
   const alertEl = document.getElementById('credit-alert')
   const alertTxt = document.getElementById('credit-alert-text')
-  if (U.remLeft < 10 && U.remLeft > 0) {
+  const trialExp = isTrialExpired(U)
+  const daysLeft = trialDaysLeft(U)
+  if (trialExp) {
     alertEl.style.display = 'flex'
-    alertTxt.textContent = 'Kredit hampir habis — ' + U.remLeft + ' kredit tersisa.'
+    alertEl.classList.add('critical')
+    alertTxt.innerHTML = '<strong>Trial habis</strong> — automation berhenti. Subscribe untuk lanjut. Welcome bonus ' + U.remLeft + ' kredit kamu masih tersimpan.'
+    // Hard lock overlay handled by checkTrialLock() in boot()
   } else if (U.remLeft <= 0) {
     alertEl.style.display = 'flex'
     alertEl.classList.add('critical')
     alertTxt.textContent = 'Kredit habis! Pengingat tidak bisa dikirim.'
+  } else if (U.remLeft < 10) {
+    alertEl.style.display = 'flex'
+    alertTxt.textContent = 'Kredit hampir habis — ' + U.remLeft + ' kredit tersisa.'
+  } else if (daysLeft !== null && daysLeft <= 3) {
+    alertEl.style.display = 'flex'
+    alertTxt.innerHTML = '<strong>Free trial</strong>: ' + daysLeft + ' hari tersisa. Subscribe biar ga kena gangguan.'
+  }
+
+  // Auto-disable automation kalau trial expired
+  if (trialExp && U.automationEnabled) {
+    U.automationEnabled = false
+    saveU(U)
   }
 
   // Metrics
@@ -671,6 +757,7 @@ function boot() {
 window.addEventListener('DOMContentLoaded', function() {
   boot()
   bootSidebar()
+  checkTrialLock()
 })
 </script>
 </body>

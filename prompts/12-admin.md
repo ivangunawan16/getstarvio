@@ -38,6 +38,7 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 ### Tabel Subscriber (main section)
 - List semua bisnis dari `ADMIN_DATA[]` (bukan dari `getstarvio_user`)
 - Kolom: Nama Bisnis | Jenis | Tgl Daftar | Status | Kredit Tersisa | Pengingat (bln ini) | WA Status
+- Status badge per baris: `Aktif` (lime) / `Trial Aktif` (blue) / `Trial Expired` (amber) / `Suspended` (red) / `Churned` (grey)
 - Status badge per baris: `Aktif` (lime) / `Trial` (blue) / `Suspended` (amber) / `Churned` (red)
 - WA status chip: `Connected` (lime pulse) / `Disconnected` (red)
 - Tombol "Lihat Detail" per baris → buka modal detail
@@ -64,11 +65,17 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 
 ### Tab: Plan Config — Subscription & Top-Up Pricing (editable)
 
+**Trial card** (editable):
+- Welcome bonus credits — input number, default 100
+- Trial duration — input number (days), default 14
+- Note: Trial = `trialDays` hari ATAU welcome bonus habis (mana duluan)
+
 **Subscription card** (editable):
 - Harga normal (Rp) — input number, default 499.000
 - Harga Early Access (Rp) — input number, default 249.000
 - Kredit per bulan — input number, default 300
 - Auto-show: diskon % (auto-calculated dari normal vs early access)
+- Note: Subscription **WAJIB** untuk akses platform & top-up
 
 **Top-Up Pricing card** (editable):
 - **3 Paket Tiers** — flat pricing, masing-masing punya:
@@ -88,7 +95,8 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 **planConfig schema yang disimpan:**
 ```js
 {
-  freeBonus: 100,           // welcome bonus credits
+  freeBonus: 100,           // welcome bonus credits (langsung masuk topupCreditsLeft)
+  trialDays: 14,            // trial period dalam hari
   subCredits: 300,          // subscription credits per month
   subPrice: 249000,         // subscription price per month (Early Access)
   subPriceNormal: 499000,   // subscription price normal (untuk display coret)
@@ -149,3 +157,7 @@ Contoh entry:
 | 2026-03-26 | Tambah Reference section — acuan v2.0 command-center, renamed jadi getstarvio-admin.html |
 | 2026-03-27 | Top-Up Pricing tiers now editable (price + credits inputs). Bonus % auto-recalculates. savePlanConfig() persists to getstarvio_user.planConfig in localStorage. loadPlanConfig() populates fields on boot. Billing page reads planConfig dynamically. |
 | 2026-04-18 | **MAJOR PRICING UPDATE.** New tiers: Rp 399k/200, Rp 749k/500 ("Terlaris"), Rp 1.299k/1000 ("Hemat 35%"). FLAT pricing — removed bonus % calculation (no more `topupPrice`/basePrice concept). Subscription card now editable: subPrice (249k Early Access), subPriceNormal (499k coret), subCredits (300). Auto-show diskon % from normal vs early access. Plan config schema adds `subPriceNormal`. UI copy "reminder" → "pengingat". |
+| 2026-04-18 | **TRIAL & SUBSCRIPTION WAJIB.** Plan Config tab gets new **Trial card** (welcome bonus credits + trial duration in days, default 14). planConfig schema adds `trialDays`. Subscriber table status badges include `Trial Aktif` and `Trial Expired`. |
+| 2026-04-18 | **TEMPLATES TAB ADDED.** Library WhatsApp templates (CRUD), Meta inbox notifications (category change, rejected, flagged, approved), 5 aftercare follow-up templates (UTILITY-compliant, 5 variables: nama/treatment/tanggal/bisnis/timing). Status badges: APPROVED/PENDING/REJECTED/PAUSED/FLAGGED. Category chips: UTILITY/MARKETING/AUTHENTICATION. |
+| 2026-04-18 | **TIPE LAYANAN TAB ADDED.** Manage business types (Salon/Spa/Klinik/etc.) + preset categories per type. Click card to expand & edit presets. Per preset: nama, icon, default interval, default template. CRUD + auto-sync ke onboarding "Jenis Bisnis" + "Kategori Layanan". |
+| 2026-04-18 | **DATA_VERSION 5 IMPACT.** Subscriber table status badges include `Trial Aktif` (blue) + `Trial Expired` (amber). ADMIN_DATA dummies should reflect new plan values (`trial` instead of `free`). Plan Config trial card editable: welcome bonus credits + trial duration days. planConfig schema dilengkapi `trialDays` field. |

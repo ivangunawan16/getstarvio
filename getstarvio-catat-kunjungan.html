@@ -409,14 +409,39 @@ function loadU() {
     var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     var u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        var td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      var endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else { u.trialDaysLeft = null; u.trialExpired = false }
     return u
   } catch(e) { return null }
 }
 
 function saveU(u) {
+  delete u.remLeft; delete u.trialDaysLeft; delete u.trialExpired
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
+}
+
+function showTrialLockOverlay() { var el = document.getElementById('trialLockOverlay'); if (el) el.style.display = 'flex' }
+function checkTrialLock() {
+  var u = loadU()
+  if (!u || !u.trialExpired) return
+  if (location.pathname.includes('billing')) return
+  showTrialLockOverlay()
 }
 
 function bootSidebar() {
@@ -877,6 +902,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   bootSidebarData()
   bootSidebar()
+  checkTrialLock()
   renderTodayVisits()
 
   // Search input with debounce
@@ -900,5 +926,22 @@ window.addEventListener('DOMContentLoaded', function() {
   })
 })
 </script>
+
+<!-- Trial Hard Lock Overlay -->
+<div id="trialLockOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;font-family:'Sora',sans-serif">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)">
+    <div style="font-size:48px;margin-bottom:14px">🔒</div>
+    <div style="font-size:22px;font-weight:700;color:#1a1917;margin-bottom:8px">Trial selesai</div>
+    <div style="font-size:13px;color:#5c5b55;line-height:1.6;margin-bottom:20px">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:#edfac8;border:1px solid #c8f07a;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#2d4a00">
+      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
+      <strong style="font-size:18px;font-weight:700">Rp 249.000/bulan</strong>
+      <span style="font-size:10px;font-weight:700;background:#b8f04a;color:#2d4a00;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em">Early Access 50% off</span>
+    </div>
+    <a href="getstarvio-billing.html" style="display:block;width:100%;padding:14px;background:#b8f04a;color:#2d4a00;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;box-shadow:0 4px 16px rgba(184,240,74,.3);box-sizing:border-box">Subscribe Sekarang →</a>
+    <a href="getstarvio-billing.html" style="display:inline-block;font-size:11px;color:#9b9a92;text-decoration:underline">Lihat detail di Billing</a>
+  </div>
+</div>
+
 </body>
 </html>

@@ -288,13 +288,13 @@ select.fi{cursor:pointer;appearance:auto}
         </div>
       </div>
       <div class="fg">
-        <label class="fl">Template Pesan WA</label>
+        <label class="fl">Template Pesan WA <span style="font-size:9px;font-weight:600;background:var(--lime-bg);color:var(--lime-dk);border:1px solid var(--lime-bd);padding:1px 6px;border-radius:99px;text-transform:none;letter-spacing:0;margin-left:5px">UTILITY · APPROVED</span></label>
         <select id="kat-tpl" class="fi" onchange="updateAddPreview()">
-          <option value="reminder_return">Reminder balik</option>
-          <option value="soft_invite">Ajakan santai</option>
-          <option value="promo_nudge">Reminder + penawaran</option>
-          <option value="care_checkin">Check-in personal</option>
-          <option value="urgency_light">Gentle urgency</option>
+          <option value="aftercare_followup_1">Aftercare #1 — formal</option>
+          <option value="aftercare_followup_2">Aftercare #2 — terima kasih</option>
+          <option value="aftercare_followup_3">Aftercare #3 — casual</option>
+          <option value="aftercare_followup_4">Aftercare #4 — semoga puas</option>
+          <option value="aftercare_followup_5">Aftercare #5 — tanya hasil</option>
         </select>
         <div class="msg-preview" id="msg-preview-add"></div>
       </div>
@@ -339,13 +339,13 @@ select.fi{cursor:pointer;appearance:auto}
         </div>
       </div>
       <div class="fg">
-        <label class="fl">Template Pesan</label>
+        <label class="fl">Template Pesan <span style="font-size:9px;font-weight:600;background:var(--lime-bg);color:var(--lime-dk);border:1px solid var(--lime-bd);padding:1px 6px;border-radius:99px;text-transform:none;letter-spacing:0;margin-left:5px">UTILITY · APPROVED</span></label>
         <select id="edit-tpl" class="fi" onchange="updateEditPreview()">
-          <option value="reminder_return">Reminder balik</option>
-          <option value="soft_invite">Ajakan santai</option>
-          <option value="promo_nudge">Reminder + penawaran</option>
-          <option value="care_checkin">Check-in personal</option>
-          <option value="urgency_light">Gentle urgency</option>
+          <option value="aftercare_followup_1">Aftercare #1 — formal</option>
+          <option value="aftercare_followup_2">Aftercare #2 — terima kasih</option>
+          <option value="aftercare_followup_3">Aftercare #3 — casual</option>
+          <option value="aftercare_followup_4">Aftercare #4 — semoga puas</option>
+          <option value="aftercare_followup_5">Aftercare #5 — tanya hasil</option>
         </select>
         <div class="msg-preview" id="msg-preview-edit"></div>
       </div>
@@ -400,14 +400,39 @@ function loadU() {
     var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     var u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        var td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      var endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else { u.trialDaysLeft = null; u.trialExpired = false }
     return u
   } catch(e) { return null }
 }
 
 function saveU(u) {
+  delete u.remLeft; delete u.trialDaysLeft; delete u.trialExpired
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
+}
+
+function showTrialLockOverlay() { var el = document.getElementById('trialLockOverlay'); if (el) el.style.display = 'flex' }
+function checkTrialLock() {
+  var u = loadU()
+  if (!u || !u.trialExpired) return
+  if (location.pathname.includes('billing')) return
+  showTrialLockOverlay()
 }
 
 function bootSidebar(u) {
@@ -466,28 +491,48 @@ function openLogout() { openM('m-logout') }
 /* ══════════════════════════════════════════
    TEMPLATE SYSTEM
    ══════════════════════════════════════════ */
+/* TEMPLATES — Meta Cloud API placeholder format {{1}}-{{5}}, semua UTILITY-compliant
+   {{1}} = Nama customer · {{2}} = Treatment · {{3}} = Tanggal kunjungan · {{4}} = Nama bisnis · {{5}} = Waktu perawatan lanjutan */
 var TEMPLATES = {
-  reminder_return: 'Halo {customer_name}! Sudah {days} hari sejak {service} terakhir kamu di {business_name}. Yuk balik lagi \u2014 kami tunggu! \ud83d\ude0a',
-  soft_invite: 'Hai {customer_name}! Kangen nih sama kamu \ud83d\ude04 Udah {days} hari lho sejak terakhir {service} di {business_name}. Kapan mau mampir lagi?',
-  promo_nudge: 'Halo {customer_name}! Udah {days} hari sejak {service} di {business_name}. Pas banget, lagi ada promo spesial buat kamu \u2014 chat kami ya! \ud83c\udf89',
-  care_checkin: 'Hi {customer_name}, gimana kabarnya? \ud83d\ude0a Semoga {service} terakhir di {business_name} hasilnya masih oke. Kalau butuh perawatan lagi, kabarin aja ya!',
-  urgency_light: 'Hai {customer_name}! Udah {days} hari sejak {service} di {business_name}. Biar hasilnya tetap maksimal, yuk jadwalkan kunjungan berikutnya sebelum terlambat \u23f0'
+  aftercare_followup_1: 'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nUntuk hasil terbaik, perawatan lanjutan biasanya dilakukan dalam {{5}} ya.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.',
+  aftercare_followup_2: 'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, perawatan lanjutan bisa dijadwalkan dalam {{5}} ke depan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.',
+  aftercare_followup_3: 'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nBiasanya untuk perawatan seperti ini, lanjutannya dalam {{5}} supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!',
+  aftercare_followup_4: 'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSekedar info, jadwal perawatan lanjutannya dalam {{5}} dari kunjungan terakhir.\n\nButuh bantuan? Langsung balas chat ini aja.',
+  aftercare_followup_5: 'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, perawatan lanjutan bisa dilakukan dalam {{5}}.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.'
 }
 
 var TEMPLATE_LABELS = {
-  reminder_return: 'Reminder balik',
-  soft_invite: 'Ajakan santai',
-  promo_nudge: 'Reminder + penawaran',
-  care_checkin: 'Check-in personal',
-  urgency_light: 'Gentle urgency'
+  aftercare_followup_1: 'Aftercare #1 — formal',
+  aftercare_followup_2: 'Aftercare #2 — terima kasih',
+  aftercare_followup_3: 'Aftercare #3 — casual',
+  aftercare_followup_4: 'Aftercare #4 — semoga puas',
+  aftercare_followup_5: 'Aftercare #5 — tanya hasil'
 }
+
+/* Treatment timing fallback — dipakai untuk {{5}} kalau cat.timing belum di-set */
+var TIMING_DEFAULTS = {
+  'Hair Smoothing':'3-4 bulan','Hair Rebonding':'3-4 bulan','Smoothing':'3-4 bulan','Keriting':'3-4 bulan',
+  'Hair Color':'6-8 minggu','Hair Mask':'3-4 minggu','Creambath':'2-4 minggu','Hair Spa':'2-4 minggu','Blow Dry':'1-2 minggu',
+  'Facial':'4-6 minggu','Body Scrub':'4 minggu','Aromaterapi':'3-4 minggu','Full Body Massage':'3-4 minggu',
+  'Manicure':'2-3 minggu','Pedicure':'2-3 minggu','Nail Art':'3 minggu','Gel Nails':'3 minggu',
+  'Eyelash Extension':'2-3 minggu','Waxing':'3-4 minggu',
+  'Potong Rambut':'3 minggu','Cukur Jenggot':'2 minggu','Hair Wax':'2 minggu',
+  'Konsultasi':'4 minggu','Perawatan Kulit':'3 minggu','Laser Treatment':'4-6 minggu','Chemical Peel':'3-4 minggu',
+  'Ganti Oli':'3 bulan','Servis Rutin':'6 bulan'
+}
+function getTiming(catName) { return TIMING_DEFAULTS[catName] || '3-4 minggu' }
 
 function tplKeyFromMsg(msg) {
   // Try to match existing msg to a template key
   for (var k in TEMPLATES) {
     if (TEMPLATES[k] === msg) return k
   }
-  return 'reminder_return' // default fallback
+  return 'aftercare_followup_1' // default fallback
+}
+
+function fmtDateID(iso) {
+  if (!iso) return new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
+  return new Date(iso).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
 }
 
 /* ══════════════════════════════════════════
@@ -505,12 +550,20 @@ var COLS = [
 /* ══════════════════════════════════════════
    RENDER HELPERS
    ══════════════════════════════════════════ */
-function renderMsgHtml(msg, days, serviceName, bizName) {
+function renderMsgHtml(msg, days, serviceName, bizName, customTiming) {
+  // Render Meta Cloud API placeholders {{1}}-{{5}} dengan data sample
+  var sampleName = 'Pelanggan'
+  var sampleDate = fmtDateID()
+  var biz = bizName || 'Bisnis'
+  var svc = serviceName || 'Layanan'
+  var timing = customTiming || getTiming(svc)
   return (msg || '')
-    .replace(/{customer_name}/g, '<span class="msg-var">Pelanggan</span>')
-    .replace(/{business_name}/g, '<span class="msg-var">' + (bizName || 'Bisnis') + '</span>')
-    .replace(/{days}/g, '<span class="msg-var">' + days + '</span>')
-    .replace(/{service}/g, '<span class="msg-var">' + serviceName + '</span>')
+    .replace(/\{\{1\}\}/g, '<span class="msg-var">' + sampleName + '</span>')
+    .replace(/\{\{2\}\}/g, '<span class="msg-var">' + svc + '</span>')
+    .replace(/\{\{3\}\}/g, '<span class="msg-var">' + sampleDate + '</span>')
+    .replace(/\{\{4\}\}/g, '<span class="msg-var">' + biz + '</span>')
+    .replace(/\{\{5\}\}/g, '<span class="msg-var">' + timing + '</span>')
+    .replace(/\n/g, '<br>')
 }
 
 /* ══════════════════════════════════════════
@@ -550,12 +603,12 @@ function renderKat() {
     }).length
 
     // Template label
-    var tplKey = cat.tplKey || tplKeyFromMsg(cat.msg)
-    var tplLabel = TEMPLATE_LABELS[tplKey] || 'Reminder balik'
+    var tplKey = cat.tplKey || cat.templateId || tplKeyFromMsg(cat.msg)
+    var tplLabel = TEMPLATE_LABELS[tplKey] || 'Aftercare #1 — formal'
 
     // Message preview
-    var msgBody = TEMPLATES[tplKey] || cat.msg || TEMPLATES.reminder_return
-    var msgHtml = renderMsgHtml(msgBody, cat.interval, cat.name, biz)
+    var msgBody = TEMPLATES[tplKey] || cat.msg || TEMPLATES.aftercare_followup_1
+    var msgHtml = renderMsgHtml(msgBody, cat.interval, cat.name, biz, cat.timing)
 
     return '<div class="kat-card">' +
       '<div class="kc-head">' +
@@ -600,7 +653,7 @@ function openAdd() {
   document.getElementById('kat-name').value = ''
   document.getElementById('kat-icon').value = '✨'
   document.getElementById('kat-days').value = 30
-  document.getElementById('kat-tpl').value = 'reminder_return'
+  document.getElementById('kat-tpl').value = 'aftercare_followup_1'
   updateAddPreview()
   openM('m-addkat')
 }
@@ -711,7 +764,24 @@ function saveDef() {
 }
 
 /* ── INIT ── */
-window.addEventListener('DOMContentLoaded', boot)
+window.addEventListener('DOMContentLoaded', function(){ boot(); checkTrialLock() })
 </script>
+
+<!-- Trial Hard Lock Overlay -->
+<div id="trialLockOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;font-family:'Sora',sans-serif">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)">
+    <div style="font-size:48px;margin-bottom:14px">🔒</div>
+    <div style="font-size:22px;font-weight:700;color:#1a1917;margin-bottom:8px">Trial selesai</div>
+    <div style="font-size:13px;color:#5c5b55;line-height:1.6;margin-bottom:20px">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:#edfac8;border:1px solid #c8f07a;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#2d4a00">
+      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
+      <strong style="font-size:18px;font-weight:700">Rp 249.000/bulan</strong>
+      <span style="font-size:10px;font-weight:700;background:#b8f04a;color:#2d4a00;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em">Early Access 50% off</span>
+    </div>
+    <a href="getstarvio-billing.html" style="display:block;width:100%;padding:14px;background:#b8f04a;color:#2d4a00;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;box-shadow:0 4px 16px rgba(184,240,74,.3);box-sizing:border-box">Subscribe Sekarang →</a>
+    <a href="getstarvio-billing.html" style="display:inline-block;font-size:11px;color:#9b9a92;text-decoration:underline">Lihat detail di Billing</a>
+  </div>
+</div>
+
 </body>
 </html>

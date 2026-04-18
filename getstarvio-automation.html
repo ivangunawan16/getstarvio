@@ -352,14 +352,53 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
 </div>
 
 <script>
-/* == TEMPLATES == */
+/* == TEMPLATES (Meta Cloud API placeholder format {{1}}-{{5}}) ==
+   {{1}} = Nama customer        (customer.name)
+   {{2}} = Jenis treatment      (service.name)
+   {{3}} = Tanggal kunjungan    (service.date, "DD MMMM YYYY")
+   {{4}} = Nama bisnis          (bizName)
+   {{5}} = Waktu perawatan lanjutan (cats[].timing, default "4-6 minggu") */
 var TEMPLATES = [
-  {id:'reminder_return',label:'Reminder balik',msg:'Halo {customer_name}! Sudah {days} hari sejak {service} di {business_name}. Saatnya kembali ✨'},
-  {id:'soft_invite',label:'Ajakan santai',msg:'Hai {customer_name} 👋 {business_name} kangen! Sudah {days} hari sejak {service}. Yuk balik!'},
-  {id:'promo_nudge',label:'Reminder + penawaran',msg:'Helo {customer_name}! Sudah {days} hari sejak {service} di {business_name}. Ada slot kosong 😊'},
-  {id:'care_checkin',label:'Check-in personal',msg:'{customer_name}, sudah {days} hari sejak {service} di {business_name}. Gimana kondisi kamu?'},
-  {id:'urgency_light',label:'Gentle urgency',msg:'Hai {customer_name}! Sudah {days} hari sejak {service} di {business_name} 🗓 Jangan lewatkan!'}
+  {id:'aftercare_followup_1',label:'Aftercare #1 — formal',  msg:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nUntuk hasil terbaik, perawatan lanjutan biasanya dilakukan dalam {{5}} ya.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.'},
+  {id:'aftercare_followup_2',label:'Aftercare #2 — terima kasih', msg:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, perawatan lanjutan bisa dijadwalkan dalam {{5}} ke depan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.'},
+  {id:'aftercare_followup_3',label:'Aftercare #3 — casual',  msg:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nBiasanya untuk perawatan seperti ini, lanjutannya dalam {{5}} supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!'},
+  {id:'aftercare_followup_4',label:'Aftercare #4 — semoga puas', msg:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSekedar info, jadwal perawatan lanjutannya dalam {{5}} dari kunjungan terakhir.\n\nButuh bantuan? Langsung balas chat ini aja.'},
+  {id:'aftercare_followup_5',label:'Aftercare #5 — tanya hasil', msg:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, perawatan lanjutan bisa dilakukan dalam {{5}}.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.'}
 ]
+
+/* Treatment timing fallback — dipakai untuk {{5}} kalau cat.timing belum di-set */
+var TIMING_DEFAULTS = {
+  'Hair Smoothing':'3-4 bulan','Hair Rebonding':'3-4 bulan','Smoothing':'3-4 bulan','Keriting':'3-4 bulan',
+  'Hair Color':'6-8 minggu','Hair Mask':'3-4 minggu','Creambath':'2-4 minggu','Hair Spa':'2-4 minggu','Blow Dry':'1-2 minggu',
+  'Facial':'4-6 minggu','Body Scrub':'4 minggu','Aromaterapi':'3-4 minggu','Full Body Massage':'3-4 minggu',
+  'Manicure':'2-3 minggu','Pedicure':'2-3 minggu','Nail Art':'3 minggu','Gel Nails':'3 minggu',
+  'Eyelash Extension':'2-3 minggu','Waxing':'3-4 minggu',
+  'Potong Rambut':'3 minggu','Cukur Jenggot':'2 minggu','Hair Wax':'2 minggu',
+  'Konsultasi':'4 minggu','Perawatan Kulit':'3 minggu','Laser Treatment':'4-6 minggu','Chemical Peel':'3-4 minggu',
+  'Ganti Oli':'3 bulan','Servis Rutin':'6 bulan'
+}
+
+function getTiming(catName) {
+  return TIMING_DEFAULTS[catName] || '3-4 minggu'
+}
+
+function fmtDate(iso) {
+  if (!iso) return new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
+  var d = new Date(iso)
+  return d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
+}
+
+/* Render template with real data — replace {{1}}-{{5}} */
+function renderTemplate(msg, opts) {
+  opts = opts || {}
+  var bizName = (loadU()||{}).bizName || 'Bisnis Kamu'
+  return msg
+    .replace(/\{\{1\}\}/g, opts.name || 'Pelanggan')
+    .replace(/\{\{2\}\}/g, opts.service || 'Layanan')
+    .replace(/\{\{3\}\}/g, opts.date || fmtDate())
+    .replace(/\{\{4\}\}/g, opts.bizName || bizName)
+    .replace(/\{\{5\}\}/g, opts.timing || '4-6 minggu')
+}
 
 /* == SHARED == */
 function loadU() {
@@ -367,14 +406,43 @@ function loadU() {
     var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     var u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    // Migration v4 → v5
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        var td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      var endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else {
+      u.trialDaysLeft = null; u.trialExpired = false
+    }
     return u
   } catch(e) { return null }
 }
 
 function saveU(u) {
+  delete u.remLeft; delete u.trialDaysLeft; delete u.trialExpired
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
+}
+
+/* Trial Hard Lock helpers */
+function showTrialLockOverlay() { var el = document.getElementById('trialLockOverlay'); if (el) el.style.display = 'flex' }
+function checkTrialLock() {
+  var u = loadU()
+  if (!u || !u.trialExpired) return
+  if (location.pathname.includes('billing')) return
+  showTrialLockOverlay()
 }
 
 function bootSidebar() {
@@ -570,7 +638,7 @@ function toggleCat(catId) {
 }
 
 /* == CHANGE INTERVAL == */
-/* == PREVIEW TEMPLATE ON CHANGE (no save) == */
+/* == PREVIEW TEMPLATE ON CHANGE (no save) — render {{1}}-{{5}} dengan data sample == */
 function previewCatTemplate(catId) {
   var sel = document.getElementById('tpl-' + catId)
   var tplId = sel.value
@@ -578,16 +646,26 @@ function previewCatTemplate(catId) {
   if (!tpl) return
   var U = loadU()
   var cat = (U.cats || []).find(function(c){ return c.id === catId })
-  var days = document.getElementById('interval-' + catId).value || '30'
+  var sampleCx = (U.customers || [])[0]
+  var sampleName = sampleCx ? sampleCx.name.split(' ')[0] : 'Anita'
   var prev = document.getElementById('prev-' + catId)
-  if (prev) {
-    prev.innerHTML = tpl.msg
-      .replace(/\{customer_name\}/g, '<span class="msg-var">{customer_name}</span>')
-      .replace(/\{business_name\}/g, '<span class="msg-var">{business_name}</span>')
-      .replace(/\{days\}/g, '<span class="msg-var">' + days + '</span>')
-      .replace(/\{service\}/g, '<span class="msg-var">' + (cat ? cat.name : 'layanan') + '</span>')
-  }
+  if (!prev) return
+  var rendered = renderTemplate(tpl.msg, {
+    name: sampleName,
+    service: cat ? cat.name : 'Layanan',
+    date: fmtDate(),
+    bizName: U.bizName || 'Bisnis Kamu',
+    timing: (cat && cat.timing) || getTiming(cat ? cat.name : '')
+  })
+  // Wrap variables yang sudah di-replace dengan span var styling — split by sample values
+  prev.innerHTML = rendered
+    .replace(new RegExp(escapeReg(sampleName), 'g'), '<span class="msg-var">' + sampleName + '</span>')
+    .replace(new RegExp(escapeReg(cat ? cat.name : 'Layanan'), 'g'), '<span class="msg-var">' + (cat ? cat.name : 'Layanan') + '</span>')
+    .replace(new RegExp(escapeReg(U.bizName || 'Bisnis Kamu'), 'g'), '<span class="msg-var">' + (U.bizName || 'Bisnis Kamu') + '</span>')
+    .replace(/\n/g, '<br>')
 }
+
+function escapeReg(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') }
 
 /* == SAVE FLOW CHANGES (interval + template) == */
 function saveFlowChanges(catId) {
@@ -638,13 +716,22 @@ function renderFlows(U) {
     var count = cxs.filter(function(c){
       return (c.services || []).some(function(s){ return s.name === cat.name })
     }).length
-    var tplId = cat.templateId || 'reminder_return'
-    var msg = cat.msg || TEMPLATES[0].msg
-    var msgHtml = msg
-      .replace(/{customer_name}/g, '<span class="msg-var">' + sample + '</span>')
-      .replace(/{business_name}/g, '<span class="msg-var">' + biz + '</span>')
-      .replace(/{days}/g, '<span class="msg-var">' + cat.interval + '</span>')
-      .replace(/{service}/g, '<span class="msg-var">' + (cat.name || 'layanan') + '</span>')
+    var tplId = cat.templateId || 'aftercare_followup_1'
+    var tplObj = TEMPLATES.find(function(t){ return t.id === tplId }) || TEMPLATES[0]
+    var msg = tplObj.msg
+    var timingStr = cat.timing || getTiming(cat.name)
+    var rendered = renderTemplate(msg, {
+      name: sample,
+      service: cat.name || 'Layanan',
+      date: fmtDate(),
+      bizName: biz,
+      timing: timingStr
+    })
+    var msgHtml = rendered
+      .replace(new RegExp(escapeReg(sample), 'g'), '<span class="msg-var">' + sample + '</span>')
+      .replace(new RegExp(escapeReg(cat.name || 'Layanan'), 'g'), '<span class="msg-var">' + (cat.name || 'Layanan') + '</span>')
+      .replace(new RegExp(escapeReg(biz), 'g'), '<span class="msg-var">' + biz + '</span>')
+      .replace(/\n/g, '<br>')
 
     var tplOptions = TEMPLATES.map(function(t) {
       var sel = t.id === tplId ? ' selected' : ''
@@ -677,12 +764,13 @@ function renderFlows(U) {
         '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Preview Pesan WA</div>' +
         '<div class="msg-prev" id="prev-' + cat.id + '">' + msgHtml + '</div>' +
         '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:12px">' +
-          '<div style="display:flex;flex-wrap:wrap;gap:5px">' +
-            '<span style="font-size:10px;font-weight:600;color:var(--ink3)">Variabel:</span>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)">{customer_name}</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)">{business_name}</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)">{days}</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)">{service}</code>' +
+          '<div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">' +
+            '<span style="font-size:10px;font-weight:600;color:var(--ink3)">Variabel Meta:</span>' +
+            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Nama customer">{{1}} nama</code>' +
+            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Jenis treatment">{{2}} treatment</code>' +
+            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Tanggal kunjungan">{{3}} tanggal</code>' +
+            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Nama bisnis">{{4}} bisnis</code>' +
+            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Waktu perawatan lanjutan">{{5}} timing</code>' +
           '</div>' +
           '<button id="save-' + cat.id + '" class="btn btn-lime btn-sm" onclick="saveFlowChanges(\'' + cat.id + '\')">Simpan</button>' +
         '</div>' +
@@ -722,7 +810,25 @@ function boot() {
 window.addEventListener('DOMContentLoaded', function() {
   boot()
   bootSidebar()
+  checkTrialLock()
 })
 </script>
+
+<!-- Trial Hard Lock Overlay (self-styled, no CSS class deps) -->
+<div id="trialLockOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;font-family:'Sora',sans-serif">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)">
+    <div style="font-size:48px;margin-bottom:14px">🔒</div>
+    <div style="font-size:22px;font-weight:700;color:#1a1917;margin-bottom:8px">Trial selesai</div>
+    <div style="font-size:13px;color:#5c5b55;line-height:1.6;margin-bottom:20px">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:#edfac8;border:1px solid #c8f07a;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#2d4a00">
+      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
+      <strong style="font-size:18px;font-weight:700">Rp 249.000/bulan</strong>
+      <span style="font-size:10px;font-weight:700;background:#b8f04a;color:#2d4a00;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em">Early Access 50% off</span>
+    </div>
+    <a href="getstarvio-billing.html" style="display:block;width:100%;padding:14px;background:#b8f04a;color:#2d4a00;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;box-shadow:0 4px 16px rgba(184,240,74,.3);box-sizing:border-box">Subscribe Sekarang →</a>
+    <a href="getstarvio-billing.html" style="display:inline-block;font-size:11px;color:#9b9a92;text-decoration:underline">Lihat detail di Billing</a>
+  </div>
+</div>
+
 </body>
 </html>

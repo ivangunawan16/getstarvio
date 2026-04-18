@@ -676,7 +676,8 @@ select.fi{cursor:pointer}
       <!-- Status chips: what's ready -->
       <div class="done-stats">
         <span class="ds-chip"><span class="ic">●</span>WhatsApp Coexist aktif</span>
-        <span class="ds-chip"><span class="ic">●</span>100 kredit gratis</span>
+        <span class="ds-chip"><span class="ic">●</span>100 kredit gratis (permanent)</span>
+        <span class="ds-chip"><span class="ic">●</span>Free Trial 14 hari</span>
         <span class="ds-chip" id="ds-cats"><span class="ic">●</span>Kategori siap</span>
       </div>
 
@@ -1038,8 +1039,13 @@ function buildDone() {
     templateBody: c.msg || TEMPLATES[0].msg
   })) : [{id:'default',name:'Semua Layanan',icon:'✨',interval:30,templateId:'reminder_return',templateBody:TEMPLATES[0].msg}]
 
+  // Set trial fields (DATA_VERSION 5)
+  var trialDays = 14
+  var nowIso = new Date().toISOString()
+  var trialEndsIso = new Date(Date.now() + trialDays * 86400000).toISOString()
+
   localStorage.setItem('getstarvio_user', JSON.stringify({
-    DATA_VERSION: 4,
+    DATA_VERSION: 5,
     bizName: biz,
     bizType: D.bizType,
     bizSlug: slug,
@@ -1049,16 +1055,31 @@ function buildDone() {
     waNum: '628100000001',
     timezone: tz,
     country: country,
-    plan: 'free',
+    plan: 'trial',                               // schema v5: "trial" (sebelumnya "free")
     subCreditsLeft: 0,
-    subCreditsMax: 250,
-    topupCreditsLeft: 100,
+    subCreditsMax: 300,                          // sub max kalau nanti subscribe
+    topupCreditsLeft: 100,                       // welcome bonus 100 kredit langsung masuk topup (permanent)
     subRenewsAt: null,
+    trialStartedAt: nowIso,
+    trialEndsAt: trialEndsIso,                   // snapshot: nowIso + 14 hari
+    trialUsed: false,                            // belum expired/subscribe
     remMax: 100,
     defaultInterval: 30,
     automationEnabled: true,
+    planConfig: {
+      freeBonus: 100,
+      trialDays: trialDays,
+      subCredits: 300,
+      subPrice: 249000,
+      subPriceNormal: 499000,
+      tiers: [
+        { price: 399000,  credits: 200 },
+        { price: 749000,  credits: 500,  label: 'Terlaris' },
+        { price: 1299000, credits: 1000, label: 'Hemat 35%' }
+      ]
+    },
     billingHistory: [
-      { date: new Date().toISOString().slice(0,10), type:'welcome', label:'Welcome Bonus', delta:100, balAfter:100, note:'Bonus kredit pendaftaran' }
+      { date: nowIso.slice(0,10), type:'welcome', label:'Welcome Bonus', delta:100, balAfter:100, note:'Welcome bonus 100 kredit (permanent — tidak hilang setelah trial)' }
     ],
     notifSettings: { lowCredit:true, criticalCredit:true, subLow:true, preRenewal:true },
     cats: finalCats,

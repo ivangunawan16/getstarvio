@@ -196,6 +196,99 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .tx-amount.reset{color:var(--blue)}
 .tx-amount.welcome{color:var(--amber)}
 
+/* ══════════════════ TEMPLATES TAB ══════════════════ */
+.tpl-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.tpl-toolbar .filter-bar{flex:1;margin-bottom:0}
+.btn-primary{padding:8px 14px;background:var(--lime);color:var(--lime-dk);border:none;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .12s;white-space:nowrap}
+.btn-primary:hover{background:var(--lime2);box-shadow:0 2px 8px rgba(184,240,74,.3)}
+.btn-primary:active{transform:scale(.98)}
+.btn-secondary{padding:7px 12px;background:var(--bg2);border:1px solid var(--border2);color:var(--ink2);border-radius:var(--r-sm);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn-secondary:hover{background:var(--bg3);border-color:var(--ink4)}
+.btn-danger{padding:7px 12px;background:var(--red-bg);border:1px solid rgba(232,69,60,.25);color:var(--red-dk);border-radius:var(--r-sm);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn-danger:hover{background:#fbd8d6}
+
+/* Status badges (template status) */
+.tpl-status{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.tpl-status::before{content:'';width:5px;height:5px;border-radius:50%}
+.tpl-status.approved{background:var(--lime-bg);color:var(--lime-dk);border:1px solid rgba(184,240,74,.35)}
+.tpl-status.approved::before{background:var(--lime2)}
+.tpl-status.pending{background:var(--amber-bg);color:var(--amber-dk);border:1px solid rgba(245,166,35,.25)}
+.tpl-status.pending::before{background:var(--amber)}
+.tpl-status.rejected{background:var(--red-bg);color:var(--red-dk);border:1px solid rgba(232,69,60,.25)}
+.tpl-status.rejected::before{background:var(--red)}
+.tpl-status.paused{background:var(--bg3);color:var(--ink2);border:1px solid var(--border2)}
+.tpl-status.paused::before{background:var(--ink3)}
+.tpl-status.flagged{background:#fff4e0;color:#7a4f00;border:1px solid #fcd88a}
+.tpl-status.flagged::before{background:var(--amber)}
+
+/* Template category chip */
+.tpl-cat{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase}
+.tpl-cat.utility{background:var(--blue-bg);color:var(--blue-dk);border:1px solid rgba(37,99,235,.2)}
+.tpl-cat.marketing{background:#f3e8ff;color:#5b21b6;border:1px solid rgba(168,85,247,.25)}
+.tpl-cat.authentication{background:#fef3c7;color:#854d0e;border:1px solid rgba(245,166,35,.3)}
+
+/* Meta inbox card */
+.meta-inbox{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:18px}
+.meta-inbox-hd{padding:11px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.meta-inbox-title{font-size:12px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px}
+.meta-inbox-title .pulse{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:pulse 2s ease-in-out infinite}
+.meta-inbox-count{font-size:10px;font-weight:700;background:var(--amber-bg);color:var(--amber-dk);padding:2px 8px;border-radius:99px;border:1px solid rgba(245,166,35,.3)}
+.meta-notif{display:flex;align-items:flex-start;gap:11px;padding:11px 16px;border-bottom:1px solid var(--border);transition:background .12s}
+.meta-notif:last-child{border-bottom:none}
+.meta-notif:hover{background:var(--bg3)}
+.meta-notif.read{opacity:.6}
+.meta-notif-ic{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.meta-notif-ic.cat-change{background:var(--amber-bg);color:var(--amber-dk)}
+.meta-notif-ic.rejected{background:var(--red-bg);color:var(--red)}
+.meta-notif-ic.approved{background:var(--lime-bg);color:var(--lime-dk)}
+.meta-notif-ic.paused{background:var(--bg3);color:var(--ink3)}
+.meta-notif-text{flex:1;font-size:12px;color:var(--ink2);line-height:1.5}
+.meta-notif-text strong{color:var(--ink);font-weight:700}
+.meta-notif-time{font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace;flex-shrink:0;white-space:nowrap;padding-top:2px}
+
+/* Template body preview */
+.tpl-body-preview{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink2);background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;line-height:1.55;white-space:pre-wrap;max-height:120px;overflow-y:auto}
+.tpl-var{display:inline-block;background:var(--lime-bg);color:var(--lime-dk);padding:1px 6px;border-radius:4px;font-weight:700}
+
+/* ══════════════════ TIPE LAYANAN TAB ══════════════════ */
+.bt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:18px}
+.bt-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .15s}
+.bt-card:hover{border-color:var(--lime2);box-shadow:0 4px 14px rgba(0,0,0,.04)}
+.bt-card.expanded{border-color:var(--lime2);box-shadow:0 6px 20px rgba(0,0,0,.06)}
+.bt-card-hd{padding:14px 16px;display:flex;align-items:center;gap:11px;cursor:pointer;background:var(--bg2);transition:background .12s}
+.bt-card-hd:hover{background:var(--bg3)}
+.bt-icon{width:38px;height:38px;border-radius:9px;background:var(--lime-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid var(--lime-bd)}
+.bt-info{flex:1;min-width:0}
+.bt-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.bt-meta{font-size:11px;color:var(--ink3)}
+.bt-actions{display:flex;gap:5px;flex-shrink:0}
+.bt-icon-btn{width:26px;height:26px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.bt-icon-btn:hover{background:var(--bg4);color:var(--ink)}
+.bt-icon-btn svg{width:13px;height:13px}
+.bt-icon-btn.danger:hover{background:var(--red-bg);color:var(--red);border-color:rgba(232,69,60,.3)}
+
+.bt-cats{padding:0 16px 14px;border-top:1px solid var(--border);background:var(--bg3);display:none}
+.bt-card.expanded .bt-cats{display:block}
+.bt-cats-hd{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin:11px 0 8px;display:flex;align-items:center;justify-content:space-between}
+.bt-cat-row{display:flex;align-items:center;gap:10px;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:6px}
+.bt-cat-icon{font-size:14px;flex-shrink:0}
+.bt-cat-name{font-size:12px;font-weight:600;color:var(--ink);flex:1;min-width:0}
+.bt-cat-meta{font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:2px 7px;border-radius:99px;border:1px solid var(--border);white-space:nowrap}
+.bt-cat-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;background:transparent;border:1.5px dashed var(--border2);color:var(--ink3);border-radius:var(--r-sm);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s;margin-top:2px}
+.bt-cat-add:hover{border-color:var(--lime2);color:var(--lime-dk);background:var(--lime-bg)}
+
+/* Modal extensions */
+.modal-lg{width:640px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.field-row .field-cell{margin-bottom:0}
+.field-textarea{width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:90px;line-height:1.6;transition:border-color .12s}
+.field-textarea:focus{border-color:var(--lime2)}
+.field-textarea.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+.field-select{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;cursor:pointer;margin-bottom:14px}
+.field-select:focus{border-color:var(--lime2)}
+.field-help{font-size:10px;color:var(--ink3);margin-top:-10px;margin-bottom:14px;line-height:1.5}
+.field-help code{font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)}
+
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .stats-row{grid-template-columns:repeat(2,1fr)}
@@ -244,6 +337,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
   <!-- TAB NAV -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('dashboard',this)">Dashboard</button>
+    <button class="tab-btn" onclick="switchTab('templates',this)">Templates</button>
+    <button class="tab-btn" onclick="switchTab('biz-types',this)">Tipe Layanan</button>
     <button class="tab-btn" onclick="switchTab('plan-config',this)">Plan Config</button>
     <button class="tab-btn" onclick="switchTab('transactions',this)">Transactions</button>
   </div>
@@ -327,6 +422,81 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 
     </div><!-- /tab-dashboard -->
 
+    <!-- ══════════ TAB: TEMPLATES ══════════ -->
+    <div class="tab-section" id="tab-templates">
+
+      <!-- Meta Notifications inbox -->
+      <div class="meta-inbox" id="meta-inbox-wrap">
+        <div class="meta-inbox-hd">
+          <div class="meta-inbox-title"><span class="pulse"></span>Notifikasi dari Meta</div>
+          <span class="meta-inbox-count" id="meta-inbox-count">0 baru</span>
+        </div>
+        <div id="meta-inbox-list"></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="tpl-toolbar">
+        <div class="filter-bar">
+          <div class="search-wrap">
+            <svg class="search-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="4"/><path d="M10.5 10.5l3 3"/></svg>
+            <input class="search-inp" id="tpl-search" placeholder="Cari nama template..." oninput="renderTemplates()">
+          </div>
+          <select class="filter-sel" id="tpl-cat-filter" onchange="renderTemplates()">
+            <option value="all">Semua Kategori</option>
+            <option value="UTILITY">Utility</option>
+            <option value="MARKETING">Marketing</option>
+            <option value="AUTHENTICATION">Authentication</option>
+          </select>
+          <select class="filter-sel" id="tpl-status-filter" onchange="renderTemplates()">
+            <option value="all">Semua Status</option>
+            <option value="APPROVED">Approved</option>
+            <option value="PENDING">Pending</option>
+            <option value="REJECTED">Rejected</option>
+            <option value="PAUSED">Paused</option>
+            <option value="FLAGGED">Flagged</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="openTemplateModal()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+          Tambah Template
+        </button>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Nama Template</th>
+              <th>Kategori</th>
+              <th>Bahasa</th>
+              <th>Status</th>
+              <th>Last Updated</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tpl-tbody"></tbody>
+        </table>
+      </div>
+    </div><!-- /tab-templates -->
+
+    <!-- ══════════ TAB: TIPE LAYANAN (Biz Types) ══════════ -->
+    <div class="tab-section" id="tab-biz-types">
+
+      <div class="section-hd" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 7h12M5 10h6"/></svg>
+          Tipe Bisnis & Preset Kategori
+        </div>
+        <button class="btn-primary" onclick="openBizTypeModal()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+          Tambah Tipe Bisnis
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:14px;line-height:1.55">Tipe bisnis dan preset kategori muncul di onboarding step "Jenis Bisnis" + "Kategori Layanan". Klik kartu untuk expand & edit preset.</div>
+
+      <div class="bt-grid" id="bt-grid"></div>
+    </div><!-- /tab-biz-types -->
+
     <!-- ══════════ TAB: PLAN CONFIG ══════════ -->
     <div class="tab-section" id="tab-plan-config">
       <div class="section-hd">
@@ -338,24 +508,27 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
       </div>
 
       <div style="max-width:600px">
-        <!-- Free Plan -->
+        <!-- Free Trial -->
         <div class="plan-config">
           <div class="plan-config-hd">
             <div>
-              <div class="plan-config-name">Free Plan</div>
-              <div style="font-size:11px;color:var(--ink3);margin-top:2px">One-time trial — tidak reset</div>
+              <div class="plan-config-name">Free Trial</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:2px">14 hari ATAU welcome bonus habis (mana duluan) — setelah itu wajib subscribe</div>
             </div>
             <span class="badge b-gray">Trial</span>
           </div>
           <div class="plan-field">
-            <div class="plan-field-lbl">Welcome bonus</div>
+            <div class="plan-field-lbl">Welcome bonus credits</div>
             <input class="plan-field-inp" id="pc-free-bonus" value="100" type="number" min="0">
-            <div class="plan-field-unit">kredit</div>
+            <div class="plan-field-unit">kredit (langsung masuk topup, permanent)</div>
           </div>
           <div class="plan-field">
-            <div class="plan-field-lbl">Reset otomatis</div>
-            <input class="plan-field-inp" value="Tidak" disabled style="opacity:.4;width:80px">
-            <div class="plan-field-unit"></div>
+            <div class="plan-field-lbl">Trial duration</div>
+            <input class="plan-field-inp" id="pc-trial-days" value="14" type="number" min="1" max="90">
+            <div class="plan-field-unit">hari</div>
+          </div>
+          <div class="plan-field">
+            <div class="plan-field-lbl" style="font-size:11px;color:var(--ink3);font-style:italic">Setelah trial: dashboard accessible tapi automation OFF + popup paksa subscribe + tombol top-up disabled</div>
           </div>
         </div>
 
@@ -489,6 +662,141 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
     </div>
     <div class="mbd" id="md-body"></div>
     <div class="mft" id="md-footer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ TEMPLATE MODAL ══════════════════ -->
+<div class="overlay" id="modal-template" onclick="if(event.target===this)closeModal('modal-template')">
+  <div class="modal modal-lg">
+    <div class="mhd">
+      <div class="m-title" id="tpl-modal-title">Tambah Template Baru</div>
+      <button class="m-close" onclick="closeModal('modal-template')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="tpl-edit-id">
+
+      <div class="field-row">
+        <div class="field-cell">
+          <label class="field-lbl">Nama Template</label>
+          <input class="field-inp" id="tpl-name" placeholder="contoh: reminder_balik" style="font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:0">
+        </div>
+        <div class="field-cell">
+          <label class="field-lbl">Bahasa</label>
+          <select class="field-select" id="tpl-lang" style="margin-bottom:0">
+            <option value="id">🇮🇩 Indonesia (id)</option>
+            <option value="en_US">🇺🇸 English (en_US)</option>
+            <option value="ms_MY">🇲🇾 Malay (ms_MY)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-help">Nama harus huruf kecil + underscore (snake_case). Tidak bisa diubah setelah submit ke Meta.</div>
+
+      <label class="field-lbl">Kategori (sesuai Meta)</label>
+      <select class="field-select" id="tpl-category">
+        <option value="UTILITY">UTILITY — transactional, account update, alert, status (paling banyak dipakai)</option>
+        <option value="MARKETING">MARKETING — promo, ajakan, soft sell (lebih ketat, perlu opt-in jelas)</option>
+        <option value="AUTHENTICATION">AUTHENTICATION — OTP, kode verifikasi (khusus, format terbatas)</option>
+      </select>
+      <div class="field-help">Meta dapat <strong>mengubah kategori</strong> setelah review. Kalau berubah, notifikasi muncul di inbox di atas.</div>
+
+      <label class="field-lbl">Header (opsional)</label>
+      <input class="field-inp" id="tpl-header" placeholder="contoh: Pengingat dari {{1}}">
+
+      <label class="field-lbl">Body Pesan</label>
+      <textarea class="field-textarea mono" id="tpl-body" placeholder="Halo {{1}}, sudah {{2}} hari sejak {{3}} di {{4}}. Saatnya kembali!"></textarea>
+      <div class="field-help">Pakai placeholder <code>{{1}}</code>, <code>{{2}}</code>, dst untuk variabel. Variabel diisi otomatis dari data customer (nama, layanan, hari, nama bisnis).</div>
+
+      <label class="field-lbl">Footer (opsional)</label>
+      <input class="field-inp" id="tpl-footer" placeholder="contoh: Balas STOP untuk berhenti">
+
+      <label class="field-lbl">Buttons (opsional, max 3) — pisah dengan baris baru</label>
+      <textarea class="field-textarea" id="tpl-buttons" placeholder="Booking Sekarang&#10;Hubungi Kami" style="min-height:60px"></textarea>
+      <div class="field-help">Quick reply buttons. Untuk MARKETING, button "Booking Sekarang" bantu konversi. Maksimal 3.</div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-template')">Batal</button>
+      <button class="btn-primary" onclick="saveTemplate()">Submit ke Meta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ BIZ TYPE MODAL ══════════════════ -->
+<div class="overlay" id="modal-biztype" onclick="if(event.target===this)closeModal('modal-biztype')">
+  <div class="modal">
+    <div class="mhd">
+      <div class="m-title" id="bt-modal-title">Tambah Tipe Bisnis</div>
+      <button class="m-close" onclick="closeModal('modal-biztype')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="bt-edit-id">
+
+      <div class="field-row">
+        <div class="field-cell">
+          <label class="field-lbl">Nama Tipe Bisnis</label>
+          <input class="field-inp" id="bt-name" placeholder="contoh: Salon" style="margin-bottom:0">
+        </div>
+        <div class="field-cell">
+          <label class="field-lbl">Icon (emoji)</label>
+          <input class="field-inp" id="bt-icon" placeholder="💇" style="font-size:18px;text-align:center;margin-bottom:0">
+        </div>
+      </div>
+      <div class="field-help">Tipe bisnis akan muncul di onboarding step "Jenis Bisnis". Pilih icon yg representatif.</div>
+
+      <label class="field-lbl">ID (slug, lowercase)</label>
+      <input class="field-inp" id="bt-id" placeholder="contoh: salon" style="font-family:'JetBrains Mono',monospace;font-size:12px">
+      <div class="field-help">Slug unik, tidak bisa diubah. Pakai untuk pemetaan ke preset kategori.</div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-biztype')">Batal</button>
+      <button class="btn-primary" onclick="saveBizType()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ PRESET CATEGORY MODAL ══════════════════ -->
+<div class="overlay" id="modal-preset-cat" onclick="if(event.target===this)closeModal('modal-preset-cat')">
+  <div class="modal">
+    <div class="mhd">
+      <div class="m-title" id="pc-modal-title">Tambah Preset Kategori</div>
+      <button class="m-close" onclick="closeModal('modal-preset-cat')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="pc-bt-id">
+      <input type="hidden" id="pc-edit-id">
+
+      <div class="field-row">
+        <div class="field-cell">
+          <label class="field-lbl">Nama Layanan</label>
+          <input class="field-inp" id="pc-name" placeholder="contoh: Facial" style="margin-bottom:0">
+        </div>
+        <div class="field-cell">
+          <label class="field-lbl">Icon (emoji)</label>
+          <input class="field-inp" id="pc-icon" placeholder="💆" style="font-size:18px;text-align:center;margin-bottom:0">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-cell">
+          <label class="field-lbl">Default Interval (hari)</label>
+          <input type="number" class="field-inp" id="pc-interval" value="30" min="1" max="365" style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:center;margin-bottom:0">
+        </div>
+        <div class="field-cell">
+          <label class="field-lbl">Default Template</label>
+          <select class="field-select" id="pc-template" style="margin-bottom:0">
+            <option value="reminder_return">Pengingat balik</option>
+            <option value="soft_invite">Ajakan santai</option>
+            <option value="promo_nudge">Pengingat + penawaran</option>
+            <option value="care_checkin">Check-in personal</option>
+            <option value="urgency_light">Gentle urgency</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-help">Preset ini muncul di onboarding step "Kategori Layanan" untuk customer pilih.</div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-preset-cat')">Batal</button>
+      <button class="btn-primary" onclick="savePresetCat()">Simpan</button>
+    </div>
   </div>
 </div>
 
@@ -883,6 +1191,401 @@ function switchTab(tab, el) {
   if (section) section.classList.add('active');
   if (el) el.classList.add('active');
   if (tab === 'transactions') renderTx();
+  if (tab === 'templates') { renderTemplates(); renderMetaInbox(); }
+  if (tab === 'biz-types') renderBizTypes();
+}
+
+// ══════════════════════════════════════════════
+// TEMPLATES — manage WA templates (Meta approval flow)
+// ══════════════════════════════════════════════
+
+// ── TEMPLATE VARIABLES (semua template aftercare pakai mapping yang sama) ──
+// {{1}} = Nama customer       (contoh: Kak Sarah)
+// {{2}} = Jenis treatment     (contoh: Hair Smoothing)
+// {{3}} = Tanggal kunjungan   (contoh: 15 Maret 2026)
+// {{4}} = Nama bisnis         (contoh: Salon Cantika)
+// {{5}} = Waktu perawatan     (contoh: 4-6 minggu) — diambil dari preset.timing per kategori
+
+var TEMPLATES = [
+  // ═══ AFTERCARE FOLLOW-UP (utility-compliant, post-visit) ═══
+  { id:'tpl-aft-1', name:'aftercare_followup_1', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nUntuk hasil terbaik, perawatan lanjutan biasanya dilakukan dalam {{5}} ya.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  { id:'tpl-aft-2', name:'aftercare_followup_2', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, perawatan lanjutan bisa dijadwalkan dalam {{5}} ke depan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  { id:'tpl-aft-3', name:'aftercare_followup_3', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nBiasanya untuk perawatan seperti ini, lanjutannya dalam {{5}} supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  { id:'tpl-aft-4', name:'aftercare_followup_4', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSekedar info, jadwal perawatan lanjutannya dalam {{5}} dari kunjungan terakhir.\n\nButuh bantuan? Langsung balas chat ini aja.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  { id:'tpl-aft-5', name:'aftercare_followup_5', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, perawatan lanjutan bisa dilakukan dalam {{5}}.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+
+  // ═══ LEGACY REMINDER TEMPLATES (kompatibilitas — bisa di-deprecate) ═══
+  { id:'tpl-001', name:'reminder_balik',   category:'UTILITY',        language:'id', status:'APPROVED', body:'Halo {{1}}, sudah {{2}} hari sejak {{3}} di {{4}}. Saatnya kembali ✨ Balas untuk booking ya!', header:'', footer:'', buttons:['Booking Sekarang'], updatedAt:'2026-04-10' },
+  { id:'tpl-002', name:'soft_invite',      category:'MARKETING',      language:'id', status:'APPROVED', body:'Hai {{1}} 👋 {{4}} kangen! Sudah {{2}} hari sejak {{3}}. Yuk balik — balas kapan aja!', header:'', footer:'Balas STOP untuk berhenti', buttons:[], updatedAt:'2026-04-08' },
+  { id:'tpl-003', name:'promo_nudge',      category:'MARKETING',      language:'id', status:'PENDING',  body:'Helo {{1}}! Sudah {{2}} hari sejak {{3}} di {{4}}. Ada slot kosong 😊 Promo {{5}} berlaku minggu ini!', header:'', footer:'', buttons:['Lihat Promo','Booking'], updatedAt:'2026-04-17' },
+  { id:'tpl-004', name:'care_checkin',     category:'UTILITY',        language:'id', status:'APPROVED', body:'{{1}}, sudah {{2}} hari sejak {{3}} di {{4}}. Gimana kondisi kamu?', header:'', footer:'', buttons:['Balas Sekarang'], updatedAt:'2026-03-28' },
+  { id:'tpl-005', name:'urgency_light',    category:'UTILITY',        language:'id', status:'FLAGGED',  body:'Hai {{1}}! Sudah {{2}} hari sejak {{3}} di {{4}} 🗓 Jangan lewatkan perawatan rutin!', header:'', footer:'', buttons:[], updatedAt:'2026-04-15' },
+  { id:'tpl-006', name:'birthday_special', category:'MARKETING',      language:'id', status:'REJECTED', body:'Selamat ulang tahun {{1}}! 🎉 Dapatkan diskon 30% di {{2}} bulan ini. Klaim sekarang!', header:'', footer:'', buttons:['Klaim Diskon'], updatedAt:'2026-04-12', rejectReason:'Promotional offer must include opt-out instruction' },
+  { id:'tpl-007', name:'otp_verification', category:'AUTHENTICATION', language:'id', status:'APPROVED', body:'Kode verifikasi getstarvio kamu: {{1}}. Berlaku 5 menit.', header:'', footer:'', buttons:[], updatedAt:'2026-02-20' }
+];
+
+// Treatment timing mapping — dipakai sebagai default `timing` untuk variable {{5}} di template aftercare.
+// Bisa di-override per preset kategori.
+var TIMING_MAP = {
+  'Hair Smoothing':     '3-4 bulan',
+  'Hair Rebonding':     '3-4 bulan',
+  'Smoothing':          '3-4 bulan',
+  'Keriting':           '3-4 bulan',
+  'Hair Color':         '6-8 minggu',
+  'Hair Mask':          '3-4 minggu',
+  'Creambath':          '2-4 minggu',
+  'Hair Spa':           '2-4 minggu',
+  'Blow Dry':           '1-2 minggu',
+  'Facial':             '4-6 minggu',
+  'Body Scrub':         '4 minggu',
+  'Aromaterapi':        '3-4 minggu',
+  'Full Body Massage':  '3-4 minggu',
+  'Manicure':           '2-3 minggu',
+  'Pedicure':           '2-3 minggu',
+  'Nail Art':           '3 minggu',
+  'Gel Nails':          '3 minggu',
+  'Eyelash Extension':  '2-3 minggu',
+  'Waxing':             '3-4 minggu',
+  'Potong Rambut':      '3 minggu',
+  'Cukur Jenggot':      '2 minggu',
+  'Hair Wax':           '2 minggu',
+  'Konsultasi':         '4 minggu',
+  'Perawatan Kulit':    '3 minggu',
+  'Laser Treatment':    '4-6 minggu',
+  'Chemical Peel':      '3-4 minggu',
+  'Ganti Oli':          '3 bulan',
+  'Servis Rutin':       '6 bulan'
+};
+
+var META_NOTIFICATIONS = [
+  { id:'n-001', type:'category_change', templateId:'tpl-002', templateName:'soft_invite', from:'UTILITY', to:'MARKETING', receivedAt:'2026-04-15 09:24', read:false },
+  { id:'n-002', type:'rejected',        templateId:'tpl-006', templateName:'birthday_special', reason:'Promotional offer must include opt-out instruction', receivedAt:'2026-04-12 14:08', read:false },
+  { id:'n-003', type:'flagged',         templateId:'tpl-005', templateName:'urgency_light', reason:'High user-blocking rate (3.2%) — review template tone', receivedAt:'2026-04-15 18:42', read:true },
+  { id:'n-004', type:'approved',        templateId:'tpl-001', templateName:'reminder_balik', receivedAt:'2026-04-10 11:15', read:true }
+];
+
+function renderMetaInbox() {
+  var listEl = document.getElementById('meta-inbox-list');
+  var countEl = document.getElementById('meta-inbox-count');
+  if (!listEl) return;
+  var unread = META_NOTIFICATIONS.filter(function(n){ return !n.read }).length;
+  countEl.textContent = unread + ' baru';
+  countEl.style.display = unread > 0 ? '' : 'none';
+
+  var html = '';
+  META_NOTIFICATIONS.forEach(function(n) {
+    var ic, txt;
+    switch (n.type) {
+      case 'category_change':
+        ic = '<div class="meta-notif-ic cat-change">⇄</div>';
+        txt = 'Meta mengubah kategori template <strong>' + n.templateName + '</strong> dari <strong>' + n.from + '</strong> → <strong>' + n.to + '</strong>. Cek apakah penggunaan masih sesuai.';
+        break;
+      case 'rejected':
+        ic = '<div class="meta-notif-ic rejected">✕</div>';
+        txt = 'Template <strong>' + n.templateName + '</strong> ditolak Meta. Alasan: <em>' + (n.reason || '—') + '</em>';
+        break;
+      case 'flagged':
+        ic = '<div class="meta-notif-ic paused">⚠</div>';
+        txt = 'Template <strong>' + n.templateName + '</strong> di-flag. ' + (n.reason || '');
+        break;
+      case 'approved':
+        ic = '<div class="meta-notif-ic approved">✓</div>';
+        txt = 'Template <strong>' + n.templateName + '</strong> disetujui Meta dan siap dipakai.';
+        break;
+      default:
+        ic = '<div class="meta-notif-ic paused">·</div>';
+        txt = 'Update untuk template <strong>' + n.templateName + '</strong>';
+    }
+    html += '<div class="meta-notif' + (n.read ? ' read' : '') + '" onclick="markNotifRead(\'' + n.id + '\')">' +
+      ic + '<div class="meta-notif-text">' + txt + '</div>' +
+      '<div class="meta-notif-time">' + n.receivedAt.split(' ')[0] + '<br>' + (n.receivedAt.split(' ')[1] || '') + '</div>' +
+      '</div>';
+  });
+  if (META_NOTIFICATIONS.length === 0) html = '<div style="padding:24px;text-align:center;color:var(--ink3);font-size:12px">Tidak ada notifikasi dari Meta.</div>';
+  listEl.innerHTML = html;
+}
+
+function markNotifRead(id) {
+  var n = META_NOTIFICATIONS.find(function(x){ return x.id === id });
+  if (n) { n.read = true; renderMetaInbox(); }
+}
+
+function renderTemplates() {
+  var q = (document.getElementById('tpl-search')?.value || '').toLowerCase();
+  var catF = document.getElementById('tpl-cat-filter')?.value || 'all';
+  var statusF = document.getElementById('tpl-status-filter')?.value || 'all';
+
+  var filtered = TEMPLATES.filter(function(t) {
+    return (catF === 'all' || t.category === catF) &&
+           (statusF === 'all' || t.status === statusF) &&
+           (!q || t.name.toLowerCase().indexOf(q) >= 0);
+  });
+
+  var html = '';
+  if (!filtered.length) {
+    html = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada template ditemukan.</td></tr>';
+  } else {
+    filtered.forEach(function(t) {
+      html += '<tr>' +
+        '<td><span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:var(--ink)">' + t.name + '</span></td>' +
+        '<td><span class="tpl-cat ' + t.category.toLowerCase() + '">' + t.category + '</span></td>' +
+        '<td><span style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--ink2)">' + t.language + '</span></td>' +
+        '<td><span class="tpl-status ' + t.status.toLowerCase() + '">' + t.status + '</span></td>' +
+        '<td style="font-size:11px;color:var(--ink3);font-family:\'JetBrains Mono\',monospace">' + t.updatedAt + '</td>' +
+        '<td><div style="display:flex;gap:5px">' +
+          '<button class="bt-icon-btn" onclick="openTemplateModal(\'' + t.id + '\')" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2l3 3-7 7-4 1 1-4 7-7z"/></svg></button>' +
+          (t.status === 'REJECTED' || t.status === 'PAUSED' ? '<button class="bt-icon-btn" onclick="resubmitTemplate(\'' + t.id + '\')" title="Resubmit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8a6 6 0 1011-3"/><path d="M13 2v3h-3"/></svg></button>' : '') +
+          '<button class="bt-icon-btn danger" onclick="deleteTemplate(\'' + t.id + '\')" title="Delete"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg></button>' +
+        '</div></td>' +
+      '</tr>';
+    });
+  }
+  document.getElementById('tpl-tbody').innerHTML = html;
+}
+
+function openTemplateModal(id) {
+  var t = id ? TEMPLATES.find(function(x){ return x.id === id }) : null;
+  document.getElementById('tpl-modal-title').textContent = t ? 'Edit Template' : 'Tambah Template Baru';
+  document.getElementById('tpl-edit-id').value = t ? t.id : '';
+  document.getElementById('tpl-name').value = t ? t.name : '';
+  document.getElementById('tpl-name').readOnly = !!t;  // name immutable after submit
+  document.getElementById('tpl-lang').value = t ? t.language : 'id';
+  document.getElementById('tpl-category').value = t ? t.category : 'UTILITY';
+  document.getElementById('tpl-header').value = t ? (t.header || '') : '';
+  document.getElementById('tpl-body').value = t ? t.body : '';
+  document.getElementById('tpl-footer').value = t ? (t.footer || '') : '';
+  document.getElementById('tpl-buttons').value = t ? (t.buttons || []).join('\n') : '';
+  document.getElementById('modal-template').classList.add('show');
+}
+
+function saveTemplate() {
+  var id = document.getElementById('tpl-edit-id').value;
+  var name = document.getElementById('tpl-name').value.trim();
+  var body = document.getElementById('tpl-body').value.trim();
+  if (!name || !body) { toast('Nama dan body template wajib diisi.', 'error'); return; }
+  if (!/^[a-z0-9_]+$/.test(name)) { toast('Nama harus huruf kecil + angka + underscore.', 'error'); return; }
+
+  var data = {
+    name: name,
+    language: document.getElementById('tpl-lang').value,
+    category: document.getElementById('tpl-category').value,
+    header: document.getElementById('tpl-header').value.trim(),
+    body: body,
+    footer: document.getElementById('tpl-footer').value.trim(),
+    buttons: document.getElementById('tpl-buttons').value.split('\n').map(function(s){ return s.trim() }).filter(Boolean).slice(0,3),
+    updatedAt: new Date().toISOString().slice(0,10)
+  };
+
+  if (id) {
+    var idx = TEMPLATES.findIndex(function(x){ return x.id === id });
+    if (idx >= 0) {
+      TEMPLATES[idx] = Object.assign({}, TEMPLATES[idx], data, { status:'PENDING' });
+      toast('Template di-resubmit ke Meta untuk review.', 'success');
+    }
+  } else {
+    data.id = 'tpl-' + (Date.now() % 10000);
+    data.status = 'PENDING';
+    TEMPLATES.push(data);
+    toast('Template baru di-submit ke Meta. Review biasanya 1-24 jam.', 'success');
+  }
+  closeModal('modal-template');
+  renderTemplates();
+}
+
+function resubmitTemplate(id) {
+  var t = TEMPLATES.find(function(x){ return x.id === id });
+  if (!t) return;
+  t.status = 'PENDING';
+  t.updatedAt = new Date().toISOString().slice(0,10);
+  renderTemplates();
+  toast('Template ' + t.name + ' di-resubmit ke Meta.', 'success');
+}
+
+function deleteTemplate(id) {
+  var t = TEMPLATES.find(function(x){ return x.id === id });
+  if (!t) return;
+  if (!confirm('Hapus template "' + t.name + '"? Aksi ini tidak bisa di-undo.')) return;
+  TEMPLATES = TEMPLATES.filter(function(x){ return x.id !== id });
+  renderTemplates();
+  toast('Template dihapus.', 'success');
+}
+
+// ══════════════════════════════════════════════
+// BIZ TYPES — manage business types & preset categories
+// ══════════════════════════════════════════════
+
+var BIZ_TYPES = [
+  { id:'salon', name:'Salon', icon:'💇', presets:[
+    { id:'keriting',  name:'Keriting',   icon:'💇', interval:60, templateId:'reminder_return' },
+    { id:'smoothing', name:'Smoothing',  icon:'✨', interval:90, templateId:'reminder_return' },
+    { id:'haircolor', name:'Hair Color', icon:'🎨', interval:45, templateId:'soft_invite' },
+    { id:'hairmask',  name:'Hair Mask',  icon:'🧴', interval:21, templateId:'reminder_return' },
+    { id:'blowdry',   name:'Blow Dry',   icon:'💨', interval:14, templateId:'soft_invite' },
+    { id:'creambath', name:'Creambath',  icon:'🧖', interval:21, templateId:'reminder_return' }
+  ]},
+  { id:'spa', name:'Spa', icon:'🧖', presets:[
+    { id:'fullbody',  name:'Full Body Massage', icon:'🤲', interval:21, templateId:'reminder_return' },
+    { id:'facial',    name:'Facial',            icon:'💆', interval:30, templateId:'reminder_return' },
+    { id:'bodyscrub', name:'Body Scrub',        icon:'🛁', interval:28, templateId:'reminder_return' },
+    { id:'aroma',     name:'Aromaterapi',       icon:'🌿', interval:21, templateId:'soft_invite' }
+  ]},
+  { id:'klinik', name:'Klinik/Dokter', icon:'🩺', presets:[
+    { id:'konsul',    name:'Konsultasi',       icon:'🩺', interval:30, templateId:'care_checkin' },
+    { id:'skincare2', name:'Perawatan Kulit',  icon:'🧴', interval:21, templateId:'reminder_return' },
+    { id:'laser',     name:'Laser Treatment',  icon:'⚡', interval:30, templateId:'reminder_return' },
+    { id:'chemical',  name:'Chemical Peel',    icon:'⚗️', interval:21, templateId:'reminder_return' }
+  ]},
+  { id:'barbershop', name:'Barbershop', icon:'💈', presets:[
+    { id:'potong',  name:'Potong Rambut',  icon:'✂️', interval:21, templateId:'reminder_return' },
+    { id:'cukur',   name:'Cukur Jenggot',  icon:'🪒', interval:14, templateId:'reminder_return' },
+    { id:'hairwax', name:'Hair Wax',       icon:'💈', interval:14, templateId:'soft_invite' }
+  ]},
+  { id:'nail', name:'Nail Studio', icon:'💅', presets:[
+    { id:'mani',     name:'Manicure',  icon:'💅', interval:14, templateId:'reminder_return' },
+    { id:'pedi',     name:'Pedicure',  icon:'🦶', interval:14, templateId:'reminder_return' },
+    { id:'nailart',  name:'Nail Art',  icon:'🎨', interval:21, templateId:'soft_invite' },
+    { id:'gelnails', name:'Gel Nails', icon:'✨', interval:21, templateId:'reminder_return' }
+  ]},
+  { id:'bengkel', name:'Bengkel', icon:'🔧', presets:[
+    { id:'oli',    name:'Ganti Oli',    icon:'🛢️', interval:90,  templateId:'urgency_light' },
+    { id:'servis', name:'Servis Rutin', icon:'🔧', interval:180, templateId:'reminder_return' }
+  ]},
+  { id:'skincare', name:'Skincare/Estetik', icon:'✨', presets:[
+    { id:'facial3', name:'Facial',        icon:'💆', interval:30, templateId:'reminder_return' },
+    { id:'chem3',   name:'Chemical Peel', icon:'⚗️', interval:21, templateId:'reminder_return' }
+  ]},
+  { id:'lainnya', name:'Lainnya', icon:'🏪', presets:[
+    { id:'l1', name:'Layanan Utama', icon:'✨', interval:30, templateId:'reminder_return' }
+  ]}
+];
+
+function renderBizTypes() {
+  var grid = document.getElementById('bt-grid');
+  if (!grid) return;
+  var html = '';
+  BIZ_TYPES.forEach(function(bt) {
+    html += '<div class="bt-card" id="btc-' + bt.id + '">' +
+      '<div class="bt-card-hd" onclick="toggleBizType(\'' + bt.id + '\')">' +
+        '<div class="bt-icon">' + bt.icon + '</div>' +
+        '<div class="bt-info">' +
+          '<div class="bt-name">' + bt.name + '</div>' +
+          '<div class="bt-meta">' + bt.presets.length + ' preset · id: <code style="font-family:\'JetBrains Mono\',monospace">' + bt.id + '</code></div>' +
+        '</div>' +
+        '<div class="bt-actions" onclick="event.stopPropagation()">' +
+          '<button class="bt-icon-btn" onclick="openBizTypeModal(\'' + bt.id + '\')" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2l3 3-7 7-4 1 1-4 7-7z"/></svg></button>' +
+          '<button class="bt-icon-btn danger" onclick="deleteBizType(\'' + bt.id + '\')" title="Delete"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bt-cats">' +
+        '<div class="bt-cats-hd">Preset Kategori (' + bt.presets.length + ')</div>';
+    bt.presets.forEach(function(p) {
+      html += '<div class="bt-cat-row">' +
+        '<span class="bt-cat-icon">' + p.icon + '</span>' +
+        '<span class="bt-cat-name">' + p.name + '</span>' +
+        '<span class="bt-cat-meta">' + p.interval + ' hr</span>' +
+        '<span class="bt-cat-meta" style="background:var(--lime-bg);color:var(--lime-dk);border-color:var(--lime-bd)">' + p.templateId + '</span>' +
+        '<button class="bt-icon-btn" onclick="openPresetCatModal(\'' + bt.id + '\',\'' + p.id + '\')" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2l3 3-7 7-4 1 1-4 7-7z"/></svg></button>' +
+        '<button class="bt-icon-btn danger" onclick="deletePresetCat(\'' + bt.id + '\',\'' + p.id + '\')" title="Delete"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg></button>' +
+      '</div>';
+    });
+    html += '<button class="bt-cat-add" onclick="openPresetCatModal(\'' + bt.id + '\')">+ Tambah preset kategori</button>';
+    html += '</div></div>';
+  });
+  grid.innerHTML = html;
+}
+
+function toggleBizType(id) {
+  document.getElementById('btc-' + id).classList.toggle('expanded');
+}
+
+function openBizTypeModal(id) {
+  var bt = id ? BIZ_TYPES.find(function(x){ return x.id === id }) : null;
+  document.getElementById('bt-modal-title').textContent = bt ? 'Edit Tipe Bisnis' : 'Tambah Tipe Bisnis';
+  document.getElementById('bt-edit-id').value = bt ? bt.id : '';
+  document.getElementById('bt-name').value = bt ? bt.name : '';
+  document.getElementById('bt-icon').value = bt ? bt.icon : '';
+  document.getElementById('bt-id').value = bt ? bt.id : '';
+  document.getElementById('bt-id').readOnly = !!bt;
+  document.getElementById('modal-biztype').classList.add('show');
+}
+
+function saveBizType() {
+  var editId = document.getElementById('bt-edit-id').value;
+  var name = document.getElementById('bt-name').value.trim();
+  var icon = document.getElementById('bt-icon').value.trim();
+  var id = document.getElementById('bt-id').value.trim().toLowerCase();
+  if (!name || !icon || !id) { toast('Nama, icon, dan id wajib diisi.', 'error'); return; }
+  if (!editId && BIZ_TYPES.find(function(x){ return x.id === id })) { toast('ID sudah dipakai. Pilih ID lain.', 'error'); return; }
+
+  if (editId) {
+    var bt = BIZ_TYPES.find(function(x){ return x.id === editId });
+    if (bt) { bt.name = name; bt.icon = icon; }
+  } else {
+    BIZ_TYPES.push({ id:id, name:name, icon:icon, presets:[] });
+  }
+  closeModal('modal-biztype');
+  renderBizTypes();
+  toast('Tipe bisnis ' + (editId ? 'diupdate' : 'ditambah') + '.', 'success');
+}
+
+function deleteBizType(id) {
+  var bt = BIZ_TYPES.find(function(x){ return x.id === id });
+  if (!bt) return;
+  if (!confirm('Hapus tipe bisnis "' + bt.name + '" dan ' + bt.presets.length + ' preset kategorinya?')) return;
+  BIZ_TYPES = BIZ_TYPES.filter(function(x){ return x.id !== id });
+  renderBizTypes();
+  toast('Tipe bisnis dihapus.', 'success');
+}
+
+function openPresetCatModal(btId, pId) {
+  var bt = BIZ_TYPES.find(function(x){ return x.id === btId });
+  if (!bt) return;
+  var p = pId ? bt.presets.find(function(x){ return x.id === pId }) : null;
+  document.getElementById('pc-modal-title').textContent = p ? 'Edit Preset Kategori' : 'Tambah Preset Kategori (' + bt.name + ')';
+  document.getElementById('pc-bt-id').value = btId;
+  document.getElementById('pc-edit-id').value = p ? p.id : '';
+  document.getElementById('pc-name').value = p ? p.name : '';
+  document.getElementById('pc-icon').value = p ? p.icon : '✨';
+  document.getElementById('pc-interval').value = p ? p.interval : 30;
+  document.getElementById('pc-template').value = p ? p.templateId : 'reminder_return';
+  document.getElementById('modal-preset-cat').classList.add('show');
+}
+
+function savePresetCat() {
+  var btId = document.getElementById('pc-bt-id').value;
+  var editId = document.getElementById('pc-edit-id').value;
+  var bt = BIZ_TYPES.find(function(x){ return x.id === btId });
+  if (!bt) return;
+  var name = document.getElementById('pc-name').value.trim();
+  var icon = document.getElementById('pc-icon').value.trim() || '✨';
+  var interval = parseInt(document.getElementById('pc-interval').value) || 30;
+  var templateId = document.getElementById('pc-template').value;
+  if (!name) { toast('Nama layanan wajib diisi.', 'error'); return; }
+
+  if (editId) {
+    var p = bt.presets.find(function(x){ return x.id === editId });
+    if (p) { p.name = name; p.icon = icon; p.interval = interval; p.templateId = templateId; }
+  } else {
+    var pid = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') || ('preset-' + Date.now() % 1000);
+    bt.presets.push({ id:pid, name:name, icon:icon, interval:interval, templateId:templateId });
+  }
+  closeModal('modal-preset-cat');
+  renderBizTypes();
+  // Re-expand the card we just edited
+  setTimeout(function(){ document.getElementById('btc-' + btId).classList.add('expanded'); }, 50);
+  toast('Preset kategori ' + (editId ? 'diupdate' : 'ditambah') + '.', 'success');
+}
+
+function deletePresetCat(btId, pId) {
+  var bt = BIZ_TYPES.find(function(x){ return x.id === btId });
+  if (!bt) return;
+  var p = bt.presets.find(function(x){ return x.id === pId });
+  if (!p) return;
+  if (!confirm('Hapus preset "' + p.name + '"?')) return;
+  bt.presets = bt.presets.filter(function(x){ return x.id !== pId });
+  renderBizTypes();
+  setTimeout(function(){ document.getElementById('btc-' + btId).classList.add('expanded'); }, 50);
+  toast('Preset dihapus.', 'success');
 }
 
 // ══════════════════════════════
@@ -911,6 +1614,7 @@ function loadPlanConfig() {
     var pc = u.planConfig
     if (!pc) return
     if (pc.freeBonus !== undefined) document.getElementById('pc-free-bonus').value = pc.freeBonus
+    if (pc.trialDays !== undefined) document.getElementById('pc-trial-days').value = pc.trialDays
     if (pc.subCredits !== undefined) document.getElementById('pc-sub-credit').value = pc.subCredits
     if (pc.subPrice !== undefined) document.getElementById('pc-sub-price').value = pc.subPrice
     if (pc.subPriceNormal !== undefined) document.getElementById('pc-sub-price-normal').value = pc.subPriceNormal
@@ -939,6 +1643,7 @@ function savePlanConfig() {
 
   var planConfig = {
     freeBonus: parseInt(document.getElementById('pc-free-bonus').value) || 100,
+    trialDays: parseInt(document.getElementById('pc-trial-days').value) || 14,
     subCredits: parseInt(document.getElementById('pc-sub-credit').value) || 300,
     subPrice: parseInt(document.getElementById('pc-sub-price').value) || 249000,
     subPriceNormal: parseInt(document.getElementById('pc-sub-price-normal').value) || 499000,

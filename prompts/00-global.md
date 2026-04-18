@@ -30,16 +30,22 @@ Kamu sedang membangun halaman untuk **getstarvio** — WhatsApp-based customer r
 
 **Billing model:**
 - 1 kredit = 1 pengingat WhatsApp terkirim
-- **Welcome bonus:** 100 kredit gratis saat pertama join (semua user, 1x saja)
-- **Subscription Rp 249.000/bulan (Early Access 50% off, harga normal Rp 499.000):** include **300 kredit/bulan** — ⚠️ TIDAK rollover ke bulan berikutnya
-- **Top-up packages (pay-as-you-go, ✅ tidak ada expiry):** flat tier pricing — semakin besar paket, semakin murah per kredit
+- **Subscription Rp 249.000/bulan (Early Access 50% off, harga normal Rp 499.000) — WAJIB untuk akses platform & beli top-up:** include **300 kredit/bulan** — ⚠️ TIDAK rollover ke bulan berikutnya
+- **Free Trial 14 hari** — saat user pertama selesai onboarding, `trialStartedAt = now`. Trial berakhir saat **14 hari habis ATAU welcome bonus 100 kredit habis (mana duluan)**. Setelah trial: dashboard tetap accessible tapi popup paksa subscribe + automation off + tombol top-up disabled
+- **Welcome bonus 100 kredit** — langsung masuk `topupCreditsLeft` saat join (1x saja). Karena topup permanent (tidak ada expiry), kalau trial habis tanpa subscribe, 100 kredit tetap tersimpan dan otomatis aktif kembali saat user subscribe nanti
+- **Top-up packages (pay-as-you-go, ✅ tidak ada expiry, hanya bisa beli kalau subscribed):** flat tier pricing — semakin besar paket, semakin murah per kredit
   - 200 kredit — Rp 399.000 (Rp 1.995/kredit)
   - 500 kredit — Rp 749.000 (Rp 1.498/kredit) · Terlaris · Hemat 25%
   - 1.000 kredit — Rp 1.299.000 (Rp 1.299/kredit) · Hemat 35%
-- **Urutan pakai:** kredit subscription habis duluan → baru kredit top-up
+- **Urutan pakai:** kredit subscription habis duluan → baru kredit top-up (welcome bonus + paket top-up)
 - `remLeft` = `subCreditsLeft + topupCreditsLeft` (total usable, selalu computed)
 - Credit states (total): Healthy (≥30), Low (10–29), Critical (1–9), Empty (0)
 - Notif billing dikirim ke WA pemilik (`ownerWa`) — bukan ke email admin
+
+**User states:**
+- **Trial aktif:** `plan: "trial"` + `now < trialEndsAt` + `topupCreditsLeft > 0` — bisa pakai semua fitur
+- **Trial expired:** `plan: "trial"` + (`now > trialEndsAt` ATAU `topupCreditsLeft === 0`) — **HARD LOCK**: full overlay di semua sidebar pages (kecuali billing), semua action button disabled. Satu-satunya escape = subscribe. Welcome bonus tetap tersimpan (permanent).
+- **Subscriber aktif:** `plan: "subscriber"` — full access, bisa beli top-up
 
 **Auth:** Google OAuth only. Tidak ada email/password login. `adminEmail` read-only dari Google account.
 
@@ -78,11 +84,16 @@ Key rules yang tidak boleh dilanggar:
   waNum: "string",             // nomor WA yang digunakan untuk kirim reminder
   timezone: "string",
   country: "string",
-  plan: "free" | "subscriber", // status subscription
+  plan: "trial" | "subscriber", // status subscription. "trial" = belum pernah subscribe (punya welcome bonus). "subscriber" = bayar bulanan.
   subCreditsLeft: number,      // sisa kredit dari subscription bulan ini (reset bulanan, tidak rollover)
-  topupCreditsLeft: number,    // kredit top-up (tidak ada expiry)
-  subRenewsAt: "ISO string | null", // tanggal renewal berikutnya (null jika free)
+  topupCreditsLeft: number,    // kredit top-up (tidak ada expiry) — termasuk welcome bonus 100 kredit
+  subRenewsAt: "ISO string | null", // tanggal renewal berikutnya (null untuk trial)
+  trialStartedAt: "ISO string | null", // kapan trial dimulai (set otomatis saat user pertama selesai onboarding)
+  trialEndsAt: "ISO string | null",    // kapan trial selesai (snapshot saat onboarding = startedAt + planConfig.trialDays). Re-compute kalau planConfig.trialDays berubah utk existing trial users.
+  trialUsed: boolean,                  // true setelah trial selesai (expired ATAU subscribe). Pencegah double-claim welcome bonus.
   // remLeft = subCreditsLeft + topupCreditsLeft — SELALU computed, tidak disimpan langsung
+  // trialDaysLeft = computed di loadU dari trialEndsAt
+  // trialExpired = computed di loadU: plan === "trial" && (now > trialEndsAt || topupCreditsLeft === 0)
   remMax: number,              // max kredit per bulan (300 untuk subscriber, tidak relevan untuk free)
   defaultInterval: number,     // default interval reminder dalam hari
   cats: [
@@ -125,6 +136,7 @@ Key rules yang tidak boleh dilanggar:
   ],
   planConfig: {                // opsional — di-set dari admin page, dibaca oleh billing page
     freeBonus: number,         // welcome bonus credits (default 100)
+    trialDays: number,         // trial period dalam hari (default 14)
     subCredits: number,        // subscription credits/bulan (default 300)
     subPrice: number,          // subscription price/bulan early access (default 249000)
     subPriceNormal: number,    // subscription price/bulan normal/coret (default 499000)
@@ -263,17 +275,64 @@ phoneInput.addEventListener('input', function () {
 Nama fungsi harus sama persis di setiap halaman:
 
 ```js
-// Load getstarvio_user dari localStorage. Return null jika tidak ada atau schema lama.
+// Load getstarvio_user dari localStorage. Return null jika tidak ada.
+// Auto-migrate dari DATA_VERSION 4 → 5 supaya existing user tidak kehilangan data.
 function loadU() {
   try {
     const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null  // force reset jika schema lama
-    // Selalu compute remLeft dari kedua jenis kredit
+
+    // ── Migration v4 → v5 ──
+    if (u.DATA_VERSION === 4) {
+      // plan: "free" → "trial"
+      if (u.plan === 'free') u.plan = 'trial'
+      // trialStartedAt: kalau belum ada, set sekarang (kindest migration)
+      if (!u.trialStartedAt) {
+        u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      }
+      // trialEndsAt: snapshot dari startedAt + planConfig.trialDays
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        const trialDays = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + trialDays * 86400000).toISOString()
+      }
+      // trialUsed: subscriber sudah pernah pakai trial; trial active belum
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+
+    if (u.DATA_VERSION !== 5) return null
+
+    // ── Computed fields (tidak disimpan) ──
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      const endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else {
+      u.trialDaysLeft = null
+      u.trialExpired = false
+    }
     return u
   } catch(e) { return null }
+}
+
+// Save user — hapus computed fields dulu sebelum simpan
+function saveU(u) {
+  delete u.remLeft
+  delete u.trialDaysLeft
+  delete u.trialExpired
+  localStorage.setItem('getstarvio_user', JSON.stringify(u))
+}
+
+// Trial lock check — panggil di setiap sidebar page setelah loadU().
+// Kalau trial expired & bukan di billing page, show full overlay (HARD LOCK).
+function checkTrialLock() {
+  const u = loadU()
+  if (!u || !u.trialExpired) return
+  if (location.pathname.includes('billing')) return  // billing page = exempt
+  showTrialLockOverlay()
 }
 
 // Init sidebar: set active state + inject biz name.
@@ -299,14 +358,64 @@ function doLogout() {
 }
 ```
 
-**Init order wajib setiap halaman:** `loadU()` → render/boot functions → `bootSidebar()`
+**Init order wajib setiap halaman:** `loadU()` → render/boot functions → `bootSidebar()` → `checkTrialLock()` (kecuali billing/login/onboarding/checkin/seed-data pages)
+
+---
+
+## TRIAL LOCK OVERLAY (snippet wajib di semua sidebar pages)
+
+Tambahkan ke setiap sidebar page (kecuali billing — yang exempted dari lock):
+
+**HTML (taruh di akhir body, sebelum script):**
+```html
+<div class="trial-lock-overlay" id="trialLockOverlay" style="display:none">
+  <div class="tlo-card">
+    <div class="tlo-icon">🔒</div>
+    <div class="tlo-title">Trial selesai</div>
+    <div class="tlo-sub">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
+    <div class="tlo-pricing">
+      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
+      <strong>Rp 249.000/bulan</strong>
+      <span class="tlo-tag">Early Access 50% off</span>
+    </div>
+    <a href="getstarvio-billing.html" class="tlo-cta">Subscribe Sekarang →</a>
+    <a href="getstarvio-billing.html" class="tlo-skip">Lihat detail di Billing</a>
+  </div>
+</div>
+```
+
+**CSS (tambahkan ke `<style>` setiap sidebar page):**
+```css
+.trial-lock-overlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;animation:fadeUp .3s ease}
+.trial-lock-overlay.show{display:flex}
+.tlo-card{background:var(--bg2);border-radius:var(--r-lg);padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.tlo-icon{font-size:48px;margin-bottom:14px}
+.tlo-title{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.tlo-sub{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:20px}
+.tlo-pricing{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:12px 16px;margin-bottom:20px;font-size:14px;color:var(--lime-dk)}
+.tlo-pricing strong{font-size:18px;font-weight:700}
+.tlo-tag{font-size:10px;font-weight:700;background:var(--lime);color:var(--lime-dk);padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em}
+.tlo-cta{display:block;width:100%;padding:14px;background:var(--lime);color:var(--lime-dk);border-radius:var(--r-sm);font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;transition:all .15s;box-shadow:0 4px 16px rgba(184,240,74,.3)}
+.tlo-cta:hover{background:var(--lime2);box-shadow:0 6px 20px rgba(184,240,74,.4)}
+.tlo-skip{display:inline-block;font-size:11px;color:var(--ink3);text-decoration:underline}
+```
+
+**JS (tambahkan ke shared functions block):**
+```js
+function showTrialLockOverlay() {
+  const el = document.getElementById('trialLockOverlay')
+  if (el) el.classList.add('show')
+}
+```
+
+**Behavior:** Overlay full-screen + dim backdrop. Tidak ada cara close kecuali navigasi ke billing.html. Tombol subtle "Lihat detail di Billing" jadi escape softer (masih ke billing page).
 
 ---
 
 ## DATA_VERSION
 
-Setiap kali schema data berubah, increment `DATA_VERSION`. Ini memaksa reset localStorage lama otomatis.
-Versi saat ini: **4**. Selalu include di DUMMY object seed data.
+Setiap kali schema data berubah, increment `DATA_VERSION`. Ini memaksa reset localStorage lama otomatis (atau auto-migrate kalau migration logic ada di `loadU()`).
+Versi saat ini: **5**. Selalu include di DUMMY object seed data. `loadU()` auto-migrate dari v4 → v5 supaya existing user tidak kehilangan data.
 
 ---
 
@@ -421,3 +530,5 @@ Build satu halaman per sesi. Untuk setiap halaman:
 | 2026-03-27 | Added `planConfig` to data schema — optional field set by admin page, read by billing page for dynamic pricing. Log Reminder table mobile responsive (card layout <768px). |
 | 2026-04-18 | **MAJOR PRICING UPDATE.** Subscription: Rp 249.000/bulan (Early Access 50% off, normal Rp 499.000) for 300 kredit/bulan (was 250). Top-up: flat tier pricing — 200/500/1.000 kredit @ Rp 399k/749k/1.299k (no more "+X% bonus" claim). Per-credit: Rp 1.995/1.498/1.299. Added `subPriceNormal` to planConfig. Removed `topupPrice` (basePrice concept). subCreditsMax=300. |
 | 2026-04-18 | **POSITIONING & COPY UPDATE.** Broaden from "beauty/wellness" to "UMKM Indonesia" (salon, spa, klinik, barbershop, nail studio, bengkel, pet grooming, laundry, dll.). Add WhatsApp Coexistence Mode flow (Embedded Signup, scan QR di popup Meta). UI copy "reminder" → "pengingat". Trust commitments: garansi 30 hari uang kembali, no kartu kredit, bisa berhenti kapan saja. Banned claims: "diskon selamanya", "harga dikunci seumur akun", "Platform #1", "Trusted by X+ bisnis", angka spesifik tanpa bukti. |
+| 2026-04-18 | **BILLING MODEL FINAL.** Subscription jadi **WAJIB** untuk akses platform & beli top-up (sebelumnya optional). Free Trial 14 hari (atau 100 kredit, mana duluan) saat user pertama selesai onboarding — `trialStartedAt` di-set otomatis. Welcome bonus 100 kredit langsung masuk `topupCreditsLeft` (permanent, tidak ada field terpisah). Setelah trial expired: dashboard tetap accessible tapi automation OFF + popup paksa subscribe + tombol top-up disabled. `planConfig.trialDays` editable dari admin (default 14). |
+| 2026-04-18 | **DATA_VERSION 4 → 5 + UIUX HARD LOCK.** Schema rename `plan: "free"` → `"trial"`. Tambah `trialEndsAt` (snapshot, computed dari startedAt+trialDays saat onboarding) + `trialUsed` (boolean, true setelah expired/subscribe). loadU() auto-migrate v4→v5 supaya existing user tidak kehilangan data. Trial expired = **HARD LOCK overlay** di semua sidebar pages (kecuali billing) — tidak bisa skip, satu-satunya escape = subscribe. Subscribe modal tambah Bundle (subscribe + topup auto-checked, default 500 kredit) untuk conversion lift. Billing page restructured ke 4 conditional states (A=trial active, B=trial expired, C=subscriber, D=subscriber low). |

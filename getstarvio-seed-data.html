@@ -159,12 +159,13 @@ body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a19
         <div class="card-sub">Switch state tanpa re-inject data</div>
       </div>
       <div class="card-body" style="padding:12px 16px">
-        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Free Plan</div>
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Free Trial (14 hari ATAU 100 kredit)</div>
         <div class="billing-grid" style="margin-bottom:10px">
-          <button class="billing-btn" onclick="setBilling('free-full')"><span class="bb-icon">🆓</span><div><div class="bb-label">Full (100)</div><div class="bb-sub">Welcome bonus utuh</div></div></button>
-          <button class="billing-btn" onclick="setBilling('free-low')"><span class="bb-icon">⚠️</span><div><div class="bb-label">Low (22)</div><div class="bb-sub">Hampir habis</div></div></button>
-          <button class="billing-btn" onclick="setBilling('free-critical')"><span class="bb-icon">🔴</span><div><div class="bb-label">Critical (5)</div><div class="bb-sub">Urgent topup</div></div></button>
-          <button class="billing-btn" onclick="setBilling('free-empty')"><span class="bb-icon">⛔</span><div><div class="bb-label">Empty (0)</div><div class="bb-sub">Automation stop</div></div></button>
+          <button class="billing-btn" onclick="setBilling('free-trial-fresh')"><span class="bb-icon">🆕</span><div><div class="bb-label">Fresh (Day 0)</div><div class="bb-sub">100 kredit · 14 hari</div></div></button>
+          <button class="billing-btn" onclick="setBilling('free-trial-day7')"><span class="bb-icon">⏳</span><div><div class="bb-label">Mid (Day 7)</div><div class="bb-sub">60 kredit · 7 hari</div></div></button>
+          <button class="billing-btn" onclick="setBilling('free-trial-day13')"><span class="bb-icon">⚠️</span><div><div class="bb-label">Day 13</div><div class="bb-sub">30 kredit · 1 hari</div></div></button>
+          <button class="billing-btn" onclick="setBilling('free-expired-time')"><span class="bb-icon">⏰</span><div><div class="bb-label">Expired (time)</div><div class="bb-sub">14 hari habis</div></div></button>
+          <button class="billing-btn" onclick="setBilling('free-expired-empty')"><span class="bb-icon">⛔</span><div><div class="bb-label">Expired (empty)</div><div class="bb-sub">Kredit habis</div></div></button>
         </div>
         <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Subscriber (Rp 249k/bln · Early Access)</div>
         <div class="billing-grid">
@@ -200,7 +201,7 @@ function daysAgo(n) { var d = new Date(today); d.setDate(d.getDate() - n); retur
 function hoursAgo(n) { var d = new Date(today); d.setHours(d.getHours() - n); return d.toISOString(); }
 
 var DUMMY = {
-  DATA_VERSION: 4,
+  DATA_VERSION: 5,
   bizName: 'Celestial Spa & Wellness',
   bizType: 'spa',
   bizSlug: 'celestial-spa-wellness',
@@ -216,7 +217,22 @@ var DUMMY = {
   subCreditsMax: 300,
   topupCreditsLeft: 50,
   subRenewsAt: (function(){ var d=new Date(); d.setMonth(d.getMonth()+1); d.setDate(15); return d.toISOString() })(),
+  trialStartedAt: '2026-03-01T00:00:00.000Z',
+  trialEndsAt: '2026-03-15T00:00:00.000Z',  // sudah lewat — Cynthia subscriber
+  trialUsed: true,
   remMax: 300,
+  planConfig: {
+    freeBonus: 100,
+    trialDays: 14,
+    subCredits: 300,
+    subPrice: 249000,
+    subPriceNormal: 499000,
+    tiers: [
+      { price: 399000,  credits: 200 },
+      { price: 749000,  credits: 500,  label: 'Terlaris' },
+      { price: 1299000, credits: 1000, label: 'Hemat 35%' }
+    ]
+  },
   automationEnabled: true,
   billingHistory: [
     { date: (function(){ var d=new Date(); d.setDate(d.getDate()-28); return d.toISOString().slice(0,10) })(), type:'welcome', label:'Welcome Bonus', delta:100, balAfter:100, note:'Bonus kredit pendaftaran' },
@@ -486,13 +502,30 @@ function injectData() {
   var preset = sel ? sel.value : 'sub-healthy';
 
   var renewDate = new Date(); renewDate.setMonth(renewDate.getMonth() + 1); renewDate.setDate(15);
+  var nowMs = Date.now();
+  var DAY = 86400000;
+  function endsAtFromStart(daysAgo) {
+    // Trial dimulai N hari yang lalu, ends 14 hari setelah start
+    return new Date(nowMs - daysAgo * DAY + 14 * DAY).toISOString();
+  }
+  function startedDaysAgo(n) { return new Date(nowMs - n * DAY).toISOString(); }
+  var pastTrialEnds = '2026-03-15T00:00:00.000Z';  // already ended for subscribers
+  var pastTrialStart = '2026-03-01T00:00:00.000Z';
   var billingPresets = {
-    'sub-healthy':  { plan:'subscriber', subCreditsLeft:225, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
-    'sub-low':      { plan:'subscriber', subCreditsLeft:22,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
-    'sub-empty':    { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:300 },
-    'free-full':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, remMax:100 },
-    'free-low':     { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
-    'free-empty':   { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 }
+    // Trial states
+    'trial-full':    { plan:'trial', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, trialStartedAt:startedDaysAgo(0),  trialEndsAt:endsAtFromStart(0),  trialUsed:false, remMax:100 },
+    'trial-low':     { plan:'trial', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, trialStartedAt:startedDaysAgo(9),  trialEndsAt:endsAtFromStart(9),  trialUsed:false, remMax:100 },
+    'trial-empty':   { plan:'trial', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, trialStartedAt:startedDaysAgo(3),  trialEndsAt:endsAtFromStart(3),  trialUsed:false, remMax:100 },
+    'trial-expired-time':    { plan:'trial', subCreditsLeft:0, topupCreditsLeft:30, subRenewsAt:null, trialStartedAt:startedDaysAgo(20), trialEndsAt:endsAtFromStart(20), trialUsed:false, remMax:100 },  // 14 hari sudah lewat
+    'trial-expired-credits': { plan:'trial', subCreditsLeft:0, topupCreditsLeft:0,  subRenewsAt:null, trialStartedAt:startedDaysAgo(5),  trialEndsAt:endsAtFromStart(5),  trialUsed:false, remMax:100 },  // kredit habis duluan
+    // Subscriber states
+    'sub-healthy':   { plan:'subscriber', subCreditsLeft:225, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), trialStartedAt:pastTrialStart, trialEndsAt:pastTrialEnds, trialUsed:true, remMax:300 },
+    'sub-low':       { plan:'subscriber', subCreditsLeft:22,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), trialStartedAt:pastTrialStart, trialEndsAt:pastTrialEnds, trialUsed:true, remMax:300 },
+    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), trialStartedAt:pastTrialStart, trialEndsAt:pastTrialEnds, trialUsed:true, remMax:300 },
+    // Legacy preset names (backward compat dengan UI lama)
+    'free-full':    { plan:'trial', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, trialStartedAt:startedDaysAgo(0), trialEndsAt:endsAtFromStart(0), trialUsed:false, remMax:100 },
+    'free-low':     { plan:'trial', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, trialStartedAt:startedDaysAgo(9), trialEndsAt:endsAtFromStart(9), trialUsed:false, remMax:100 },
+    'free-empty':   { plan:'trial', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, trialStartedAt:startedDaysAgo(3), trialEndsAt:endsAtFromStart(3), trialUsed:false, remMax:100 }
   };
   var bp = billingPresets[preset] || billingPresets['sub-healthy'];
   var totalKredit = bp.subCreditsLeft + bp.topupCreditsLeft;
@@ -504,9 +537,12 @@ function injectData() {
       var data = JSON.parse(JSON.stringify(DUMMY));
       data.plan = bp.plan;
       data.subCreditsLeft = bp.subCreditsLeft;
-      data.subCreditsMax = bp.plan === 'subscriber' ? 300 : 0;
+      data.subCreditsMax = bp.plan === 'subscriber' ? 300 : 300;  // selalu 300 (target subscribe)
       data.topupCreditsLeft = bp.topupCreditsLeft;
       data.subRenewsAt = bp.subRenewsAt;
+      data.trialStartedAt = bp.trialStartedAt;
+      data.trialEndsAt = bp.trialEndsAt;
+      data.trialUsed = bp.trialUsed;
       data.remMax = bp.remMax;
 
       var totalSvc = data.customers.reduce(function(a, c) { return a + (c.services ? c.services.length : 1); }, 0);
@@ -534,16 +570,36 @@ function setBilling(preset) {
 
   var renewDate = new Date(); renewDate.setMonth(renewDate.getMonth() + 1); renewDate.setDate(15);
 
+  // Helpers
+  var DAY = 86400000;
+  function trialState(daysAgo, topupLeft) {
+    var s = new Date(Date.now() - daysAgo * DAY);
+    var e = new Date(s.getTime() + 14 * DAY);
+    return { plan:'trial', subCreditsLeft:0, topupCreditsLeft:topupLeft, subRenewsAt:null, trialStartedAt:s.toISOString(), trialEndsAt:e.toISOString(), trialUsed:false, remMax:100 };
+  }
+  var pastTS = '2026-03-01T00:00:00.000Z', pastTE = '2026-03-15T00:00:00.000Z';
+  function subState(subLeft, topLeft) {
+    return { plan:'subscriber', subCreditsLeft:subLeft, topupCreditsLeft:topLeft, subRenewsAt:renewDate.toISOString(), trialStartedAt:pastTS, trialEndsAt:pastTE, trialUsed:true, remMax:300 };
+  }
+
   var states = {
-    'free-full':     { plan:'free', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, remMax:100 },
-    'free-low':      { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
-    'free-critical': { plan:'free', subCreditsLeft:0, topupCreditsLeft:5,   subRenewsAt:null, remMax:100 },
-    'free-empty':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 },
-    'sub-healthy':   { plan:'subscriber', subCreditsLeft:225, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
-    'sub-low':       { plan:'subscriber', subCreditsLeft:22,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:300 },
-    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:300 },
-    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:300 },
-    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:300 }
+    // Trial states
+    'free-full':     trialState(0, 100),
+    'free-low':      trialState(9, 22),
+    'free-critical': trialState(11, 5),
+    'free-empty':    trialState(3, 0),
+    'free-trial-fresh':   trialState(0, 100),
+    'free-trial-day7':    trialState(7, 60),
+    'free-trial-day13':   trialState(13, 30),
+    'free-expired-time':  trialState(20, 60),  // 14 hari sudah lewat
+    'free-expired-empty': trialState(0, 0),    // kredit habis duluan
+    // Subscriber states
+    'sub-healthy':   subState(225, 50),
+    'sub-low':       subState(22, 50),
+    'sub-depleted':  subState(0, 30),
+    'sub-critical':  subState(0, 7),
+    'sub-empty':     subState(0, 0),
+    'sub-no-topup':  subState(187, 0)
   };
 
   var s = states[preset];
@@ -553,6 +609,9 @@ function setBilling(preset) {
   u.subCreditsMax = 300;
   u.topupCreditsLeft = s.topupCreditsLeft;
   u.subRenewsAt = s.subRenewsAt;
+  u.trialStartedAt = s.trialStartedAt;
+  u.trialEndsAt = s.trialEndsAt;
+  u.trialUsed = s.trialUsed;
   u.remMax = s.remMax;
   localStorage.setItem(KEY, JSON.stringify(u));
 
