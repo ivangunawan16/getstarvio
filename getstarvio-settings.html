@@ -129,6 +129,42 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .wa-num{font-size:14px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace}
 .wa-label{font-size:11px;color:var(--ink3)}
 
+/* OTP verify block */
+.otp-wrap{margin:10px 0 16px}
+.otp-state{padding:12px 14px;border-radius:var(--r-sm);border:1.5px solid}
+.otp-unverified{background:#fff8ec;border-color:#f5d28a}
+.otp-pending{background:var(--bg2);border-color:var(--lime2)}
+.otp-verified{background:var(--lime-bg);border-color:var(--lime2)}
+.otp-row{display:flex;align-items:flex-start;gap:10px}
+.otp-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.otp-msg{flex:1;min-width:0}
+.otp-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.otp-unverified .otp-title{color:#8a5e00}
+.otp-verified .otp-title{color:var(--lime-dk)}
+.otp-sub{font-size:11px;color:var(--ink3);line-height:1.4}
+.otp-form{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.otp-input{flex:1;min-width:100px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:18px;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:.15em;color:var(--ink);background:var(--bg2);outline:none;text-align:center}
+.otp-input:focus{border-color:var(--lime2)}
+.otp-err{margin-top:8px;font-size:11px;color:var(--red-dk);font-weight:600}
+@media (max-width:480px){
+  .otp-row{flex-wrap:wrap}
+  .otp-row .btn{margin-left:0;margin-top:8px;width:100%}
+}
+
+/* notification preferences in WA section */
+.notif-divider{margin:18px -17px 16px;border-top:1px dashed var(--border)}
+.notif-title-row{margin-bottom:10px}
+.notif-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.notif-sub{font-size:11px;color:var(--ink3);line-height:1.4}
+.notif-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.notif-check{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);cursor:pointer;background:var(--bg2);transition:all .15s}
+.notif-check:hover{border-color:var(--lime2);background:var(--lime-bg)}
+.notif-check:has(input:checked){border-color:var(--lime2);background:var(--lime-bg)}
+.notif-check input[type=checkbox]{margin-top:2px;accent-color:var(--lime2);cursor:pointer;flex-shrink:0}
+.notif-txt{flex:1;min-width:0}
+.notif-check .notif-label{font-size:12px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:2px}
+.notif-check .notif-desc{font-size:11px;color:var(--ink3);line-height:1.4}
+
 /* danger zone */
 .danger-section{border:1.5px solid #f5c5c3;border-radius:var(--r);overflow:hidden;margin-bottom:13px}
 .danger-header{display:flex;align-items:center;justify-content:space-between;padding:14px 17px;cursor:pointer;background:var(--bg2);user-select:none;transition:background .15s}
@@ -676,7 +712,7 @@ body.imp-active{padding-top:36px}
           </div>
 
           <div class="field">
-            <label class="field-label">Nomor WA Owner (untuk notifikasi)</label>
+            <label class="field-label">Nomor WA Owner (untuk notifikasi billing)</label>
             <div class="phone-wrap">
               <select class="phone-cc" id="ownerCc">
                 <option value="62">+62</option>
@@ -688,12 +724,93 @@ body.imp-active{padding-top:36px}
                 <option value="44">+44</option>
                 <option value="1">+1</option>
               </select>
-              <input type="tel" class="phone-num" id="inp-ownerWa" placeholder="81234567890">
+              <input type="tel" class="phone-num" id="inp-ownerWa" placeholder="81234567890" oninput="onOwnerWaInput()">
             </div>
-            <div class="field-hint">Awalan 0 akan dihapus otomatis</div>
+            <div class="field-hint">Awalan 0 akan dihapus otomatis. Nomor ini dipakai untuk menerima notifikasi billing via WhatsApp.</div>
           </div>
 
-          <button class="btn btn-lime" onclick="saveWa()">Simpan WhatsApp</button>
+          <!-- ── OTP VERIFY BLOCK ── -->
+          <div class="otp-wrap" id="otpWrap" style="display:none">
+            <!-- state: unverified (amber) -->
+            <div class="otp-state otp-unverified" id="otpUnverified" style="display:none">
+              <div class="otp-row">
+                <span class="otp-ico">⚠️</span>
+                <div class="otp-msg">
+                  <div class="otp-title">Nomor belum diverifikasi</div>
+                  <div class="otp-sub">Verifikasi via OTP agar notifikasi billing (kredit rendah, renewal) bisa terkirim.</div>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="sendOwnerWaOtp()" id="btn-send-otp">Kirim OTP</button>
+              </div>
+            </div>
+
+            <!-- state: OTP sent, waiting input -->
+            <div class="otp-state otp-pending" id="otpPending" style="display:none">
+              <div class="otp-row">
+                <span class="otp-ico">📲</span>
+                <div class="otp-msg">
+                  <div class="otp-title">Masukkan kode 6-digit</div>
+                  <div class="otp-sub">Kode sudah dikirim ke nomor kamu (simulasi). <span id="otp-dev-hint" style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--lime-dk)"></span></div>
+                </div>
+              </div>
+              <div class="otp-form">
+                <input type="text" class="otp-input" id="otpInput" maxlength="6" inputmode="numeric" placeholder="123456">
+                <button class="btn btn-lime btn-sm" onclick="verifyOwnerWaOtp()">Verifikasi</button>
+                <button class="btn btn-ghost btn-sm" onclick="sendOwnerWaOtp()">Kirim ulang</button>
+              </div>
+              <div class="otp-err" id="otpErr" style="display:none"></div>
+            </div>
+
+            <!-- state: verified (lime) -->
+            <div class="otp-state otp-verified" id="otpVerified" style="display:none">
+              <div class="otp-row">
+                <span class="otp-ico">✅</span>
+                <div class="otp-msg">
+                  <div class="otp-title">Nomor terverifikasi</div>
+                  <div class="otp-sub" id="otpVerifiedDate">Terverifikasi <span id="otpVerifiedWhen"></span></div>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="resetOwnerWaVerify()">Verifikasi ulang</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── NOTIFICATION PREFERENCES (migrated from billing) ── -->
+          <div class="notif-divider"></div>
+          <div class="notif-title-row">
+            <div class="notif-title">Pengaturan Notifikasi</div>
+            <div class="notif-sub">Pilih notifikasi yang ingin diterima di WhatsApp owner.</div>
+          </div>
+          <div class="notif-list">
+            <label class="notif-check">
+              <input type="checkbox" id="nf-lowCredit" checked>
+              <div class="notif-txt">
+                <div class="notif-label">Kredit total rendah</div>
+                <div class="notif-desc">Saat kredit total turun di bawah 30</div>
+              </div>
+            </label>
+            <label class="notif-check">
+              <input type="checkbox" id="nf-criticalCredit" checked>
+              <div class="notif-txt">
+                <div class="notif-label">Kredit total kritis</div>
+                <div class="notif-desc">Saat kredit total turun di bawah 10</div>
+              </div>
+            </label>
+            <label class="notif-check">
+              <input type="checkbox" id="nf-subLow" checked>
+              <div class="notif-txt">
+                <div class="notif-label">Kredit subscription hampir habis</div>
+                <div class="notif-desc">Saat kredit bulanan subscription &lt; 50</div>
+              </div>
+            </label>
+            <label class="notif-check">
+              <input type="checkbox" id="nf-renewalReminder" checked>
+              <div class="notif-txt">
+                <div class="notif-label">Pengingat perpanjangan langganan</div>
+                <div class="notif-desc">3 hari sebelum subscription otomatis diperpanjang</div>
+              </div>
+            </label>
+          </div>
+
+          <button class="btn btn-lime" onclick="saveWa()">Simpan Pengaturan WA & Notifikasi</button>
 
         </div>
       </div>
@@ -1087,17 +1204,164 @@ function confirmRemoveLogo() {
   showToast('Logo dihapus.')
 }
 
-/* ── SAVE WA ── */
+/* ── SAVE WA + NOTIFICATION PREFERENCES ── */
 function saveWa() {
   var u = loadU()
   if (!u) return
   var cc = document.getElementById('ownerCc').value
   var num = document.getElementById('inp-ownerWa').value.trim()
-  if (num) {
-    u.ownerWa = cc + num
+  // Normalize: strip leading zeros from number (global phone rule)
+  num = num.replace(/\D/g, '')
+  if (num.startsWith('0')) num = num.slice(1)
+  var newOwnerWa = num ? (cc + num) : ''
+
+  // Detect phone-number change: force re-verify if different
+  if (newOwnerWa !== u.ownerWa) {
+    u.ownerWa = newOwnerWa
+    u.ownerWaVerifiedAt = null
+    u.ownerWaOtpPending = null
   }
+
+  // Save notification preferences (migrated from billing)
+  u.billingNotifs = {
+    lowCredit:       document.getElementById('nf-lowCredit').checked,
+    criticalCredit:  document.getElementById('nf-criticalCredit').checked,
+    subLow:          document.getElementById('nf-subLow').checked,
+    renewalReminder: document.getElementById('nf-renewalReminder').checked
+  }
+
   saveU(u)
-  showToast('Pengaturan WhatsApp disimpan!')
+  refreshOwnerWaVerifyUI()
+  showToast('Pengaturan WA & notifikasi disimpan!')
+}
+
+/* ── OTP VERIFICATION (Owner WA) ── */
+function onOwnerWaInput() {
+  // Trigger UI refresh to show Kirim OTP button once user typing a number
+  // (cheap — just re-evaluate which OTP state to show)
+  refreshOwnerWaVerifyUI()
+}
+
+function sendOwnerWaOtp() {
+  var u = loadU()
+  if (!u) return
+  var cc = document.getElementById('ownerCc').value
+  var num = document.getElementById('inp-ownerWa').value.trim().replace(/\D/g, '')
+  if (num.startsWith('0')) num = num.slice(1)
+  if (num.length < 9) {
+    alert('Masukkan nomor WA owner yang valid (min 9 digit) dulu.')
+    return
+  }
+  // Prototype: generate mock 6-digit OTP, expires in 5 min
+  var code = String(Math.floor(100000 + Math.random() * 900000))
+  u.ownerWa = cc + num
+  u.ownerWaOtpPending = { code: code, expiresAt: Date.now() + 5 * 60 * 1000 }
+  u.ownerWaVerifiedAt = null
+  saveU(u)
+  refreshOwnerWaVerifyUI()
+  // Prototype: show code inline so user can test verify
+  var hintEl = document.getElementById('otp-dev-hint')
+  if (hintEl) hintEl.textContent = '(demo: ' + code + ')'
+  // Focus input
+  setTimeout(function() {
+    var input = document.getElementById('otpInput')
+    if (input) input.focus()
+  }, 120)
+  showToast('OTP dikirim ke +' + (cc + num))
+}
+
+function verifyOwnerWaOtp() {
+  var u = loadU()
+  if (!u) return
+  var pending = u.ownerWaOtpPending
+  var errEl = document.getElementById('otpErr')
+  errEl.style.display = 'none'
+  if (!pending) {
+    errEl.textContent = 'OTP belum dikirim. Klik "Kirim ulang".'
+    errEl.style.display = 'block'
+    return
+  }
+  if (Date.now() > pending.expiresAt) {
+    errEl.textContent = 'Kode OTP sudah kadaluarsa. Klik "Kirim ulang".'
+    errEl.style.display = 'block'
+    return
+  }
+  var input = document.getElementById('otpInput').value.trim()
+  if (input !== pending.code) {
+    errEl.textContent = 'Kode OTP salah. Cek lagi.'
+    errEl.style.display = 'block'
+    return
+  }
+  // Success
+  u.ownerWaVerifiedAt = new Date().toISOString()
+  u.ownerWaOtpPending = null
+  saveU(u)
+  refreshOwnerWaVerifyUI()
+  showToast('Nomor WA owner terverifikasi!')
+}
+
+function resetOwnerWaVerify() {
+  if (!confirm('Verifikasi ulang nomor WA owner? Kamu harus input kode OTP baru.')) return
+  var u = loadU()
+  if (!u) return
+  u.ownerWaVerifiedAt = null
+  u.ownerWaOtpPending = null
+  saveU(u)
+  refreshOwnerWaVerifyUI()
+}
+
+function refreshOwnerWaVerifyUI() {
+  var u = loadU()
+  if (!u) return
+  var wrap = document.getElementById('otpWrap')
+  var unv  = document.getElementById('otpUnverified')
+  var pnd  = document.getElementById('otpPending')
+  var vfd  = document.getElementById('otpVerified')
+  if (!wrap || !unv || !pnd || !vfd) return
+
+  // Get current input value (not saved ownerWa — may differ during typing)
+  var cc = document.getElementById('ownerCc').value
+  var num = document.getElementById('inp-ownerWa').value.trim().replace(/\D/g, '')
+  if (num.startsWith('0')) num = num.slice(1)
+  var currentFull = num.length >= 9 ? (cc + num) : ''
+
+  // No ownerWa entered yet: hide entire block
+  if (!currentFull && !u.ownerWa) {
+    wrap.style.display = 'none'
+    return
+  }
+  wrap.style.display = 'block'
+
+  // Check if input changed from saved ownerWa (user is editing)
+  var savedWa = u.ownerWa || ''
+  var numberChanged = currentFull && currentFull !== savedWa
+
+  // Hide all states
+  unv.style.display = 'none'
+  pnd.style.display = 'none'
+  vfd.style.display = 'none'
+
+  // State 1: verified
+  if (u.ownerWaVerifiedAt && !numberChanged) {
+    vfd.style.display = 'block'
+    var whenEl = document.getElementById('otpVerifiedWhen')
+    if (whenEl) {
+      try {
+        var d = new Date(u.ownerWaVerifiedAt)
+        whenEl.textContent = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+      } catch (e) { whenEl.textContent = '' }
+    }
+    return
+  }
+
+  // State 2: OTP sent, waiting verify
+  if (u.ownerWaOtpPending && Date.now() < u.ownerWaOtpPending.expiresAt && !numberChanged) {
+    pnd.style.display = 'block'
+    return
+  }
+
+  // State 3: unverified (default)
+  unv.style.display = 'block'
 }
 
 /* ── QR MODAL ── */
@@ -1457,6 +1721,16 @@ function boot() {
 
   // WA status
   renderWaStatus(U)
+
+  // OTP verify state
+  refreshOwnerWaVerifyUI()
+
+  // Notification preferences (migrated from billing)
+  var nf = U.billingNotifs || { lowCredit: true, criticalCredit: true, subLow: true, renewalReminder: true }
+  document.getElementById('nf-lowCredit').checked       = nf.lowCredit       !== false
+  document.getElementById('nf-criticalCredit').checked  = nf.criticalCredit  !== false
+  document.getElementById('nf-subLow').checked          = nf.subLow          !== false
+  document.getElementById('nf-renewalReminder').checked = nf.renewalReminder !== false
 }
 
 /* ── INIT ── */

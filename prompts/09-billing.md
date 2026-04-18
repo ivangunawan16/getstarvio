@@ -121,26 +121,58 @@ Tambahkan field ini ke `getstarvio_user`:
 
 ### Section 2: Ringkasan Kredit
 
-Tampilkan dua baris kredit secara visual terpisah:
-
-**Kredit Subscription** (hanya tampil jika `plan === "subscriber"`)
-- Label: "Kredit Bulanan" + badge "Reset tiap bulan"
-- Angka: `subCreditsLeft` dari `subCreditsMax` (300)
-- Progress bar
-- Warning jika < 30: "Kredit bulanan hampir habis — tidak rollover ke bulan depan"
-
-**Kredit Top-Up**
-- Label: "Kredit Top-Up" + badge "Tidak ada expiry ✓"
-- Angka: `topupCreditsLeft`
-- Jika 0: tampilkan "–" dengan CTA "Tambah Kredit"
-
-**Total Usable** (di bawah keduanya)
+**Total Usable** (paling atas, primary display):
 - Besar, bold: `remLeft` total kredit tersisa
 - Warna sesuai state:
   - ≥30 → lime (`var(--lime-dk)`)
   - 10–29 → amber (`var(--amber-dk)`)
   - 1–9 → red (`var(--red-dk)`) + pulse animation
   - 0 → dark (`var(--ink)`) + label "Automation dihentikan"
+
+**Detail Kredit — SELALU VISIBLE (no collapsible toggle):**
+
+Breakdown di bawah total, dipisah border-top. User ingin lihat detail langsung tanpa klik toggle.
+
+**Kredit Subscription** (hanya tampil jika `plan === "subscriber"`)
+- Label: "Kredit Subscription" + badge "Reset tiap bulan"
+- Angka: `subCreditsLeft` dari `subCreditsMax` (300)
+- Progress bar (lime kalau ≥30, amber kalau <30)
+- Warning inline jika < 30: "⚠️ Kredit subscription hampir habis"
+
+**Kredit Top-Up** (dengan progress bar)
+- Label: "Kredit Top-Up" + badge "Tidak ada expiry ✓"
+- Angka: `topupCreditsLeft` "sisa dari X total dibeli" (X = akumulasi dari billingHistory welcome + topup)
+- **Progress bar:** `topLeft / topPurchased * 100` (lime kalau ≥10, amber kalau <10 tapi >0)
+- Caption: "Terpakai A · Sisa B" (A = topPurchased - topLeft, B = topLeft)
+- Jika topPurchased = 0: tampilkan "–" dengan inline link "Top up sekarang" → scroll ke Section 3
+
+**Implementasi top-up progress:**
+```js
+var topPurchased = 0
+;(U.billingHistory || []).forEach(function(tx) {
+  if ((tx.type === 'topup' || tx.type === 'welcome') && tx.delta > 0) topPurchased += tx.delta
+})
+var topUsed = Math.max(0, topPurchased - topLeft)
+var topPct  = topPurchased > 0 ? Math.round(topLeft / topPurchased * 100) : 0
+```
+
+---
+
+### Section 2.5: Recommendation Engine (contextual banner)
+
+**Posisi: RIGHT AFTER Ringkasan Kredit, BEFORE Top-Up Section.** User ingin rekomendasi muncul dekat saldo kredit (jangan di-kubur di bawah auto-topup / riwayat).
+
+Conditional banner berdasarkan state:
+
+| Kondisi | Banner | Warna |
+|---|---|---|
+| `remLeft === 0` | "Kredit habis — automation berhenti" | red |
+| `remLeft < 10` | "Kredit hampir habis!" | red |
+| `remLeft < 30` | "Kredit mulai menipis" | amber |
+| `plan === 'trial'` (healthy) | "Upgrade ke Subscriber? Hemat 50% Early Access!" | lime |
+| else (subscriber healthy) | no banner | — |
+
+Copy harus ROI-framed: "1 kredit = 1 pengingat = potensi pelanggan balik" — bukan "kredit tipis".
 
 ---
 
@@ -185,32 +217,27 @@ var PACKAGES = buildPackages()  // reads planConfig.tiers[], falls back to flat 
 
 ---
 
-### Section 5: Recommendation Engine (contextual)
+### Section 5: Recommendation Engine — MOVED to Section 2.5
 
-Tampilkan banner rekomendasi berdasarkan kondisi:
-
-| Kondisi | Rekomendasi |
-|---|---|
-| `plan === "trial"` + `remLeft` < 30 | "Subscribe sekarang — dapat 300 kredit fresh tiap bulan (Early Access 50% off)" |
-| `plan === "subscriber"` + sub habis + topup > 0 | "Kredit bulanan habis — kredit top-up kamu akan dipakai" |
-| `plan === "subscriber"` + topup = 0 + sub < 30 | "Mau ada cadangan? Top up kredit extra sekarang" |
-| `remLeft` = 0 | 🚨 Banner merah: "Automation dihentikan — isi kredit untuk lanjutkan" |
-
-Copy harus ROI-framed: **"Setiap pengingat = peluang pelanggan balik"** — bukan "kredit hampir habis"
+⚠️ **This section was relocated.** Lihat **Section 2.5** di atas — sekarang muncul tepat setelah Ringkasan Kredit, sebelum Top-Up section. Alasan: user ingin rekomendasi muncul dekat saldo kredit, jangan dikubur di bawah auto-topup / riwayat transaksi.
 
 ---
 
-### Section 6: Prediction Engine
+### Section 6: Prediction Engine — REMOVED
 
-- "Dengan pemakaian rata-rata kamu, kredit **[tipe yang akan habis duluan]** akan habis dalam **X hari**"
-- Kalkulasi: `subCreditsLeft / (totalReminderBulanIni / hariDalamBulan)`
-- Jika subscriber: hitung kapan sub credits habis vs renewal date → tampilkan yang mana lebih dulu
+⚠️ Section ini dihapus per feedback user ("remove jangan bikin janji yang belum tentu bisa di tepati"). Prediksi "kredit habis dalam X hari" bisa misleading kalau pola pemakaian berubah. Kalau mau kasih info, cukup rely pada banner di Section 2.5 yang sudah contextual.
 
 ---
 
 ### Section 7: Riwayat Transaksi
 
-Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
+Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan.
+
+**Tombol "Download Excel"** di kanan header Riwayat Transaksi:
+- Export semua entries ke CSV format (compatible dengan Excel)
+- Filename: `getstarvio-transaksi-{bizSlug}-{YYYYMMDD}.csv`
+- Kolom CSV: Tanggal (ISO), Tipe, Jumlah, Saldo Setelah, Keterangan
+- Hanya tampil kalau ada entries di `billingHistory`
 
 | Tipe | Warna | Contoh Keterangan |
 |---|---|---|
@@ -221,14 +248,13 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 
 ---
 
-### Section 8: Pengaturan Notifikasi
+### Section 8: Pengaturan Notifikasi — MIGRATED to Settings
 
-- Notif WA ke: `ownerWa` — tampilkan nomor (read-only)
-- Checkbox:
-  - ☑ Saat kredit total Rendah (< 30)
-  - ☑ Saat kredit total Kritis (< 10)
-  - ☑ Saat kredit subscription hampir habis (< 60 dari 300)
-  - ☑ 3 hari sebelum renewal
+⚠️ **This section moved to Settings → WhatsApp & Notifikasi.** Alasan: notifikasi billing dikirim ke `ownerWa`, jadi logis digroup dengan field WA owner + OTP verification. Lihat `13-settings.md` Section 3.
+
+Data field `u.billingNotifs` tetap sama (backward compat) — hanya UI-nya pindah.
+
+Billing page TIDAK render notif checkbox lagi di halaman ini.
 
 ---
 
@@ -266,3 +292,4 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 | 2026-04-18 | **BILLING MODEL FINAL.** Subscription jadi **WAJIB** untuk akses platform & beli top-up. Welcome bonus 100 kredit langsung masuk `topupCreditsLeft` (tidak ada field terpisah). Free Trial 14 hari ATAU 100 kredit (mana duluan) — set `trialStartedAt` saat onboarding selesai. Setelah trial expired: Section 1 jadi banner "Trial habis", Section 3 (top-up) di-DISABLE dengan overlay + tombol jadi "Subscribe untuk Top Up". `planConfig.trialDays` editable dari admin. Computation helpers `isTrialExpired()` + `trialDaysLeft()` di docs. |
 | 2026-04-18 | **DATA_VERSION 5 + UIUX HARD LOCK + BUNDLE.** Schema rename `plan: "free"` → `"trial"`. Tambah `trialEndsAt` (snapshot stored) + `trialUsed` (boolean). loadU() auto-migrate v4→v5 (kindest migration: existing user dapat fresh trialStartedAt jika belum ada). Subscribe modal sekarang tampilkan **Bundle** (subscribe + topup auto-checked, default tier 500 kredit) untuk conversion lift. Total dynamic update: `Rp 998.000` (subscription + bundle 500). Bundle bisa di-uncheck untuk subscribe-only. processSubscribe handle dual transaction (subscription + bundle topup). 4 conditional state router: `getBillingState()` returns A (trial active), B (trial expired), C (subscriber normal), D (subscriber low). |
 | 2026-04-18 | **SPEC CONSISTENCY PATCH.** Section 3 (Top Up) condition `plan === 'free'` → `plan === 'trial'` (v5 schema). Known Bug #3 "RESOLVED" note updated — subscription sekarang wajib untuk top-up (billing model final 2026-04-18), bukan terpisah. |
+| 2026-04-18 | **LAYOUT REFINEMENT (post-review).** (1) Detail Kredit ALWAYS VISIBLE — hapus collapsible toggle, user ingin lihat breakdown langsung. (2) Kredit Top-Up dapat **progress bar** (sebelumnya hanya subscription). Compute `topPurchased` dari `billingHistory` (welcome + topup deltas), `topPct = topLeft / topPurchased * 100`. (3) Recommendation Engine dipindah dari Section 5 → **Section 2.5** (tepat setelah Ringkasan Kredit, sebelum Top-Up). Section 5 placeholder tetap ada dengan cross-reference. (4) Section 8 Pengaturan Notifikasi MIGRATED to Settings → WhatsApp & Notifikasi. (5) Section 6 Prediction Engine REMOVED per user feedback (avoid misleading predictions). (6) Section 7 Riwayat Transaksi: tombol "Download Excel" (CSV export). |

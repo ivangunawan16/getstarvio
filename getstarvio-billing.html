@@ -990,16 +990,16 @@ function toast(msg, type) {
 }
 
 /* ══════════════════════════════════════════════
-   NOTIFICATION SETTINGS
+   NOTIFICATION SETTINGS — DEPRECATED HERE
+   ══════════════════════════════════════════════
+   Moved to getstarvio-settings.html → Section WhatsApp.
+   `toggleNotif()` kept as no-op so any stale onclick handler
+   doesn't break, but nothing here renders notif UI anymore.
    ══════════════════════════════════════════════ */
 
 function toggleNotif(key, val) {
-  var U = loadU()
-  if (!U) return
-  U = ensureBillingFields(U)
-  U.billingNotifs = U.billingNotifs || {}
-  U.billingNotifs[key] = val
-  saveU(U)
+  /* No-op. Manage notifications di Settings page. */
+  console.warn('[billing] toggleNotif deprecated — manage notifications di Settings page.')
 }
 
 /* ══════════════════════════════════════════════
@@ -1133,12 +1133,8 @@ function render() {
   html += totalWarnHtml
   html += '</div>'
 
-  // Collapsible detail breakdown
-  html += '<div style="border-top:1px solid var(--border);margin-top:4px;padding-top:0">'
-  html += '<button onclick="var d=document.getElementById(\'credit-detail\');var a=this.querySelector(\'.chevron\');if(d.style.display===\'none\'){d.style.display=\'block\';a.style.transform=\'rotate(180deg)\'}else{d.style.display=\'none\';a.style.transform=\'rotate(0deg)\'}" style="display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;cursor:pointer;padding:10px 0;font-family:inherit;font-size:12px;font-weight:600;color:var(--ink3)">'
-  html += '<svg class="chevron" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s"><path d="M4 6l4 4 4-4"/></svg>'
-  html += 'Detail kredit</button>'
-  html += '<div id="credit-detail" style="display:none;padding-bottom:8px">'
+  // Detail breakdown — ALWAYS VISIBLE (no collapsible toggle)
+  html += '<div style="border-top:1px solid var(--border);margin-top:4px;padding:14px 0 8px">'
 
   // Subscription credits row (only for subscribers)
   if (plan === 'subscriber') {
@@ -1162,15 +1158,29 @@ function render() {
     html += '</div>'
   }
 
-  // Top-Up credits row
-  html += '<div class="credit-row">'
+  // Top-Up credits row (with progress bar)
+  // Calculate total purchased top-up (welcome + topup transactions with positive delta)
+  var topPurchased = 0
+  ;(U.billingHistory || []).forEach(function(tx) {
+    if ((tx.type === 'topup' || tx.type === 'welcome') && tx.delta > 0) topPurchased += tx.delta
+  })
+  var topUsed = Math.max(0, topPurchased - topLeft)
+  var topPct = topPurchased > 0 ? Math.round(topLeft / topPurchased * 100) : 0
+  var topBarColor = topLeft < 10 && topLeft > 0 ? 'var(--amber)' : 'var(--lime)'
+
+  html += '<div class="credit-row" style="margin-top:10px">'
   html += '<div style="flex:1">'
   html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'
   html += '<span class="credit-label">Kredit Top-Up</span>'
   html += '<span class="badge b-lime" style="font-size:9px">Tidak ada expiry &#10003;</span>'
   html += '</div>'
-  if (topLeft > 0) {
+  if (topPurchased > 0) {
+    html += '<div style="display:flex;align-items:center;gap:12px">'
     html += '<span class="credit-val">' + fmt(topLeft) + '</span>'
+    html += '<span style="font-size:11px;color:var(--ink3)">sisa dari ' + fmt(topPurchased) + ' total dibeli</span>'
+    html += '</div>'
+    html += '<div class="progress-bar"><div class="progress-fill" style="width:' + topPct + '%;background:' + topBarColor + '"></div></div>'
+    html += '<div style="font-size:11px;color:var(--ink3);margin-top:4px">Terpakai ' + fmt(topUsed) + ' &middot; Sisa ' + fmt(topLeft) + '</div>'
   } else {
     html += '<span class="credit-val" style="color:var(--ink3)">&ndash;</span>'
     html += '<span style="font-size:11px;color:var(--ink3);margin-left:8px">Belum punya kredit top-up. <a href="#topup" style="color:var(--lime-dk);font-weight:700;text-decoration:underline" onclick="document.getElementById(\'topup-section\').scrollIntoView({behavior:\'smooth\'});return false">Top up sekarang</a></span>'
@@ -1178,10 +1188,42 @@ function render() {
   html += '</div>'
   html += '</div>'
 
-  html += '</div>' // end #credit-detail
-  html += '</div>' // end collapsible wrapper
+  html += '</div>' // end detail breakdown (always visible)
 
   html += '</div>'
+
+  /* ─────────────────────────────────────────
+     SECTION 2.5: RECOMMENDATION ENGINE
+     (moved here from Section 5 — user wants it near credit summary,
+      not buried after Top-Up & Auto Top-Up)
+     ───────────────────────────────────────── */
+  var recoHtml = ''
+  if (remLeft <= 0) {
+    recoHtml += '<div class="reco-banner crit">'
+    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#9940;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit habis &mdash; automation berhenti</div>'
+    recoHtml += '<div class="reco-sub">Reminder otomatis tidak bisa dikirim. Top up sekarang supaya pelanggan kamu tidak lupa balik.</div></div>'
+    recoHtml += '</div>'
+  } else if (remLeft < 10) {
+    recoHtml += '<div class="reco-banner crit">'
+    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#128680;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit hampir habis!</div>'
+    recoHtml += '<div class="reco-sub">Tinggal ' + remLeft + ' kredit. Dengan rata-rata pemakaian saat ini, kredit bisa habis dalam hitungan hari. Top up sekarang biar automation tetap jalan.</div></div>'
+    recoHtml += '</div>'
+  } else if (remLeft < 30) {
+    recoHtml += '<div class="reco-banner warn">'
+    recoHtml += '<div class="reco-icon" style="background:var(--amber-bg);border:1px solid #fcd88a">&#9888;&#65039;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit mulai menipis</div>'
+    recoHtml += '<div class="reco-sub">Sisa ' + remLeft + ' kredit. Pertimbangkan top up supaya pengingat tetap jalan tanpa gangguan. 1 kredit = 1 pengingat = potensi pelanggan balik.</div></div>'
+    recoHtml += '</div>'
+  } else if (plan === 'trial') {
+    recoHtml += '<div class="reco-banner">'
+    recoHtml += '<div class="reco-icon" style="background:var(--lime-bg);border:1px solid var(--lime-bd)">&#128161;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Upgrade ke Subscriber? Hemat 50% Early Access!</div>'
+    recoHtml += '<div class="reco-sub">Dapatkan <b>300 kredit/bulan</b> — <span style="text-decoration:line-through;color:var(--ink3)">Rp 499.000</span> hanya <b style="color:var(--lime-dk)">Rp 249.000/bulan</b> (Rp 830/kredit). Setiap pengingat punya potensi bawa pelanggan balik.</div></div>'
+    recoHtml += '</div>'
+  }
+  html += recoHtml
 
   /* ─────────────────────────────────────────
      SECTION 3: TOP UP KREDIT EXTRA (Subscriber-only)
@@ -1254,34 +1296,10 @@ function render() {
 
   /* ─────────────────────────────────────────
      SECTION 5: RECOMMENDATION ENGINE
+     (MOVED to Section 2.5 — right after credit summary, before Top-Up.
+      This position helps owner see recommended action immediately after
+      seeing their credit balance.)
      ───────────────────────────────────────── */
-  var recoHtml = ''
-  if (remLeft <= 0) {
-    recoHtml += '<div class="reco-banner crit">'
-    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#9940;</div>'
-    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit habis &mdash; automation berhenti</div>'
-    recoHtml += '<div class="reco-sub">Reminder otomatis tidak bisa dikirim. Top up sekarang supaya pelanggan kamu tidak lupa balik.</div></div>'
-    recoHtml += '</div>'
-  } else if (remLeft < 10) {
-    recoHtml += '<div class="reco-banner crit">'
-    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#128680;</div>'
-    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit hampir habis!</div>'
-    recoHtml += '<div class="reco-sub">Tinggal ' + remLeft + ' kredit. Dengan rata-rata pemakaian saat ini, kredit bisa habis dalam hitungan hari. Top up sekarang biar automation tetap jalan.</div></div>'
-    recoHtml += '</div>'
-  } else if (remLeft < 30) {
-    recoHtml += '<div class="reco-banner warn">'
-    recoHtml += '<div class="reco-icon" style="background:var(--amber-bg);border:1px solid #fcd88a">&#9888;&#65039;</div>'
-    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit mulai menipis</div>'
-    recoHtml += '<div class="reco-sub">Sisa ' + remLeft + ' kredit. Pertimbangkan top up supaya pengingat tetap jalan tanpa gangguan. 1 kredit = 1 pengingat = potensi pelanggan balik.</div></div>'
-    recoHtml += '</div>'
-  } else if (plan === 'trial') {
-    recoHtml += '<div class="reco-banner">'
-    recoHtml += '<div class="reco-icon" style="background:var(--lime-bg);border:1px solid var(--lime-bd)">&#128161;</div>'
-    recoHtml += '<div class="reco-text"><div class="reco-title">Upgrade ke Subscriber? Hemat 50% Early Access!</div>'
-    recoHtml += '<div class="reco-sub">Dapatkan <b>300 kredit/bulan</b> — <span style="text-decoration:line-through;color:var(--ink3)">Rp 499.000</span> hanya <b style="color:var(--lime-dk)">Rp 249.000/bulan</b> (Rp 830/kredit). Setiap pengingat punya potensi bawa pelanggan balik.</div></div>'
-    recoHtml += '</div>'
-  }
-  html += recoHtml
 
   // Empty state kalau kredit habis — minimum signal tanpa clutter
   if (remLeft <= 0) {
@@ -1328,39 +1346,12 @@ function render() {
   /* ─────────────────────────────────────────
      SECTION 8: PENGATURAN NOTIFIKASI
      ───────────────────────────────────────── */
-  var ownerWa = U.ownerWa || U.waNum || '\u2014'
-  var nf = U.billingNotifs || {}
-
-  html += '<div class="sec-header"><div class="sec-title">Pengaturan Notifikasi</div></div>'
-  html += '<div class="notif-card">'
-
-  // WA number display (read-only)
-  html += '<div class="notif-row">'
-  html += '<span class="notif-label">Notifikasi dikirim ke WhatsApp owner</span>'
-  html += '<span class="notif-value">' + ownerWa + '</span>'
-  html += '</div>'
-
-  // Checkbox: kredit rendah (<30)
-  html += '<div class="notif-row">'
-  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.lowCredit !== false ? 'checked' : '') + ' onchange="toggleNotif(\'lowCredit\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit rendah (&lt; 30)</span></label>'
-  html += '</div>'
-
-  // Checkbox: kredit kritis (<10)
-  html += '<div class="notif-row">'
-  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.criticalCredit !== false ? 'checked' : '') + ' onchange="toggleNotif(\'criticalCredit\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit kritis (&lt; 10)</span></label>'
-  html += '</div>'
-
-  // Checkbox: sub hampir habis (<50/300)
-  html += '<div class="notif-row">'
-  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.subLow !== false ? 'checked' : '') + ' onchange="toggleNotif(\'subLow\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit subscription hampir habis (&lt; 50/250)</span></label>'
-  html += '</div>'
-
-  // Checkbox: 3 hari sebelum renewal
-  html += '<div class="notif-row">'
-  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.renewalReminder !== false ? 'checked' : '') + ' onchange="toggleNotif(\'renewalReminder\',this.checked)"><span class="notif-label" style="cursor:pointer">Pengingat 3 hari sebelum perpanjangan langganan</span></label>'
-  html += '</div>'
-
-  html += '</div>'
+  /* MIGRATED to Settings → WhatsApp section (2026-04-18).
+     Notif preferences are now saved from settings.html under
+     u.billingNotifs via saveWa(). Keep the data field in loadU
+     migration (line ~644) for backward compat.
+     Old UI block removed from this page; no "Pengaturan Notifikasi"
+     rendered in billing page. Link users to settings if they ask. */
 
   document.getElementById('billing-content').innerHTML = html
 }

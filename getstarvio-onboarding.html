@@ -818,12 +818,15 @@ const PRESETS = {
   lainnya:    [{id:'l1',icon:'✨',name:'Layanan Utama',interval:30}]
 }
 
+// Template aftercare_followup_1-5 — sinkron dengan admin.html TEMPLATES (Meta UTILITY-compliant).
+// Placeholder format Meta Cloud API: {{1}}-{{4}} positional (nama/treatment/tanggal/bisnis).
+// Tidak ada {{5}} timing — pesan dikirim tepat waktu sesuai cats[].interval, jadi ga rigid.
 const TEMPLATES = [
-  {id:'reminder_return',label:'Reminder balik',      msg:'Halo {customer_name}! Sudah {days} hari sejak {service} di {business_name}. Saatnya kembali ✨ Balas untuk booking ya!'},
-  {id:'soft_invite',    label:'Ajakan santai',        msg:'Hai {customer_name} 👋 {business_name} kangen! Sudah {days} hari sejak {service}. Yuk balik — balas kapan aja!'},
-  {id:'promo_nudge',    label:'Reminder + penawaran', msg:'Helo {customer_name}! Sudah {days} hari sejak {service} di {business_name}. Ada slot kosong 😊'},
-  {id:'care_checkin',   label:'Check-in personal',    msg:'{customer_name}, sudah {days} hari sejak {service} di {business_name}. Gimana kondisi kamu?'},
-  {id:'urgency_light',  label:'Gentle urgency',       msg:'Hai {customer_name}! Sudah {days} hari sejak {service} di {business_name} 🗓 Jangan lewatkan perawatan rutin!'}
+  {id:'aftercare_followup_1', label:'Follow-up: Sudah berjalan baik', msg:'Hi {{1}}, {{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik. Sekarang waktunya untuk perawatan lanjutan supaya hasilnya tetap optimal. Balas chat ini kalau ada pertanyaan ya.'},
+  {id:'aftercare_followup_2', label:'Follow-up: Terima kasih',        msg:'Hi {{1}}, makasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}. Supaya hasilnya tetap maksimal, sekarang waktu yang pas untuk menjadwalkan perawatan lanjutan. Balas chat ini ya.'},
+  {id:'aftercare_followup_3', label:'Follow-up: Casual',              msg:'Halo {{1}}, ini follow-up dari {{2}} kamu tanggal {{3}} di {{4}}. Sekarang waktu yang pas untuk perawatan lanjutan supaya hasilnya tetap terjaga. Balas aja ya!'},
+  {id:'aftercare_followup_4', label:'Follow-up: Semoga puas',         msg:'Hi {{1}}, semoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya. Sudah waktunya untuk perawatan lanjutan nih. Butuh bantuan booking? Balas chat ini aja.'},
+  {id:'aftercare_followup_5', label:'Follow-up: Tanya hasil',         msg:'Halo {{1}}, gimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya! Untuk menjaga hasilnya, sekarang pas waktunya perawatan lanjutan. Balas di sini aja.'}
 ]
 
 /* ── PHONE ── */
@@ -1082,9 +1085,9 @@ function buildDone() {
   // Build cats for localStorage
   const finalCats = D.cats.length ? D.cats.map(c => ({
     id: c.id, name: c.name, icon: c.icon, interval: c.interval,
-    templateId: c.tplId || 'reminder_return',
+    templateId: c.tplId || 'aftercare_followup_1',
     templateBody: c.msg || TEMPLATES[0].msg
-  })) : [{id:'default',name:'Semua Layanan',icon:'✨',interval:30,templateId:'reminder_return',templateBody:TEMPLATES[0].msg}]
+  })) : [{id:'default',name:'Semua Layanan',icon:'✨',interval:30,templateId:'aftercare_followup_1',templateBody:TEMPLATES[0].msg}]
 
   // Set trial fields (DATA_VERSION 5) — read from admin pc_defaults if admin sudah publish
   var pc = getPlanConfigDefaults()

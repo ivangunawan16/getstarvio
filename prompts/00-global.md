@@ -83,7 +83,9 @@ Key rules yang tidak boleh dilanggar:
   avgServiceValue: number,     // rata-rata harga layanan dalam IDR (default 150000). Dipakai di ROI calculation di dashboard. Editable di Settings → Profil Bisnis.
   adminName: "string",
   adminEmail: "string",        // read-only, dari Google OAuth
-  ownerWa: "string",           // WA pemilik untuk notif billing (bisa beda dari waNum)
+  ownerWa: "string",           // WA pemilik untuk notif billing (bisa beda dari waNum). Format 628xxx (no +, no space).
+  ownerWaVerifiedAt: "ISO string | null",  // kapan ownerWa terverifikasi via OTP. null = belum terverifikasi. Auto-reset ke null kalau ownerWa diubah (paksa re-verify).
+  ownerWaOtpPending: "{ code, expiresAt } | null",  // pending OTP state selama verifikasi. code = 6-digit string, expiresAt = ms timestamp (5 min lifetime). Di-set oleh sendOwnerWaOtp(), di-clear oleh verifyOwnerWaOtp() atau resetOwnerWaVerify().
   waNum: "string",             // nomor WA yang digunakan untuk kirim reminder
   timezone: "string",
   country: "string",

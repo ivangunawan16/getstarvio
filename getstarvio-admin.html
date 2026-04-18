@@ -1704,53 +1704,26 @@ function switchTab(tab, el) {
 // {{2}} = Jenis treatment     (contoh: Hair Smoothing)
 // {{3}} = Tanggal kunjungan   (contoh: 15 Maret 2026)
 // {{4}} = Nama bisnis         (contoh: Salon Cantika)
-// {{5}} = Waktu perawatan     (contoh: 4-6 minggu) — diambil dari preset.timing per kategori
+// Catatan: TIDAK ada {{5}} timing — pesan dikirim TEPAT WAKTU sesuai cats[].interval,
+// jadi tidak perlu lagi menyebut "dalam X minggu". Template jadi ga rigid,
+// bisa dipakai oleh interval berapa pun (7 hari, 3 minggu, 3 bulan).
 
 var TEMPLATES = [
-  // ═══ AFTERCARE FOLLOW-UP (utility-compliant, post-visit) ═══
-  { id:'tpl-aft-1', name:'aftercare_followup_1', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nUntuk hasil terbaik, perawatan lanjutan biasanya dilakukan dalam {{5}} ya.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
-  { id:'tpl-aft-2', name:'aftercare_followup_2', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, perawatan lanjutan bisa dijadwalkan dalam {{5}} ke depan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
-  { id:'tpl-aft-3', name:'aftercare_followup_3', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nBiasanya untuk perawatan seperti ini, lanjutannya dalam {{5}} supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
-  { id:'tpl-aft-4', name:'aftercare_followup_4', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSekedar info, jadwal perawatan lanjutannya dalam {{5}} dari kunjungan terakhir.\n\nButuh bantuan? Langsung balas chat ini aja.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
-  { id:'tpl-aft-5', name:'aftercare_followup_5', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, perawatan lanjutan bisa dilakukan dalam {{5}}.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  // ═══ AFTERCARE FOLLOW-UP (utility-compliant, post-visit) — 4 variabel, no rigid timing ═══
+  { id:'tpl-aft-1', name:'aftercare_followup_1', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nSekarang waktunya untuk perawatan lanjutan supaya hasilnya tetap optimal.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  { id:'tpl-aft-2', name:'aftercare_followup_2', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, sekarang waktu yang pas untuk menjadwalkan perawatan lanjutan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  { id:'tpl-aft-3', name:'aftercare_followup_3', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nSekarang waktu yang pas untuk perawatan lanjutan supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  { id:'tpl-aft-4', name:'aftercare_followup_4', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSudah waktunya untuk perawatan lanjutan nih — biar hasilnya tetap optimal.\n\nButuh bantuan booking? Langsung balas chat ini aja.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  { id:'tpl-aft-5', name:'aftercare_followup_5', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, sekarang pas waktunya untuk perawatan lanjutan.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
 
   // ═══ AUTH & LEGACY (kompatibilitas) ═══
   { id:'tpl-001', name:'reminder_balik',   category:'UTILITY',        language:'id', status:'APPROVED', body:'Halo {{1}}, sudah {{2}} hari sejak {{3}} di {{4}}. Saatnya kembali ✨ Balas untuk booking ya!', header:'', footer:'', buttons:['Booking Sekarang'], updatedAt:'2026-04-10' },
   { id:'tpl-007', name:'otp_verification', category:'AUTHENTICATION', language:'id', status:'APPROVED', body:'Kode verifikasi getstarvio kamu: {{1}}. Berlaku 5 menit.', header:'', footer:'', buttons:[], updatedAt:'2026-02-20' }
 ];
 
-// Treatment timing mapping — dipakai sebagai default `timing` untuk variable {{5}} di template aftercare.
-// Bisa di-override per preset kategori.
-var TIMING_MAP = {
-  'Hair Smoothing':     '3-4 bulan',
-  'Hair Rebonding':     '3-4 bulan',
-  'Smoothing':          '3-4 bulan',
-  'Keriting':           '3-4 bulan',
-  'Hair Color':         '6-8 minggu',
-  'Hair Mask':          '3-4 minggu',
-  'Creambath':          '2-4 minggu',
-  'Hair Spa':           '2-4 minggu',
-  'Blow Dry':           '1-2 minggu',
-  'Facial':             '4-6 minggu',
-  'Body Scrub':         '4 minggu',
-  'Aromaterapi':        '3-4 minggu',
-  'Full Body Massage':  '3-4 minggu',
-  'Manicure':           '2-3 minggu',
-  'Pedicure':           '2-3 minggu',
-  'Nail Art':           '3 minggu',
-  'Gel Nails':          '3 minggu',
-  'Eyelash Extension':  '2-3 minggu',
-  'Waxing':             '3-4 minggu',
-  'Potong Rambut':      '3 minggu',
-  'Cukur Jenggot':      '2 minggu',
-  'Hair Wax':           '2 minggu',
-  'Konsultasi':         '4 minggu',
-  'Perawatan Kulit':    '3 minggu',
-  'Laser Treatment':    '4-6 minggu',
-  'Chemical Peel':      '3-4 minggu',
-  'Ganti Oli':          '3 bulan',
-  'Servis Rutin':       '6 bulan'
-};
+// NOTE: TIMING_MAP dihapus — {{5}} timing variable sudah tidak dipakai lagi.
+// Template aftercare sekarang ga rigid (tidak menyebut "dalam X minggu"), jadi
+// ga perlu mapping timing per kategori. Interval kirim tetap handled di cats[].interval.
 
 var META_NOTIFICATIONS = [
   { id:'n-004', type:'approved', templateId:'tpl-001', templateName:'reminder_balik', receivedAt:'2026-04-10 11:15', read:true }
