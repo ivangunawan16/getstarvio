@@ -100,6 +100,32 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .date-chip{padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);transition:all .15s;user-select:none}
 .date-chip:hover{background:var(--bg3)}
 .date-chip.active{background:var(--ink);border-color:var(--ink);color:#fff}
+.search-input{
+  width:200px;padding:7px 12px;border-radius:var(--r-sm);
+  background:var(--bg2);border:1.5px solid var(--border2);
+  color:var(--ink);font-size:12px;font-family:inherit;outline:none;transition:all .15s;
+}
+.search-input:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.12)}
+.search-input::placeholder{color:var(--ink4)}
+.bulk-retry-bar{
+  display:none;align-items:center;justify-content:space-between;gap:10px;
+  background:#fff7f6;border:1px solid #f5c5c3;border-radius:var(--r-sm);
+  padding:10px 14px;margin-bottom:12px;flex-wrap:wrap;
+}
+.bulk-retry-bar .br-text{font-size:12px;color:var(--red-dk);font-weight:600}
+.bulk-retry-bar .br-btn{
+  padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:700;
+  background:var(--bg2);color:var(--red-dk);border:1.5px solid var(--red-dk);
+  cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.bulk-retry-bar .br-btn:hover{background:var(--red-bg)}
+.toast-container{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;pointer-events:none;align-items:center}
+.toast{
+  background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;
+  font-size:13px;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,.3);
+  animation:fadeUp .3s ease;white-space:nowrap;transition:opacity .3s;
+}
+.toast-err{background:var(--red-dk)}
 
 /* ── TABLE ── */
 .table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
@@ -154,6 +180,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   .filter-bar{gap:6px}
   .filter-bar{flex-direction:column;align-items:stretch}
   .filter-bar > div:last-child{margin-left:0;justify-content:flex-start}
+  .search-input{width:100%}
 
   /* Hide table, show cards on mobile */
   .table-wrap .tbl{display:none}
@@ -273,11 +300,18 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
         <div class="filter-tab" data-filter="gagal" onclick="setStatusFilter(this,'gagal')">Gagal <span class="ft-count" id="fc-fail">0</span></div>
         <div class="filter-tab" data-filter="pending" onclick="setStatusFilter(this,'pending')">Pending <span class="ft-count" id="fc-pending">0</span></div>
 
-        <div style="margin-left:auto;display:flex;gap:6px">
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
           <div class="date-chip active" onclick="setDateRange(this,'week')">Minggu Ini</div>
           <div class="date-chip" onclick="setDateRange(this,'month')">Bulan Ini</div>
           <div class="date-chip" onclick="setDateRange(this,'all')">Semua</div>
+          <input type="text" id="search-input" class="search-input" placeholder="Cari nama atau WA..." oninput="onSearchInput()">
         </div>
+      </div>
+
+      <!-- BULK RETRY BAR -->
+      <div class="bulk-retry-bar" id="bulk-retry-bar">
+        <div class="br-text">⚠ Ada <span id="bulk-fail-count">0</span> pengingat gagal di filter ini</div>
+        <button class="br-btn" onclick="openBulkRetry()">Kirim ulang semua yang gagal</button>
       </div>
 
       <!-- TABLE -->
@@ -315,6 +349,27 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   </div>
 </div>
 </div>
+
+<!-- BULK RETRY CONFIRM MODAL -->
+<div class="overlay" id="m-bulk">
+  <div class="modal">
+    <div class="mhd">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--amber-bg);border:1px solid #fcd88a;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="var(--amber-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M8 1l7 13H1L8 1z"/><path d="M8 6v3M8 11.5v.5"/></svg>
+      </div>
+      <div class="m-title">Kirim ulang <span id="bulk-count">0</span> pengingat gagal?</div>
+      <div class="m-sub" style="margin-top:8px">Kredit dibutuhkan: <strong id="bulk-cred">0</strong> · Kredit tersisa: <strong id="bulk-rem">0</strong></div>
+      <div id="bulk-warn" style="display:none;margin-top:10px;font-size:11px;color:var(--red-dk);background:var(--red-bg);border:1px solid #f5c5c3;border-radius:6px;padding:8px 10px;line-height:1.5">Kredit tidak cukup untuk semua pengingat. Top up atau kurangi filter.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeBulkRetry()">Batal</button>
+      <button class="btn btn-lime btn-sm" id="bulk-confirm-btn" onclick="confirmBulkRetry()">Kirim Ulang</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
 
 <!-- LOGOUT MODAL -->
 <div class="overlay" id="m-logout">
@@ -422,6 +477,7 @@ function closeSidebar() { document.getElementById('sidebar').classList.remove('o
 /* ── STATE ── */
 let statusFilter = 'semua'
 let dateRange = 'week'
+let searchQuery = ''
 let currentPage = 1
 const PER_PAGE = 10
 
@@ -459,6 +515,7 @@ function getMonthStart() {
 /* ── FILTER / RENDER ── */
 function getFilteredReminders(u) {
   const rems = u.reminders || []
+  const cxs = u.customers || []
 
   // date range filter
   let rangeStart = null
@@ -476,6 +533,20 @@ function getFilteredReminders(u) {
   // status filter
   if (statusFilter !== 'semua') {
     filtered = filtered.filter(r => r.status === statusFilter)
+  }
+
+  // search filter — name or WA digits
+  const q = (searchQuery || '').toLowerCase().trim()
+  if (q) {
+    const qDigits = q.replace(/\D/g, '')
+    filtered = filtered.filter(r => {
+      if ((r.cxName || '').toLowerCase().includes(q)) return true
+      if (qDigits) {
+        const cx = cxs.find(c => c.id === r.cxId)
+        if (cx && (cx.wa || '').includes(qDigits)) return true
+      }
+      return false
+    })
   }
 
   // sort by date desc
@@ -558,9 +629,22 @@ function renderTable() {
 
   const mobileWrap = document.getElementById('log-cards-mobile')
 
+  // Bulk retry visibility
+  const failedCount = filtered.filter(r => r.status === 'gagal').length
+  const bulkBar = document.getElementById('bulk-retry-bar')
+  if (bulkBar) {
+    if (failedCount > 0 && !u.trialExpired) {
+      bulkBar.style.display = 'flex'
+      document.getElementById('bulk-fail-count').textContent = failedCount
+    } else {
+      bulkBar.style.display = 'none'
+    }
+  }
+
   if (pageRows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada log ditemukan untuk filter ini.</td></tr>'
-    mobileWrap.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada log ditemukan untuk filter ini.</div>'
+    const emptyMsg = '<div style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada pengingat yang cocok dengan filter ini.<br><button class="btn btn-ghost btn-sm" style="margin-top:14px" onclick="resetFilter()">Reset Filter</button></div>'
+    tbody.innerHTML = '<tr><td colspan="6" style="padding:0">' + emptyMsg + '</td></tr>'
+    mobileWrap.innerHTML = emptyMsg
     document.getElementById('pag-info').textContent = ''
     document.getElementById('pag-btns').innerHTML = ''
     return
@@ -577,11 +661,21 @@ function renderTable() {
     let chipHtml = ''
     if (r.status === 'terkirim') chipHtml = '<span class="badge b-lime">Terkirim</span>'
     else if (r.status === 'gagal') chipHtml = '<span class="badge b-red">Gagal</span>'
-    else if (r.status === 'pending') chipHtml = '<span class="badge b-amber">Pending</span>'
+    else if (r.status === 'pending') {
+      const sched = new Date(r.scheduledAt)
+      const isPast = sched < new Date()
+      const tStr = String(sched.getHours()).padStart(2,'0') + ':' + String(sched.getMinutes()).padStart(2,'0')
+      const lbl = isPast ? 'Pending \u00B7 segera' : 'Pending \u00B7 ' + tStr
+      chipHtml = '<span class="badge b-amber">' + lbl + '</span>'
+    }
 
     let actionHtml = ''
     if (r.status === 'gagal') {
-      actionHtml = '<button class="retry-btn" onclick="retryReminder(\'' + r.id + '\',this)">Coba Kirim Ulang</button>'
+      if (u.trialExpired) {
+        actionHtml = '<button class="retry-btn" disabled title="Subscribe untuk kirim ulang">Kirim Ulang</button>'
+      } else {
+        actionHtml = '<button class="retry-btn" onclick="retryReminder(\'' + r.id + '\',this)">Coba Kirim Ulang</button>'
+      }
     }
 
     let failInfoHtml = ''
@@ -646,6 +740,17 @@ function setStatusFilter(el, val) {
   renderTable()
 }
 
+let searchDebounce = null
+function onSearchInput() {
+  const v = document.getElementById('search-input').value
+  if (searchDebounce) clearTimeout(searchDebounce)
+  searchDebounce = setTimeout(() => {
+    searchQuery = v
+    currentPage = 1
+    renderTable()
+  }, 180)
+}
+
 function setDateRange(el, val) {
   dateRange = val
   currentPage = 1
@@ -666,12 +771,23 @@ function changePage(p) {
   renderTable()
 }
 
+/* ── CREDIT DEDUCT — global rule: subscription first, then top-up ── */
+function deductCredit(u) {
+  if ((u.subCreditsLeft || 0) > 0) { u.subCreditsLeft = (u.subCreditsLeft || 0) - 1; return true }
+  if ((u.topupCreditsLeft || 0) > 0) { u.topupCreditsLeft = (u.topupCreditsLeft || 0) - 1; return true }
+  return false
+}
+
 /* ── RETRY ── */
 function retryReminder(remId, btnEl) {
   const u = loadU()
   if (!u) return
+  if (u.trialExpired) {
+    showToast('Subscribe untuk kirim ulang', 'error')
+    return
+  }
   if ((u.remLeft || 0) <= 0) {
-    alert('Kredit habis! Silakan top up dulu.')
+    showToast('Kredit habis — top up atau subscribe dulu', 'error')
     return
   }
 
@@ -685,10 +801,9 @@ function retryReminder(remId, btnEl) {
     const rem = (u2.reminders || []).find(r => r.id === remId)
     if (!rem) return
 
+    if (!deductCredit(u2)) return
     rem.status = 'terkirim'
     rem.sentAt = new Date().toISOString()
-    u2.topupCreditsLeft = Math.max(0, (u2.topupCreditsLeft || 0) - 1)
-    u2.remLeft = (u2.subCreditsLeft || 0) + (u2.topupCreditsLeft || 0)
     saveU(u2)
 
     // Refresh everything
@@ -697,6 +812,103 @@ function retryReminder(remId, btnEl) {
     renderBadgeCounts(u2)
     renderTable()
   }, 1500)
+}
+
+/* ── BULK RETRY ── */
+function getFailedVisible() {
+  const u = loadU()
+  if (!u) return []
+  return getFilteredReminders(u).filter(r => r.status === 'gagal')
+}
+
+function openBulkRetry() {
+  const u = loadU()
+  if (!u) return
+  if (u.trialExpired) { showToast('Subscribe untuk kirim ulang', 'error'); return }
+  const failed = getFailedVisible()
+  if (failed.length === 0) return
+  const total = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+  document.getElementById('bulk-count').textContent = failed.length
+  document.getElementById('bulk-cred').textContent = failed.length
+  document.getElementById('bulk-rem').textContent = total
+  const btn = document.getElementById('bulk-confirm-btn')
+  if (total < failed.length) {
+    btn.disabled = true
+    btn.style.opacity = '.5'
+    document.getElementById('bulk-warn').style.display = 'block'
+  } else {
+    btn.disabled = false
+    btn.style.opacity = ''
+    document.getElementById('bulk-warn').style.display = 'none'
+  }
+  document.getElementById('m-bulk').classList.add('show')
+}
+
+function closeBulkRetry() { document.getElementById('m-bulk').classList.remove('show') }
+
+function confirmBulkRetry() {
+  const failed = getFailedVisible()
+  if (failed.length === 0) { closeBulkRetry(); return }
+  const u = loadU()
+  if (!u) return
+  const total = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+  if (total < failed.length) { closeBulkRetry(); showToast('Kredit tidak cukup', 'error'); return }
+
+  closeBulkRetry()
+  // Mark all as pending immediately
+  failed.forEach(rem => {
+    const r = (u.reminders || []).find(x => x.id === rem.id)
+    if (r) r.status = 'pending'
+  })
+  saveU(u)
+  renderTable(); renderBadgeCounts(u); renderMetrics(u)
+
+  // Staggered "send"
+  failed.forEach((rem, i) => {
+    setTimeout(() => {
+      const u2 = loadU()
+      if (!u2) return
+      const r = (u2.reminders || []).find(x => x.id === rem.id)
+      if (!r) return
+      if (deductCredit(u2)) {
+        r.status = 'terkirim'
+        r.sentAt = new Date().toISOString()
+      } else {
+        r.status = 'gagal'
+      }
+      saveU(u2)
+      if (i === failed.length - 1) {
+        bootSidebar(); renderMetrics(u2); renderBadgeCounts(u2); renderTable()
+        showToast(failed.length + ' pengingat berhasil dikirim ulang')
+      }
+    }, 1500 + (i * 300))
+  })
+}
+
+/* ── TOAST ── */
+function showToast(msg, type) {
+  const c = document.getElementById('toastContainer')
+  if (!c) return
+  const el = document.createElement('div')
+  el.className = 'toast' + (type === 'error' ? ' toast-err' : '')
+  el.textContent = msg
+  c.appendChild(el)
+  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300) }, 2600)
+}
+
+/* ── RESET FILTER ── */
+function resetFilter() {
+  statusFilter = 'semua'
+  dateRange = 'all'
+  searchQuery = ''
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === 'semua'))
+  document.querySelectorAll('.date-chip').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('.date-chip').forEach(t => { if (t.textContent.trim() === 'Semua') t.classList.add('active') })
+  const si = document.getElementById('search-input')
+  if (si) si.value = ''
+  currentPage = 1
+  const u = loadU()
+  if (u) { renderBadgeCounts(u); renderTable() }
 }
 
 /* ── EXPORT CSV ── */

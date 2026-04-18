@@ -179,11 +179,34 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .step-title{font-size:13px;font-weight:600;color:var(--ink)}
 .step-sub{font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.5}
 
-/* ── COPY TEXT BLOCK ── */
-.copy-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--ink2);line-height:1.75;position:relative;padding-right:60px}
-.copy-btn{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;padding:3px 8px;cursor:pointer;font-family:inherit;color:var(--ink3);transition:all .15s;white-space:nowrap}
-.copy-btn:hover{background:var(--lime-bg);color:var(--lime-dk);border-color:var(--lime2)}
-.copy-btn.copied{background:var(--lime-bg);color:var(--lime-dk);border-color:var(--lime2)}
+/* ── TEKS SIAP PAKAI — color-coded editable templates ── */
+.tpl-block{border-radius:var(--r-sm);overflow:hidden;margin-bottom:10px;border:1px solid;transition:border-color .15s}
+.tpl-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(0,0,0,.06)}
+.tpl-head-label{display:flex;align-items:center;gap:6px}
+.tpl-text{
+  width:100%;border:none;outline:none;padding:12px 14px;
+  font-family:'Sora',sans-serif;font-size:12.5px;line-height:1.7;
+  color:var(--ink);background:rgba(255,255,255,.55);resize:vertical;min-height:74px;display:block;
+}
+.tpl-text:focus{background:rgba(255,255,255,.85)}
+.tpl-actions{display:flex;gap:6px;padding:8px 14px;align-items:center;background:rgba(255,255,255,.4)}
+.tpl-edited{margin-right:auto;font-size:10px;font-weight:600;color:var(--ink3);font-style:italic;display:none}
+.tpl-block.is-edited .tpl-edited{display:inline}
+.tpl-btn{
+  font-size:10px;font-weight:700;padding:5px 11px;border-radius:5px;
+  border:1px solid var(--border2);background:#fff;cursor:pointer;font-family:inherit;
+  color:var(--ink3);transition:all .12s;white-space:nowrap;
+}
+.tpl-btn:hover{color:var(--ink);border-color:var(--ink3)}
+.tpl-btn.is-flash{background:var(--lime-bg);border-color:var(--lime2);color:var(--lime-dk)}
+.tpl-btn-reset{margin-left:0}
+/* Per-color schemes */
+.tpl-kasir{background:var(--lime-bg);border-color:#c8f07a}
+.tpl-kasir .tpl-head{color:var(--lime-dk);background:rgba(184,240,74,.25)}
+.tpl-blast{background:var(--blue-bg);border-color:#bfcff8}
+.tpl-blast .tpl-head{color:var(--blue-dk);background:rgba(37,99,235,.08)}
+.tpl-reply{background:var(--amber-bg);border-color:#fcd88a}
+.tpl-reply .tpl-head{color:var(--amber-dk);background:rgba(245,166,35,.12)}
 
 /* ── METRICS ── */
 .met-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:13px}
@@ -415,38 +438,38 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
           <!-- TEKS SIAP PAKAI -->
           <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
             <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px">Teks siap pakai</div>
-            <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Copy dan tempel langsung — tidak perlu tulis ulang</div>
+            <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Copy &amp; tempel — atau edit dulu sesuai gaya bisnis kamu. Otomatis tersimpan.</div>
+
             <!-- Kasir -->
-            <div style="margin-bottom:12px">
-              <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
-                🧾 Untuk print di kasir / dipajang
-              </div>
-              <div class="copy-block" id="text-kasir">
-                📱 Scan QR ini &amp; daftarkan nomor WA kamu<br>
-                Kami akan ingatkan kamu sebelum jadwal kunjungan berikutnya ✨
-                <button class="copy-btn" id="btn-kasir" onclick="copyText('text-kasir','btn-kasir')">Salin</button>
+            <div class="tpl-block tpl-kasir" data-key="kasir">
+              <div class="tpl-head"><span class="tpl-head-label">🧾 Untuk print di kasir / dipajang</span></div>
+              <textarea class="tpl-text" id="tpl-kasir" oninput="onTplEdit('kasir')" spellcheck="false"></textarea>
+              <div class="tpl-actions">
+                <span class="tpl-edited">✏️ disesuaikan</span>
+                <button class="tpl-btn tpl-btn-reset" onclick="resetTpl('kasir')" title="Kembalikan ke teks default">↺ Reset</button>
+                <button class="tpl-btn" id="btn-kasir" onclick="copyTpl('kasir','btn-kasir')">Salin</button>
               </div>
             </div>
+
             <!-- WA Blast -->
-            <div style="margin-bottom:12px">
-              <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
-                📲 Untuk WA blast ke pelanggan lama
-              </div>
-              <div class="copy-block" id="text-blast">
-                Halo! Daftarkan dirimu untuk dapat reminder kunjungan otomatis dari kami 😊<br>
-                → <span id="blast-link">getstarvio.com/checkin/—</span>
-                <button class="copy-btn" id="btn-blast" onclick="copyText('text-blast','btn-blast')">Salin</button>
+            <div class="tpl-block tpl-blast" data-key="blast">
+              <div class="tpl-head"><span class="tpl-head-label">📲 Untuk WA blast ke pelanggan lama</span></div>
+              <textarea class="tpl-text" id="tpl-blast" oninput="onTplEdit('blast')" spellcheck="false"></textarea>
+              <div class="tpl-actions">
+                <span class="tpl-edited">✏️ disesuaikan</span>
+                <button class="tpl-btn tpl-btn-reset" onclick="resetTpl('blast')" title="Kembalikan ke teks default">↺ Reset</button>
+                <button class="tpl-btn" id="btn-blast" onclick="copyTpl('blast','btn-blast')">Salin</button>
               </div>
             </div>
+
             <!-- Balasan -->
-            <div>
-              <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
-                💬 Balasan ke pelanggan yang baru daftar
-              </div>
-              <div class="copy-block" id="text-reply">
-                Terima kasih sudah daftar! 🌟<br>
-                Kami akan ingatkan kamu sebelum waktu kunjungan berikutnya via WhatsApp ini.
-                <button class="copy-btn" id="btn-reply" onclick="copyText('text-reply','btn-reply')">Salin</button>
+            <div class="tpl-block tpl-reply" data-key="reply">
+              <div class="tpl-head"><span class="tpl-head-label">💬 Balasan ke pelanggan yang baru daftar</span></div>
+              <textarea class="tpl-text" id="tpl-reply" oninput="onTplEdit('reply')" spellcheck="false"></textarea>
+              <div class="tpl-actions">
+                <span class="tpl-edited">✏️ disesuaikan</span>
+                <button class="tpl-btn tpl-btn-reset" onclick="resetTpl('reply')" title="Kembalikan ke teks default">↺ Reset</button>
+                <button class="tpl-btn" id="btn-reply" onclick="copyTpl('reply','btn-reply')">Salin</button>
               </div>
             </div>
           </div>
@@ -507,7 +530,31 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
         </div>
         <div class="acc-body">
 
+          <!-- LOGO BISNIS UPLOAD (opsional) — di atas Nama Bisnis -->
           <div class="field" style="margin-top:14px">
+            <label class="field-label">Logo Bisnis <span style="font-size:10px;font-weight:500;color:var(--ink3);text-transform:none;letter-spacing:0;margin-left:4px">(opsional)</span></label>
+            <div style="font-size:11px;color:var(--ink3);margin-top:-4px;margin-bottom:8px;line-height:1.5">Tampil di halaman check-in pelanggan dan QR print. PNG/JPG, max 200KB.</div>
+            <div id="logoUploadArea" style="display:flex;align-items:center;gap:14px">
+              <!-- Preview / placeholder -->
+              <div id="logoPreview" style="width:120px;height:120px;border:2px dashed var(--border2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;background:var(--bg3);overflow:hidden;flex-shrink:0;cursor:pointer;transition:border-color .15s" onclick="document.getElementById('logoFileInput').click()">
+                <div id="logoPlaceholder" style="text-align:center;color:var(--ink3);font-size:11px;line-height:1.4">
+                  <div style="font-size:22px;margin-bottom:4px">📷</div>
+                  Upload logo
+                </div>
+                <img id="logoImg" style="display:none;width:100%;height:100%;object-fit:contain" alt="Logo bisnis">
+              </div>
+              <!-- Buttons -->
+              <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+                <button type="button" class="btn btn-ghost btn-sm" id="btnLogoChange" onclick="document.getElementById('logoFileInput').click()" style="justify-content:center">📤 Upload</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="btnLogoRemove" onclick="confirmRemoveLogo()" style="display:none;justify-content:center;color:var(--red-dk);border-color:#f5c5c3">🗑️ Hapus</button>
+                <div id="logoError" style="display:none;font-size:11px;color:var(--red-dk);background:var(--red-bg);border:1px solid #f5c5c3;border-radius:var(--r-sm);padding:6px 10px;line-height:1.4"></div>
+                <div id="logoWarning" style="display:none;font-size:11px;color:var(--amber-dk);background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:6px 10px;line-height:1.4"></div>
+              </div>
+              <input type="file" id="logoFileInput" accept=".png,.jpg,.jpeg,image/png,image/jpeg" style="display:none" onchange="handleLogoUpload(event)">
+            </div>
+          </div>
+
+          <div class="field">
             <label class="field-label">Nama Bisnis</label>
             <input type="text" class="field-input" id="inp-bizName" placeholder="Nama bisnis kamu">
           </div>
@@ -529,6 +576,15 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
           <div class="field">
             <label class="field-label">Nama Admin</label>
             <input type="text" class="field-input" id="inp-adminName" placeholder="Nama kamu">
+          </div>
+
+          <div class="field">
+            <label class="field-label">Rata-rata Harga Layanan <span style="font-size:10px;font-weight:500;color:var(--ink3);text-transform:none;letter-spacing:0;margin-left:4px">(untuk ROI calculation di dashboard)</span></label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:14px;font-weight:600;color:var(--ink2);font-family:'JetBrains Mono',monospace">Rp</span>
+              <input type="number" class="field-input" id="inp-avgServiceValue" placeholder="150000" min="1000" step="10000" style="font-family:'JetBrains Mono',monospace;font-weight:600">
+            </div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:5px;line-height:1.5">Dipakai untuk estimasi pendapatan dari pengingat (Estimasi Revenue = pelanggan kembali × harga rata-rata).</div>
           </div>
 
           <div class="field">
@@ -733,13 +789,8 @@ function loadU() {
   } catch(e) { return null }
 }
 
-function showTrialLockOverlay() { const el = document.getElementById('trialLockOverlay'); if (el) el.style.display = 'flex' }
-function checkTrialLock() {
-  const u = loadU()
-  if (!u || !u.trialExpired) return
-  if (location.pathname.includes('billing')) return
-  showTrialLockOverlay()
-}
+/* Settings EXEMPT dari trial lock — owner harus bisa upload logo, dapatkan QR, export data sebelum subscribe */
+function checkTrialLock() {}
 
 function saveU(u) {
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
@@ -850,11 +901,150 @@ function saveProfile() {
   u.adminName = document.getElementById('inp-adminName').value.trim()
   u.country = document.getElementById('inp-country').value
   u.timezone = document.getElementById('inp-timezone').value
+  var avg = parseInt(document.getElementById('inp-avgServiceValue').value) || 150000
+  u.avgServiceValue = Math.max(1000, avg)
   saveU(u)
   bootSidebar()
   var accProfilSub = document.getElementById('acc-profil-sub')
   if (accProfilSub) accProfilSub.textContent = u.bizName || '—'
   showToast('Profil berhasil disimpan!')
+}
+
+/* ══════════════════════════════════════════════
+   LOGO UPLOAD — canvas resize + validation
+   ══════════════════════════════════════════════ */
+const LOGO_MAX_KB = 200
+const LOGO_RESIZE_PX = 120
+
+function loadLogoFromU() {
+  const u = loadU()
+  if (!u) return
+  if (u.bizLogo) {
+    showLogoPreview(u.bizLogo)
+  } else {
+    hideLogoPreview()
+  }
+}
+
+function showLogoPreview(dataUrl) {
+  const img = document.getElementById('logoImg')
+  const ph = document.getElementById('logoPlaceholder')
+  const removeBtn = document.getElementById('btnLogoRemove')
+  const previewBox = document.getElementById('logoPreview')
+  img.src = dataUrl
+  img.style.display = 'block'
+  ph.style.display = 'none'
+  removeBtn.style.display = ''
+  previewBox.style.borderStyle = 'solid'
+  previewBox.style.borderColor = 'var(--lime2)'
+  previewBox.style.background = '#fff'
+}
+
+function hideLogoPreview() {
+  const img = document.getElementById('logoImg')
+  const ph = document.getElementById('logoPlaceholder')
+  const removeBtn = document.getElementById('btnLogoRemove')
+  const previewBox = document.getElementById('logoPreview')
+  img.src = ''
+  img.style.display = 'none'
+  ph.style.display = ''
+  removeBtn.style.display = 'none'
+  previewBox.style.borderStyle = 'dashed'
+  previewBox.style.borderColor = 'var(--border2)'
+  previewBox.style.background = 'var(--bg3)'
+}
+
+function showLogoError(msg) {
+  const el = document.getElementById('logoError')
+  el.textContent = msg
+  el.style.display = ''
+  document.getElementById('logoWarning').style.display = 'none'
+}
+
+function showLogoWarning(msg) {
+  const el = document.getElementById('logoWarning')
+  el.textContent = msg
+  el.style.display = ''
+}
+
+function clearLogoMessages() {
+  document.getElementById('logoError').style.display = 'none'
+  document.getElementById('logoWarning').style.display = 'none'
+}
+
+function handleLogoUpload(event) {
+  clearLogoMessages()
+  const file = event.target.files[0]
+  if (!file) return
+
+  // Format check
+  if (!/^image\/(png|jpeg|jpg)$/i.test(file.type)) {
+    showLogoError('Format harus PNG atau JPG.')
+    event.target.value = ''
+    return
+  }
+
+  // Size check (200KB)
+  if (file.size > LOGO_MAX_KB * 1024) {
+    showLogoError('Ukuran file maks ' + LOGO_MAX_KB + 'KB. File kamu ' + Math.round(file.size / 1024) + 'KB.')
+    event.target.value = ''
+    return
+  }
+
+  // Read file → load as image → resize via canvas → save
+  const reader = new FileReader()
+  reader.onload = function(e) {
+    const img = new Image()
+    img.onload = function() {
+      // Aspect ratio warning (square-ish: ratio max 1.5)
+      const w = img.naturalWidth, h = img.naturalHeight
+      const ratio = Math.max(w, h) / Math.min(w, h)
+      if (ratio > 1.5) {
+        showLogoWarning('Logo tidak square — bagian gambar mungkin terpotong saat ditampilkan.')
+      }
+
+      // Resize to max 120x120 (preserve aspect ratio with contain logic)
+      const scale = Math.min(LOGO_RESIZE_PX / w, LOGO_RESIZE_PX / h, 1)
+      const newW = Math.round(w * scale)
+      const newH = Math.round(h * scale)
+      const canvas = document.createElement('canvas')
+      canvas.width = newW
+      canvas.height = newH
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, newW, newH)
+      // Use original format for better quality (PNG keeps transparency)
+      const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg'
+      const dataUrl = canvas.toDataURL(outType, 0.85)
+
+      // Save to U.bizLogo
+      const u = loadU()
+      if (!u) return
+      u.bizLogo = dataUrl
+      saveU(u)
+      showLogoPreview(dataUrl)
+      showToast('Logo berhasil di-upload!')
+    }
+    img.onerror = function() {
+      showLogoError('Gagal membaca file gambar. Coba file lain.')
+    }
+    img.src = e.target.result
+  }
+  reader.onerror = function() {
+    showLogoError('Gagal membaca file.')
+  }
+  reader.readAsDataURL(file)
+  event.target.value = '' // reset agar bisa upload file yg sama lagi
+}
+
+function confirmRemoveLogo() {
+  if (!confirm('Hapus logo bisnis? Halaman check-in akan kembali pakai inisial.')) return
+  const u = loadU()
+  if (!u) return
+  u.bizLogo = null
+  saveU(u)
+  hideLogoPreview()
+  clearLogoMessages()
+  showToast('Logo dihapus.')
 }
 
 /* ── SAVE WA ── */
@@ -946,15 +1136,101 @@ function copyLink() {
   flashBtn('copy-link-btn', '✓ Disalin', 'Salin')
 }
 
-/* ── COPY TEXT ── */
-function copyText(srcId, btnId) {
-  var el = document.getElementById(srcId)
-  var clone = el.cloneNode(true)
-  var btns = clone.querySelectorAll('button')
-  btns.forEach(function(b){ b.remove() })
-  var text = clone.innerText.trim()
+/* ══════════════════════════════════════════
+   TEKS SIAP PAKAI — color-coded editable templates
+   Placeholder format: {bizName}, {link}
+   Custom edits saved to U.qrTexts (raw with placeholders).
+   ══════════════════════════════════════════ */
+var DEFAULT_QR_TEXTS = {
+  kasir: '\uD83D\uDCF1 Scan & daftar — kami ingatkan via WhatsApp\nsebelum kunjungan kamu berikutnya\n\n\u2713 Cuma 10 detik \u00B7 cuma butuh nomor WA',
+  blast: 'Halo! \uD83D\uDC4B\n\nSekarang {bizName} kirim pengingat otomatis lewat WhatsApp\nbiar kamu ga lupa jadwal perawatan berikutnya.\n\nDaftar sekali, gratis: {link}',
+  reply: 'Makasih udah daftar di {bizName} \uD83C\uDF1F\n\nKami akan kirim pengingat ke WhatsApp ini beberapa hari\nsebelum jadwal perawatan kamu berikutnya.\n\nSampai ketemu lagi! \uD83D\uDC4B'
+}
+
+function renderTplString(raw, u) {
+  if (!u) u = loadU()
+  var biz = (u && u.bizName) || 'Bisnis Kamu'
+  var slug = (u && u.bizSlug) || 'bisnis-kamu'
+  var link = 'getstarvio.com/checkin/' + slug
+  return (raw || '').replace(/\{bizName\}/g, biz).replace(/\{link\}/g, link)
+}
+
+function getTplRaw(key, u) {
+  if (!u) u = loadU()
+  var saved = u && u.qrTexts && u.qrTexts[key]
+  return (typeof saved === 'string' && saved.length > 0) ? saved : DEFAULT_QR_TEXTS[key]
+}
+
+function isTplEdited(key, u) {
+  if (!u) u = loadU()
+  var saved = u && u.qrTexts && u.qrTexts[key]
+  return typeof saved === 'string' && saved !== DEFAULT_QR_TEXTS[key]
+}
+
+function renderAllTpls() {
+  var u = loadU()  // bisa null — render default tetap jalan dengan fallback bizName/link
+  ;['kasir','blast','reply'].forEach(function(key) {
+    var ta = document.getElementById('tpl-' + key)
+    if (!ta) return
+    ta.value = renderTplString(getTplRaw(key, u), u)
+    var block = document.querySelector('.tpl-block[data-key="' + key + '"]')
+    if (block) block.classList.toggle('is-edited', isTplEdited(key, u))
+  })
+}
+
+var _tplSaveTimers = {}
+function onTplEdit(key) {
+  var ta = document.getElementById('tpl-' + key)
+  if (!ta) return
+  var u = loadU()
+  if (!u) return
+  // Reverse-substitute bizName & link back to placeholders, so edits survive name changes.
+  var biz = u.bizName || 'Bisnis Kamu'
+  var slug = u.bizSlug || 'bisnis-kamu'
+  var link = 'getstarvio.com/checkin/' + slug
+  var raw = ta.value
+  if (biz) raw = raw.split(biz).join('{bizName}')
+  if (link) raw = raw.split(link).join('{link}')
+
+  if (_tplSaveTimers[key]) clearTimeout(_tplSaveTimers[key])
+  _tplSaveTimers[key] = setTimeout(function() {
+    var u2 = loadU()
+    if (!u2) return
+    if (!u2.qrTexts) u2.qrTexts = {}
+    u2.qrTexts[key] = raw
+    saveU(u2)
+    var block = document.querySelector('.tpl-block[data-key="' + key + '"]')
+    if (block) block.classList.toggle('is-edited', isTplEdited(key, u2))
+  }, 350)
+}
+
+function resetTpl(key) {
+  var u = loadU()
+  if (!u) return
+  if (u.qrTexts && u.qrTexts[key]) {
+    delete u.qrTexts[key]
+    saveU(u)
+  }
+  var ta = document.getElementById('tpl-' + key)
+  if (ta) ta.value = renderTplString(DEFAULT_QR_TEXTS[key], u)
+  var block = document.querySelector('.tpl-block[data-key="' + key + '"]')
+  if (block) block.classList.remove('is-edited')
+  flashBtn('btn-' + key, '\u2713 Reset', 'Salin')
+}
+
+function copyTpl(key, btnId) {
+  var ta = document.getElementById('tpl-' + key)
+  if (!ta) return
+  var text = ta.value.trim()
   if (navigator.clipboard) { navigator.clipboard.writeText(text) }
-  flashBtn(btnId, '✓ Tersalin', 'Salin')
+  else { ta.select(); document.execCommand('copy') }
+  flashBtn(btnId, '\u2713 Tersalin', 'Salin')
+}
+
+/* ── BACK-COMPAT shim (kalau ada onclick lama yang masih panggil copyText) ── */
+function copyText(srcId, btnId) {
+  var key = (srcId || '').replace(/^text-|^tpl-/, '')
+  copyTpl(key, btnId)
 }
 
 /* ── FLASH BUTTON ── */
@@ -974,12 +1250,10 @@ function flashBtn(btnId, flashText, origText) {
   }, 1800)
 }
 
-/* ── SHARE WA ── */
+/* ── SHARE WA — pakai template "blast" (custom kalau owner sudah edit) ── */
 function shareWA() {
   var u = loadU()
-  var slug = (u && u.bizSlug) || 'bisnis-kamu'
-  var link = 'https://getstarvio.com/checkin/' + slug
-  var msg = 'Halo! Daftarkan dirimu untuk dapat reminder kunjungan otomatis dari kami 😊\n→ ' + link
+  var msg = renderTplString(getTplRaw('blast', u), u)
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
 }
 
@@ -988,29 +1262,47 @@ function printQR() {
   var u = loadU()
   var slug = (u && u.bizSlug) || 'bisnis-kamu'
   var bizName = (u && u.bizName) || 'Bisnis Kamu'
-  var win = window.open('','_blank','width=500,height=600')
+  var bizLogo = (u && u.bizLogo) || ''
+  var initial = bizName.trim().charAt(0).toUpperCase() || 'B'
+  // Logo block: image kalau ada, fallback initial circle
+  var logoHtml = bizLogo
+    ? '<div class="logo-circle"><img src="'+bizLogo+'" alt="Logo"></div>'
+    : '<div class="logo-circle logo-initial">'+initial+'</div>'
+
+  var win = window.open('','_blank','width=500,height=700')
   win.document.write('<!DOCTYPE html><html><head>' +
     '<meta charset="UTF-8">' +
     '<title>QR Check-in — '+bizName+'</title>' +
-    '<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet">' +
+    '<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">' +
     '<style>' +
-      'body{margin:0;padding:0;font-family:Sora,sans-serif;background:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh}' +
-      '.wrap{text-align:center;padding:32px}' +
-      '.top{font-size:14px;font-weight:700;color:#1a1917;margin-bottom:6px}' +
-      '.sub{font-size:12px;color:#9b9a92;margin-bottom:20px}' +
-      '.qr-box{background:#fff;border:2px solid #e2e1d9;border-radius:12px;padding:18px;display:inline-block;margin-bottom:16px}' +
-      '.slug{font-size:11px;font-family:monospace;color:#9b9a92;margin-bottom:12px}' +
-      '.cta{font-size:13px;font-weight:700;color:#2d4a00;background:#edfac8;border:1.5px solid #9fd93a;padding:10px 24px;border-radius:99px;display:inline-block}' +
+      'body{margin:0;padding:0;font-family:Sora,sans-serif;background:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;color:#1a1917}' +
+      '.wrap{text-align:center;padding:40px 32px;max-width:380px}' +
+      '.logo-circle{width:80px;height:80px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:#b8f04a;color:#2d4a00;font-size:34px;font-weight:700;overflow:hidden;border:2px solid #9fd93a}' +
+      '.logo-circle img{width:100%;height:100%;object-fit:cover;display:block}' +
+      '.biz-name{font-size:22px;font-weight:800;color:#1a1917;margin-bottom:6px;letter-spacing:-.3px;line-height:1.2}' +
+      '.tagline{font-size:13px;color:#5c5b55;margin-bottom:22px;line-height:1.5}' +
+      '.qr-box{background:#fff;border:2px solid #e2e1d9;border-radius:14px;padding:18px;display:inline-block;margin-bottom:18px}' +
+      '.scan-cta{font-size:16px;font-weight:700;color:#1a1917;margin-bottom:14px;line-height:1.3}' +
+      '.value-row{display:flex;justify-content:center;gap:18px;margin-bottom:18px;flex-wrap:wrap}' +
+      '.value-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#2d4a00;font-weight:600;background:#edfac8;border:1px solid #c8f07a;padding:4px 10px;border-radius:99px}' +
+      '.slug{font-size:11px;font-family:monospace;color:#9b9a92;margin-bottom:24px;letter-spacing:.02em}' +
+      '.powered{font-size:10px;color:#c2c1b8;font-weight:500;border-top:1px solid #e2e1d9;padding-top:14px;margin-top:8px}' +
     '</style>' +
     '</head><body>' +
     '<div class="wrap">' +
-      '<div class="top">'+bizName+'</div>' +
-      '<div class="sub">Scan untuk daftar &amp; dapat reminder kunjungan otomatis</div>' +
+      logoHtml +
+      '<div class="biz-name">'+bizName+'</div>' +
+      '<div class="tagline">Daftar sekali, dapat pengingat otomatis<br>via WhatsApp sebelum kunjungan kamu</div>' +
       '<div class="qr-box">' +
         document.getElementById('qr-svg').outerHTML +
       '</div>' +
+      '<div class="scan-cta">Scan QR ini untuk daftar</div>' +
+      '<div class="value-row">' +
+        '<span class="value-item">\u2713 Cuma 10 detik</span>' +
+        '<span class="value-item">\u2713 Tanpa aplikasi</span>' +
+      '</div>' +
       '<div class="slug">getstarvio.com/checkin/'+slug+'</div>' +
-      '<div class="cta">📱 Scan QR ini — gratis, &lt;10 detik</div>' +
+      '<div class="powered">Powered by getstarvio</div>' +
     '</div>' +
     '</body></html>')
   win.document.close()
@@ -1054,7 +1346,9 @@ function boot() {
   var link = 'getstarvio.com/checkin/' + slug
   document.getElementById('qr-slug').textContent = link
   document.getElementById('link-display').textContent = link
-  document.getElementById('blast-link').textContent = link
+
+  // Render 3 editable copy templates (kasir, blast, reply)
+  renderAllTpls()
 
   // Stats
   var cxs = U.customers || []
@@ -1073,6 +1367,8 @@ function boot() {
   document.getElementById('inp-bizName').value = U.bizName || ''
   document.getElementById('inp-adminName').value = U.adminName || ''
   document.getElementById('inp-email').value = U.email || ''
+  document.getElementById('inp-avgServiceValue').value = U.avgServiceValue || 150000
+  loadLogoFromU()
 
   // Select biz type
   selectedBizType = U.bizType || ''
@@ -1114,27 +1410,13 @@ function boot() {
 
 /* ── INIT ── */
 window.addEventListener('DOMContentLoaded', function() {
+  // Render templates first — selalu jalan, walau loadU() null
+  renderAllTpls()
   boot()
   bootSidebar()
   checkTrialLock()
 })
 </script>
-
-<!-- Trial Hard Lock Overlay -->
-<div id="trialLockOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;font-family:'Sora',sans-serif">
-  <div style="background:#fff;border-radius:16px;padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)">
-    <div style="font-size:48px;margin-bottom:14px">🔒</div>
-    <div style="font-size:22px;font-weight:700;color:#1a1917;margin-bottom:8px">Trial selesai</div>
-    <div style="font-size:13px;color:#5c5b55;line-height:1.6;margin-bottom:20px">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:#edfac8;border:1px solid #c8f07a;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#2d4a00">
-      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
-      <strong style="font-size:18px;font-weight:700">Rp 249.000/bulan</strong>
-      <span style="font-size:10px;font-weight:700;background:#b8f04a;color:#2d4a00;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em">Early Access 50% off</span>
-    </div>
-    <a href="getstarvio-billing.html" style="display:block;width:100%;padding:14px;background:#b8f04a;color:#2d4a00;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;box-shadow:0 4px 16px rgba(184,240,74,.3);box-sizing:border-box">Subscribe Sekarang →</a>
-    <a href="getstarvio-billing.html" style="display:inline-block;font-size:11px;color:#9b9a92;text-decoration:underline">Lihat detail di Billing</a>
-  </div>
-</div>
 
 </body>
 </html>

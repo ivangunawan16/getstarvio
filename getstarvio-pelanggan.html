@@ -179,6 +179,74 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .phone-row{display:flex;gap:8px}
 .phone-code{width:90px;flex-shrink:0}
 
+/* ── TOPBAR ACTIONS ── */
+.tb-actions{display:flex;gap:6px;align-items:center}
+
+/* ── IMPORT MODAL ── */
+.import-modal{width:560px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column}
+.import-body{padding:18px 22px;overflow-y:auto;flex:1}
+.import-steps{display:flex;align-items:center;gap:6px;padding:14px 22px 0;font-size:11px;font-weight:600;color:var(--ink3);flex-shrink:0}
+.import-step{display:inline-flex;align-items:center;gap:5px}
+.import-step-num{width:18px;height:18px;border-radius:50%;background:var(--bg3);color:var(--ink3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.import-step.active .import-step-num{background:var(--lime);color:var(--lime-dk)}
+.import-step.done .import-step-num{background:var(--lime-dk);color:#fff}
+.import-step.active{color:var(--ink)}
+.import-step-sep{flex:1;height:1px;background:var(--border);max-width:32px}
+
+.import-info{font-size:12px;color:var(--ink2);line-height:1.6;margin-bottom:14px}
+.import-note{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;font-size:11px;color:var(--ink2);line-height:1.7;margin-top:12px}
+.import-note ul{margin:4px 0 0 18px;padding:0}
+.import-note li{margin-bottom:3px}
+
+.dropzone{
+  border:2px dashed var(--border2);border-radius:var(--r-lg);
+  padding:32px 20px;text-align:center;cursor:pointer;transition:all .15s;
+  background:var(--bg3);
+}
+.dropzone:hover,.dropzone.drag-over{border-color:var(--lime2);background:var(--lime-bg)}
+.dropzone-ic{font-size:36px;margin-bottom:10px}
+.dropzone-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.dropzone-sub{font-size:11px;color:var(--ink3)}
+
+.import-summary{
+  display:flex;gap:8px;padding:10px 12px;border-radius:var(--r-sm);
+  background:var(--bg3);border:1px solid var(--border);margin-bottom:12px;
+  flex-wrap:wrap;font-size:11px;
+}
+.import-summary .pill{padding:3px 9px;border-radius:99px;font-weight:700}
+.pill-ok{background:var(--lime-bg);color:var(--lime-dk);border:1px solid #c8f07a}
+.pill-warn{background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a}
+.pill-err{background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3}
+.pill-info{background:var(--blue-bg);color:var(--blue-dk);border:1px solid #bfcff8}
+
+.preview-table{width:100%;border-collapse:collapse;font-size:11px}
+.preview-table th{
+  background:var(--bg3);color:var(--ink3);text-align:left;
+  padding:7px 9px;font-size:10px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;border-bottom:1px solid var(--border);position:sticky;top:0;
+}
+.preview-table td{padding:7px 9px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:top}
+.preview-table tr.row-warn td{background:#fff8e6}
+.preview-table tr.row-err td{background:#fdf1f0;color:var(--red-dk);text-decoration:line-through}
+.row-msg{font-size:10px;color:var(--ink3);margin-top:2px;font-style:italic}
+.row-msg.r-warn{color:var(--amber-dk)}
+.row-msg.r-err{color:var(--red-dk);text-decoration:none;font-style:normal}
+
+.preview-wrap{max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r-sm)}
+
+.skip-list{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:8px 12px;max-height:160px;overflow-y:auto;font-size:11px;color:var(--ink2);
+}
+.skip-list li{margin:3px 0}
+
+@media(max-width:520px){
+  .tb-btn-label,.tb-btn-label-add{display:none}
+  .tb-btn-label-add-mobile{display:inline!important}
+  .tb-import,.tb-export{padding:6px 10px}
+  .preview-table th,.preview-table td{padding:6px}
+}
+
 /* ── SIDEBAR OVERLAY (mobile) ── */
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
 .sidebar-overlay.open{display:block}
@@ -262,10 +330,21 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
       <span class="tb-title">Pelanggan</span>
       <span class="tb-sub" id="tb-sub">—</span>
     </div>
-    <button class="btn btn-lime btn-sm" onclick="openAddModal()">
-      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
-      Tambah Pelanggan
-    </button>
+    <div class="tb-actions">
+      <button class="btn btn-ghost btn-sm tb-import" onclick="openImport()" title="Import CSV">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 12V3M5 6l3-3 3 3"/><path d="M3 13h10"/></svg>
+        <span class="tb-btn-label">Import CSV</span>
+      </button>
+      <button class="btn btn-ghost btn-sm tb-export" onclick="exportCustomersCSV()" title="Export CSV">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v9M5 9l3 3 3-3"/><path d="M3 13h10"/></svg>
+        <span class="tb-btn-label">Export CSV</span>
+      </button>
+      <button class="btn btn-lime btn-sm" onclick="openAddModal()">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+        <span class="tb-btn-label-add">Tambah Pelanggan</span>
+        <span class="tb-btn-label-add-mobile" style="display:none">Tambah</span>
+      </button>
+    </div>
   </div>
 
   <div class="db-content">
@@ -451,6 +530,87 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
     <div class="mftr">
       <button class="btn btn-ghost btn-sm" onclick="closeAddModal()">Batal</button>
       <button class="btn btn-lime btn-sm" onclick="saveAdd()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT CSV MODAL -->
+<div class="overlay" id="import-modal" onclick="if(event.target===this)closeImport()">
+  <div class="modal import-modal">
+    <div class="mhd">
+      <div>
+        <div class="m-title">Import Pelanggan dari CSV</div>
+        <div class="m-sub">Tambah banyak pelanggan sekaligus dari file CSV.</div>
+      </div>
+      <button class="close-btn" onclick="closeImport()">×</button>
+    </div>
+    <div class="import-steps">
+      <div class="import-step active" data-stage="1"><span class="import-step-num">1</span> Template</div>
+      <div class="import-step-sep"></div>
+      <div class="import-step" data-stage="2"><span class="import-step-num">2</span> Upload</div>
+      <div class="import-step-sep"></div>
+      <div class="import-step" data-stage="3"><span class="import-step-num">3</span> Preview</div>
+      <div class="import-step-sep"></div>
+      <div class="import-step" data-stage="4"><span class="import-step-num">4</span> Selesai</div>
+    </div>
+    <div class="import-body">
+      <!-- STAGE 1: Template -->
+      <div id="import-stage-1">
+        <div class="import-info">Download template CSV, isi data pelanggan kamu, lalu upload kembali. File harus berformat <strong>.csv</strong>.</div>
+        <button class="btn btn-lime btn-sm" onclick="downloadTemplate()" style="width:100%;padding:12px">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v9M5 9l3 3 3-3"/><path d="M3 13h10"/></svg>
+          Download Template CSV
+        </button>
+        <div class="import-note">
+          <strong>Aturan pengisian:</strong>
+          <ul>
+            <li>Nama dan No WA <strong>wajib</strong> diisi</li>
+            <li>No WA tanpa 0 di depan, tanpa +62 (contoh: <code>81234567890</code>)</li>
+            <li>Layanan harus sesuai nama kategori yang sudah kamu buat</li>
+            <li>Tanggal format <code>YYYY-MM-DD</code> (contoh: <code>2026-04-01</code>)</li>
+            <li>Satu baris = satu pelanggan + satu layanan. Pelanggan dengan beberapa layanan = beberapa baris dengan No WA sama.</li>
+          </ul>
+        </div>
+      </div>
+      <!-- STAGE 2: Upload -->
+      <div id="import-stage-2" style="display:none">
+        <div class="dropzone" id="import-dropzone">
+          <div class="dropzone-ic">📤</div>
+          <div class="dropzone-title">Drag &amp; drop file CSV ke sini</div>
+          <div class="dropzone-sub">atau klik untuk pilih file (.csv, max 1MB)</div>
+          <input type="file" id="import-file-input" accept=".csv,text/csv" style="display:none">
+        </div>
+        <div id="import-error" style="display:none;margin-top:10px;font-size:12px;color:var(--red-dk);background:var(--red-bg);border:1px solid #f5c5c3;border-radius:6px;padding:8px 10px"></div>
+      </div>
+      <!-- STAGE 3: Preview -->
+      <div id="import-stage-3" style="display:none">
+        <div class="import-summary" id="import-summary"></div>
+        <div class="preview-wrap">
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th>Nama</th><th>No WA</th><th>Layanan</th><th>Tanggal</th>
+              </tr>
+            </thead>
+            <tbody id="import-preview-tbody"></tbody>
+          </table>
+        </div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:8px" id="import-trunc-note"></div>
+      </div>
+      <!-- STAGE 4: Done -->
+      <div id="import-stage-4" style="display:none;text-align:center;padding:14px 0">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--lime-bg);border:2px solid var(--lime2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;color:var(--lime-dk)">✓</div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Import selesai</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.6;margin-bottom:14px" id="import-result-summary">—</div>
+        <details id="import-skip-details" style="display:none;text-align:left;margin-top:14px">
+          <summary style="font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer;margin-bottom:8px">Lihat baris yang di-skip</summary>
+          <ul class="skip-list" id="import-skip-list"></ul>
+        </details>
+      </div>
+    </div>
+    <div class="mftr" id="import-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeImport()">Batal</button>
+      <button class="btn btn-lime btn-sm" id="import-next-btn" onclick="importNext()">Lanjut — Upload File</button>
     </div>
   </div>
 </div>
@@ -1074,6 +1234,332 @@ function saveAdd() {
   saveU(U)
   closeAddModal()
   renderCards()
+}
+
+/* ══════════════════════════════════════════
+   CSV IMPORT
+   ══════════════════════════════════════════ */
+var IMPORT_STATE = { stage: 1, parsedRows: [], validation: [], stats: null }
+
+function openImport() {
+  if (U && U.trialExpired) { alert('Subscribe untuk import. Trial sudah selesai.'); return }
+  IMPORT_STATE = { stage: 1, parsedRows: [], validation: [], stats: null }
+  setImportStage(1)
+  document.getElementById('import-modal').classList.add('show')
+  // Wire dropzone once
+  if (!document.getElementById('import-dropzone').dataset.wired) {
+    wireDropzone()
+    document.getElementById('import-dropzone').dataset.wired = '1'
+  }
+}
+
+function closeImport() {
+  document.getElementById('import-modal').classList.remove('show')
+}
+
+function setImportStage(n) {
+  IMPORT_STATE.stage = n
+  for (var i = 1; i <= 4; i++) {
+    var section = document.getElementById('import-stage-' + i)
+    if (section) section.style.display = (i === n) ? 'block' : 'none'
+    var step = document.querySelector('.import-step[data-stage="' + i + '"]')
+    if (step) {
+      step.classList.toggle('active', i === n)
+      step.classList.toggle('done', i < n)
+    }
+  }
+  var nextBtn = document.getElementById('import-next-btn')
+  var footer = document.getElementById('import-footer')
+  footer.style.display = 'flex'
+  if (n === 1) {
+    nextBtn.style.display = 'inline-flex'
+    nextBtn.textContent = 'Lanjut — Upload File'
+    nextBtn.disabled = false
+  } else if (n === 2) {
+    nextBtn.style.display = 'none'
+  } else if (n === 3) {
+    nextBtn.style.display = 'inline-flex'
+    var validCount = IMPORT_STATE.validation.filter(function(v){return v.isValid}).length
+    nextBtn.textContent = 'Import ' + validCount + ' Pelanggan'
+    nextBtn.disabled = validCount === 0
+  } else if (n === 4) {
+    nextBtn.style.display = 'inline-flex'
+    nextBtn.textContent = 'Selesai'
+  }
+}
+
+function importNext() {
+  if (IMPORT_STATE.stage === 1) setImportStage(2)
+  else if (IMPORT_STATE.stage === 3) doBulkInsert()
+  else if (IMPORT_STATE.stage === 4) { closeImport(); renderCards() }
+}
+
+function downloadTemplate() {
+  var BOM = '\uFEFF'
+  var csv = BOM + 'Nama,No WA,Layanan,Tanggal Kunjungan Terakhir\n' +
+    'Mia Rahayu,81234567890,Facial Treatment,2026-04-01\n' +
+    'Sari Dewi,85678901234,Manicure & Pedicure,2026-03-28\n'
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  var url = URL.createObjectURL(blob)
+  var a = document.createElement('a')
+  a.href = url
+  a.download = 'template-pelanggan-getstarvio.csv'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+function wireDropzone() {
+  var dz = document.getElementById('import-dropzone')
+  var input = document.getElementById('import-file-input')
+  dz.onclick = function() { input.click() }
+  input.onchange = function() { if (input.files[0]) handleImportFile(input.files[0]) }
+  dz.ondragover = function(e) { e.preventDefault(); dz.classList.add('drag-over') }
+  dz.ondragleave = function() { dz.classList.remove('drag-over') }
+  dz.ondrop = function(e) {
+    e.preventDefault(); dz.classList.remove('drag-over')
+    if (e.dataTransfer.files[0]) handleImportFile(e.dataTransfer.files[0])
+  }
+}
+
+function handleImportFile(file) {
+  var errEl = document.getElementById('import-error')
+  errEl.style.display = 'none'
+  if (!/\.csv$/i.test(file.name)) {
+    errEl.textContent = 'File harus berformat .csv'
+    errEl.style.display = 'block'; return
+  }
+  if (file.size > 1024 * 1024) {
+    errEl.textContent = 'Ukuran file maksimal 1MB'
+    errEl.style.display = 'block'; return
+  }
+  var reader = new FileReader()
+  reader.onload = function() {
+    IMPORT_STATE.parsedRows = parseCSV(reader.result)
+    IMPORT_STATE.validation = IMPORT_STATE.parsedRows.map(function(r) { return validateImportRow(r) })
+    renderImportPreview()
+    setImportStage(3)
+  }
+  reader.readAsText(file)
+}
+
+function parseCSV(text) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1)
+  var lines = text.split(/\r?\n/).filter(function(l) { return l.trim() })
+  if (lines.length < 2) return []
+  var rows = []
+  for (var i = 1; i < lines.length; i++) {
+    var cols = parseCSVLine(lines[i])
+    rows.push({
+      name: (cols[0] || '').trim(),
+      wa: (cols[1] || '').trim(),
+      service: (cols[2] || '').trim(),
+      date: (cols[3] || '').trim()
+    })
+  }
+  return rows
+}
+
+function parseCSVLine(line) {
+  var out = [], cur = '', inQ = false
+  for (var i = 0; i < line.length; i++) {
+    var ch = line[i]
+    if (ch === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++ }
+      else inQ = !inQ
+    } else if (ch === ',' && !inQ) { out.push(cur); cur = '' }
+    else cur += ch
+  }
+  out.push(cur)
+  return out
+}
+
+function normalizeImportWA(wa) {
+  var raw = (wa || '').replace(/\D/g, '')
+  if (raw.startsWith('0')) raw = raw.substring(1)
+  if (raw.startsWith('62')) return raw
+  return '62' + raw
+}
+
+function validateImportRow(row) {
+  var errors = [], warnings = []
+  if (!row.name) errors.push('Nama kosong')
+  if (!row.wa) errors.push('No WA kosong')
+  var normalized = normalizeImportWA(row.wa)
+  if (normalized.replace(/\D/g, '').length < 11) errors.push('No WA invalid')
+  var catMatch = (U.cats || []).find(function(c) {
+    return c.name.toLowerCase() === (row.service || '').toLowerCase()
+  })
+  if (row.service && !catMatch) warnings.push('Layanan "' + row.service + '" tidak cocok')
+  var existing = (U.customers || []).find(function(cx) { return stripPhone(cx.wa) === normalized })
+  if (existing && errors.length === 0) warnings.push('Pelanggan sudah ada — akan diupdate')
+  var dateValid = row.date && !isNaN(new Date(row.date).getTime())
+  if (row.date && !dateValid) warnings.push('Tanggal invalid — pakai hari ini')
+  return {
+    row: row, normalized: normalized, catMatch: catMatch || null,
+    dateValid: !!dateValid, errors: errors, warnings: warnings,
+    isValid: errors.length === 0, isExisting: !!existing
+  }
+}
+
+function renderImportPreview() {
+  var rows = IMPORT_STATE.validation
+  var validRows = rows.filter(function(v){return v.isValid})
+  var errCount = rows.length - validRows.length
+  var warnCount = validRows.filter(function(v){return v.warnings.length > 0}).length
+
+  // Group by WA to count unique new vs updated
+  var grouped = {}
+  validRows.forEach(function(v) {
+    if (!grouped[v.normalized]) grouped[v.normalized] = v.isExisting
+  })
+  var newCount = 0, updCount = 0
+  Object.keys(grouped).forEach(function(wa) { grouped[wa] ? updCount++ : newCount++ })
+
+  document.getElementById('import-summary').innerHTML =
+    '<span class="pill pill-ok">' + validRows.length + ' baris valid</span>' +
+    (errCount > 0 ? '<span class="pill pill-err">' + errCount + ' baris error (di-skip)</span>' : '') +
+    (warnCount > 0 ? '<span class="pill pill-warn">' + warnCount + ' baris warning</span>' : '') +
+    '<span class="pill pill-info">' + newCount + ' pelanggan baru</span>' +
+    (updCount > 0 ? '<span class="pill pill-info">' + updCount + ' pelanggan diupdate</span>' : '')
+
+  var maxRows = 20
+  var shown = rows.slice(0, maxRows)
+  var html = ''
+  shown.forEach(function(v) {
+    var rowClass = v.isValid ? (v.warnings.length ? 'row-warn' : '') : 'row-err'
+    var msgs = v.errors.map(function(e){return '<div class="row-msg r-err">⚠ '+e+'</div>'}).join('') +
+               v.warnings.map(function(w){return '<div class="row-msg r-warn">'+w+'</div>'}).join('')
+    html += '<tr class="' + rowClass + '">' +
+      '<td>' + escapeHTML(v.row.name) + msgs + '</td>' +
+      '<td>' + escapeHTML(v.row.wa) + '</td>' +
+      '<td>' + escapeHTML(v.row.service) + '</td>' +
+      '<td>' + escapeHTML(v.row.date) + '</td>' +
+    '</tr>'
+  })
+  document.getElementById('import-preview-tbody').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--ink3)">CSV kosong</td></tr>'
+  document.getElementById('import-trunc-note').textContent = rows.length > maxRows
+    ? 'Menampilkan ' + maxRows + ' dari ' + rows.length + ' baris.' : ''
+}
+
+function escapeHTML(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]
+  })
+}
+
+function doBulkInsert() {
+  var validRows = IMPORT_STATE.validation.filter(function(v){return v.isValid})
+  var grouped = {}
+  validRows.forEach(function(v) {
+    if (!grouped[v.normalized]) grouped[v.normalized] = { name: v.row.name, wa: v.normalized, services: [] }
+    if (v.catMatch) {
+      grouped[v.normalized].services.push({
+        name: v.catMatch.name,
+        icon: v.catMatch.icon,
+        date: v.dateValid ? new Date(v.row.date).toISOString() : new Date().toISOString(),
+        days: v.catMatch.interval
+      })
+    }
+  })
+  var added = 0, updated = 0
+  if (!U.customers) U.customers = []
+  Object.keys(grouped).forEach(function(wa) {
+    var entry = grouped[wa]
+    var existing = U.customers.find(function(cx) { return stripPhone(cx.wa) === wa })
+    if (existing) {
+      entry.services.forEach(function(svc) {
+        var existSvc = (existing.services || []).find(function(s) { return s.name === svc.name })
+        if (existSvc) existSvc.date = svc.date
+        else { existing.services = existing.services || []; existing.services.push(svc) }
+      })
+      updated++
+    } else {
+      U.customers.push({
+        id: 'cx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        name: entry.name, wa: entry.wa, via: 'manual',
+        services: entry.services
+      })
+      added++
+    }
+  })
+  saveU(U)
+
+  // Stage 4 summary
+  var skipped = IMPORT_STATE.validation.filter(function(v){return !v.isValid})
+  document.getElementById('import-result-summary').innerHTML =
+    '<strong>' + added + '</strong> pelanggan baru ditambahkan' +
+    (updated > 0 ? ', <strong>' + updated + '</strong> pelanggan diupdate' : '') +
+    (skipped.length > 0 ? ', <strong>' + skipped.length + '</strong> baris di-skip' : '')
+  if (skipped.length > 0) {
+    document.getElementById('import-skip-details').style.display = 'block'
+    document.getElementById('import-skip-list').innerHTML = skipped.map(function(v) {
+      return '<li><strong>' + (escapeHTML(v.row.name) || '(tanpa nama)') + '</strong> — ' + v.errors.join(', ') + '</li>'
+    }).join('')
+  } else {
+    document.getElementById('import-skip-details').style.display = 'none'
+  }
+  setImportStage(4)
+}
+
+/* ══════════════════════════════════════════
+   CSV EXPORT — respects active filter
+   ══════════════════════════════════════════ */
+function getFilteredCustomers() {
+  var cxs = U.customers || []
+  var q = ((document.getElementById('cx-q') || {}).value || '').toLowerCase()
+  return cxs.filter(function(cx) {
+    var matchF = cxFilter === 'all' || cxFilter === worstStatus(cx)
+    var matchQ = !q || cx.name.toLowerCase().indexOf(q) >= 0 || (cx.wa || '').indexOf(q) >= 0
+    return matchF && matchQ
+  })
+}
+
+function exportCustomersCSV() {
+  if (!U) return
+  var filtered = getFilteredCustomers()
+  if (filtered.length === 0) { alert('Tidak ada pelanggan untuk di-export pada filter ini.'); return }
+  var BOM = '\uFEFF'
+  var rows = ['Nama,No WA,Layanan,Tanggal Kunjungan Terakhir,Status,Hari Sejak Kunjungan']
+  var STAT_LABEL = { aktif: 'Aktif', mendekati: 'Mendekati', hilang: 'Hilang' }
+  filtered.forEach(function(cx) {
+    var svcs = cx.services || []
+    if (svcs.length === 0) {
+      rows.push(csvEscape(cx.name) + ',' + displayWA(cx.wa) + ',,,,')
+    }
+    svcs.forEach(function(svc) {
+      var st = STAT_LABEL[getStatus(svc)] || ''
+      var days = Math.floor((Date.now() - new Date(svc.date)) / 86400000)
+      var dateStr = new Date(svc.date).toISOString().slice(0, 10)
+      rows.push([
+        csvEscape(cx.name),
+        displayWA(cx.wa),
+        csvEscape(svc.name || ''),
+        dateStr,
+        st,
+        days
+      ].join(','))
+    })
+  })
+  var csv = BOM + rows.join('\n')
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  var url = URL.createObjectURL(blob)
+  var a = document.createElement('a')
+  a.href = url
+  var slug = (U.bizSlug || U.bizName || 'getstarvio').replace(/[^a-z0-9]+/gi, '-').toLowerCase()
+  a.download = 'pelanggan-' + slug + '-' + new Date().toISOString().slice(0, 10) + '.csv'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+function csvEscape(s) {
+  s = String(s == null ? '' : s)
+  return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s
+}
+
+function displayWA(wa) {
+  var raw = stripPhone(wa)
+  if (raw.startsWith('62')) return '0' + raw.substring(2)
+  return raw
 }
 
 /* ── BOOT ── */

@@ -383,7 +383,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
       <select class="filter-sel" id="s-status" onchange="renderTable()">
         <option value="all">Semua Status</option>
         <option value="active">Aktif</option>
-        <option value="trial">Trial</option>
+        <option value="trial_aktif">Trial Aktif</option>
+        <option value="trial_expired">Trial Expired</option>
         <option value="suspended">Suspended</option>
         <option value="churned">Churned</option>
       </select>
@@ -806,12 +807,18 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 // ══════════════════════════════
 // ADMIN DATA
 // ══════════════════════════════
+// Helper: tanggal relatif untuk trial states
+function _daysFromNow(n) { var d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); }
+
 const ADMIN_DATA = [
-  { id:'biz-1', name:'Celestial Spa & Wellness', type:'spa', joinDate:'2025-11-15', status:'active', creditLeft:63, creditMax:100, remindersSent:37, waStatus:'connected', owner:'Cynthia', email:'cynthia@gmail.com' },
-  { id:'biz-2', name:'Salon Cantik', type:'salon', joinDate:'2026-01-20', status:'active', creditLeft:12, creditMax:100, remindersSent:88, waStatus:'connected', owner:'Diana', email:'diana@gmail.com' },
-  { id:'biz-3', name:'Barber Bros', type:'barbershop', joinDate:'2026-02-01', status:'trial', creditLeft:85, creditMax:100, remindersSent:15, waStatus:'connected', owner:'Riko', email:'riko@gmail.com' },
+  { id:'biz-1', name:'Celestial Spa & Wellness', type:'spa', joinDate:'2025-11-15', status:'active', creditLeft:63, creditMax:300, remindersSent:37, waStatus:'connected', owner:'Cynthia', email:'cynthia@gmail.com' },
+  { id:'biz-2', name:'Salon Cantik', type:'salon', joinDate:'2026-01-20', status:'active', creditLeft:12, creditMax:300, remindersSent:88, waStatus:'connected', owner:'Diana', email:'diana@gmail.com' },
+  { id:'biz-3', name:'Barber Bros', type:'barbershop', joinDate:'2026-02-01', status:'trial_aktif', trialEndsAt:_daysFromNow(8),  creditLeft:85, creditMax:100, remindersSent:15, waStatus:'connected', owner:'Riko', email:'riko@gmail.com' },
   { id:'biz-4', name:'Nail Palace', type:'nail', joinDate:'2025-09-10', status:'suspended', creditLeft:0, creditMax:500, remindersSent:423, waStatus:'disconnected', owner:'Jessica', email:'jessica@gmail.com' },
-  { id:'biz-5', name:'Klinik Estetika', type:'klinik', joinDate:'2025-12-01', status:'churned', creditLeft:0, creditMax:100, remindersSent:67, waStatus:'disconnected', owner:'Dr. Rina', email:'rina@gmail.com' }
+  { id:'biz-5', name:'Klinik Estetika', type:'klinik', joinDate:'2025-12-01', status:'churned', creditLeft:0, creditMax:100, remindersSent:67, waStatus:'disconnected', owner:'Dr. Rina', email:'rina@gmail.com' },
+  // Trial state samples (added per ADMIN-UPDATE.md)
+  { id:'biz-6', name:'Lash Studio Bella', type:'skincare', joinDate:_daysFromNow(-12), status:'trial_aktif',   trialEndsAt:_daysFromNow(2),  creditLeft:23, creditMax:100, remindersSent:5,  waStatus:'connected',    owner:'Bella',  email:'bella@gmail.com' },
+  { id:'biz-7', name:'Barbershop Raka',   type:'barbershop',joinDate:_daysFromNow(-20), status:'trial_expired', trialEndsAt:_daysFromNow(-6), creditLeft:30, creditMax:100, remindersSent:42, waStatus:'connected',    owner:'Raka',   email:'raka@gmail.com' }
 ];
 
 // Activity logs per business (simulated)
@@ -896,7 +903,7 @@ function startClock() {
 // STATS
 // ══════════════════════════════
 function updateStats() {
-  var active = ADMIN_DATA.filter(function(b){ return b.status === 'active' || b.status === 'trial'; }).length;
+  var active = ADMIN_DATA.filter(function(b){ return b.status === 'active' || b.status === 'trial' || b.status === 'trial_aktif'; }).length;
   var totalCredits = ADMIN_DATA.reduce(function(s,b){ return s + b.creditMax; }, 0);
   var totalReminders = ADMIN_DATA.reduce(function(s,b){ return s + b.remindersSent; }, 0);
   var churnRisks = getChurnRisks().length;
@@ -949,11 +956,13 @@ function renderTable() {
 
 function getStatusBadge(status) {
   switch(status) {
-    case 'active':    return '<span class="badge b-lime">Aktif</span>';
-    case 'trial':     return '<span class="badge b-blue">Trial</span>';
-    case 'suspended': return '<span class="badge b-red">Suspended</span>';
-    case 'churned':   return '<span class="badge b-gray">Churned</span>';
-    default:          return '<span class="badge b-gray">'+status+'</span>';
+    case 'active':         return '<span class="badge b-lime">Aktif</span>';
+    case 'trial':          return '<span class="badge b-blue">Trial</span>';  // legacy fallback
+    case 'trial_aktif':    return '<span class="badge b-blue">Trial Aktif</span>';
+    case 'trial_expired':  return '<span class="badge b-amber">Trial Expired</span>';
+    case 'suspended':      return '<span class="badge b-red">Suspended</span>';
+    case 'churned':        return '<span class="badge b-gray">Churned</span>';
+    default:               return '<span class="badge b-gray">'+status+'</span>';
   }
 }
 
@@ -1105,25 +1114,39 @@ function doToggleStatus(id) {
 function getChurnRisks() {
   var risks = [];
   var now = new Date();
+  var DAY = 86400000;
 
   ADMIN_DATA.forEach(function(b) {
-    // Credit exhausted (creditLeft === 0 and not already churned)
+    // Kredit habis & belum top up >7 hari
     if (b.creditLeft <= 0 && b.status !== 'churned') {
-      risks.push({ biz: b, reason: 'Kredit habis — sudah 0/' + b.creditMax, level: 'danger' });
+      risks.push({ biz: b, reason: 'Kredit habis, belum top up', level: 'danger' });
     }
-    // WA disconnected
+    // WA putus >3 hari
     if (b.waStatus === 'disconnected' && b.status !== 'churned') {
       risks.push({ biz: b, reason: 'WhatsApp terputus > 3 hari', level: 'danger' });
     }
-    // Trial expiring (trial status, check join date)
-    if (b.status === 'trial') {
-      var joinDate = new Date(b.joinDate);
-      var trialEnd = new Date(joinDate);
-      trialEnd.setDate(trialEnd.getDate() + 30); // 30 day trial
-      var daysLeft = Math.ceil((trialEnd - now) / (1000*60*60*24));
-      if (daysLeft < 7 && daysLeft >= 0) {
-        risks.push({ biz: b, reason: 'Trial berakhir dalam ' + daysLeft + ' hari', level: 'warn' });
+    // Trial expiring soon (≤3 hari) — pakai trialEndsAt baru
+    if (b.status === 'trial_aktif' && b.trialEndsAt) {
+      var endMs = new Date(b.trialEndsAt).getTime();
+      var daysLeft = Math.ceil((endMs - now.getTime()) / DAY);
+      if (daysLeft <= 3 && daysLeft >= 0) {
+        risks.push({ biz: b, reason: 'Trial segera berakhir (' + daysLeft + ' hari)', level: 'warn' });
       }
+    }
+    // Trial expired >3 hari belum subscribe
+    if (b.status === 'trial_expired' && b.trialEndsAt) {
+      var endMs2 = new Date(b.trialEndsAt).getTime();
+      var daysSince = Math.floor((now.getTime() - endMs2) / DAY);
+      if (daysSince >= 3) {
+        risks.push({ biz: b, reason: 'Trial expired ' + daysSince + ' hari, belum subscribe', level: 'danger' });
+      }
+    }
+    // Legacy 'trial' status fallback
+    if (b.status === 'trial' && !b.trialEndsAt) {
+      var joinDate = new Date(b.joinDate);
+      var trialEnd = new Date(joinDate); trialEnd.setDate(trialEnd.getDate() + 30);
+      var dl = Math.ceil((trialEnd - now) / DAY);
+      if (dl < 7 && dl >= 0) risks.push({ biz: b, reason: 'Trial berakhir dalam ' + dl + ' hari', level: 'warn' });
     }
   });
   return risks;

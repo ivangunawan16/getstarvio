@@ -159,21 +159,22 @@ body{font-family:'Sora',sans-serif;font-size:13px;background:#f7f6f2;color:#1a19
         <div class="card-sub">Switch state tanpa re-inject data</div>
       </div>
       <div class="card-body" style="padding:12px 16px">
-        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Free Trial (14 hari ATAU 100 kredit)</div>
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Trial States (14 hari ATAU 100 kredit)</div>
         <div class="billing-grid" style="margin-bottom:10px">
-          <button class="billing-btn" onclick="setBilling('free-trial-fresh')"><span class="bb-icon">🆕</span><div><div class="bb-label">Fresh (Day 0)</div><div class="bb-sub">100 kredit · 14 hari</div></div></button>
-          <button class="billing-btn" onclick="setBilling('free-trial-day7')"><span class="bb-icon">⏳</span><div><div class="bb-label">Mid (Day 7)</div><div class="bb-sub">60 kredit · 7 hari</div></div></button>
-          <button class="billing-btn" onclick="setBilling('free-trial-day13')"><span class="bb-icon">⚠️</span><div><div class="bb-label">Day 13</div><div class="bb-sub">30 kredit · 1 hari</div></div></button>
-          <button class="billing-btn" onclick="setBilling('free-expired-time')"><span class="bb-icon">⏰</span><div><div class="bb-label">Expired (time)</div><div class="bb-sub">14 hari habis</div></div></button>
-          <button class="billing-btn" onclick="setBilling('free-expired-empty')"><span class="bb-icon">⛔</span><div><div class="bb-label">Expired (empty)</div><div class="bb-sub">Kredit habis</div></div></button>
+          <button class="billing-btn" onclick="setBilling('trial-full')"><span class="bb-icon">🆕</span><div><div class="bb-label">Full</div><div class="bb-sub">100 kredit · 14 hari</div></div></button>
+          <button class="billing-btn" onclick="setBilling('trial-low')"><span class="bb-icon">⏳</span><div><div class="bb-label">Low</div><div class="bb-sub">22 kredit · 5 hari</div></div></button>
+          <button class="billing-btn" onclick="setBilling('trial-critical')"><span class="bb-icon">⚠️</span><div><div class="bb-label">Critical</div><div class="bb-sub">5 kredit · 3 hari</div></div></button>
+          <button class="billing-btn" onclick="setBilling('trial-expired-time')"><span class="bb-icon">⏰</span><div><div class="bb-label">Expired (time)</div><div class="bb-sub">14 hari habis, 30 kredit</div></div></button>
+          <button class="billing-btn" onclick="setBilling('trial-expired-credits')"><span class="bb-icon">⛔</span><div><div class="bb-label">Expired (empty)</div><div class="bb-sub">Kredit habis, waktu masih</div></div></button>
         </div>
-        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Subscriber (Rp 249k/bln · Early Access)</div>
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Subscriber States (Rp 249k/bln · Early Access)</div>
         <div class="billing-grid">
           <button class="billing-btn" style="border-color:var(--lime2)" onclick="setBilling('sub-healthy')"><span class="bb-icon">✅</span><div><div class="bb-label">Healthy (275)</div><div class="bb-sub">225 sub + 50 topup</div></div></button>
           <button class="billing-btn" onclick="setBilling('sub-low')"><span class="bb-icon">📉</span><div><div class="bb-label">Sub Low (72)</div><div class="bb-sub">22 sub + 50 topup</div></div></button>
           <button class="billing-btn" onclick="setBilling('sub-depleted')"><span class="bb-icon">🔄</span><div><div class="bb-label">Sub Habis (30)</div><div class="bb-sub">0 sub + 30 topup</div></div></button>
           <button class="billing-btn" onclick="setBilling('sub-critical')"><span class="bb-icon">🚨</span><div><div class="bb-label">Critical (7)</div><div class="bb-sub">0 sub + 7 topup</div></div></button>
           <button class="billing-btn" onclick="setBilling('sub-empty')"><span class="bb-icon">💀</span><div><div class="bb-label">Empty (0)</div><div class="bb-sub">Semua habis</div></div></button>
+          <button class="billing-btn" onclick="setBilling('sub-no-topup')"><span class="bb-icon">🆗</span><div><div class="bb-label">No TopUp (187)</div><div class="bb-sub">187 sub + 0 topup</div></div></button>
         </div>
       </div>
     </div>
@@ -221,6 +222,9 @@ var DUMMY = {
   trialEndsAt: '2026-03-15T00:00:00.000Z',  // sudah lewat — Cynthia subscriber
   trialUsed: true,
   remMax: 300,
+  bizLogo: null,                            // Cynthia belum upload
+  avgServiceValue: 175000,                  // spa rata-rata
+  setupComplete: true,                      // semua step setup sudah
   planConfig: {
     freeBonus: 100,
     trialDays: 14,
@@ -599,7 +603,13 @@ function setBilling(preset) {
     'sub-depleted':  subState(0, 30),
     'sub-critical':  subState(0, 7),
     'sub-empty':     subState(0, 0),
-    'sub-no-topup':  subState(187, 0)
+    'sub-no-topup':  subState(187, 0),
+    // Aliases utk legacy preset (backward compat)
+    'trial-full':            trialState(0, 100),
+    'trial-low':             trialState(9, 22),
+    'trial-critical':        trialState(11, 5),
+    'trial-expired-time':    trialState(20, 60),
+    'trial-expired-credits': trialState(0, 0)
   };
 
   var s = states[preset];
