@@ -422,6 +422,7 @@ html,body{
         >
       </div>
       <div class="phone-hint">Awalan 0 akan dihapus otomatis</div>
+      <button id="phoneNextBtn" onclick="doSearch()" disabled style="margin-top:16px;width:100%;padding:14px;background:var(--lime);color:var(--lime-dk);border:none;border-radius:var(--r);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s,background .15s;box-shadow:0 4px 14px rgba(184,240,74,.3)">Lanjut &rarr;</button>
       <div id="spinnerWrap" class="spinner-wrap" style="display:none;">
         <div class="spinner"></div>
       </div>
@@ -672,9 +673,19 @@ function init() {
 
   showState('state1')
 
-  // Phone input: strip leading 0 real-time + auto-search
+  // Phone input: strip leading 0 real-time. Search HANYA saat klik "Lanjut" atau Enter.
   var phoneInput = document.getElementById('phoneInput')
-  var searchTimeout = null
+  var nextBtn = document.getElementById('phoneNextBtn')
+
+  function updateNextBtn() {
+    var digits = phoneInput.value.replace(/\D/g,'')
+    var valid = digits.length >= 8
+    if (nextBtn) {
+      nextBtn.disabled = !valid
+      nextBtn.style.opacity = valid ? '1' : '.45'
+      nextBtn.style.cursor = valid ? 'pointer' : 'not-allowed'
+    }
+  }
 
   phoneInput.addEventListener('input', function() {
     // Strip leading 0 real-time
@@ -683,21 +694,17 @@ function init() {
       val = val.slice(1)
       phoneInput.value = val
     }
-
-    // Clear pending search
-    if (searchTimeout) clearTimeout(searchTimeout)
-
-    // Auto-search when >= 10 digits
-    if (val.length >= 10) {
-      searchTimeout = setTimeout(function() {
-        doSearch()
-      }, 300)
-    }
+    updateNextBtn()
   })
 
   phoneInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') doSearch()
+    if (e.key === 'Enter') {
+      var digits = phoneInput.value.replace(/\D/g,'')
+      if (digits.length >= 8) doSearch()
+    }
   })
+
+  updateNextBtn()
 
   // Date change listeners
   document.getElementById('foundDateInput').addEventListener('change', function() {

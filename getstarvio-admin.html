@@ -136,9 +136,14 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .kv-val{font-size:12px;font-weight:600;color:var(--ink);text-align:right}
 .kv-val.mono{font-family:'JetBrains Mono',monospace}
 
-.field-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:block}
-.field-inp{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .12s}
-.field-inp:focus{border-color:var(--lime2)}
+.field-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:block}
+.field-inp{width:100%;padding:10px 13px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .12s,box-shadow .12s}
+.field-inp::placeholder{color:var(--ink4);opacity:1}
+.field-inp:hover:not([readonly]):not(:disabled){border-color:var(--ink4)}
+.field-inp:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.15)}
+.field-inp[readonly],.field-inp:disabled{background:var(--bg3);color:var(--ink3);cursor:not-allowed;border-color:var(--border)}
+.field-textarea::placeholder,.field-select::placeholder{color:var(--ink4);opacity:1}
+.field-textarea[readonly],.field-textarea:disabled,.field-select:disabled{background:var(--bg3);color:var(--ink3);cursor:not-allowed;border-color:var(--border)}
 
 /* ── CREDIT ADD ── */
 .credit-row{display:flex;gap:8px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
@@ -302,13 +307,15 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .modal-lg{width:640px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .field-row .field-cell{margin-bottom:0}
-.field-textarea{width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:90px;line-height:1.6;transition:border-color .12s}
-.field-textarea:focus{border-color:var(--lime2)}
+.field-textarea{width:100%;padding:11px 13px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:90px;line-height:1.6;transition:border-color .12s,box-shadow .12s;margin-bottom:14px}
+.field-textarea:hover{border-color:var(--ink4)}
+.field-textarea:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.15)}
 .field-textarea.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
-.field-select{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;cursor:pointer;margin-bottom:14px}
-.field-select:focus{border-color:var(--lime2)}
-.field-help{font-size:10px;color:var(--ink3);margin-top:-10px;margin-bottom:14px;line-height:1.5}
-.field-help code{font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)}
+.field-select{width:100%;padding:10px 13px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;cursor:pointer;margin-bottom:14px;transition:border-color .12s,box-shadow .12s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%239b9a92' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.field-select:hover{border-color:var(--ink4)}
+.field-select:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.15)}
+.field-help{font-size:11px;color:var(--ink3);margin-top:-10px;margin-bottom:16px;line-height:1.55}
+.field-help code{font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:1px 6px;border-radius:3px;color:var(--ink2);font-size:10.5px}
 
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
@@ -385,6 +392,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
     <button class="tab-btn" onclick="switchTab('biz-types',this)">Tipe Layanan</button>
     <button class="tab-btn" onclick="switchTab('plan-config',this)">Plan Config</button>
     <button class="tab-btn" onclick="switchTab('transactions',this)">Transactions</button>
+    <button class="tab-btn" onclick="switchTab('audit',this)">Audit Log</button>
   </div>
 
   <!-- CONTENT -->
@@ -695,6 +703,48 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
       </div>
     </div><!-- /tab-transactions -->
 
+    <div class="tab-section" id="tab-audit">
+      <div class="section-hd">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 2h12v12H2z"/><path d="M5 6h6M5 9h6M5 12h3"/></svg>
+        Audit Log
+      </div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:14px;line-height:1.55">Semua admin action kritis tercatat di sini untuk compliance + security trail. Data lokal per device, max 500 entri terbaru.</div>
+
+      <div class="filter-bar">
+        <select class="filter-sel" id="audit-filter" onchange="renderAuditLog()" style="min-width:200px">
+          <option value="all">Semua Action</option>
+          <option value="credit_topup">💳 Tambah Kredit</option>
+          <option value="suspend_account">🚫 Suspend Account</option>
+          <option value="activate_account">✅ Activate Account</option>
+          <option value="impersonate_start">🎭 Login as User</option>
+          <option value="impersonate_end">🚪 Exit Impersonate</option>
+          <option value="save_plan_config">⚙️ Save Plan Config</option>
+          <option value="save_template">💾 Save Template</option>
+          <option value="delete_template">🗑 Hapus Template</option>
+          <option value="save_biztype">🏷️ Save Biz Type</option>
+          <option value="delete_biztype">🗑 Hapus Biz Type</option>
+          <option value="save_preset">🏷️ Save Preset</option>
+          <option value="delete_preset">🗑 Hapus Preset</option>
+        </select>
+        <button class="btn-secondary" onclick="exportAuditLog()" style="margin-left:auto">📥 Export CSV</button>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width:150px">Waktu</th>
+              <th style="width:170px">Action</th>
+              <th>Target</th>
+              <th>Details</th>
+              <th style="width:200px">Admin</th>
+            </tr>
+          </thead>
+          <tbody id="audit-tbody"></tbody>
+        </table>
+      </div>
+    </div><!-- /tab-audit -->
+
   </div><!-- /content -->
 </div><!-- /shell -->
 
@@ -913,6 +963,113 @@ const ACTIVITY_LOG = {
 var currentDetailId = null;
 
 // ══════════════════════════════
+// ADMIN AUDIT LOG — compliance + security trail
+// Semua admin action kritis lewat sini. Persisted di localStorage.
+// ══════════════════════════════
+var ADMIN_AUDIT_LOG = (function() {
+  try { return JSON.parse(localStorage.getItem('getstarvio_admin_audit') || '[]') }
+  catch(e) { return [] }
+})();
+var _adminEmail = ''; // set saat Google OAuth berhasil
+
+function logAdminAction(action, target, details) {
+  var entry = {
+    id: 'audit-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+    timestamp: new Date().toISOString(),
+    admin: _adminEmail || 'admin@getstarvio.com',
+    action: action,     // e.g., 'credit_topup', 'suspend_account', 'impersonate_user'
+    target: target,     // target biz id atau template id
+    details: details || {}  // free-form {amount, reason, etc}
+  };
+  ADMIN_AUDIT_LOG.unshift(entry);
+  // Cap at 500 entries (oldest dropped)
+  if (ADMIN_AUDIT_LOG.length > 500) ADMIN_AUDIT_LOG.length = 500;
+  try { localStorage.setItem('getstarvio_admin_audit', JSON.stringify(ADMIN_AUDIT_LOG)) } catch(e) {}
+  // Re-render audit tab kalau lagi visible
+  if (document.getElementById('tab-audit') && document.getElementById('tab-audit').classList.contains('active')) {
+    renderAuditLog();
+  }
+}
+
+function fmtAuditTime(iso) {
+  var d = new Date(iso);
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+
+function auditActionLabel(action) {
+  var labels = {
+    credit_topup: '💳 Tambah Kredit',
+    suspend_account: '🚫 Suspend Account',
+    activate_account: '✅ Activate Account',
+    impersonate_start: '🎭 Login as User',
+    impersonate_end: '🚪 Exit Impersonate',
+    delete_template: '🗑 Hapus Template',
+    save_template: '💾 Save Template',
+    save_plan_config: '⚙️ Save Plan Config',
+    save_biztype: '🏷️ Save Biz Type',
+    delete_biztype: '🗑 Hapus Biz Type',
+    save_preset: '🏷️ Save Preset',
+    delete_preset: '🗑 Hapus Preset'
+  };
+  return labels[action] || action;
+}
+
+function exportAuditLog() {
+  var BOM = '\uFEFF';
+  var rows = ['Waktu,Action,Target,Target Name,Details,Admin'];
+  ADMIN_AUDIT_LOG.forEach(function(r) {
+    var biz = r.target ? ADMIN_DATA.find(function(x){ return x.id === r.target }) : null;
+    var detailStr = r.details && Object.keys(r.details).length
+      ? Object.keys(r.details).map(function(k){ return k + '=' + r.details[k] }).join('; ')
+      : '';
+    var esc = function(s) { s = String(s == null ? '' : s); return /[,"\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s };
+    rows.push([r.timestamp, r.action, r.target || '', biz ? biz.name : '', detailStr, r.admin].map(esc).join(','));
+  });
+  var csv = BOM + rows.join('\n');
+  var blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'admin-audit-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Audit log exported (' + ADMIN_AUDIT_LOG.length + ' entries)', 'success');
+}
+
+function renderAuditLog() {
+  var tbody = document.getElementById('audit-tbody');
+  if (!tbody) return;
+  var filter = (document.getElementById('audit-filter') || {}).value || 'all';
+  var rows = ADMIN_AUDIT_LOG;
+  if (filter !== 'all') rows = rows.filter(function(r){ return r.action === filter });
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px 20px;color:var(--ink3);font-size:12px">Belum ada audit log. Semua admin action kritis akan tercatat di sini.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.slice(0, 200).map(function(r) {
+    var targetStr = '';
+    if (r.target) {
+      var biz = ADMIN_DATA.find(function(x){ return x.id === r.target });
+      targetStr = biz ? biz.name : r.target;
+    }
+    var detailStr = '';
+    if (r.details && Object.keys(r.details).length) {
+      detailStr = Object.keys(r.details).map(function(k) {
+        return '<span style="color:var(--ink3)">' + k + ':</span> <code style="font-family:\'JetBrains Mono\',monospace;font-size:11px;background:var(--bg3);padding:1px 6px;border-radius:3px">' + r.details[k] + '</code>';
+      }).join(' · ');
+    }
+    return '<tr>' +
+      '<td style="white-space:nowrap;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--ink3)">' + fmtAuditTime(r.timestamp) + '</td>' +
+      '<td style="white-space:nowrap"><span style="font-weight:600;color:var(--ink)">' + auditActionLabel(r.action) + '</span></td>' +
+      '<td>' + targetStr + '</td>' +
+      '<td style="font-size:11px">' + detailStr + '</td>' +
+      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--ink3);white-space:nowrap">' + r.admin + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+// ══════════════════════════════
 // PASSWORD GATE
 // ══════════════════════════════
 /* Admin login = dual auth: Google OAuth (must be @getstarvio.com) + password.
@@ -931,6 +1088,7 @@ function tryGoogleAdmin() {
     return
   }
   _adminGoogleVerified = true
+  _adminEmail = email
   document.getElementById('gate-google-email').textContent = '✓ ' + email
   document.getElementById('gate-step-google').style.display = 'none'
   document.getElementById('gate-step-pw').style.display = 'block'
@@ -1060,6 +1218,52 @@ function getStatusBadge(status) {
 // ══════════════════════════════
 // DETAIL MODAL
 // ══════════════════════════════
+
+/* Internal notes storage — admin-only context per business */
+var INTERNAL_NOTES = (function(){
+  try { return JSON.parse(localStorage.getItem('getstarvio_admin_notes') || '{}') }
+  catch(e) { return {} }
+})();
+function saveInternalNotes() {
+  try { localStorage.setItem('getstarvio_admin_notes', JSON.stringify(INTERNAL_NOTES)) } catch(e) {}
+}
+
+/* Tags storage per business (VIP, Watch, Risk) */
+var BIZ_TAGS = (function(){
+  try { return JSON.parse(localStorage.getItem('getstarvio_admin_biztags') || '{}') }
+  catch(e) { return {} }
+})();
+function saveBizTags() {
+  try { localStorage.setItem('getstarvio_admin_biztags', JSON.stringify(BIZ_TAGS)) } catch(e) {}
+}
+
+/* Churn risk score 0-100 dari sinyal yang ada */
+function computeChurnRisk(b) {
+  var score = 0, reasons = [];
+  var pctCredit = b.creditMax > 0 ? (b.creditLeft / b.creditMax) : 0;
+  if (pctCredit <= 0) { score += 40; reasons.push('Kredit habis'); }
+  else if (pctCredit < 0.2) { score += 20; reasons.push('Kredit <20%'); }
+  if (b.waStatus !== 'connected') { score += 25; reasons.push('WA disconnected'); }
+  if (b.status === 'suspended') { score += 20; reasons.push('Suspended'); }
+  if (b.status === 'churned') { score = 100; reasons.push('Churned'); }
+  if (b.status === 'trial_expired') { score += 30; reasons.push('Trial expired'); }
+  if (b.trialEndsAt) {
+    var daysLeft = Math.ceil((new Date(b.trialEndsAt) - Date.now()) / 86400000);
+    if (daysLeft > 0 && daysLeft <= 3) { score += 15; reasons.push('Trial ending ' + daysLeft + 'd'); }
+  }
+  return { score: Math.min(100, score), reasons: reasons };
+}
+
+function fmtRelDays(iso) {
+  if (!iso) return '—';
+  var days = Math.floor((Date.now() - new Date(iso)) / 86400000);
+  if (days === 0) return 'hari ini';
+  if (days === 1) return '1 hari lalu';
+  if (days < 30) return days + ' hari lalu';
+  if (days < 365) return Math.floor(days/30) + ' bulan lalu';
+  return Math.floor(days/365) + ' tahun lalu';
+}
+
 function openDetail(id) {
   var b = ADMIN_DATA.find(function(x){ return x.id === id; });
   if (!b) return;
@@ -1069,8 +1273,36 @@ function openDetail(id) {
 
   var creditColor = b.creditLeft <= 0 ? 'var(--red)' : b.creditLeft <= 20 ? 'var(--amber)' : 'var(--lime-dk)';
   var statusBadge = getStatusBadge(b.status);
+  var tags = BIZ_TAGS[b.id] || [];
+  var note = INTERNAL_NOTES[b.id] || '';
+  var risk = computeChurnRisk(b);
+  var isSubscriber = (b.status === 'active');
+  var isTrial = (b.status === 'trial' || b.status === 'trial_aktif');
+  var mrr = isSubscriber ? 249000 : 0;
 
   var html = '';
+
+  // ── RISK + TAGS STRIP (top) ──
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)">';
+  if (risk.score >= 60) {
+    html += '<span class="badge" style="background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3"><span class="dot" style="background:var(--red)"></span>Churn Risk ' + risk.score + '%</span>';
+  } else if (risk.score >= 30) {
+    html += '<span class="badge" style="background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a"><span class="dot" style="background:var(--amber)"></span>At-risk ' + risk.score + '%</span>';
+  } else {
+    html += '<span class="badge b-lime"><span class="dot" style="background:var(--lime-dk)"></span>Healthy</span>';
+  }
+  ['VIP','Watch','Risk'].forEach(function(t) {
+    var active = tags.indexOf(t) !== -1;
+    var cols = t === 'VIP' ? ['#fbbf24','#78350f'] : t === 'Watch' ? ['#3b82f6','#1e3a8a'] : ['#e8453c','#7a1a16'];
+    var style = active
+      ? 'background:' + cols[0] + ';color:#fff;border:1px solid ' + cols[0]
+      : 'background:var(--bg2);color:var(--ink3);border:1.5px dashed var(--border2)';
+    html += '<button onclick="toggleBizTag(\'' + b.id + '\',\'' + t + '\')" class="badge" style="' + style + ';cursor:pointer;font-family:inherit">' + (active ? '\u2713 ' : '+ ') + t + '</button>';
+  });
+  html += '</div>';
+  if (risk.score >= 30 && risk.reasons.length) {
+    html += '<div style="font-size:11px;color:var(--amber-dk);background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:8px 12px;margin-bottom:14px;line-height:1.55">\u26A0 ' + risk.reasons.join(' \u00B7 ') + '</div>';
+  }
 
   // Business Info
   html += '<div style="margin-bottom:16px">';
@@ -1078,9 +1310,37 @@ function openDetail(id) {
   html += '<div class="kv"><span class="kv-key">Owner</span><span class="kv-val">'+b.owner+'</span></div>';
   html += '<div class="kv"><span class="kv-key">Email</span><span class="kv-val mono" style="font-size:11px">'+b.email+'</span></div>';
   html += '<div class="kv"><span class="kv-key">Type</span><span class="kv-val" style="text-transform:capitalize">'+b.type+'</span></div>';
-  html += '<div class="kv"><span class="kv-key">Join Date</span><span class="kv-val mono">'+b.joinDate+'</span></div>';
+  html += '<div class="kv"><span class="kv-key">Join Date</span><span class="kv-val mono">'+b.joinDate+' <span style="color:var(--ink3);font-family:inherit">(' + fmtRelDays(b.joinDate) + ')</span></span></div>';
   html += '<div class="kv"><span class="kv-key">Status</span><span class="kv-val">'+statusBadge+'</span></div>';
   html += '<div class="kv"><span class="kv-key">WA Status</span><span class="kv-val">'+(b.waStatus==='connected'?'<span class="badge b-lime"><span class="dot" style="background:var(--lime-dk)"></span>Connected</span>':'<span class="badge b-red"><span class="dot" style="background:var(--red)"></span>Disconnected</span>')+'</span></div>';
+  html += '</div>';
+
+  // ── SUBSCRIPTION ──
+  html += '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Subscription</div>';
+  if (isSubscriber) {
+    html += '<div class="kv"><span class="kv-key">Plan</span><span class="kv-val"><span class="badge b-lime">\u2B50 Subscriber</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">MRR</span><span class="kv-val mono" style="font-weight:700;color:var(--lime-dk)">Rp ' + mrr.toLocaleString('id-ID') + '/bln</span></div>';
+    if (b.nextRenewal) html += '<div class="kv"><span class="kv-key">Next Renewal</span><span class="kv-val mono">'+b.nextRenewal+'</span></div>';
+  } else if (isTrial) {
+    var daysLeft = b.trialEndsAt ? Math.max(0, Math.ceil((new Date(b.trialEndsAt) - Date.now()) / 86400000)) : 0;
+    html += '<div class="kv"><span class="kv-key">Plan</span><span class="kv-val"><span class="badge b-blue">\uD83C\uDF81 Trial Aktif</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">Trial Ends</span><span class="kv-val mono">' + (b.trialEndsAt || '—') + ' <span style="color:' + (daysLeft <= 3 ? 'var(--red-dk)' : 'var(--ink3)') + ';font-family:inherit">(' + daysLeft + ' hari lagi)</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">MRR</span><span class="kv-val mono" style="color:var(--ink3)">Rp 0 <span style="font-family:inherit">(pending)</span></span></div>';
+  } else {
+    html += '<div class="kv"><span class="kv-key">Plan</span><span class="kv-val"><span class="badge b-gray">' + b.status + '</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">MRR</span><span class="kv-val mono" style="color:var(--ink3)">Rp 0</span></div>';
+  }
+  html += '</div>';
+
+  // ── USAGE METRICS ──
+  html += '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Usage</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">';
+  html += '<div style="background:var(--bg3);padding:10px;border-radius:var(--r-sm);text-align:center"><div style="font-size:18px;font-weight:700;font-family:\'JetBrains Mono\',monospace;color:var(--ink)">'+b.remindersSent+'</div><div style="font-size:10px;color:var(--ink3);margin-top:2px">Reminder sent</div></div>';
+  html += '<div style="background:var(--bg3);padding:10px;border-radius:var(--r-sm);text-align:center"><div style="font-size:18px;font-weight:700;font-family:\'JetBrains Mono\',monospace;color:var(--ink)">'+(b.customerCount || '—')+'</div><div style="font-size:10px;color:var(--ink3);margin-top:2px">Pelanggan</div></div>';
+  html += '<div style="background:var(--bg3);padding:10px;border-radius:var(--r-sm);text-align:center"><div style="font-size:18px;font-weight:700;font-family:\'JetBrains Mono\',monospace;color:var(--ink)">'+(b.responseRate ? b.responseRate+'%' : '—')+'</div><div style="font-size:10px;color:var(--ink3);margin-top:2px">Response rate</div></div>';
+  html += '</div>';
   html += '</div>';
 
   // Credits
@@ -1106,14 +1366,30 @@ function openDetail(id) {
   html += '</div>';
   html += '</div>';
 
-  // Suspend / Activate toggle
+  // Internal Notes (admin-only)
+  html += '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">Internal Notes <span style="color:var(--ink4);font-weight:500;text-transform:none;letter-spacing:0">admin-only, tidak visible ke owner</span></div>';
+  html += '<textarea id="md-internal-note" placeholder="Context untuk support team: preferensi komunikasi, history issue, perjanjian khusus, dsb." style="width:100%;min-height:70px;padding:10px 13px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-sm);font-family:inherit;font-size:12px;resize:vertical;outline:none;line-height:1.55" onblur="saveNoteForBiz(\'' + b.id + '\')">' + note + '</textarea>';
+  html += '</div>';
+
+  // Quick Actions
   html += '<div style="margin-bottom:16px">';
   html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Actions</div>';
-  if (b.status === 'active' || b.status === 'trial') {
-    html += '<button class="btn btn-red" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">Suspend Account</button>';
+  html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">';
+  html += '<button class="btn btn-lime btn-sm" onclick="impersonateUser(\'' + b.id + '\')">\uD83C\uDFAD Login as User</button>';
+  if (isTrial || b.status === 'trial_expired') {
+    html += '<button class="btn btn-lime btn-sm" onclick="extendTrial(\'' + b.id + '\')" style="background:var(--amber);color:var(--amber-dk)">\u23F1 Extend Trial</button>';
   } else {
-    html += '<button class="btn btn-lime" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">Activate Account</button>';
+    html += '<button class="btn btn-ghost btn-sm" disabled style="opacity:.4;cursor:not-allowed">\u23F1 Extend Trial</button>';
   }
+  html += '<button class="btn btn-ghost btn-sm" onclick="sendWAToOwner(\'' + b.id + '\')">\uD83D\uDCAC Kirim WA Owner</button>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="exportBizData(\'' + b.id + '\')">\uD83D\uDCE5 Export Data</button>';
+  if (b.status === 'active' || b.status === 'trial' || b.status === 'trial_aktif') {
+    html += '<button class="btn btn-red btn-sm" style="grid-column:span 2" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">\uD83D\uDEAB Suspend Account</button>';
+  } else {
+    html += '<button class="btn btn-lime btn-sm" style="grid-column:span 2" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">\u2705 Activate Account</button>';
+  }
+  html += '</div>';
   html += '</div>';
 
   // Activity Log
@@ -1136,6 +1412,93 @@ function openDetail(id) {
   document.getElementById('md-footer').innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'modal-detail\')">Tutup</button>';
 
   openModal('modal-detail');
+}
+
+/* ── Business-detail quick action handlers ── */
+function toggleBizTag(bizId, tag) {
+  if (!BIZ_TAGS[bizId]) BIZ_TAGS[bizId] = [];
+  var idx = BIZ_TAGS[bizId].indexOf(tag);
+  if (idx === -1) BIZ_TAGS[bizId].push(tag); else BIZ_TAGS[bizId].splice(idx, 1);
+  saveBizTags();
+  openDetail(bizId);
+}
+
+function saveNoteForBiz(bizId) {
+  var txt = (document.getElementById('md-internal-note') || {}).value || '';
+  INTERNAL_NOTES[bizId] = txt;
+  saveInternalNotes();
+  // Silent save — no toast untuk smooth typing
+}
+
+function extendTrial(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  var days = prompt('Extend trial berapa hari? (7 / 14 / 30)', '7');
+  if (days === null) return;
+  days = parseInt(days, 10);
+  if ([7,14,30].indexOf(days) === -1) { toast('Pilih 7, 14, atau 30 hari', 'error'); return; }
+  var pw = prompt('\u26A0 EXTEND TRIAL\n\nTambah ' + days + ' hari ke trial "' + b.name + '"?\n\nMasukkan password admin:');
+  if (pw === null) return;
+  if (pw !== 'getstarvio2026') { toast('Password salah', 'error'); return; }
+  var current = b.trialEndsAt ? new Date(b.trialEndsAt) : new Date();
+  if (current < new Date()) current = new Date();
+  current.setDate(current.getDate() + days);
+  b.trialEndsAt = current.toISOString().slice(0,10);
+  if (b.status === 'trial_expired') b.status = 'trial_aktif';
+  logAdminAction('extend_trial', bizId, { days: days, newEndDate: b.trialEndsAt });
+  toast('Trial extended +' + days + ' hari ke ' + b.trialEndsAt, 'success');
+  renderTable();
+  openDetail(bizId);
+}
+
+function sendWAToOwner(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  var msg = prompt('Kirim WA ke owner "' + b.owner + '" dari getstarvio support:',
+    'Halo ' + b.owner + ', tim getstarvio mau check-in kabar kamu. Ada yang bisa kami bantu?');
+  if (!msg) return;
+  var phone = (b.phone || '62810000000').replace(/\D/g,'');
+  window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(msg), '_blank');
+  logAdminAction('send_wa_owner', bizId, { msgLen: msg.length });
+  toast('WA opened — send via web/app', 'success');
+}
+
+function exportBizData(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  var data = {
+    business: b,
+    activityLog: ACTIVITY_LOG[bizId] || [],
+    internalNote: INTERNAL_NOTES[bizId] || '',
+    tags: BIZ_TAGS[bizId] || [],
+    exportedAt: new Date().toISOString(),
+    exportedBy: _adminEmail || 'admin'
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'getstarvio-' + b.id + '-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  logAdminAction('export_biz_data', bizId, { format: 'json' });
+  toast('Data exported', 'success');
+}
+
+function impersonateUser(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  var confirmed = confirm('\uD83C\uDFAD LOGIN AS USER\n\nBuka dashboard user "' + b.name + '" (owner: ' + b.owner + ')?\n\n\u2022 Banner merah akan muncul di semua page menandakan impersonation mode.\n\u2022 Semua action tetap tercatat di audit log.\n\u2022 Click "Exit Impersonate" di banner untuk kembali ke admin.');
+  if (!confirmed) return;
+  var flag = {
+    adminEmail: _adminEmail || 'admin@getstarvio.com',
+    targetBizId: bizId,
+    targetBizName: b.name,
+    startedAt: new Date().toISOString()
+  };
+  try { localStorage.setItem('getstarvio_impersonation', JSON.stringify(flag)) } catch(e) {}
+  logAdminAction('impersonate_start', bizId, { targetName: b.name });
+  window.location.href = 'getstarvio-dashboard.html';
 }
 
 // ══════════════════════════════
@@ -1163,11 +1526,14 @@ function doAddCredit() {
 
   setTimeout(function() {
     b.creditLeft += amount;
-    // Add to log
+    // Add to business activity log
     if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
     var now = new Date();
     var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
     ACTIVITY_LOG[b.id].unshift({ time: ts, text: 'Credit top-up +'+amount+' by admin' });
+
+    // Audit log
+    logAdminAction('credit_topup', b.id, { amount: amount, balanceAfter: b.creditLeft });
 
     toast('Berhasil menambahkan '+amount+' kredit ke '+b.name, 'success');
     renderTable();
@@ -1182,6 +1548,14 @@ function doToggleStatus(id) {
 
   var btn = document.getElementById('btn-toggle-status');
   var isActive = (b.status === 'active' || b.status === 'trial');
+
+  // Suspend = high-impact action — require password gate
+  if (isActive) {
+    var pw = prompt('⚠ SUSPEND ACCOUNT\n\nSuspend "' + b.name + '"? Owner ga bisa login sampai di-aktivasi lagi.\n\nMasukkan password admin:');
+    if (pw === null) return;
+    if (pw !== 'getstarvio2026') { toast('Password admin salah — suspend dibatalkan', 'error'); return; }
+  }
+
   btn.textContent = isActive ? 'Suspending...' : 'Activating...';
   btn.disabled = true;
 
@@ -1194,11 +1568,14 @@ function doToggleStatus(id) {
       b.status = 'active';
       toast(b.name + ' telah diaktifkan kembali', 'success');
     }
-    // Add to log
+    // Add to business activity log
     if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
     var now = new Date();
     var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
     ACTIVITY_LOG[b.id].unshift({ time: ts, text: 'Status changed from '+oldStatus+' to '+b.status+' by admin' });
+
+    // Audit log
+    logAdminAction(isActive ? 'suspend_account' : 'activate_account', b.id, { from: oldStatus, to: b.status });
 
     renderTable();
     renderChurnRisks();
@@ -1315,6 +1692,7 @@ function switchTab(tab, el) {
   if (tab === 'transactions') renderTx();
   if (tab === 'templates') { renderTemplates(); renderMetaInbox(); }
   if (tab === 'biz-types') renderBizTypes();
+  if (tab === 'audit') renderAuditLog();
 }
 
 // ══════════════════════════════════════════════
@@ -1336,13 +1714,8 @@ var TEMPLATES = [
   { id:'tpl-aft-4', name:'aftercare_followup_4', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSekedar info, jadwal perawatan lanjutannya dalam {{5}} dari kunjungan terakhir.\n\nButuh bantuan? Langsung balas chat ini aja.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
   { id:'tpl-aft-5', name:'aftercare_followup_5', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, perawatan lanjutan bisa dilakukan dalam {{5}}.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
 
-  // ═══ LEGACY REMINDER TEMPLATES (kompatibilitas — bisa di-deprecate) ═══
+  // ═══ AUTH & LEGACY (kompatibilitas) ═══
   { id:'tpl-001', name:'reminder_balik',   category:'UTILITY',        language:'id', status:'APPROVED', body:'Halo {{1}}, sudah {{2}} hari sejak {{3}} di {{4}}. Saatnya kembali ✨ Balas untuk booking ya!', header:'', footer:'', buttons:['Booking Sekarang'], updatedAt:'2026-04-10' },
-  { id:'tpl-002', name:'soft_invite',      category:'MARKETING',      language:'id', status:'APPROVED', body:'Hai {{1}} 👋 {{4}} kangen! Sudah {{2}} hari sejak {{3}}. Yuk balik — balas kapan aja!', header:'', footer:'Balas STOP untuk berhenti', buttons:[], updatedAt:'2026-04-08' },
-  { id:'tpl-003', name:'promo_nudge',      category:'MARKETING',      language:'id', status:'PENDING',  body:'Helo {{1}}! Sudah {{2}} hari sejak {{3}} di {{4}}. Ada slot kosong 😊 Promo {{5}} berlaku minggu ini!', header:'', footer:'', buttons:['Lihat Promo','Booking'], updatedAt:'2026-04-17' },
-  { id:'tpl-004', name:'care_checkin',     category:'UTILITY',        language:'id', status:'APPROVED', body:'{{1}}, sudah {{2}} hari sejak {{3}} di {{4}}. Gimana kondisi kamu?', header:'', footer:'', buttons:['Balas Sekarang'], updatedAt:'2026-03-28' },
-  { id:'tpl-005', name:'urgency_light',    category:'UTILITY',        language:'id', status:'FLAGGED',  body:'Hai {{1}}! Sudah {{2}} hari sejak {{3}} di {{4}} 🗓 Jangan lewatkan perawatan rutin!', header:'', footer:'', buttons:[], updatedAt:'2026-04-15' },
-  { id:'tpl-006', name:'birthday_special', category:'MARKETING',      language:'id', status:'REJECTED', body:'Selamat ulang tahun {{1}}! 🎉 Dapatkan diskon 30% di {{2}} bulan ini. Klaim sekarang!', header:'', footer:'', buttons:['Klaim Diskon'], updatedAt:'2026-04-12', rejectReason:'Promotional offer must include opt-out instruction' },
   { id:'tpl-007', name:'otp_verification', category:'AUTHENTICATION', language:'id', status:'APPROVED', body:'Kode verifikasi getstarvio kamu: {{1}}. Berlaku 5 menit.', header:'', footer:'', buttons:[], updatedAt:'2026-02-20' }
 ];
 
@@ -1380,10 +1753,7 @@ var TIMING_MAP = {
 };
 
 var META_NOTIFICATIONS = [
-  { id:'n-001', type:'category_change', templateId:'tpl-002', templateName:'soft_invite', from:'UTILITY', to:'MARKETING', receivedAt:'2026-04-15 09:24', read:false },
-  { id:'n-002', type:'rejected',        templateId:'tpl-006', templateName:'birthday_special', reason:'Promotional offer must include opt-out instruction', receivedAt:'2026-04-12 14:08', read:false },
-  { id:'n-003', type:'flagged',         templateId:'tpl-005', templateName:'urgency_light', reason:'High user-blocking rate (3.2%) — review template tone', receivedAt:'2026-04-15 18:42', read:true },
-  { id:'n-004', type:'approved',        templateId:'tpl-001', templateName:'reminder_balik', receivedAt:'2026-04-10 11:15', read:true }
+  { id:'n-004', type:'approved', templateId:'tpl-001', templateName:'reminder_balik', receivedAt:'2026-04-10 11:15', read:true }
 ];
 
 function renderMetaInbox() {
@@ -1502,12 +1872,14 @@ function saveTemplate() {
     var idx = TEMPLATES.findIndex(function(x){ return x.id === id });
     if (idx >= 0) {
       TEMPLATES[idx] = Object.assign({}, TEMPLATES[idx], data, { status:'PENDING' });
+      logAdminAction('save_template', id, { name: name, category: data.category, mode: 'edit_resubmit' });
       toast('Template di-resubmit ke Meta untuk review.', 'success');
     }
   } else {
     data.id = 'tpl-' + (Date.now() % 10000);
     data.status = 'PENDING';
     TEMPLATES.push(data);
+    logAdminAction('save_template', data.id, { name: name, category: data.category, mode: 'create' });
     toast('Template baru di-submit ke Meta. Review biasanya 1-24 jam.', 'success');
   }
   closeModal('modal-template');
@@ -1534,6 +1906,7 @@ function deleteTemplate(id) {
     return;
   }
   TEMPLATES = TEMPLATES.filter(function(x){ return x.id !== id });
+  logAdminAction('delete_template', id, { name: t.name, status: t.status });
   renderTemplates();
   toast('Template "' + t.name + '" dihapus.', 'success');
 }
@@ -1652,8 +2025,10 @@ function saveBizType() {
   if (editId) {
     var bt = BIZ_TYPES.find(function(x){ return x.id === editId });
     if (bt) { bt.name = name; bt.icon = icon; }
+    logAdminAction('save_biztype', editId, { name: name, mode: 'edit' });
   } else {
     BIZ_TYPES.push({ id:id, name:name, icon:icon, presets:[] });
+    logAdminAction('save_biztype', id, { name: name, mode: 'create' });
   }
   closeModal('modal-biztype');
   renderBizTypes();
@@ -1663,10 +2038,14 @@ function saveBizType() {
 function deleteBizType(id) {
   var bt = BIZ_TYPES.find(function(x){ return x.id === id });
   if (!bt) return;
-  if (!confirm('Hapus tipe bisnis "' + bt.name + '" dan ' + bt.presets.length + ' preset kategorinya?')) return;
+  // Type name for confirmation (anti fat-finger — biztype affects onboarding)
+  var typed = prompt('⚠ HAPUS TIPE BISNIS PERMANEN\n\nTipe: "' + bt.name + '" + ' + bt.presets.length + ' preset kategori.\nIni akan hilang dari onboarding flow untuk user baru.\n\nKetik nama tipe bisnis untuk konfirmasi:');
+  if (typed === null) return;
+  if (typed.trim() !== bt.name) { toast('Nama tidak cocok — penghapusan dibatalkan', 'error'); return; }
   BIZ_TYPES = BIZ_TYPES.filter(function(x){ return x.id !== id });
+  logAdminAction('delete_biztype', id, { name: bt.name, presetCount: bt.presets.length });
   renderBizTypes();
-  toast('Tipe bisnis dihapus.', 'success');
+  toast('Tipe bisnis "' + bt.name + '" dihapus.', 'success');
 }
 
 function openPresetCatModal(btId, pId) {
@@ -1697,9 +2076,11 @@ function savePresetCat() {
   if (editId) {
     var p = bt.presets.find(function(x){ return x.id === editId });
     if (p) { p.name = name; p.icon = icon; p.interval = interval; p.templateId = templateId; }
+    logAdminAction('save_preset', btId, { presetId: editId, name: name, interval: interval, templateId: templateId, mode: 'edit' });
   } else {
     var pid = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') || ('preset-' + Date.now() % 1000);
     bt.presets.push({ id:pid, name:name, icon:icon, interval:interval, templateId:templateId });
+    logAdminAction('save_preset', btId, { presetId: pid, name: name, interval: interval, templateId: templateId, mode: 'create' });
   }
   closeModal('modal-preset-cat');
   renderBizTypes();
@@ -1713,11 +2094,12 @@ function deletePresetCat(btId, pId) {
   if (!bt) return;
   var p = bt.presets.find(function(x){ return x.id === pId });
   if (!p) return;
-  if (!confirm('Hapus preset "' + p.name + '"?')) return;
+  if (!confirm('Hapus preset "' + p.name + '" dari ' + bt.name + '?')) return;
   bt.presets = bt.presets.filter(function(x){ return x.id !== pId });
+  logAdminAction('delete_preset', btId, { presetId: pId, name: p.name });
   renderBizTypes();
   setTimeout(function(){ document.getElementById('btc-' + btId).classList.add('expanded'); }, 50);
-  toast('Preset dihapus.', 'success');
+  toast('Preset "' + p.name + '" dihapus.', 'success');
 }
 
 // ══════════════════════════════
@@ -1802,18 +2184,31 @@ function savePlanConfig() {
   }
 
   try {
+    // 1) Update current user (Cynthia demo) — mempengaruhi billing / display di app
     var raw = localStorage.getItem('getstarvio_user')
     if (raw) {
       var u = JSON.parse(raw)
       u.planConfig = planConfig
       localStorage.setItem('getstarvio_user', JSON.stringify(u))
     }
+    // 2) Publish ke global defaults — dibaca oleh onboarding (new signup) +
+    //    login trust badges. All app pages yang pakai getPlanConfigDefaults()
+    //    akan otomatis propagate.
+    localStorage.setItem('getstarvio_pc_defaults', JSON.stringify(planConfig))
   } catch(e) {}
+
+  // Audit log
+  logAdminAction('save_plan_config', null, {
+    subPrice: planConfig.subPrice,
+    subPriceNormal: planConfig.subPriceNormal,
+    trialDays: planConfig.trialDays,
+    freeBonus: planConfig.freeBonus
+  });
 
   setTimeout(function() {
     btn.textContent = 'Simpan Konfigurasi';
     btn.disabled = false;
-    toast('Konfigurasi plan berhasil disimpan', 'success');
+    toast('Konfigurasi plan berhasil disimpan & dipublish ke app', 'success');
   }, 800);
 }
 
