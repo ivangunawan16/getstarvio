@@ -1065,6 +1065,8 @@ function closeDetail() {
 
 /* ── EDIT MODAL ── */
 function openEditModal(idx) {
+  // Tutup detail panel kalau lagi terbuka — mencegah double overlay & z-index conflict
+  closeDetail()
   // Support both index-based and direct customer lookup
   var cx = _ecxMap[idx]
   if (!cx && typeof idx === 'number') {
