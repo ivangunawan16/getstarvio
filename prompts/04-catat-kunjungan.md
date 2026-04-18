@@ -40,6 +40,10 @@ Dua section, vertikal dari atas ke bawah:
 - UI matches checkin page: `found-card` with green top-border (`border-top:3px solid var(--lime2)`)
 - Greeting di dalam card: "Hai, [nama]! 👋" (`font-size:18px;font-weight:700`)
 - Field tanggal di dalam card: default hari ini, readonly (background `var(--bg3)`)
+- Di bawah field tanggal: link kecil **"Bukan hari ini?"** — klik untuk enable editing tanggal
+  - Saat di-klik: field jadi editable, `max = hari ini`, `min = 7 hari ke belakang`
+  - Text link berubah jadi "Maks 7 hari ke belakang" (tidak bisa klik lagi)
+  - Reset ke readonly saat modal ditutup/dibuka ulang
 - Label "Pilih layanan hari ini:" di dalam card
 - Service list di dalam card (`svc-list`): semua layanan dari `cats[]` sebagai rows
 - Per row: ikon (22px), nama layanan (14px bold), circular check (22x22, `border-radius:50%`)
@@ -50,8 +54,10 @@ Dua section, vertikal dari atas ke bawah:
 
 **Tahap 3: Konfirmasi**
 - Ringkasan: nama pelanggan, layanan yang dipilih, tanggal
+- Jika tanggal bukan hari ini: tampilkan warning amber kecil "⚠️ Kunjungan akan dicatat untuk tanggal [date] (bukan hari ini)"
 - Tombol "Simpan Kunjungan"
 - Saat simpan: update `customer.services[]` — set `date = tanggal dipilih` untuk tiap layanan yang dicentang
+- Kunjungan backdate TIDAK muncul di section "Kunjungan Hari Ini" — hanya tampil di halaman Pelanggan
 
 **Jika "➕ Tambah pelanggan baru" dipilih:**
 - Field nama (wajib)
@@ -103,4 +109,5 @@ Dua section, vertikal dari atas ke bawah:
 | 2026-03-26 | Cleanup: `starvio-kumpulkan.html` dihapus. `getstarvio-catat-kunjungan.html` adalah halaman utama. nav-catat href=getstarvio-catat-kunjungan.html. No QR/how-to content (moved to Settings). Customer names link to pelanggan page. |
 | 2026-03-26 | **FINAL:** starvio-kumpulkan.html dihapus. getstarvio-catat-kunjungan.html adalah halaman utama (bukan redirect). nav-catat href = getstarvio-catat-kunjungan.html |
 | 2026-03-26 | **Sync Step 2 UI:** found-card with greeting, date inside card, service list inside card, circular checks (matches checkin page). Modal 560px wide, min-height 500px. Autocomplete dropdown inline. |
+| 2026-03-27 | Tambah fitur backdate "Bukan hari ini?" — max 7 hari ke belakang, warning di Step 3, backdate tidak muncul di Kunjungan Hari Ini. |
 

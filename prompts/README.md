@@ -18,7 +18,7 @@ Tidak perlu paste file page lain yang tidak dikerjakan.
 |---|---|---|
 | `00-global.md` | — | Rules global, data schema, must-not-do list |
 | `01-login.md` | `getstarvio-login.html` | Google OAuth, 2-kolom layout |
-| `02-onboarding.md` | `getstarvio-onboarding.html` | 5 step: WA → Profil → QR → Kategori → Selesai |
+| `02-onboarding.md` | `getstarvio-onboarding.html` | **4 step** (LOCKED): Connect WA → Profil Bisnis → Kategori → Selesai + QR |
 | `03-dashboard.md` | `getstarvio-dashboard.html` | Greeting card, metrics, quick links |
 | `04-catat-kunjungan.md` | `getstarvio-catat-kunjungan.html` | Catat kunjungan harian — search first, no CRM |
 | `05-pelanggan.md` | `getstarvio-pelanggan.html` | Daftar pelanggan, filter, detail |
@@ -44,6 +44,14 @@ Tidak perlu ubah file lain.
 
 ---
 
+## Prompts Utility
+
+| File | Fungsi |
+|---|---|
+| `START-HERE.md` | Kickoff prompt untuk rebuild dari scratch (paste ke sesi baru Claude Code) |
+| `QUICK-UPDATE.md` | Update satu halaman dari spec — baca global → design system → spec page → HTML lama |
+| `getstarvio-design-system.md` | Design system lengkap: CSS variables, komponen, layout rules |
+
 ## Design System
 
-Selalu baca juga: `../getstarvio-design-system.md` sebelum nulis CSS apapun.
+Selalu baca juga: `getstarvio-design-system.md` sebelum nulis CSS apapun.

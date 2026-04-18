@@ -17,31 +17,39 @@ Halaman ini adalah CRM view — bukan untuk catat kunjungan. Catat kunjungan ada
 ## Layout
 
 Dari atas ke bawah:
-1. Stats Bar
-2. Search + Filter Tabs
-3. Customer Table
-4. (Modal: Detail Pelanggan — slide-in panel atau overlay)
+1. Single Toolbar (filter chips + sort dropdown + search)
+2. Customer Table
+3. (Modal: Detail Pelanggan — slide-in panel atau overlay)
 
 ---
 
 ## Must-Have
 
-### Stats Bar (atas)
-- Total pelanggan
-- Aktif count — warna lime
-- Mendekati count — warna amber
-- Hilang count — warna merah
-- Semua dihitung dari `worstStatus()` tiap customer
+### Single Toolbar (satu baris, gantikan Stats Bar + Filter Tabs lama)
 
-### Search Bar
-- Filter real-time berdasarkan nama atau nomor WA
-- Client-side, tidak perlu submit
+Satu baris kontrol berisi 3 elemen:
 
-### Filter Tabs
-- Semua | Hilang | Mendekati | Aktif
+**Kiri — Filter Chips (dengan count badge):**
+- `[Semua 42]` `[Aktif 28]` `[Mendekati 9]` `[Hilang 5]`
+- Setiap chip punya count badge (jumlah customer di kategori itu)
+- Chip active state: Semua=hitam, Aktif=lime, Mendekati=amber, Hilang=red
 - Filter `customers[]` berdasarkan `worstStatus()`
-- Tab aktif highlight warna yang sesuai (Hilang=red, Mendekati=amber, Aktif=lime)
-- Bisa dikombinasikan dengan search bar
+- Bisa dikombinasikan dengan search
+
+**Kanan — Sort Dropdown:**
+- Trigger button: ikon sort + label aktif + chevron
+- Menu opsi: "Paling Mendesak", "A–Z Nama", "Terlama", "Terbaru"
+- Default: Paling Mendesak
+- Klik di luar dropdown → tutup
+
+**Kanan — Search Input:**
+- Placeholder "Cari nama atau WA..."
+- Filter real-time, dikombinasikan dengan filter chip aktif
+- Width 180px (mobile: full width)
+
+**Mobile (<768px):** toolbar vertikal — filter chips bisa scroll horizontal, sort+search di baris kedua full width.
+
+> ⚠️ TIDAK ADA metric cards terpisah di atas. Count angka total ada di chip "Semua" dan di topbar sub-text ("X pelanggan terdaftar").
 
 ### Customer Table Rows
 Per baris:
@@ -108,3 +116,4 @@ Per baris:
 | 2026-03-26 | Tambah Reference section — acuan v2.0, pre-select logic, tombol utama |
 | 2026-03-26 | **Update v3:** Hapus semua aksi catat kunjungan (tombol "Kunjungan Hari Ini", pre-select modal, shortcut dari detail panel). Halaman ini murni CRM view. Tambah "Yang TIDAK Ada" section untuk clarity |
 | 2026-03-26 | Sync: Edit modal = date picker + service checklist (recording services), bukan interval customization. Detail panel has Edit button only — no "Catat Kunjungan" shortcut. nav-catat href = getstarvio-catat-kunjungan.html. |
+| 2026-03-27 | Hapus Stats Bar (metric cards) + Filter Tabs + Sort Buttons terpisah. Diganti single toolbar: filter chips (dengan count badge) + sort dropdown + search input dalam satu baris. |

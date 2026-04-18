@@ -151,7 +151,7 @@ Ini sudah ada di `00-global.md` bagian MUST-NOT DO LIST, tapi repeat di sini kar
 4. **Nomor HP** — strip leading 0 real-time, simpan dengan country code (628xxx)
 5. **Semua data dari localStorage `getstarvio_user`** — tidak ada hardcoded dummy di halaman production
 6. **`getstarvio-admin.html` tidak pernah dilink dari app user**
-7. **Onboarding flow = LOCKED** — jangan ubah flow 5-step tanpa instruksi eksplisit
+7. **Onboarding flow = LOCKED** — flow adalah **4 step** (Connect WA → Profil → Kategori → Selesai+QR). Jangan ubah jumlah atau urutan step tanpa instruksi eksplisit
 8. **`DATA_VERSION: 4`** — harus match di seed data dan di `loadU()` check
 9. **Bahasa UI = Indonesia informal** — "Kamu", "Yuk", bukan "Anda"
 10. **Prototype actions** (Google OAuth, WA send, payment) = simulasikan dengan setTimeout + visual feedback
