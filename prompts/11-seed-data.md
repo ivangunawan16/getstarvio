@@ -26,25 +26,36 @@ Deretan tab horizontal untuk switch state kredit tanpa edit manual. Klik tab →
 
 Pelanggan, kategori, dan reminder log tetap sama — hanya billing fields yang berubah.
 
-**9 presets yang harus ada:**
+**11 presets yang harus ada (grouped by Trial States + Subscriber States):**
+
+**Trial States** (plan: "trial" — welcome bonus di topupCreditsLeft)
+
+| Preset | plan | subCreditsLeft | topupCreditsLeft | trialEndsAt | Kondisi yang ditest |
+|---|---|---|---|---|---|
+| **trial-fresh** | trial | 0 | 100 | +14 hari | User baru sign-up, trial penuh |
+| **trial-low** | trial | 0 | 22 | +5 hari | Trial berjalan, bonus hampir habis |
+| **trial-expiring-soon** | trial | 0 | 45 | +2 hari | Trial 2 hari lagi (churn risk alert) |
+| **trial-expired-time** | trial | 0 | 40 | -3 hari | Trial expired karena waktu (HARD LOCK) |
+| **trial-expired-credit** | trial | 0 | 0 | +5 hari | Trial expired karena kredit habis (HARD LOCK) |
+
+**Subscriber States** (plan: "subscriber")
 
 | Preset | plan | subCreditsLeft | topupCreditsLeft | subRenewsAt | Kondisi yang ditest |
 |---|---|---|---|---|---|
-| **free-full** | free | 0 | 100 | null | User baru, welcome bonus penuh |
-| **free-low** | free | 0 | 22 | null | Welcome bonus hampir habis |
-| **free-critical** | free | 0 | 5 | null | Welcome bonus kritis |
-| **free-empty** | free | 0 | 0 | null | Kredit kosong — automation mati |
 | **sub-healthy** | subscriber | 312 | 50 | +1 bulan | Subscriber sehat |
 | **sub-low** | subscriber | 18 | 50 | +1 bulan | Kredit bulanan hampir habis |
+| **sub-no-topup** | subscriber | 237 | 0 | +1 bulan | Sub OK, belum pernah topup |
 | **sub-depleted** | subscriber | 0 | 30 | +1 bulan | Sub habis, topup masih ada |
 | **sub-critical** | subscriber | 0 | 7 | +1 bulan | Topup kritis |
-| **sub-empty** | subscriber | 0 | 0 | +1 bulan | Semua habis |
+| **sub-empty** | subscriber | 0 | 0 | +1 bulan | Semua habis (automation off) |
 
 **Visual:**
 - Preset buttons/pills — klik untuk switch billing state instan
+- **2 rows separator:** "Trial States" row + "Subscriber States" row (visual grouping)
 - Tab aktif (state saat ini): highlight style
 - Di bawah, tampilkan ringkasan state saat ini
-- `subCreditsMax` selalu di-set ke 250 untuk subscriber presets
+- `subCreditsMax` selalu di-set ke 300 untuk subscriber presets
+- Trial presets: auto-set `trialStartedAt = trialEndsAt - 14 days`, `trialUsed = false`
 
 **Implementasi (tiap tab klik):**
 ```js
@@ -65,7 +76,7 @@ Object `DUMMY` harus berisi:
 
 **Profil:**
 ```js
-DATA_VERSION: 4,
+DATA_VERSION: 5,                       // v5 schema (migrated from v4 via loadU() auto-migration)
 bizName: "Celestial Spa & Wellness",
 bizType: "spa",
 bizSlug: "celestial-spa-wellness",
@@ -75,14 +86,23 @@ ownerWa: "628123456789",
 waNum: "628987654321",
 timezone: "Asia/Jakarta",
 country: "ID",
-// Billing fields (model baru):
-plan: "subscriber",           // Cynthia sudah subscribe
+// Billing fields (v5 model):
+plan: "subscriber",           // Cynthia sudah subscribe ("trial" | "subscriber")
 subCreditsLeft: 237,          // dari 300/bulan, sudah terpakai bulan ini
-subCreditsMax: 250,
-topupCreditsLeft: 50,         // kredit top-up yang tidak ada expiry
-subRenewsAt: "+1 month",     // dynamic — 1 bulan dari sekarang
-remMax: 300,                  // max kredit subscription per bulan (NOT 100)
+subCreditsMax: 300,           // max subscription credits per bulan
+topupCreditsLeft: 50,         // kredit top-up permanent (tidak ada expiry)
+subRenewsAt: "+1 month",      // dynamic — 1 bulan dari sekarang
+// Trial fields (v5 required):
+trialStartedAt: "-60 days",   // 60 hari lalu untuk historical subscriber
+trialEndsAt: "-46 days",      // 14 hari setelah trialStartedAt
+trialUsed: true,              // sudah lewat trial, sudah subscribe
+remMax: 300,                  // max kredit subscription per bulan
 automationEnabled: true,
+// Branding & Settings (v5 fields):
+bizLogo: null,                // opsional, null = fallback initial circle
+avgServiceValue: 175000,      // Rp 175.000 rata-rata layanan (untuk ROI calc)
+setupComplete: true,          // dashboard setup checklist: all 4 steps done
+qrPosted: true,               // owner sudah print/share QR
 // remLeft = 237 + 50 = 287 (dihitung otomatis di loadU())
 defaultInterval: 30,
 billingHistory: [...],        // entries use format: { date, type, label, delta, balAfter, note }

@@ -108,16 +108,30 @@ Dua section, vertikal dari atas ke bawah:
 
 ---
 
-## BILLING / TRIAL BEHAVIOR
+## BILLING / TRIAL BEHAVIOR — MODE: NONE
 
-**Halaman ini TIDAK pernah di-lock oleh trial expired atau kredit habis.**
+Per TRIAL LOCK MATRIX (`00-global.md`), Catat Kunjungan = **NONE lock** — halaman ini TIDAK pernah di-lock oleh trial expired atau kredit habis.
 
 Alasan:
 - Kasir bukan orang yang handle billing (itu owner)
 - Kalau catat kunjungan di-block, data pelanggan hilang — itu lebih bahaya dari apapun
 - Yang berhenti saat kredit habis = pengiriman pengingat otomatis (handled di Automation page), bukan pencatatan
+- Data ownership priority: kasir harus bisa input data bahkan saat owner lupa bayar
 
-Implementation: `checkTrialLock()` di-stub jadi no-op di halaman ini. Pattern function tetap ada untuk konsistensi dengan sidebar pages lain, tapi tidak melakukan apapun.
+**Implementation — MUST ada function stub (bukan hapus function):**
+```js
+function checkTrialLock() {
+  // Intentional no-op — Catat Kunjungan tidak di-lock per TRIAL LOCK MATRIX (00-global.md)
+  return
+}
+```
+
+Function tetap ada untuk:
+1. Konsistensi pattern dengan sidebar pages lain (semua sidebar page punya function ini)
+2. Memudahkan refactor kalau suatu saat rule berubah (cukup edit 1 function, bukan tambah function baru)
+3. Testing: unit test bisa panggil `checkTrialLock()` di semua page tanpa check if-defined
+
+**TIDAK ADA:** banner soft lock, overlay hard lock, atau disable button saat trial expired. Full access.
 
 ---
 
@@ -143,4 +157,5 @@ Implementation: `checkTrialLock()` di-stub jadi no-op di halaman ini. Pattern fu
 | 2026-03-26 | **Sync Step 2 UI:** found-card with greeting, date inside card, service list inside card, circular checks (matches checkin page). Modal 560px wide, min-height 500px. Autocomplete dropdown inline. |
 | 2026-03-27 | Tambah fitur backdate "Bukan hari ini?" — max 7 hari ke belakang, warning di Step 3, backdate tidak muncul di Kunjungan Hari Ini. |
 | 2026-04-18 | **MAJOR UIUX UPDATE.** 3 step → 2 step (hapus Tahap 3 Konfirmasi terpisah — Save langsung ke Success Screen). Tambah **Recent Customers Row** di atas search (8 pills horizontal scroll, tap = skip search). **Success Screen** di dalam modal: centang animated + nama + layanan + dual buttons "Catat Lagi" outline / "Selesai" filled (no auto-close). Backdate warning inline di Tahap 2. Tombol "Ganti" di greeting card → kembali ke Tahap 1. **NO TRIAL LOCK** — `checkTrialLock()` stubbed jadi no-op (kasir harus selalu bisa catat data). Target: <8 detik per record, 3 taps min. |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH.** Clarified `checkTrialLock()` stub implementation — function MUST exist (empty return) untuk konsistensi pattern dengan sidebar pages lain, bukan dihapus. Reference canonical TRIAL LOCK MATRIX di 00-global.md (mode: NONE). |
 

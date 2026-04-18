@@ -23,7 +23,7 @@
 
 ### Step 2 — Profil Bisnis
 - Field: Nama Bisnis (wajib, tidak bisa lanjut jika kosong), Jenis Bisnis, Nama Admin, Email (read-only dari Google), No WA Pemilik (untuk notif billing)
-- **Jenis Bisnis: visual grid 8 pilihan** — bukan dropdown. Tiap pilihan punya ikon besar + label. Pilihan: Salon, Spa, Klinik/Dokter, Barbershop, Nail Studio, Bengkel, Skincare/Estetik, Lainnya
+- **Jenis Bisnis: visual grid 9 pilihan** (3×3 grid di desktop, 2-col di mobile) — bukan dropdown. Tiap pilihan punya ikon besar + label. Pilihan (sesuai PRODUCT CONTEXT UMKM): Salon, Spa, Klinik, Barbershop, Nail Studio, Bengkel, Pet Grooming, Laundry, Lainnya
 - Memilih jenis bisnis otomatis update preset kategori di Step 3
 - **Nomor WA Pemilik:** apply global phone number rules (strip leading 0, country code selector)
 
@@ -37,8 +37,9 @@
   - Klinik: Konsultasi, Perawatan Kulit, Laser Treatment, Chemical Peel
   - Barbershop: Potong Rambut, Cukur Jenggot, Hair Wax
   - Nail Studio: Manicure, Pedicure, Nail Art, Gel Nails
-  - Bengkel: Ganti Oli, Servis Rutin
-  - Skincare/Estetik: Facial, Chemical Peel
+  - Bengkel: Ganti Oli, Servis Rutin, Tune Up, Ganti Ban
+  - Pet Grooming: Bath & Brush, Full Grooming, Nail Trim, Ear Cleaning
+  - Laundry: Cuci Kering, Dry Clean, Setrika, Express
   - Lainnya: Layanan Utama
 
 ### Step 4 — Selesai + QR Check-in (merged)
@@ -81,3 +82,4 @@ Flow & struktur mengacu ke built `getstarvio-onboarding.html`. Old v2.0 had 5 st
 | 2026-03-26 | **Major update:** 5 steps merged to 4 steps. Old Step 3 (QR Check-in) and Step 5 (Done) merged into Step 4 (Selesai + QR Check-in). Sidebar light theme. remMax=100. Progress = step N dari 4. |
 | 2026-04-18 | **Step 1 redesign — Embedded Signup + Coexist flow.** 3-state UI (pre-connection / progress mockup / success card) menggantikan standalone QR scan. Tombol biru Facebook "Hubungkan dengan Facebook" → mockup popup Meta dengan 5-step stepper (Login FB → Pilih Business Portfolio → Pilih nomor WA Business → Scan QR di popup pakai WA Business app → Konfirmasi Coexist). Success card focused (nomor WA + Coexist tag, no technical IDs). Template approval status dengan amber spinner (1-24 jam). |
 | 2026-04-18 | **Step 2/3/4 cleanup.** Step 2 grouped jadi 3 sections (Tentang bisnis / Tentang kamu / Lokasi & waktu). Step 3 grouped jadi 2 sections (Pilih dari template / Tambah custom) dengan add-card responsive. Step 4 redesign total: hero centered + status chips lime + Section A (QR check-in card lime) + Section B (WA share tip card) + final CTA. Sidebar labels Indonesia. UI copy "reminder" → "pengingat". |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH.** Step 2 Jenis Bisnis grid 8 → 9 pilihan untuk match PRODUCT CONTEXT UMKM di 00-global.md: removed "Skincare/Estetik" + "Klinik/Dokter" label, added "Pet Grooming" + "Laundry", normalize "Klinik". Step 3 pre-fill suggestions expanded: added Bengkel extra presets (Tune Up, Ganti Ban), added Pet Grooming + Laundry presets. |

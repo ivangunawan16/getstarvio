@@ -8,8 +8,9 @@
 
 Landing → klik "Lanjut dengan Google" → Google account picker modal muncul → pilih akun:
 - Pilih **Cynthia** (existing user):
-  - Cek `getstarvio_user` di localStorage, jika ada & `DATA_VERSION === 4` → redirect ke `getstarvio-dashboard.html`
-  - Jika tidak ada → redirect ke `getstarvio-seed-data.html?auto=1&next=dashboard` (inject data dulu)
+  - Panggil `loadU()` — akan auto-migrate v4 → v5 kalau perlu, return null kalau tidak ada atau invalid
+  - Jika `loadU()` return non-null (DATA_VERSION 4 atau 5 — auto-migrated) → redirect ke `getstarvio-dashboard.html`
+  - Jika return null → redirect ke `getstarvio-seed-data.html?auto=1&next=dashboard` (inject data dulu)
 - Pilih **Buat Akun Baru**:
   - `localStorage.removeItem('getstarvio_user')` → redirect ke `getstarvio-onboarding.html`
 
@@ -56,3 +57,4 @@ _Catat semua perubahan/feedback di sini dengan tanggal_
 | 2026-03-26 | Update: hapus "Daftar Gratis", demo mode jadi 2 opsi (Cynthia existing + Buat Akun Baru), tidak ada link manual ke onboarding |
 | 2026-03-26 | Update: Google button → account picker modal (bukan langsung redirect). Cynthia cek localStorage dulu. Buat Akun Baru di bawah Cynthia di picker. Tidak ada tulisan "Daftar Gratis" di pojok kanan |
 | 2026-03-26 | Verified: HTML matches prompt spec. Google OAuth only, no registration link, account picker with 2 options. |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH.** Existing user check: ganti hardcoded `DATA_VERSION === 4` dengan `loadU()` call — terima v4 (auto-migrate) ATAU v5 (current). Hindari login gate break setelah schema bump. |

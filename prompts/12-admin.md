@@ -38,8 +38,8 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 ### Tabel Subscriber (main section)
 - List semua bisnis dari `ADMIN_DATA[]` (bukan dari `getstarvio_user`)
 - Kolom: Nama Bisnis | Jenis | Tgl Daftar | Status | Kredit Tersisa | Pengingat (bln ini) | WA Status
-- Status badge per baris: `Aktif` (lime) / `Trial Aktif` (blue) / `Trial Expired` (amber) / `Suspended` (red) / `Churned` (grey)
-- Status badge per baris: `Aktif` (lime) / `Trial` (blue) / `Suspended` (amber) / `Churned` (red)
+- Status badge per baris (5 varian): `Aktif` (lime) / `Trial Aktif` (blue) / `Trial Expired` (amber) / `Suspended` (red) / `Churned` (grey)
+- **Status derivation (admin-side):** Admin data stores status langsung (bukan computed dari plan+trialEndsAt) karena admin perlu status operational seperti `suspended` dan `churned` yang tidak ada di user schema. Enum value match user-facing badge label: `aktif | trial-aktif | trial-expired | suspended | churned`.
 - WA status chip: `Connected` (lime pulse) / `Disconnected` (red)
 - Tombol "Lihat Detail" per baris → buka modal detail
 
@@ -125,17 +125,28 @@ Contoh entry:
   bizSlug: "salon-kecantikan-indah",
   adminName: "Siti Rahayu",
   adminEmail: "siti@gmail.com",
-  status: "aktif",           // "aktif" | "trial" | "suspended" | "churned"
-  remLeft: 42,
-  remMax: 100,
-  reminderThisMonth: 18,    // count of pengingat sent this month
-  reminderAllTime: 134,     // count of pengingat all-time
+  plan: "subscriber",        // "trial" | "subscriber" — match user schema v5
+  status: "aktif",           // admin-side operational status — "aktif" | "trial-aktif" | "trial-expired" | "suspended" | "churned"
+  trialEndsAt: null,         // ISO string; null untuk subscriber. Dipakai untuk kalkulasi "hari trial tersisa" di modal detail.
+  subCreditsLeft: 237,       // sisa kredit bulanan
+  subCreditsMax: 300,        // cap bulanan (untuk progress bar)
+  topupCreditsLeft: 50,      // kredit top-up permanent
+  remLeft: 287,              // mirror dari subCreditsLeft + topupCreditsLeft (pre-computed untuk tabel performance)
+  reminderThisMonth: 18,     // count of pengingat sent this month
+  reminderAllTime: 134,      // count of pengingat all-time
   waStatus: "connected",     // "connected" | "disconnected"
   lastConnected: "2026-03-25T10:30:00",
   lastTopUp: "2026-03-10",
   joinedAt: "2025-11-15"
 }
 ```
+
+**Status ↔ plan mapping (internally consistent):**
+- `aktif` → `plan: "subscriber"` (paying customer)
+- `trial-aktif` → `plan: "trial"` + `trialEndsAt > now` + `topupCreditsLeft > 0`
+- `trial-expired` → `plan: "trial"` + (`trialEndsAt < now` OR `topupCreditsLeft === 0`)
+- `suspended` → admin manually suspended (ignore plan/trial state)
+- `churned` → cancel subscription setelah pernah subscriber (plan stored as "churned" at ADMIN_DATA level only)
 
 ---
 
@@ -161,3 +172,4 @@ Contoh entry:
 | 2026-04-18 | **TEMPLATES TAB ADDED.** Library WhatsApp templates (CRUD), Meta inbox notifications (category change, rejected, flagged, approved), 5 aftercare follow-up templates (UTILITY-compliant, 5 variables: nama/treatment/tanggal/bisnis/timing). Status badges: APPROVED/PENDING/REJECTED/PAUSED/FLAGGED. Category chips: UTILITY/MARKETING/AUTHENTICATION. |
 | 2026-04-18 | **TIPE LAYANAN TAB ADDED.** Manage business types (Salon/Spa/Klinik/etc.) + preset categories per type. Click card to expand & edit presets. Per preset: nama, icon, default interval, default template. CRUD + auto-sync ke onboarding "Jenis Bisnis" + "Kategori Layanan". |
 | 2026-04-18 | **DATA_VERSION 5 IMPACT.** Subscriber table status badges include `Trial Aktif` (blue) + `Trial Expired` (amber). ADMIN_DATA dummies should reflect new plan values (`trial` instead of `free`). Plan Config trial card editable: welcome bonus credits + trial duration days. planConfig schema dilengkapi `trialDays` field. |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH.** Removed duplicate/stale status badge line (old 4-value enum). Canonical status enum: `aktif \| trial-aktif \| trial-expired \| suspended \| churned` (5 values). ADMIN_DATA example entry expanded with `plan`, `trialEndsAt`, `subCreditsLeft`, `subCreditsMax`, `topupCreditsLeft` — match user v5 schema. Added explicit status↔plan mapping table to prevent drift. |

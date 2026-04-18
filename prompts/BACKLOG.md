@@ -257,10 +257,13 @@
 | P3 — UX Refinement | 5 | M+M+M+S+S | Mobile, accessibility, polish |
 | P4 — Backend Integration | 5 | XL+XL+L+M+L | Real backend, payment, WA API |
 | P5 — Differentiators | 11 | mostly L/XL | Long-term vision |
+| P6 — Admin Enhancements | 10 | mix S-L | Refund queue, revenue dashboard, churn recovery, feature flags, etc. |
+
+**Sudah done dari P6:** ✅ Impersonate user + ✅ Audit log system
 
 **Estimasi total effort untuk launch-ready:** P2 + P3 + critical P4 (real backend + payment + WA API) = ~3-4 bulan dengan 2-3 dev.
 
-**Estimasi untuk competitive moat:** + P1 + selected P5 = ~6-9 bulan additional.
+**Estimasi untuk competitive moat:** + P1 + selected P5 + P6 = ~6-9 bulan additional.
 
 ---
 

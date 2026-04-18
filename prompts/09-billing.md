@@ -44,8 +44,8 @@ Kelola subscription dan kredit pengingat. **ROI framing** — pengingat bukan "b
 **`remLeft` = `subCreditsLeft + topupCreditsLeft`** — total kredit yang bisa dipakai
 
 **User states:**
-- **Trial aktif:** `plan: "free"` + `trialStartedAt` < `trialDays` hari + `topupCreditsLeft > 0` — bisa pakai welcome bonus 100 kredit
-- **Trial expired:** `plan: "free"` + (trial >`trialDays` hari ATAU `topupCreditsLeft === 0`) — dashboard accessible, automation OFF, popup paksa subscribe, tombol top-up disabled. Sisa welcome bonus tetap tersimpan (permanent).
+- **Trial aktif:** `plan: "trial"` + `trialStartedAt` < `trialDays` hari + `topupCreditsLeft > 0` — bisa pakai welcome bonus 100 kredit
+- **Trial expired:** `plan: "trial"` + (trial >`trialDays` hari ATAU `topupCreditsLeft === 0`) — dashboard accessible, automation OFF, popup paksa subscribe, tombol top-up disabled. Sisa welcome bonus tetap tersimpan (permanent).
 - **Subscriber aktif:** `plan: "subscriber"` — full access, bisa top-up. Welcome bonus + sub credits + topup credits semua bisa dipakai.
 
 **Trial computation (lakukan di `loadU()` atau ensureBillingFields):**
@@ -77,7 +77,7 @@ Tambahkan field ini ke `getstarvio_user`:
 
 ```js
 {
-  plan: "free" | "subscriber",       // status subscription
+  plan: "trial" | "subscriber",       // status subscription
   subCreditsLeft: number,            // sisa kredit dari subscription bulan ini (reset bulanan)
   subCreditsMax: 300,
   topupCreditsLeft: number,          // kredit top-up (tidak ada expiry) — termasuk welcome bonus 100 kredit
@@ -85,7 +85,7 @@ Tambahkan field ini ke `getstarvio_user`:
   trialStartedAt: "ISO string | null", // kapan trial mulai. Set otomatis saat selesai onboarding.
   // remLeft = subCreditsLeft + topupCreditsLeft (computed, bukan disimpan)
   // trialEndsAt = trialStartedAt + planConfig.trialDays (computed)
-  // isTrialExpired = plan === 'free' && (now > trialEndsAt || topupCreditsLeft === 0)
+  // isTrialExpired = plan === 'trial' && (now > trialEndsAt || topupCreditsLeft === 0)
 }
 ```
 
@@ -98,14 +98,14 @@ Tambahkan field ini ke `getstarvio_user`:
 
 ### Section 1: Status Plan (paling atas)
 
-**Jika `plan === "free"` & trial AKTIF (belum expired):**
+**Jika `plan === "trial"` & trial AKTIF (belum expired):**
 - Badge: "Free Trial" (amber/lime)
 - Teks: "Trial: `X hari tersisa` · `Y kredit tersisa`"
 - Show progress: trial countdown (X dari trialDays hari)
 - CTA prominent: tombol **"Subscribe — ~~Rp 499.000~~ Rp 249.000/bulan (300 kredit)"**
 - Subtext: "Subscribe sekarang biar ga ada gangguan saat trial habis."
 
-**Jika `plan === "free"` & trial EXPIRED:**
+**Jika `plan === "trial"` & trial EXPIRED:**
 - Banner merah/amber prominent: "Trial habis — subscribe untuk lanjut"
 - Sub-text: "Welcome bonus `topupCreditsLeft` kredit kamu masih tersimpan. Subscribe sekarang untuk pakai lagi."
 - Automation OFF indicator
@@ -148,7 +148,7 @@ Tampilkan dua baris kredit secara visual terpisah:
 
 Header: "Top Up Kredit Extra" dengan subtext "Beli paket sekali, kredit tidak ada expiry — semakin besar paket, semakin murah per kreditnya."
 
-⚠️ **Hanya bisa diakses subscriber.** Jika `plan === 'free'` (baik trial aktif maupun expired):
+⚠️ **Hanya bisa diakses subscriber.** Jika `plan === 'trial'` (baik trial aktif maupun expired):
 - Tampilkan paket-paket dalam state DISABLED (overlay semi-transparent)
 - Tombol "Top Up Sekarang" diganti jadi "Subscribe untuk Top Up" → buka modal subscribe
 - Tooltip di paket: "Top-up hanya untuk subscriber"
@@ -191,7 +191,7 @@ Tampilkan banner rekomendasi berdasarkan kondisi:
 
 | Kondisi | Rekomendasi |
 |---|---|
-| `plan === "free"` + `remLeft` < 30 | "Subscribe sekarang — dapat 300 kredit fresh tiap bulan (Early Access 50% off)" |
+| `plan === "trial"` + `remLeft` < 30 | "Subscribe sekarang — dapat 300 kredit fresh tiap bulan (Early Access 50% off)" |
 | `plan === "subscriber"` + sub habis + topup > 0 | "Kredit bulanan habis — kredit top-up kamu akan dipakai" |
 | `plan === "subscriber"` + topup = 0 + sub < 30 | "Mau ada cadangan? Top up kredit extra sekarang" |
 | `remLeft` = 0 | 🚨 Banner merah: "Automation dihentikan — isi kredit untuk lanjutkan" |
@@ -236,7 +236,7 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 
 1. `getRecommendation()` — kedua branch return `'topup'` padahal seharusnya satu branch return `'upgrade'` → sekarang diperbaiki dengan logika subscription vs topup
 2. Semua CTA billing masih pakai `alert()` — ganti dengan modal konfirmasi proper
-3. ~~Free user bisa top-up sebelum upgrade~~ → **RESOLVED:** free user boleh top-up tanpa harus subscribe dulu. Top-up dan subscription adalah dua hal terpisah.
+3. ~~Free user bisa top-up sebelum upgrade~~ → **UPDATED 2026-04-18:** Subscription sekarang WAJIB untuk akses platform & beli top-up (billing model final). Trial user (`plan === 'trial'`) tidak bisa beli top-up — harus subscribe dulu. Lihat Section 3 untuk locked state behavior.
 4. Belum ada billing history / invoice → implement di Section 7
 
 ---
@@ -265,3 +265,4 @@ Tabel dengan kolom: Tanggal, Tipe, Jumlah, Saldo Setelah, Keterangan
 | 2026-04-18 | **MAJOR PRICING UPDATE.** Subscription Rp 249.000/bulan (Early Access 50% off, normal Rp 499.000) for 300 kredit/bulan (was 250). subCreditsMax=300. Top-up: flat tier pricing — 200/500/1.000 kredit @ Rp 399k/749k/1.299k (no more "+X% bonus" claim). Per-credit Rp 1.995/1.498/1.299. Removed `topupPrice`/basePrice concept. Added `subPriceNormal` to planConfig. Subscribe modal shows price-old strikethrough + Early Access discount line. UI copy "reminder" → "pengingat". Trust line: "Garansi 30 hari uang kembali". |
 | 2026-04-18 | **BILLING MODEL FINAL.** Subscription jadi **WAJIB** untuk akses platform & beli top-up. Welcome bonus 100 kredit langsung masuk `topupCreditsLeft` (tidak ada field terpisah). Free Trial 14 hari ATAU 100 kredit (mana duluan) — set `trialStartedAt` saat onboarding selesai. Setelah trial expired: Section 1 jadi banner "Trial habis", Section 3 (top-up) di-DISABLE dengan overlay + tombol jadi "Subscribe untuk Top Up". `planConfig.trialDays` editable dari admin. Computation helpers `isTrialExpired()` + `trialDaysLeft()` di docs. |
 | 2026-04-18 | **DATA_VERSION 5 + UIUX HARD LOCK + BUNDLE.** Schema rename `plan: "free"` → `"trial"`. Tambah `trialEndsAt` (snapshot stored) + `trialUsed` (boolean). loadU() auto-migrate v4→v5 (kindest migration: existing user dapat fresh trialStartedAt jika belum ada). Subscribe modal sekarang tampilkan **Bundle** (subscribe + topup auto-checked, default tier 500 kredit) untuk conversion lift. Total dynamic update: `Rp 998.000` (subscription + bundle 500). Bundle bisa di-uncheck untuk subscribe-only. processSubscribe handle dual transaction (subscription + bundle topup). 4 conditional state router: `getBillingState()` returns A (trial active), B (trial expired), C (subscriber normal), D (subscriber low). |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH.** Section 3 (Top Up) condition `plan === 'free'` → `plan === 'trial'` (v5 schema). Known Bug #3 "RESOLVED" note updated — subscription sekarang wajib untuk top-up (billing model final 2026-04-18), bukan terpisah. |

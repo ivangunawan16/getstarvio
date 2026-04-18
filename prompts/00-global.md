@@ -89,6 +89,7 @@ Key rules yang tidak boleh dilanggar:
   country: "string",
   plan: "trial" | "subscriber", // status subscription. "trial" = belum pernah subscribe (punya welcome bonus). "subscriber" = bayar bulanan.
   subCreditsLeft: number,      // sisa kredit dari subscription bulan ini (reset bulanan, tidak rollover)
+  subCreditsMax: number,       // cap kredit bulanan subscription (default 300 untuk subscriber, 0 untuk trial). Dipakai untuk progress bar "X dari Y kredit bulanan" di billing.
   topupCreditsLeft: number,    // kredit top-up (tidak ada expiry) — termasuk welcome bonus 100 kredit
   subRenewsAt: "ISO string | null", // tanggal renewal berikutnya (null untuk trial)
   trialStartedAt: "ISO string | null", // kapan trial dimulai (set otomatis saat user pertama selesai onboarding)
@@ -97,7 +98,8 @@ Key rules yang tidak boleh dilanggar:
   // remLeft = subCreditsLeft + topupCreditsLeft — SELALU computed, tidak disimpan langsung
   // trialDaysLeft = computed di loadU dari trialEndsAt
   // trialExpired = computed di loadU: plan === "trial" && (now > trialEndsAt || topupCreditsLeft === 0)
-  remMax: number,              // max kredit per bulan (300 untuk subscriber, tidak relevan untuk free)
+  remMax: number,              // legacy alias = subCreditsMax untuk subscriber; tidak relevan untuk trial (trial pakai topupCreditsLeft). Pertahankan untuk backward compat.
+  automationEnabled: boolean,  // global master toggle untuk kirim pengingat otomatis. Default true setelah setup selesai. Di-set dari Automation page master card. Jika false: tidak ada pengingat di-schedule (tapi kategori individual setting tetap dihormati saat true).
   defaultInterval: number,     // default interval reminder dalam hari
   cats: [
     {
@@ -105,8 +107,9 @@ Key rules yang tidak boleh dilanggar:
       name: "string",          // contoh: "Keriting", "Hair Color", "Facial"
       icon: "string",          // emoji, dipilih dari daftar pre-made
       interval: number,        // hari antar kunjungan untuk layanan ini
-      templateId: "string",    // ID template WA pre-made yang dipilih
-      templateBody: "string"   // copy template (read-only)
+      timing: "string",        // waktu perawatan lanjutan untuk template {{5}} (format: "4-6 minggu", "3 bulan", "1 tahun"). Editable di Kategori page. Default derive dari interval (e.g. 30 hari → "4-6 minggu").
+      templateId: "string",    // ID template WA pre-made yang dipilih (aftercare_followup_1 sampai _5)
+      templateBody: "string"   // copy template (read-only preview, rendered dengan {{1}}-{{5}} di UI)
     }
   ],
   customers: [
@@ -365,6 +368,40 @@ function doLogout() {
 
 ---
 
+## TRIAL LOCK MATRIX — Canonical per-page behavior
+
+> **Source of truth** untuk semua implementasi. Kalau page behavior berbeda dari tabel ini = bug.
+
+| Page | Mode | Behavior saat trial expired | Implementation |
+|---|---|---|---|
+| **Dashboard** | **SOFT** | Banner merah atas + Quick Links 2/3 disabled (Catat Kunjungan tetap aktif); ROI/metrics tetap terlihat | `applySoftLock()` called from `render()` — no hard overlay |
+| **Catat Kunjungan** | **NONE** | Full access (kasir harus bisa catat data bahkan saat trial expired — data ownership priority) | `function checkTrialLock() {}` — stub no-op |
+| **Pelanggan** | **SOFT** | Banner atas + disable Import/Edit/Tambah buttons; Export tetap aktif via `data-always` (data ownership) | `trial-soft-locked` body class + `data-always` exception |
+| **Automation** | **HARD** | Full overlay, semua action blocked; satu-satunya escape = subscribe | `showTrialLockOverlay()` via `checkTrialLock()` |
+| **Log Pengingat** | **SOFT** | Banner atas + retry button disabled dengan tooltip "Subscribe untuk kirim ulang"; Export tetap aktif | `trial-soft-locked` + disable retry-btn |
+| **Kategori** | **NONE** | Full access (setup kategori ga butuh kredit; owner harus bisa atur sebelum subscribe) | `function checkTrialLock() {}` — stub no-op |
+| **Settings** | **NONE** | Full access (owner harus bisa upload logo, print QR, export data bahkan saat trial expired) | `function checkTrialLock() {}` — stub no-op |
+| **Billing** | **SKIP** | Page ini adalah destination — tidak di-lock | `checkTrialLock()` tidak dipanggil sama sekali |
+| **Check-in** | **SKIP** | Public-facing page (pelanggan-facing); tidak punya konsep trial | No call |
+| **Login** | **SKIP** | User belum login, belum ada trial state | No call |
+| **Onboarding** | **SKIP** | User baru sign-up, trial baru mulai | No call |
+| **Seed Data** | **SKIP** | Dev tool — bukan user-facing | No call |
+| **Admin** | **SKIP** | Internal tool getstarvio — separate auth | No call |
+
+**Philosophy:**
+- **HARD LOCK** = core paid feature (Automation). No workaround.
+- **SOFT LOCK** = action pages where data/action matters but paying unlocks it (Dashboard, Pelanggan, Log). Data tetap visible, action di-gate.
+- **NONE** = setup/data-ownership pages. Owner perlu akses bahkan saat trial expired untuk: catat kunjungan (Catat Kunjungan), setup jangan hilang (Kategori, Settings).
+- **SKIP** = page ga butuh lock logic sama sekali.
+
+**Exception buttons (`data-always`):**
+Di soft-lock pages, button yang harus tetap aktif bahkan saat trial expired:
+- Pelanggan: Export CSV (data ownership)
+- Log Pengingat: Export CSV (data ownership)
+- Dashboard: Catat Kunjungan link (kasir-path)
+
+---
+
 ## TRIAL LOCK OVERLAY (snippet wajib di semua sidebar pages)
 
 Tambahkan ke setiap sidebar page (kecuali billing — yang exempted dari lock):
@@ -538,3 +575,5 @@ Build satu halaman per sesi. Untuk setiap halaman:
 | 2026-04-18 | **CATAT KUNJUNGAN UIUX.** 3 step → 2 step (Save langsung ke Success Screen, hapus Konfirmasi terpisah). Tambah Recent Customers Row (8 pills horizontal, tap = skip search). Success screen dengan dual buttons "Catat Lagi"/"Selesai" (no auto-close). NO trial lock di halaman ini — `checkTrialLock()` di-stub jadi no-op (kasir harus selalu bisa catat data). |
 | 2026-04-18 | **CHECK-IN BRANDING + bizLogo SCHEMA.** Tambah `bizLogo` field (base64 data URL, opsional, max 200KB resized 120x120). Check-in page rebrand: bizLogo/initial circle + bizName heading sebagai header (hapus topbar getstarvio), "Powered by getstarvio" pindah ke footer kecil. WA consent line wajib di State 2 & 3 ("Dengan check-in, kamu setuju menerima pengingat... dari [bizName]."). Hapus tombol "Scan lagi" di success — final state, sebut bizName di message + subtle "boleh tutup" hint. Error state friendly (no internal terms). Settings: tambah logo upload field di Section 2 Profil Bisnis (canvas resize, validate size+format+aspect). |
 | 2026-04-18 | **DASHBOARD UIUX OVERHAUL.** Tambah `setupComplete` (boolean, auto-detect 3 steps) + `avgServiceValue` (number, default 150000, editable di Settings) ke schema. Dashboard: Setup Checklist card (logo upload inline / tambah pelanggan / aktifkan automation, auto-dismiss permanent setelah semua selesai). ROI Card baru (untuk user dengan reminder data — pelanggan kembali, response rate, estimasi revenue, ROI multiplier) ATAU Projection Card (untuk new users — proyeksi pengingat + revenue). Metrics Grid reframe: "Kembali via Pengingat" jadi metric utama. Tips Section bawah (Print QR + Salin Link). Section order baru. **Trial Behavior Hybrid:** Dashboard = soft lock (banner merah + Quick Links 2/3 disabled, Catat Kunjungan + Billing tetap aktif), sidebar pages lain tetap hard lock overlay. Konsisten dengan filosofi: dashboard punya value sebagai "preview" untuk push subscribe, action pages tetap forced. |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH (pre-build review).** (1) Added canonical **TRIAL LOCK MATRIX** (13 pages × mode HARD/SOFT/NONE/SKIP) — single source of truth, replaces scattered inline notes in page specs. (2) Added `subCreditsMax: number` field to DATA SCHEMA block (was used in seed + admin but missing from canonical schema). (3) Clarified `remMax` sebagai legacy alias dari subCreditsMax (backward compat), bukan field baru. (4) Cross-patched: `09-billing.md` plan references (7 lines `"free"` → `"trial"`), `11-seed-data.md` (DATA_VERSION 4→5 + 11 presets covering 5 trial + 6 subscriber states + v5 fields), `07-log-reminder.md` retry credit order (sub first per global rule, bukan top-up first), `12-admin.md` (duplicate status badge line removed, status enum canonicalized ke 5 nilai, ADMIN_DATA example extended dengan plan/trialEndsAt/subCreditsMax). |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH #2 (cross-page review).** (1) Added `automationEnabled: boolean` field to DATA SCHEMA — referenced di 06-automation.md + 03-dashboard.md setup checklist tapi belum ada di canonical schema. (2) Added `cats[].timing: string` field — dipakai untuk template variable `{{5}}` di 06-automation.md + 08-kategori.md. (3) Cross-patched: `05-pelanggan.md` added TRIAL BEHAVIOR SOFT LOCK section (data ownership: banner + disable Tambah/Edit/Import, Export via `data-always`), `09-billing.md` Section 3 `plan === 'free'` → `'trial'` + Known Bug #3 updated (subscription wajib untuk top-up), `07-log-reminder.md` retry credit order clarification in changelog (superseded 2026-03-27 entry). |

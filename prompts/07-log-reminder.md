@@ -42,8 +42,10 @@ Per baris:
 
 ### Tombol Retry (di baris/card yang `gagal`)
 - Re-jadwalkan pengingat tersebut
-- Potong 1 kredit dari `topupCreditsLeft` duluan, baru `subCreditsLeft`
+- Potong 1 kredit dari `subCreditsLeft` **duluan** (per global rule), baru `topupCreditsLeft` kalau sub habis
 - Update status jadi `pending` dulu, lalu simulasikan `terkirim` setelah 1.5 detik (setTimeout)
+- Jika `remLeft === 0` setelah deduct: block retry, show toast "Kredit habis — top up dulu"
+- Trial expired: retry **disabled** dengan tooltip "Subscribe untuk kirim ulang"
 
 ---
 
@@ -63,3 +65,4 @@ Per baris:
 | 2026-03-26 | File dibuat, spec awal |
 | 2026-03-26 | Tambah Reference section — acuan v2.0, retry logic |
 | 2026-03-27 | Mobile responsive: table hidden on <768px, replaced with card-based layout (colored left border per status). Filter bar stacks vertically. Retry deducts from topupCreditsLeft first. |
+| 2026-04-18 | **Credit order CORRECTION (superseded 2026-03-27 entry):** Retry deducts from `subCreditsLeft` FIRST, lalu `topupCreditsLeft` — per global rule (00-global.md line 40). Plus: retry disabled saat `trialExpired` (SOFT lock per TRIAL LOCK MATRIX) + disabled saat `remLeft === 0`. |

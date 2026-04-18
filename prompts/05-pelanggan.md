@@ -98,6 +98,34 @@ Per baris:
 
 ---
 
+## Trial Behavior — SOFT LOCK
+
+Per TRIAL LOCK MATRIX (`00-global.md`), Pelanggan = **SOFT lock** saat `trialExpired === true`. Filosofi: data ownership — owner harus bisa lihat + export data pelanggan bahkan saat trial habis, tapi action yang konsumsi kredit/subscription di-gate.
+
+Behavior:
+- Banner merah sticky di atas konten: "Trial kamu telah berakhir — Subscribe untuk kirim pengingat otomatis" + CTA lime "Subscribe →" link ke `getstarvio-billing.html`
+- Apply body class `trial-soft-locked` — CSS disable (opacity .45 + pointer-events:none) untuk:
+  - Tombol "Tambah Pelanggan" (topbar)
+  - Tombol "Edit" di Detail Panel
+  - Tombol "Import CSV" (jika ada)
+  - Modal form submit buttons
+- **Export CSV tetap aktif** via `data-always` attribute — data ownership exception
+- Tabel customer + detail panel tetap **fully visible** (read-only preview untuk push subscribe)
+- Filter chips, sort, search tetap berfungsi (query bukan action)
+
+Implementasi:
+```js
+if (U.trialExpired) {
+  document.body.classList.add('trial-soft-locked')
+  document.getElementById('softLockBanner').style.display = 'block'
+  // Tombol dengan data-always tidak kena soft lock CSS
+}
+```
+
+**TIDAK pakai `showTrialLockOverlay()`** — itu untuk hard lock. Pelanggan page punya soft-lock banner sendiri.
+
+---
+
 ## Reference
 
 - **Version acuan:** `version 2.0/getstarvio-pelanggan.html` — v2.1 memotong ~39% (hilang progress bar per service, riwayat reminder, edit modal)
@@ -117,3 +145,4 @@ Per baris:
 | 2026-03-26 | **Update v3:** Hapus semua aksi catat kunjungan (tombol "Kunjungan Hari Ini", pre-select modal, shortcut dari detail panel). Halaman ini murni CRM view. Tambah "Yang TIDAK Ada" section untuk clarity |
 | 2026-03-26 | Sync: Edit modal = date picker + service checklist (recording services), bukan interval customization. Detail panel has Edit button only — no "Catat Kunjungan" shortcut. nav-catat href = getstarvio-catat-kunjungan.html. |
 | 2026-03-27 | Hapus Stats Bar (metric cards) + Filter Tabs + Sort Buttons terpisah. Diganti single toolbar: filter chips (dengan count badge) + sort dropdown + search input dalam satu baris. |
+| 2026-04-18 | **TRIAL LOCK SPEC ADDED.** Tambah "Trial Behavior — SOFT LOCK" section sesuai TRIAL LOCK MATRIX di 00-global.md. Banner merah + disable Tambah/Edit/Import; Export CSV tetap aktif via `data-always` (data ownership). Tabel + detail panel tetap visible sebagai read-only preview. |
