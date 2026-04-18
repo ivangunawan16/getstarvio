@@ -264,8 +264,83 @@
 
 ---
 
+## 🛡️ PRIORITY ADMIN FEATURES (from 20yr admin backend review)
+
+Sudah diimplementasi di versi ini:
+- ✅ Impersonate user (login as user, mocked — real version butuh session token)
+- ✅ Audit log (semua critical action tercatat, export CSV)
+- ✅ Business detail modal: subscription, usage metrics, tags, internal notes, quick actions (extend trial, send WA, export data)
+- ✅ Password gate untuk high-impact action (credit topup, suspend, extend trial)
+- ✅ Type-name confirmation untuk destructive delete (template, biz type)
+
+### 31. Churn Recovery Strategy
+**Status:** Spec, belum diimplementasi.
+**Recommended hybrid approach:**
+```
+TRIAL EXPIRED / SUBSCRIPTION CANCELLED
+  ↓ [AUTO] Day 1: WA pesan #1 — soft reminder
+  ↓ [AUTO] Day 3: WA pesan #2 — value reminder
+  ↓ [AUTO] Day 7: WA pesan #3 — last chance + incentive
+  ↓ [FLAG] Move to "Churn Watch" in admin panel
+  ↓ [ADMIN] Personal outreach / custom promo / exit survey / mark lost
+```
+
+**Tiering by customer value:**
+| Customer value | Auto msgs | Admin alert |
+|---|---|---|
+| < 3 bulan LTV | Full auto (day 1, 3, 7) | No alert |
+| 3-12 bulan LTV | Auto + review after day 7 | Alert jika no response |
+| > 12 bulan / VIP | MANUAL ONLY | Immediate alert |
+
+**Admin panel additions needed:**
+- "Churn Watch" widget di Dashboard
+- Per-user Recovery modal: previous outreach log + quick actions (Send WA template #1/#2/#3, Extend trial, Apply promo)
+- Metrics: recovery rate per message (%1, %2, %3), ROI of recovery effort
+
+**Effort:** M — spec ready, implementasi ~1 hari saat backend ready.
+**Impact:** High — recover 10-20% of churners = meaningful MRR preservation.
+
+### 32. Revenue Dashboard
+Real-time MRR, ARR, churn rate cards + cohort retention heatmap. Computed dari ADMIN_DATA untuk prototype.
+**Effort:** S (mocked) / L (real backend). **Impact:** High (business health visibility)
+
+### 33. Refund Queue
+Workflow standar untuk claim refund (garansi 30 hari): queue view, approve/deny, auto-trigger payment gateway refund, log everything ke audit.
+**Effort:** M. **Impact:** Compliance + customer trust
+
+### 34. Bulk Announcements
+Broadcast WA/email ke all subscriber saat maintenance / product updates. Pre-filled templates.
+**Effort:** M. **Impact:** Medium (operational)
+
+### 35. Error Log Viewer
+Real-time error feed per user/operation (JS errors, API failures). Integrate dengan Sentry / Rollbar.
+**Effort:** L. **Impact:** Medium-high (debugging speed)
+
+### 36. Feature Flags System
+Enable/disable features per plan atau per user. A/B test rollouts.
+**Effort:** L. **Impact:** High (velocity)
+
+### 37. Health Dashboard
+Status cards: WA Cloud API uptime, payment gateway status, server health, DB connection.
+**Effort:** M. **Impact:** Medium (ops)
+
+### 38. Support Chat (Live)
+In-app chat widget untuk owner ke support tim. Atau integrate Crisp/Intercom.
+**Effort:** L. **Impact:** Medium
+
+### 39. Fraud / Abuse Detection
+Suspicious multi-signup same IP, payment card fraud patterns, spam WA template submissions.
+**Effort:** L. **Impact:** Medium (risk mitigation)
+
+### 40. Maintenance Mode Toggle
+Admin button untuk put site in read-only mode saat migration. All app pages show "Sedang maintenance" banner.
+**Effort:** S. **Impact:** Operational safety
+
+---
+
 ## CHANGELOG
 
 | Tanggal | Update |
 |---|---|
 | 2026-04-19 | File dibuat. Compiled dari diskusi sesi cleanup + UIUX review. |
+| 2026-04-19 | Tambah 10 priority admin features (#31-40): Churn Recovery, Revenue Dashboard, Refund Queue, Bulk Announcements, Error Log, Feature Flags, Health Dashboard, Support Chat, Fraud Detection, Maintenance Mode. Priority impersonate + audit log sudah DONE. |
