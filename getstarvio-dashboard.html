@@ -190,8 +190,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .overlay.show{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease;width:360px}
 /* Trial Hard Lock Overlay */
-.trial-lock-overlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
-.trial-lock-overlay.show{display:flex;animation:fadeUp .3s ease}
 .tlo-card{background:var(--bg2);border-radius:var(--r-lg);padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)}
 .tlo-icon{font-size:48px;margin-bottom:14px}
 .tlo-title{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px}
@@ -213,6 +211,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* ── MOBILE ── */
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -871,21 +874,31 @@ function boot() {
    Auto-detect completion + auto-dismiss permanent saat semua selesai
    ══════════════════════════════════════════════ */
 function renderSetupChecklist(U) {
-  if (!U || U.setupComplete) {
+  if (!U) {
     document.getElementById('setupCard').style.display = 'none'
     return
   }
+  const cxs = U.customers || []
+  const qrCxCount = cxs.filter(function(c){ return c.via === 'qr' }).length
   const steps = [
-    { id: 'logo',       done: !!U.bizLogo,                       label: 'Upload logo bisnis',        sub: 'Tampil di halaman check-in pelanggan',          subDone: 'Logo siap ✓' },
-    { id: 'customers',  done: (U.customers || []).length > 0,    label: 'Tambah pelanggan pertama',  sub: 'Manual, import CSV, atau pasang QR check-in',  subDone: (U.customers || []).length + ' pelanggan terdaftar ✓' },
-    { id: 'automation', done: !!U.automationEnabled,             label: 'Aktifkan automation',       sub: 'Pengingat otomatis ke WhatsApp pelanggan',     subDone: 'Automation aktif ✓' }
+    { id: 'logo',       done: !!U.bizLogo,                                   label: 'Upload logo bisnis',           sub: 'Tampil di halaman check-in pelanggan',                subDone: 'Logo siap ✓' },
+    { id: 'customers',  done: cxs.length > 0,                                label: 'Tambah pelanggan pertama',     sub: 'Manual atau import CSV — biar sistem punya data',     subDone: cxs.length + ' pelanggan terdaftar ✓' },
+    { id: 'qr',         done: !!U.qrPosted || qrCxCount > 0,                 label: 'Pasang QR check-in',           sub: 'Print/share QR — pelanggan bisa daftar sendiri',      subDone: qrCxCount > 0 ? qrCxCount + ' pelanggan via QR ✓' : 'QR sudah dipasang ✓' },
+    { id: 'automation', done: !!U.automationEnabled,                         label: 'Aktifkan automation',          sub: 'Pengingat otomatis ke WhatsApp pelanggan',            subDone: 'Automation aktif ✓' }
   ]
   const doneCount = steps.filter(s => s.done).length
   const card = document.getElementById('setupCard')
+
+  // Sembunyikan HANYA kalau semua step beneran masih done DAN owner sudah dismiss success card sebelumnya.
+  // Kalau ada step yang turun (misal automation di-matiin lagi), checklist muncul lagi.
+  if (doneCount === 4 && U.setupComplete) {
+    card.style.display = 'none'
+    return
+  }
   card.style.display = ''
 
-  // All done — show success state, set setupComplete permanent
-  if (doneCount === 3) {
+  // All done — show success state, set setupComplete (dismissed flag)
+  if (doneCount === 4) {
     card.innerHTML =
       '<div class="setup-success">' +
         '<div class="setup-success-ic">🎉</div>' +
@@ -893,7 +906,6 @@ function renderSetupChecklist(U) {
         '<div class="setup-success-sub">getstarvio siap kirim pengingat otomatis ke pelangganmu.</div>' +
         '<button class="setup-dismiss" onclick="dismissSetupCard()">Tutup</button>' +
       '</div>'
-    // Auto-dismiss after 5 seconds + persist setupComplete
     U.setupComplete = true
     saveU(U)
     setTimeout(function() { card.style.display = 'none' }, 5000)
@@ -901,12 +913,12 @@ function renderSetupChecklist(U) {
   }
 
   // Render checklist
-  document.getElementById('setupTitle').textContent = 'Selesaikan setup — ' + doneCount + ' dari 3 selesai'
-  document.getElementById('setupProgressFill').style.width = (doneCount / 3 * 100) + '%'
+  document.getElementById('setupTitle').textContent = 'Selesaikan setup — ' + doneCount + ' dari 4 selesai'
+  document.getElementById('setupProgressFill').style.width = (doneCount / 4 * 100) + '%'
 
   card.innerHTML =
-    '<div class="setup-hd"><div class="setup-title" id="setupTitle">Selesaikan setup — ' + doneCount + ' dari 3 selesai</div></div>' +
-    '<div class="setup-progress-wrap"><div class="setup-progress-fill" style="width:' + (doneCount / 3 * 100) + '%"></div></div>' +
+    '<div class="setup-hd"><div class="setup-title" id="setupTitle">Selesaikan setup — ' + doneCount + ' dari 4 selesai</div></div>' +
+    '<div class="setup-progress-wrap"><div class="setup-progress-fill" style="width:' + (doneCount / 4 * 100) + '%"></div></div>' +
     '<div id="setupSteps">' + steps.map((s, i) => renderSetupStep(s, i + 1, U)).join('') + '</div>'
 }
 
@@ -921,6 +933,8 @@ function renderSetupStep(step, num, U) {
       actionHtml = '<button class="setup-action lime" onclick="document.getElementById(\'setupLogoFile\').click()">📤 Upload</button>'
     } else if (step.id === 'customers') {
       actionHtml = '<a class="setup-action" href="getstarvio-pelanggan.html?action=add">Tambah →</a>'
+    } else if (step.id === 'qr') {
+      actionHtml = '<a class="setup-action" href="getstarvio-settings.html#qr">Pasang QR →</a>'
     } else if (step.id === 'automation') {
       actionHtml = '<a class="setup-action" href="getstarvio-automation.html">Aktifkan →</a>'
     }

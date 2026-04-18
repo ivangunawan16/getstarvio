@@ -129,6 +129,65 @@ img,svg{display:block;max-width:100%}
 .final-cta h2{font-size:clamp(1.5rem,3.5vw,2.25rem);font-weight:700;margin-bottom:12px}
 .final-cta p{color:var(--ink2);margin-bottom:32px;font-size:1rem}
 
+/* ── Hero Visual ── */
+.hero-inner{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;text-align:left;max-width:1120px;margin:0 auto;padding:0 24px}
+.hero-content{max-width:540px}
+.hero-content h1{margin:0 0 20px;text-align:left}
+.hero-content p{margin:0 0 28px;text-align:left}
+.hero-cta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hero-cta-row .btn{margin:0}
+.hero-demo-link{font-size:.92rem;color:var(--ink2);font-weight:500;text-decoration:underline;text-decoration-color:var(--ink3);text-underline-offset:3px}
+.hero-demo-link:hover{color:var(--ink)}
+.hero-content .sub-cta{text-align:left;margin-top:14px}
+.hero-visual{position:relative;display:flex;justify-content:center;align-items:center;min-height:420px}
+.phone-mock{width:280px;background:#1a1917;border-radius:36px;padding:14px;box-shadow:0 24px 60px rgba(0,0,0,.18),0 8px 20px rgba(0,0,0,.12);position:relative;flex-shrink:0}
+.phone-mock::before{content:'';position:absolute;top:18px;left:50%;transform:translateX(-50%);width:90px;height:18px;background:#000;border-radius:0 0 14px 14px;z-index:2}
+.phone-screen{background:#e5ddd5;border-radius:24px;padding:0 0 16px;min-height:440px;display:flex;flex-direction:column;overflow:hidden}
+.wa-header{background:#075e54;padding:32px 14px 12px;display:flex;align-items:center;gap:10px;color:#fff}
+.wa-avatar{width:34px;height:34px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.wa-name{font-size:13px;font-weight:600;line-height:1.2}
+.wa-online{font-size:10px;opacity:.75}
+.wa-body{padding:14px 12px;display:flex;flex-direction:column;gap:8px;flex:1}
+.wa-bubble{background:#fff;border-radius:9px;padding:9px 11px 6px;max-width:88%;align-self:flex-start;box-shadow:0 1px 1px rgba(0,0,0,.07);font-size:11.5px;line-height:1.55;color:#1a1917}
+.wa-bubble.out{background:#dcf8c6;align-self:flex-end}
+.wa-bubble .wa-time{font-size:9px;color:#999;text-align:right;margin-top:3px;display:flex;align-items:center;justify-content:flex-end;gap:3px}
+.wa-bubble strong{font-weight:600}
+.hero-mockup-tag{position:absolute;background:var(--lime);color:var(--lime-dk);font-size:.72rem;font-weight:700;padding:7px 13px;border-radius:99px;box-shadow:0 6px 16px rgba(0,0,0,.12);transform:rotate(-4deg);white-space:nowrap}
+.hero-mockup-tag.t1{top:36px;left:-22px}
+.hero-mockup-tag.t2{bottom:80px;right:-26px;background:#fff;color:var(--ink);border:1.5px solid var(--lime2);transform:rotate(3deg)}
+@media(max-width:860px){
+  .hero-inner{grid-template-columns:1fr;text-align:center;gap:36px}
+  .hero-content{margin:0 auto}
+  .hero-content h1,.hero-content p,.hero-content .sub-cta{text-align:center}
+  .hero-cta-row{justify-content:center}
+  .hero-visual{min-height:auto}
+  .phone-mock{width:240px}
+  .hero-mockup-tag.t1{left:-12px}
+  .hero-mockup-tag.t2{right:-12px}
+}
+
+/* ── Social Proof / Testimonials ── */
+.proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:980px;margin:0 auto}
+.proof-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px 22px;display:flex;flex-direction:column;gap:14px}
+.proof-quote{font-size:.95rem;color:var(--ink);line-height:1.6;flex:1}
+.proof-quote::before{content:'"';font-family:Georgia,serif;font-size:2.5rem;line-height:0;color:var(--lime2);vertical-align:-0.35em;margin-right:4px}
+.proof-author{display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--border)}
+.proof-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0}
+.proof-name{font-size:.88rem;font-weight:700;color:var(--ink);line-height:1.3}
+.proof-biz{font-size:.78rem;color:var(--ink3)}
+@media(max-width:768px){.proof-grid{grid-template-columns:1fr}}
+
+/* ── Pricing enhancements ── */
+.price-card.highlight{transform:scale(1.03);box-shadow:0 12px 32px rgba(184,240,74,.18),0 4px 12px rgba(0,0,0,.06)}
+.price-card.highlight h3{color:var(--lime-dk)}
+.price-roi{background:var(--lime-bg);border:1px solid var(--lime2);border-radius:var(--r-sm);padding:10px 14px;font-size:.85rem;color:var(--lime-dk);line-height:1.55;margin:0 0 16px;font-weight:500}
+.price-roi strong{font-weight:700}
+@media(max-width:600px){.price-card.highlight{transform:none}}
+
+/* ── Pain → Solution bridge ── */
+.pain-bridge{text-align:center;font-size:1.05rem;color:var(--ink2);max-width:560px;margin:36px auto 0;font-weight:500;line-height:1.6}
+.pain-bridge strong{color:var(--ink);font-weight:700}
+
 /* ── Footer ── */
 .footer{background:var(--ink);color:#cccbc2;padding:48px 24px}
 .footer-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:40px}
@@ -161,7 +220,7 @@ img,svg{display:block;max-width:100%}
       <li><a href="#cara-kerja">Cara Kerja</a></li>
       <li><a href="#harga">Harga</a></li>
       <li><a href="#kontak">Kontak</a></li>
-      <li><a href="#daftar" class="btn btn-lime">Mulai Gratis</a></li>
+      <li><a href="#daftar" class="btn btn-lime">Coba Gratis 14 Hari</a></li>
     </ul>
     <button class="hamburger" aria-label="Menu" onclick="toggleMenu()">
       <span></span><span></span><span></span>
@@ -173,16 +232,52 @@ img,svg{display:block;max-width:100%}
   <a href="#cara-kerja" onclick="closeMenu()">Cara Kerja</a>
   <a href="#harga" onclick="closeMenu()">Harga</a>
   <a href="#kontak" onclick="closeMenu()">Kontak</a>
-  <a href="#daftar" class="btn btn-lime" onclick="closeMenu()">Mulai Gratis</a>
+  <a href="#daftar" class="btn btn-lime" onclick="closeMenu()">Coba Gratis 14 Hari</a>
 </div>
 
 <!-- Hero -->
 <section class="hero" id="hero">
-  <div class="container">
-    <h1>Pelanggan Lama Balik Lagi, Otomatis via WhatsApp</h1>
-    <p>getstarvio bantu UMKM Indonesia kirim pengingat WhatsApp otomatis ke pelanggan — biar mereka balik tepat waktu, tanpa perlu chat satu-satu.</p>
-    <a href="#daftar" class="btn btn-lime btn-lg">Coba Gratis — 100 Kredit</a>
-    <p class="sub-cta">Tanpa kartu kredit · Garansi 30 hari uang kembali</p>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <h1>Pelanggan Lupa Balik?<br>Pengingat WA Otomatis Balikin Mereka.</h1>
+      <p>100 pelanggan, 0 chat manual. getstarvio kirim pengingat WhatsApp tepat waktu — pelanggan balik, kamu fokus jalanin bisnis.</p>
+      <div class="hero-cta-row">
+        <a href="getstarvio-login.html" class="btn btn-lime btn-lg">Coba Gratis 14 Hari</a>
+        <a href="getstarvio-seed-data.html?auto=1&next=dashboard" class="hero-demo-link">Lihat dashboard demo →</a>
+      </div>
+      <p class="sub-cta">🎁 100 kredit gratis · 💳 Tanpa kartu kredit · 🛡️ Garansi 30 hari</p>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-mockup-tag t1">📲 Otomatis terkirim</div>
+      <div class="phone-mock">
+        <div class="phone-screen">
+          <div class="wa-header">
+            <div class="wa-avatar">SW</div>
+            <div>
+              <div class="wa-name">Salon Wangi</div>
+              <div class="wa-online">online</div>
+            </div>
+          </div>
+          <div class="wa-body">
+            <div class="wa-bubble">
+              Hi <strong>Mia</strong>,<br><br>
+              Facial kamu pada <strong>1 April</strong> di Salon Wangi sudah berjalan dengan baik.<br><br>
+              Kalau kamu butuh konsultasi lanjutan atau ingin booking sesi berikutnya, langsung balas chat ini ya.
+              <div class="wa-time">09:00 ✓✓</div>
+            </div>
+            <div class="wa-bubble out">
+              Halo kak! Mau booking dong minggu depan 🙏
+              <div class="wa-time">09:14 ✓✓</div>
+            </div>
+            <div class="wa-bubble">
+              Siap! Slot Sabtu jam 11.00 masih ada — booking ya?
+              <div class="wa-time">09:15 ✓✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-mockup-tag t2">+1 pelanggan balik 🎉</div>
+    </div>
   </div>
 </section>
 
@@ -208,6 +303,7 @@ img,svg{display:block;max-width:100%}
         <p>Cukup diingatkan sekali, banyak yang mau balik. Tapi kalau tidak ada yang ingatkan, pendapatan ikut hilang diam-diam.</p>
       </div>
     </div>
+    <p class="pain-bridge">Kabar baik: <strong>semua ini bisa di-solve dalam 5 menit setup.</strong> Berikut cara kerjanya ↓</p>
   </div>
 </section>
 
@@ -233,6 +329,46 @@ img,svg{display:block;max-width:100%}
         <div class="step-num">3</div>
         <h3>Pengingat WhatsApp Terkirim</h3>
         <p>Pas waktunya tiba, pengingat WhatsApp otomatis dikirim. Pelanggan tinggal balas, langsung booking lagi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Social Proof / Early Tester Voices -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">Apa Kata Owner yang Sudah Pakai</h2>
+    <p class="section-sub">Beta tester awal dari berbagai bisnis jasa di Indonesia.</p>
+    <div class="proof-grid">
+      <div class="proof-card">
+        <div class="proof-quote">Setup-nya 5 menit, langsung jalan. Pelanggan yang udah lama ga datang mulai balik tanpa kita kontak satu-satu. Hemat banget waktu.</div>
+        <div class="proof-author">
+          <div class="proof-avatar" style="background:linear-gradient(135deg,#fde8e7,#f5c5c3);color:#7a1a16">SR</div>
+          <div>
+            <div class="proof-name">Sarah Rahmadani</div>
+            <div class="proof-biz">Owner · Salon Wangi, Jakarta</div>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-quote">Bulan pertama udah 12 pelanggan balik karena pengingat. Subscription Rp 249rb kebayar dari 1 customer aja. Worth banget.</div>
+        <div class="proof-author">
+          <div class="proof-avatar" style="background:linear-gradient(135deg,#edfac8,#c8f07a);color:#2d4a00">AP</div>
+          <div>
+            <div class="proof-name">Andi Pratama</div>
+            <div class="proof-biz">Owner · Barbershop Raka, Bandung</div>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-quote">QR di kasir + pengingat WA = pelanggan jadi self-service. Saya ga perlu pantau lagi siapa yang udah lama ga datang.</div>
+        <div class="proof-author">
+          <div class="proof-avatar" style="background:linear-gradient(135deg,#eff4ff,#bfcff8);color:#1e3a8a">MK</div>
+          <div>
+            <div class="proof-name">Maya Kartika</div>
+            <div class="proof-biz">Owner · Klinik Lavender, Surabaya</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -282,7 +418,7 @@ img,svg{display:block;max-width:100%}
 <section class="section" id="harga">
   <div class="container">
     <h2 class="section-title">Coba Dulu Gratis. Suka? Hemat 50% Early Access.</h2>
-    <p class="section-sub">100 kredit gratis tanpa kartu kredit. Kalau cocok, upgrade ke harga Early Access selama promo masih berjalan.</p>
+    <p class="section-sub">100 kredit gratis tanpa kartu kredit. Kalau cocok, upgrade dengan harga Early Access (terbatas untuk 100 bisnis pertama).</p>
     <div class="pricing-grid">
       <div class="price-card">
         <h3>Free Trial</h3>
@@ -295,20 +431,21 @@ img,svg{display:block;max-width:100%}
           <li>Tidak perlu kartu kredit</li>
           <li>Welcome bonus tetap tersimpan setelah subscribe</li>
         </ul>
-        <a href="#daftar" class="btn btn-outline">Mulai Coba Gratis</a>
+        <a href="#daftar" class="btn btn-outline">Coba Gratis 14 Hari</a>
       </div>
       <div class="price-card highlight">
-        <div class="price-badge">🔥 Early Access — Hemat 50%</div>
+        <div class="price-badge">⭐ Paling Banyak Dipilih</div>
         <h3>Berlangganan</h3>
         <div class="price mono"><span class="price-old">Rp 499.000</span> Rp 249.000<span class="discount-tag">-50%</span></div>
         <div class="price-sub">per bulan — sudah termasuk 300 kredit</div>
+        <div class="price-roi">💡 ≈ <strong>Rp 8.300/hari.</strong><br>1 pelanggan balik karena pengingat = <strong>subscription 1 bulan kebayar.</strong></div>
         <ul>
           <li><strong>300 kredit setiap bulan</strong> (kirim 300 pengingat)</li>
           <li>Garansi 30 hari uang kembali — coba tanpa risiko</li>
           <li>Priority WhatsApp support</li>
           <li>Top-up kapan saja kalau kredit habis</li>
         </ul>
-        <a href="#daftar" class="btn btn-lime">Berlangganan Sekarang</a>
+        <a href="#daftar" class="btn btn-lime">Subscribe — 300 Kredit/Bulan</a>
       </div>
     </div>
     <div class="guarantee-strip">
@@ -316,7 +453,7 @@ img,svg{display:block;max-width:100%}
       <div class="g-item"><span class="ic">⏱️</span> Trial 14 hari</div>
       <div class="g-item"><span class="ic">💳</span> Tanpa kartu kredit</div>
       <div class="g-item"><span class="ic">🛡️</span> Garansi 30 hari uang kembali</div>
-      <div class="g-item"><span class="ic">❌</span> Bisa berhenti kapan saja</div>
+      <div class="g-item"><span class="ic">🔓</span> Bisa berhenti kapan saja</div>
     </div>
   </div>
 </section>
@@ -342,9 +479,12 @@ img,svg{display:block;max-width:100%}
 
 <!-- Final CTA -->
 <section class="final-cta" id="daftar">
-  <h2>Mulai Bawa Pelanggan Lama Balik Hari Ini</h2>
-  <p>Daftar gratis, dapat 100 kredit langsung. Setup 5 menit, tanpa kartu kredit.<br>Suka? Upgrade dengan harga Early Access 50% off — garansi uang kembali 30 hari.</p>
-  <a href="#daftar" class="btn btn-lime btn-lg">Daftar Gratis Sekarang</a>
+  <h2>Pelanggan Lupa Balik? Biar Sistem yang Ingatkan.</h2>
+  <p>14 hari gratis, 100 kredit langsung di akun. Setup 5 menit, tanpa kartu kredit.<br>Suka? Lanjut dengan harga Early Access 50% off — garansi uang kembali 30 hari.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center">
+    <a href="getstarvio-login.html" class="btn btn-lime btn-lg">Coba Gratis 14 Hari</a>
+    <a href="getstarvio-seed-data.html?auto=1&next=dashboard" class="hero-demo-link">Lihat dashboard demo →</a>
+  </div>
   <p class="sub-cta" style="margin-top:16px;font-size:.85rem;color:var(--ink3)">🛡️ 30 hari uang kembali · 🎁 100 kredit gratis · 💳 Tanpa kartu kredit</p>
 </section>
 

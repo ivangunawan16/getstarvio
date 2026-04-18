@@ -202,32 +202,32 @@ html,body{
 .svc-list{display:flex;flex-direction:column;gap:8px;}
 .svc-row{
   display:flex;align-items:center;gap:12px;
-  padding:14px 14px;
+  padding:16px 16px;
   background:var(--bg2);
   border:1.5px solid var(--border);
   border-radius:var(--r);
   cursor:pointer;
   transition:border-color 150ms,background 150ms;
-  min-height:60px;
+  min-height:68px;
   -webkit-tap-highlight-color:transparent;
   user-select:none;
 }
 .svc-row:hover{border-color:var(--border2);background:var(--bg3);}
 .svc-row.checked{border-color:var(--lime2);background:var(--lime-bg);}
-.svc-row .svc-icon{font-size:22px;flex-shrink:0;line-height:1;}
+.svc-row .svc-icon{font-size:24px;flex-shrink:0;line-height:1;}
 .svc-row .svc-info{flex:1;min-width:0;}
-.svc-row .svc-name{font-size:14px;font-weight:600;color:var(--ink);}
+.svc-row .svc-name{font-size:15px;font-weight:600;color:var(--ink);}
 .svc-row .svc-badge{
   display:inline-flex;align-items:center;
   font-family:'JetBrains Mono',monospace;
   font-size:11px;font-weight:600;
   background:var(--bg3);color:var(--ink3);
   border-radius:999px;
-  padding:2px 8px;margin-top:3px;
+  padding:3px 9px;margin-top:4px;
 }
 .svc-row.checked .svc-badge{background:rgba(184,240,74,.3);color:var(--lime-dk);}
 .svc-row .svc-check{
-  width:22px;height:22px;flex-shrink:0;
+  width:28px;height:28px;flex-shrink:0;
   border-radius:50%;
   border:2px solid var(--border2);
   display:flex;align-items:center;justify-content:center;
@@ -489,7 +489,8 @@ html,body{
         </div>
         <div class="success-heading" id="successHeading">Terima kasih!</div>
         <div class="success-sub" id="successSub">Kamu akan dapat pengingat via WhatsApp dari <strong id="successBiz">bisnis ini</strong> saat waktunya perawatan berikutnya.</div>
-        <div style="font-size:11px;color:var(--ink3);margin-top:18px;text-align:center">Kamu boleh tutup halaman ini sekarang.</div>
+        <button id="checkinAgainBtn" onclick="resetCheckin()" style="margin-top:22px;width:100%;padding:14px;background:var(--lime);color:var(--lime-dk);border:none;border-radius:var(--r-sm);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(184,240,74,.3)">Daftar pelanggan berikutnya →</button>
+        <div style="font-size:11px;color:var(--ink3);margin-top:14px;text-align:center;line-height:1.55">Otomatis kembali dalam <strong id="checkinCountdown">10</strong> detik · atau boleh tutup halaman ini.</div>
       </div>
     </div>
 
@@ -912,6 +913,9 @@ function doNewCheckin() {
 }
 
 // ---- SUCCESS STATE (State 4) ----
+var _checkinResetTimer = null
+var _checkinCountdownTimer = null
+
 function showSuccessState(name) {
   document.getElementById('successHeading').textContent = 'Terima kasih, ' + (name || 'Kamu') + '!'
 
@@ -922,6 +926,33 @@ function showSuccessState(name) {
   clone.id = 'checkCircle'
 
   showState('state4')
+
+  // Auto-reset countdown — biar QR scanner ga stuck di success buat next pelanggan
+  if (_checkinCountdownTimer) clearInterval(_checkinCountdownTimer)
+  if (_checkinResetTimer) clearTimeout(_checkinResetTimer)
+  var n = 10
+  var cdEl = document.getElementById('checkinCountdown')
+  if (cdEl) cdEl.textContent = n
+  _checkinCountdownTimer = setInterval(function() {
+    n--
+    if (cdEl) cdEl.textContent = Math.max(0, n)
+    if (n <= 0) clearInterval(_checkinCountdownTimer)
+  }, 1000)
+  _checkinResetTimer = setTimeout(resetCheckin, 10000)
+}
+
+function resetCheckin() {
+  if (_checkinResetTimer) { clearTimeout(_checkinResetTimer); _checkinResetTimer = null }
+  if (_checkinCountdownTimer) { clearInterval(_checkinCountdownTimer); _checkinCountdownTimer = null }
+  // Reset form data
+  var phone = document.getElementById('phoneInput')
+  if (phone) phone.value = ''
+  currentCustomer = null
+  checkedInServices = []
+  checkedInDate = null
+  showState('state1')
+  // Focus phone input setelah transition
+  setTimeout(function() { if (phone) phone.focus() }, 350)
 }
 
 // ---- START ----

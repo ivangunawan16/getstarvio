@@ -32,6 +32,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .prog-wrap{padding:20px 36px 0;flex-shrink:0}
 .prog{height:3px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-bottom:22px}
 .prog-fill{height:100%;background:var(--lime);border-radius:99px;transition:width .45s cubic-bezier(.4,0,.2,1)}
+.mobile-step-label{display:none;font-size:12px;font-weight:600;color:var(--ink2);margin:-14px 0 16px;letter-spacing:.02em}
 .content{flex:1;overflow-y:auto;padding:0 36px 36px}
 .screen{display:none;animation:fadeUp .2s ease;max-width:520px}
 .screen.active{display:block}
@@ -311,6 +312,7 @@ select.fi{cursor:pointer}
   .shell{display:block}
   .main{height:100vh}
   .prog-wrap{padding:16px 20px 0}
+  .mobile-step-label{display:block}
   .content{padding:0 20px 28px}
   .qr-connect-wrap{flex-direction:column;align-items:center}
   .qr-box{width:140px;height:140px}
@@ -350,7 +352,10 @@ select.fi{cursor:pointer}
 
 <!-- ── MAIN ── -->
 <div class="main">
-  <div class="prog-wrap"><div class="prog"><div class="prog-fill" id="prog" style="width:25%"></div></div></div>
+  <div class="prog-wrap">
+    <div class="prog"><div class="prog-fill" id="prog" style="width:25%"></div></div>
+    <div class="mobile-step-label" id="mobileStepLabel">Step 1 dari 4 · Hubungkan WhatsApp</div>
+  </div>
   <div class="content">
 
     <!-- ═══ S1: CONNECT WHATSAPP (Embedded Signup + Coexist) ═══ -->
@@ -834,10 +839,18 @@ function selBizType(id) {
 }
 
 /* ── NAVIGATION ── */
+var STEP_LABELS = {
+  1: 'Step 1 dari 4 · Hubungkan WhatsApp',
+  2: 'Step 2 dari 4 · Profil Bisnis',
+  3: 'Step 3 dari 4 · Kategori Layanan',
+  4: 'Step 4 dari 4 · Selesai + QR'
+}
 function go(n) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
   document.getElementById('s'+n).classList.add('active')
   document.getElementById('prog').style.width = (n/4*100)+'%'
+  var lbl = document.getElementById('mobileStepLabel')
+  if (lbl) lbl.textContent = STEP_LABELS[n] || ''
   for (let i=1; i<=4; i++) {
     const it = document.getElementById('sl-'+i)
     const sn = document.getElementById('sn-'+i)

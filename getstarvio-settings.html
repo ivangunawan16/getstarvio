@@ -228,6 +228,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* ── MOBILE ── */
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -365,7 +370,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
             <label class="field-label">Rata-rata Harga Layanan <span style="font-size:10px;font-weight:500;color:var(--ink3);text-transform:none;letter-spacing:0;margin-left:4px">(untuk ROI calculation di dashboard)</span></label>
             <div style="display:flex;align-items:center;gap:8px">
               <span style="font-size:14px;font-weight:600;color:var(--ink2);font-family:'JetBrains Mono',monospace">Rp</span>
-              <input type="number" class="field-input" id="inp-avgServiceValue" placeholder="150000" min="1000" step="10000" style="font-family:'JetBrains Mono',monospace;font-weight:600">
+              <input type="text" inputmode="numeric" class="field-input" id="inp-avgServiceValue" placeholder="150.000" oninput="formatIDRInput(this)" style="font-family:'JetBrains Mono',monospace;font-weight:600">
             </div>
             <div style="font-size:11px;color:var(--ink3);margin-top:5px;line-height:1.5">Dipakai untuk estimasi pendapatan dari pengingat (Estimasi Revenue = pelanggan kembali × harga rata-rata).</div>
           </div>
@@ -683,7 +688,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
           <div class="danger-item" style="padding-top:14px">
             <div class="danger-item-info">
               <div class="danger-item-title">Reset Semua Data</div>
-              <div class="danger-item-desc">Hapus semua data di perangkat ini. Kamu harus login ulang.</div>
+              <div class="danger-item-desc">Profil bisnis, semua pelanggan, riwayat pengingat &amp; pengaturan akan <strong style="color:var(--red-dk)">terhapus permanen dari device ini</strong>. Aksi ini ga bisa di-undo. Pastikan sudah Export Data dulu kalau perlu backup.</div>
             </div>
             <button class="btn btn-danger btn-sm" onclick="openResetModal()">Reset</button>
           </div>
@@ -761,6 +766,19 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 <div class="toast" id="toast"></div>
 
 <script>
+/* ── NUMBER FORMAT (Indonesia: titik thousand separator) ── */
+function fmtIDR(n) { return Number(n || 0).toLocaleString('id-ID') }
+function parseIDR(s) { return parseInt(String(s || '').replace(/[^\d]/g, ''), 10) || 0 }
+function formatIDRInput(el) {
+  // Simpan posisi caret relatif dari kanan supaya ga lompat
+  var raw = el.value
+  var caretFromEnd = raw.length - (el.selectionStart || raw.length)
+  var num = parseIDR(raw)
+  el.value = num > 0 ? fmtIDR(num) : ''
+  var newPos = Math.max(0, el.value.length - caretFromEnd)
+  try { el.setSelectionRange(newPos, newPos) } catch(e) {}
+}
+
 /* ── SHARED ── */
 function loadU() {
   try {
@@ -901,7 +919,7 @@ function saveProfile() {
   u.adminName = document.getElementById('inp-adminName').value.trim()
   u.country = document.getElementById('inp-country').value
   u.timezone = document.getElementById('inp-timezone').value
-  var avg = parseInt(document.getElementById('inp-avgServiceValue').value) || 150000
+  var avg = parseIDR(document.getElementById('inp-avgServiceValue').value) || 150000
   u.avgServiceValue = Math.max(1000, avg)
   saveU(u)
   bootSidebar()
@@ -1250,11 +1268,20 @@ function flashBtn(btnId, flashText, origText) {
   }, 1800)
 }
 
+/* ── MARK QR POSTED — set saat owner print/unduh/share QR (sinyal intent install). Dipakai Dashboard setup checklist. ── */
+function markQrPosted() {
+  var u = loadU()
+  if (!u || u.qrPosted) return
+  u.qrPosted = true
+  saveU(u)
+}
+
 /* ── SHARE WA — pakai template "blast" (custom kalau owner sudah edit) ── */
 function shareWA() {
   var u = loadU()
   var msg = renderTplString(getTplRaw('blast', u), u)
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+  markQrPosted()
 }
 
 /* ── PRINT QR ── */
@@ -1309,6 +1336,7 @@ function printQR() {
   win.focus()
   setTimeout(function(){ win.print() }, 600)
   flashBtn('btnPrint', '✓ Printing...', 'Print QR')
+  markQrPosted()
 }
 
 /* ── DOWNLOAD QR ── */
@@ -1334,6 +1362,7 @@ function downloadQR() {
   }
   img.src = url
   flashBtn('btnDownload', '✓ Downloading...', 'Unduh PNG')
+  markQrPosted()
 }
 
 /* ── BOOT ── */
@@ -1367,7 +1396,7 @@ function boot() {
   document.getElementById('inp-bizName').value = U.bizName || ''
   document.getElementById('inp-adminName').value = U.adminName || ''
   document.getElementById('inp-email').value = U.email || ''
-  document.getElementById('inp-avgServiceValue').value = U.avgServiceValue || 150000
+  document.getElementById('inp-avgServiceValue').value = fmtIDR(U.avgServiceValue || 150000)
   loadLogoFromU()
 
   // Select biz type

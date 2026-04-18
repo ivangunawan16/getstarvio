@@ -206,6 +206,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* ── MOBILE ── */
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -573,6 +578,11 @@ function buildPackages() {
     var tierPrice = tiers ? tiers[i].price : d.price
     var tierCredits = tiers ? tiers[i].credits : d.amt
     var perCredit = tierCredits > 0 ? Math.round(tierPrice / tierCredits) : 0
+    // Estimasi durasi pakai (asumsi 4 kredit/hari untuk UMKM mid-range)
+    var daysEst = Math.round(tierCredits / 4)
+    var durationStr = daysEst < 30 ? '~' + daysEst + ' hari pakai'
+                    : daysEst < 60 ? '~' + Math.round(daysEst / 7) + ' minggu pakai'
+                    :                 '~' + Math.round(daysEst / 30) + ' bulan pakai'
     pkgs.push({
       id: d.id,
       amt: tierCredits,
@@ -580,6 +590,7 @@ function buildPackages() {
       label: tierCredits.toLocaleString('id-ID'),
       priceStr: 'Rp ' + tierPrice.toLocaleString('id-ID'),
       per: 'Rp ' + perCredit.toLocaleString('id-ID') + '/kredit',
+      duration: durationStr,
       popular: d.popular,
       popLabel: d.popLabel,
       save: d.save
@@ -833,15 +844,27 @@ function processSubscribe() {
 
     document.getElementById('sub-processing').style.display = 'none'
     document.getElementById('sub-done').style.display = 'block'
-    var doneTitle = bundlePkg ? 'Langganan + Bundle Aktif!' : 'Langganan Aktif!'
-    document.getElementById('sub-title').textContent = doneTitle
+    document.getElementById('sub-title').textContent = 'Selamat datang, subscriber getstarvio!'
     var doneSub = bundlePkg
-      ? '300 kredit subscription + ' + bundlePkg.amt + ' kredit bundle ditambahkan ke akun.'
-      : '300 kredit subscription sudah ditambahkan ke akun.'
+      ? '300 kredit bulanan + ' + bundlePkg.amt + ' kredit cadangan sudah aktif. Selamat datang!'
+      : '300 kredit bulanan sudah aktif. Selamat datang!'
     var subEl = document.querySelector('#sub-done div[style*="font-size:12px"]')
     if (subEl) subEl.textContent = doneSub
-    document.getElementById('sub-footer').innerHTML = '<button class="btn btn-lime btn-sm" onclick="closeSubscribe();render()">Tutup</button>'
+    document.getElementById('sub-footer').innerHTML =
+      '<div id="sub-countdown" style="font-size:11px;color:var(--ink3);margin-right:auto;align-self:center">Masuk dashboard dalam <strong id="sub-cdn">3</strong> detik...</div>' +
+      '<a class="btn btn-lime btn-sm" href="getstarvio-dashboard.html" style="text-decoration:none">Masuk ke Dashboard \u2192</a>'
     subBusy = false
+    // Countdown + auto-redirect
+    var cdEl = document.getElementById('sub-cdn')
+    var n = 3
+    var cdTimer = setInterval(function() {
+      n--
+      if (cdEl) cdEl.textContent = n
+      if (n <= 0) {
+        clearInterval(cdTimer)
+        location.href = 'getstarvio-dashboard.html'
+      }
+    }, 1000)
   }, 2000)
 }
 
@@ -955,12 +978,25 @@ function render() {
   else { navLost.style.display = 'none' }
 
   var html = ''
+  var trialExpired = isTrialExpired(U)
+  var daysLeft = trialDaysLeft(U)
+  var planNow = U.plan || 'trial'
+
+  /* TRIAL EXPIRED BANNER — kasih cue jelas kalau trial habis & top-up locked */
+  if (trialExpired && planNow !== 'subscriber') {
+    html += '<div style="background:var(--red-dk);color:#fff;padding:14px 18px;border-radius:var(--r);margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">' +
+      '<div style="font-size:24px;flex-shrink:0">\u26A0</div>' +
+      '<div style="flex:1;min-width:200px">' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:3px">Trial selesai — platform locked</div>' +
+        '<div style="font-size:12px;opacity:.85;line-height:1.55">Subscribe untuk lanjut kirim pengingat. Top-up packages baru bisa diakses setelah subscribe.</div>' +
+      '</div>' +
+      '<button class="btn btn-lime" onclick="openSubscribe()" style="flex-shrink:0">Subscribe Sekarang \u2192</button>' +
+    '</div>'
+  }
 
   /* ─────────────────────────────────────────
      SECTION 1: STATUS PLAN
      ───────────────────────────────────────── */
-  var trialExpired = isTrialExpired(U)
-  var daysLeft = trialDaysLeft(U)
   html += '<div class="plan-card">'
   html += '<div class="plan-row">'
   html += '<div class="plan-info">'
@@ -974,18 +1010,21 @@ function render() {
     html += '<span class="plan-credit" style="color:var(--red-dk)">Subscribe untuk lanjut. <b>' + fmt(remLeft) + '</b> kredit kamu masih tersimpan.</span>'
   } else {
     html += '<span class="plan-badge-free" style="background:var(--lime-bg);color:var(--lime-dk);border:1px solid var(--lime-bd)">&#127881; Free Trial</span>'
-    if (daysLeft !== null) {
-      html += '<span class="plan-credit"><b>' + daysLeft + ' hari tersisa</b> · <b>' + fmt(remLeft) + '</b> kredit (mana duluan)</span>'
+    if (typeof daysLeft === 'number' && daysLeft >= 0) {
+      html += '<span class="plan-credit"><b>' + daysLeft + ' hari tersisa</b> &middot; <b>' + fmt(remLeft) + '</b> kredit (mana duluan)</span>'
     } else {
       html += '<span class="plan-credit">Sisa kredit: <b>' + fmt(remLeft) + '</b></span>'
     }
   }
   html += '</div>'
-  html += '<div>'
+  html += '<div class="plan-cta">'
   if (plan === 'subscriber') {
     html += '<button class="cancel-link" onclick="openCancelModal()">Batalkan Langganan</button>'
   } else {
-    html += '<button class="btn btn-lime" onclick="openSubscribe()">Subscribe — <span style="text-decoration:line-through;opacity:.6;font-weight:500">Rp 499.000</span> Rp 249.000/bulan (300 kredit)</button>'
+    html += '<button class="btn btn-lime plan-sub-btn" onclick="openSubscribe()">' +
+      '<span class="sub-btn-main">Subscribe Rp 249.000/bulan</span>' +
+      '<span class="sub-btn-sub">300 kredit &middot; <span style="text-decoration:line-through;opacity:.55">Rp 499.000</span> hemat 50%</span>' +
+    '</button>'
   }
   html += '</div>'
   html += '</div>'
@@ -1092,7 +1131,7 @@ function render() {
     if (pkg.popular) html += '<div class="pkg-pop">' + pkg.popLabel + '</div>'
     if (pkg.save) html += '<div class="pkg-pop" style="background:var(--amber);color:#fff">' + pkg.save + '</div>'
     html += '<div class="pkg-amt">' + pkg.label + '</div>'
-    html += '<div class="pkg-unit">kredit</div>'
+    html += '<div class="pkg-unit">kredit · ' + pkg.duration + '</div>'
     html += '<div class="pkg-price">' + pkg.priceStr + '</div>'
     html += '<div class="pkg-per">' + pkg.per + '</div>'
     html += '</div>'

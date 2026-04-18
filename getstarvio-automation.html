@@ -145,6 +145,11 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
 
 /* -- MOBILE -- */
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -275,12 +280,20 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
         <div style="font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.5">Pengingat menggunakan kredit subscription dulu, baru kredit top-up.</div>
       </div>
 
-      <!-- DEFAULT SETTINGS -->
+      <!-- PER KATEGORI -->
       <div class="sec-title" style="margin-top:6px">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
+        Automation per Kategori
+      </div>
+      <div id="auto-flows"></div>
+
+      <!-- DEFAULT SETTINGS — moved to bottom: secondary/advanced config -->
+      <div class="sec-title" style="margin-top:18px">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>
         Pengaturan Default
       </div>
       <div class="card" style="margin-bottom:18px">
+        <div style="font-size:11px;color:var(--ink3);margin-bottom:12px;line-height:1.55">Setting default jam kirim &amp; interval untuk kategori baru. Tiap kategori bisa override.</div>
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
           <div style="flex:1;min-width:160px">
             <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Waktu Kirim</div>
@@ -299,13 +312,6 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
           <div id="default-saved" style="display:none;font-size:11px;font-weight:600;color:var(--lime-dk)">Tersimpan</div>
         </div>
       </div>
-
-      <!-- PER KATEGORI -->
-      <div class="sec-title">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
-        Automation per Kategori
-      </div>
-      <div id="auto-flows"></div>
 
     </div>
   </div>
@@ -693,7 +699,15 @@ function renderFlows(U) {
   var el = document.getElementById('auto-flows')
 
   if (cats.length === 0) {
-    el.innerHTML = '<div class="empty">Belum ada kategori layanan. Buat di halaman <a href="getstarvio-kategori.html" style="color:var(--ink2);font-weight:600">Kategori</a>.</div>'
+    el.innerHTML =
+      '<div style="background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r-lg);padding:48px 24px;text-align:center">' +
+        '<div style="font-size:48px;margin-bottom:14px;opacity:.85">\uD83C\uDFF7\uFE0F</div>' +
+        '<div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Belum ada kategori layanan</div>' +
+        '<div style="font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:18px;max-width:340px;margin-left:auto;margin-right:auto">Tambah kategori dulu untuk mulai atur pengingat otomatis ke pelanggan.</div>' +
+        '<a href="getstarvio-kategori.html" class="btn btn-lime btn-sm" style="text-decoration:none">' +
+          'Buka Kategori \u2192' +
+        '</a>' +
+      '</div>'
     return
   }
 

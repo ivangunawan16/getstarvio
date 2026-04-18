@@ -199,8 +199,20 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
   line-height:1.8;font-weight:500;
 }
 
-/* MOBILE HEADLINE (above form) */
+/* MOBILE HEADLINE + VALUE PROPS (above form) */
 .mobile-headline{display:none}
+.mobile-value-props{display:none;margin-bottom:22px}
+.mobile-value-props .mvp{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--ink2);font-weight:500;
+  padding:6px 0;
+}
+.mobile-value-props .mvp-check{
+  color:var(--lime-dk);font-weight:800;font-size:14px;
+  width:20px;height:20px;border-radius:50%;background:var(--lime-bg);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  border:1px solid #c8f07a;
+}
 
 /* OVERLAY / ACCOUNT PICKER */
 .overlay{
@@ -294,8 +306,9 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
   .mobile-headline{
     display:block;font-size:22px;font-weight:800;
     color:var(--ink);text-align:center;line-height:1.25;
-    letter-spacing:-.4px;margin-bottom:18px;
+    letter-spacing:-.4px;margin-bottom:14px;
   }
+  .mobile-value-props{display:block}
   .trust-line{font-size:12px}
 }
 </style>
@@ -372,6 +385,11 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
     <div class="right-body">
       <div class="login-card">
         <div class="mobile-headline">Pelanggan lupa balik? Ingatkan otomatis lewat WhatsApp.</div>
+        <div class="mobile-value-props">
+          <div class="mvp"><div class="mvp-check">✓</div>Pelanggan balik lebih sering</div>
+          <div class="mvp"><div class="mvp-check">✓</div>Tanpa follow-up manual</div>
+          <div class="mvp"><div class="mvp-check">✓</div>Setup 5 menit</div>
+        </div>
         <div class="card-eyebrow">
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <path d="M5 1l.9 2.8H8.7L6.4 5.5l.9 2.8L5 6.6l-2.3 1.7.9-2.8L1.3 3.8h2.8L5 1z" fill="#2d4a00"/>
