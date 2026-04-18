@@ -167,11 +167,32 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
 .sidebar-overlay.open{display:block}
 
+/* ── TRIAL SOFT LOCK ── */
+.trial-soft-banner{
+  background:var(--red-dk);color:#fff;padding:11px 16px;text-align:center;
+  font-size:13px;font-weight:600;border-radius:var(--r-sm);margin-bottom:14px;line-height:1.55;
+}
+.trial-soft-banner a{color:var(--lime);text-decoration:underline;font-weight:700}
+body.trial-soft-locked .db-content .retry-btn,
+body.trial-soft-locked .db-content .br-btn,
+body.trial-soft-locked .db-content .bulk-retry-bar{
+  opacity:.4;pointer-events:none;cursor:not-allowed;
+}
+
 /* ── LOG CARD (mobile) ── */
 .log-card{display:none}
 
 /* ── MOBILE ── */
+@media(max-width:520px){
+  .tb-export-log-label{display:none}
+  .tb-export-log{padding:6px 10px}
+}
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -264,9 +285,9 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
       <span class="tb-title">Log Pengingat</span>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
-      <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+      <button class="btn btn-ghost btn-sm tb-export-log" onclick="exportCSV()" data-always title="Export CSV">
         <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 10v3h10v-3"/><path d="M8 2v8M5 7l3 3 3-3"/></svg>
-        Export CSV
+        <span class="tb-export-log-label">Export CSV</span>
       </button>
     </div>
   </div>
@@ -421,12 +442,16 @@ function loadU() {
   } catch(e) { return null }
 }
 
-function showTrialLockOverlay() { const el = document.getElementById('trialLockOverlay'); if (el) el.style.display = 'flex' }
+/* Log Pengingat SOFT lock — banner atas + disable retry/bulk-retry buttons. Export tetap aktif via data-always. */
 function checkTrialLock() {
   const u = loadU()
   if (!u || !u.trialExpired) return
-  if (location.pathname.includes('billing')) return
-  showTrialLockOverlay()
+  document.body.classList.add('trial-soft-locked')
+  const banner = document.createElement('div')
+  banner.className = 'trial-soft-banner'
+  banner.innerHTML = '\u26A0 Trial selesai \u00B7 <a href="getstarvio-billing.html">Subscribe untuk lanjut \u2192</a>'
+  const content = document.querySelector('.db-inner')
+  if (content) content.prepend(banner)
 }
 
 function saveU(u) {
@@ -942,22 +967,6 @@ function boot() {
 
 window.addEventListener('DOMContentLoaded', boot)
 </script>
-
-<!-- Trial Hard Lock Overlay -->
-<div id="trialLockOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;font-family:'Sora',sans-serif">
-  <div style="background:#fff;border-radius:16px;padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)">
-    <div style="font-size:48px;margin-bottom:14px">🔒</div>
-    <div style="font-size:22px;font-weight:700;color:#1a1917;margin-bottom:8px">Trial selesai</div>
-    <div style="font-size:13px;color:#5c5b55;line-height:1.6;margin-bottom:20px">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:#edfac8;border:1px solid #c8f07a;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#2d4a00">
-      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
-      <strong style="font-size:18px;font-weight:700">Rp 249.000/bulan</strong>
-      <span style="font-size:10px;font-weight:700;background:#b8f04a;color:#2d4a00;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em">Early Access 50% off</span>
-    </div>
-    <a href="getstarvio-billing.html" style="display:block;width:100%;padding:14px;background:#b8f04a;color:#2d4a00;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;box-shadow:0 4px 16px rgba(184,240,74,.3);box-sizing:border-box">Subscribe Sekarang →</a>
-    <a href="getstarvio-billing.html" style="display:inline-block;font-size:11px;color:#9b9a92;text-decoration:underline">Lihat detail di Billing</a>
-  </div>
-</div>
 
 </body>
 </html>

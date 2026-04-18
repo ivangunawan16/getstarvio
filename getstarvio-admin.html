@@ -251,31 +251,52 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .tpl-var{display:inline-block;background:var(--lime-bg);color:var(--lime-dk);padding:1px 6px;border-radius:4px;font-weight:700}
 
 /* ══════════════════ TIPE LAYANAN TAB ══════════════════ */
-.bt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:18px}
-.bt-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .15s}
+.bt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:18px;align-items:start}
+.bt-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .15s,box-shadow .15s}
 .bt-card:hover{border-color:var(--lime2);box-shadow:0 4px 14px rgba(0,0,0,.04)}
-.bt-card.expanded{border-color:var(--lime2);box-shadow:0 6px 20px rgba(0,0,0,.06)}
-.bt-card-hd{padding:14px 16px;display:flex;align-items:center;gap:11px;cursor:pointer;background:var(--bg2);transition:background .12s}
+.bt-card.expanded{border-color:var(--lime2);box-shadow:0 6px 20px rgba(0,0,0,.06);grid-column:1/-1}
+.bt-card.expanded .bt-cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;align-items:start}
+.bt-card.expanded .bt-cat-row{margin-bottom:0}
+.bt-card-hd{padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;background:var(--bg2);transition:background .12s}
 .bt-card-hd:hover{background:var(--bg3)}
-.bt-icon{width:38px;height:38px;border-radius:9px;background:var(--lime-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid var(--lime-bd)}
+.bt-icon{width:42px;height:42px;border-radius:10px;background:var(--lime-bg);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--lime-bd)}
 .bt-info{flex:1;min-width:0}
-.bt-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
-.bt-meta{font-size:11px;color:var(--ink3)}
-.bt-actions{display:flex;gap:5px;flex-shrink:0}
-.bt-icon-btn{width:26px;height:26px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.bt-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.bt-meta{font-size:11px;color:var(--ink3);line-height:1.4}
+.bt-meta code{font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:10px}
+.bt-actions{display:flex;gap:6px;flex-shrink:0}
+.bt-icon-btn{width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .bt-icon-btn:hover{background:var(--bg4);color:var(--ink)}
 .bt-icon-btn svg{width:13px;height:13px}
 .bt-icon-btn.danger:hover{background:var(--red-bg);color:var(--red);border-color:rgba(232,69,60,.3)}
 
-.bt-cats{padding:0 16px 14px;border-top:1px solid var(--border);background:var(--bg3);display:none}
+.bt-cats{padding:0 18px 16px;border-top:1px solid var(--border);background:var(--bg3);display:none}
 .bt-card.expanded .bt-cats{display:block}
-.bt-cats-hd{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin:11px 0 8px;display:flex;align-items:center;justify-content:space-between}
-.bt-cat-row{display:flex;align-items:center;gap:10px;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:6px}
-.bt-cat-icon{font-size:14px;flex-shrink:0}
-.bt-cat-name{font-size:12px;font-weight:600;color:var(--ink);flex:1;min-width:0}
-.bt-cat-meta{font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:2px 7px;border-radius:99px;border:1px solid var(--border);white-space:nowrap}
-.bt-cat-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;background:transparent;border:1.5px dashed var(--border2);color:var(--ink3);border-radius:var(--r-sm);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s;margin-top:2px}
+.bt-cats-hd{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 10px;display:flex;align-items:center;justify-content:space-between}
+
+/* 2-row preset row: top = icon+name+interval+actions, bottom = template badge */
+.bt-cat-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  grid-template-areas:"icon name meta actions" "tpl tpl tpl tpl";
+  align-items:center;column-gap:10px;row-gap:6px;
+  padding:11px 13px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r-sm);margin-bottom:8px;
+}
+.bt-cat-icon{grid-area:icon;font-size:18px;line-height:1}
+.bt-cat-name{grid-area:name;font-size:13px;font-weight:600;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bt-cat-meta{grid-area:meta;font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:3px 9px;border-radius:99px;border:1px solid var(--border);white-space:nowrap;font-weight:600}
+.bt-cat-actions{grid-area:actions;display:flex;gap:5px}
+.bt-cat-tpl{grid-area:tpl;font-size:10px;font-weight:600;color:var(--lime-dk);background:var(--lime-bg);padding:4px 10px;border-radius:99px;border:1px solid var(--lime-bd);font-family:'JetBrains Mono',monospace;display:inline-flex;align-items:center;gap:5px;justify-self:start;max-width:100%}
+.bt-cat-tpl::before{content:'\1F4DD';font-size:10px}
+.bt-cat-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;background:transparent;border:1.5px dashed var(--border2);color:var(--ink3);border-radius:var(--r-sm);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s;margin-top:4px}
 .bt-cat-add:hover{border-color:var(--lime2);color:var(--lime-dk);background:var(--lime-bg)}
+
+@media(max-width:600px){
+  .bt-grid{grid-template-columns:1fr;gap:10px}
+  .bt-card-hd{padding:14px 14px}
+  .bt-cats{padding:0 14px 12px}
+}
 
 /* Modal extensions */
 .modal-lg{width:640px}
@@ -308,10 +329,33 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
     </div>
     <div class="gate-title">getstarvio Admin</div>
     <div class="gate-sub">Command Center · Internal Only</div>
-    <form onsubmit="return tryLogin(event)">
-      <input class="gate-inp" id="gate-pw" type="password" placeholder="Password" autofocus>
-      <button class="gate-btn" type="submit">Masuk</button>
-    </form>
+
+    <!-- Step 1: Google OAuth (must complete first) -->
+    <div id="gate-step-google">
+      <button class="gate-btn" type="button" onclick="tryGoogleAdmin()" style="background:#fff;color:var(--ink);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;gap:10px">
+        <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+          <path d="M17.64 9.2c0-.638-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+          <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        Lanjut dengan Google
+      </button>
+      <div style="font-size:11px;color:var(--ink3);margin-top:14px;line-height:1.55">Hanya akun @getstarvio.com yang diizinkan akses admin panel.</div>
+    </div>
+
+    <!-- Step 2: Password (after Google verified) -->
+    <div id="gate-step-pw" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:8px 12px;margin-bottom:14px;font-size:11px;color:var(--lime-dk);font-weight:600">
+        <span>✓</span><span id="gate-google-email">admin@getstarvio.com</span>
+      </div>
+      <form onsubmit="return tryLogin(event)">
+        <input class="gate-inp" id="gate-pw" type="password" placeholder="Admin password" autofocus>
+        <button class="gate-btn" type="submit">Masuk</button>
+      </form>
+      <button onclick="resetAdminLogin()" style="background:none;border:none;color:var(--ink3);font-size:11px;margin-top:10px;cursor:pointer;text-decoration:underline;font-family:inherit">← Ganti akun Google</button>
+    </div>
+
     <div class="gate-error" id="gate-error"></div>
   </div>
 </div>
@@ -549,12 +593,12 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           </div>
           <div class="plan-field">
             <div class="plan-field-lbl">Harga normal</div>
-            <input class="plan-field-inp" id="pc-sub-price-normal" value="499000" type="number" min="0" oninput="recalcSubDiscount()">
+            <input class="plan-field-inp" id="pc-sub-price-normal" value="499.000" type="text" inputmode="numeric" oninput="formatIDRInput(this);recalcSubDiscount()">
             <div class="plan-field-unit">IDR / bulan</div>
           </div>
           <div class="plan-field">
             <div class="plan-field-lbl">Harga Early Access</div>
-            <input class="plan-field-inp" id="pc-sub-price" value="249000" type="number" min="0" oninput="recalcSubDiscount()">
+            <input class="plan-field-inp" id="pc-sub-price" value="249.000" type="text" inputmode="numeric" oninput="formatIDRInput(this);recalcSubDiscount()">
             <div class="plan-field-unit">IDR / bulan</div>
             <span class="plan-tier-badge" id="pc-sub-discount" style="background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3">-50%</span>
           </div>
@@ -583,7 +627,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           <div class="plan-tier">
             <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">1.</span>
             <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
-            <input class="plan-field-inp" id="pc-tier1-price" value="399000" type="number" min="0" style="width:100px" oninput="recalcTier(1)">
+            <input class="plan-field-inp" id="pc-tier1-price" value="399.000" type="text" inputmode="numeric" style="width:110px" oninput="formatIDRInput(this);recalcTier(1)">
             <span style="color:var(--ink3)">→</span>
             <input class="plan-field-inp" id="pc-tier1-credits" value="200" type="number" min="1" style="width:70px" oninput="recalcTier(1)">
             <span style="font-size:11px;color:var(--ink3)">kredit</span>
@@ -592,7 +636,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           <div class="plan-tier">
             <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">2.</span>
             <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
-            <input class="plan-field-inp" id="pc-tier2-price" value="749000" type="number" min="0" style="width:100px" oninput="recalcTier(2)">
+            <input class="plan-field-inp" id="pc-tier2-price" value="749.000" type="text" inputmode="numeric" style="width:110px" oninput="formatIDRInput(this);recalcTier(2)">
             <span style="color:var(--ink3)">→</span>
             <input class="plan-field-inp" id="pc-tier2-credits" value="500" type="number" min="1" style="width:70px" oninput="recalcTier(2)">
             <span style="font-size:11px;color:var(--ink3)">kredit</span>
@@ -601,7 +645,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           <div class="plan-tier">
             <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">3.</span>
             <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
-            <input class="plan-field-inp" id="pc-tier3-price" value="1299000" type="number" min="0" style="width:100px" oninput="recalcTier(3)">
+            <input class="plan-field-inp" id="pc-tier3-price" value="1.299.000" type="text" inputmode="numeric" style="width:110px" oninput="formatIDRInput(this);recalcTier(3)">
             <span style="color:var(--ink3)">→</span>
             <input class="plan-field-inp" id="pc-tier3-credits" value="1000" type="number" min="1" style="width:70px" oninput="recalcTier(3)">
             <span style="font-size:11px;color:var(--ink3)">kredit</span>
@@ -784,11 +828,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
         <div class="field-cell">
           <label class="field-lbl">Default Template</label>
           <select class="field-select" id="pc-template" style="margin-bottom:0">
-            <option value="reminder_return">Pengingat balik</option>
-            <option value="soft_invite">Ajakan santai</option>
-            <option value="promo_nudge">Pengingat + penawaran</option>
-            <option value="care_checkin">Check-in personal</option>
-            <option value="urgency_light">Gentle urgency</option>
+            <option value="aftercare_followup_1">Aftercare #1 — formal</option>
+            <option value="aftercare_followup_2">Aftercare #2 — terima kasih</option>
+            <option value="aftercare_followup_3">Aftercare #3 — casual</option>
+            <option value="aftercare_followup_4">Aftercare #4 — semoga puas</option>
+            <option value="aftercare_followup_5">Aftercare #5 — tanya hasil</option>
           </select>
         </div>
       </div>
@@ -804,6 +848,20 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 <div class="toast-wrap" id="toast-container"></div>
 
 <script>
+// ══════════════════════════════
+// HELPERS — Indonesia number format (titik thousand separator)
+// ══════════════════════════════
+function fmtIDR(n) { return Number(n || 0).toLocaleString('id-ID') }
+function parseIDR(s) { return parseInt(String(s || '').replace(/[^\d]/g, ''), 10) || 0 }
+function formatIDRInput(el) {
+  var raw = el.value
+  var caretFromEnd = raw.length - (el.selectionStart || raw.length)
+  var num = parseIDR(raw)
+  el.value = num > 0 ? fmtIDR(num) : ''
+  var newPos = Math.max(0, el.value.length - caretFromEnd)
+  try { el.setSelectionRange(newPos, newPos) } catch(e) {}
+}
+
 // ══════════════════════════════
 // ADMIN DATA
 // ══════════════════════════════
@@ -857,8 +915,42 @@ var currentDetailId = null;
 // ══════════════════════════════
 // PASSWORD GATE
 // ══════════════════════════════
+/* Admin login = dual auth: Google OAuth (must be @getstarvio.com) + password.
+   Production: replace mock with real Google Identity Services. */
+var _adminGoogleVerified = false
+
+function tryGoogleAdmin() {
+  // MOCK: simulate Google account picker. In prod, ganti dengan Google Identity Services.
+  var email = prompt('🔐 Mock Google sign-in (admin only)\n\nMasukkan email admin (@getstarvio.com):', 'admin@getstarvio.com')
+  if (email === null) return
+  email = email.trim().toLowerCase()
+  var err = document.getElementById('gate-error')
+  if (!/@getstarvio\.com$/i.test(email)) {
+    err.textContent = 'Akun ditolak — hanya email @getstarvio.com yang diizinkan.'
+    setTimeout(function(){ err.textContent = '' }, 3500)
+    return
+  }
+  _adminGoogleVerified = true
+  document.getElementById('gate-google-email').textContent = '✓ ' + email
+  document.getElementById('gate-step-google').style.display = 'none'
+  document.getElementById('gate-step-pw').style.display = 'block'
+  setTimeout(function(){ document.getElementById('gate-pw').focus() }, 100)
+}
+
+function resetAdminLogin() {
+  _adminGoogleVerified = false
+  document.getElementById('gate-step-pw').style.display = 'none'
+  document.getElementById('gate-step-google').style.display = 'block'
+  document.getElementById('gate-pw').value = ''
+  document.getElementById('gate-error').textContent = ''
+}
+
 function tryLogin(e) {
   e.preventDefault();
+  if (!_adminGoogleVerified) {
+    document.getElementById('gate-error').textContent = 'Verify Google account dulu.'
+    return false
+  }
   var pw = document.getElementById('gate-pw');
   var err = document.getElementById('gate-error');
   if (pw.value === 'getstarvio2026') {
@@ -880,8 +972,7 @@ function tryLogin(e) {
 function doLogout() {
   document.getElementById('shell').classList.add('hidden');
   document.getElementById('gate').classList.remove('hidden');
-  document.getElementById('gate-pw').value = '';
-  document.getElementById('gate-error').textContent = '';
+  resetAdminLogin();
 }
 
 // ══════════════════════════════
@@ -1057,6 +1148,14 @@ function doAddCredit() {
 
   var b = ADMIN_DATA.find(function(x){ return x.id === currentDetailId; });
   if (!b) return;
+
+  // Password gate — high-impact financial action, prevent fat-finger / unauthorized access
+  var pw = prompt('⚠ KONFIRMASI ADMIN ACTION\n\nTambah ' + amount + ' kredit ke ' + b.name + '?\nKredit ini akan tercatat di ledger sebagai admin top-up.\n\nMasukkan password admin untuk konfirmasi:');
+  if (pw === null) return;
+  if (pw !== 'getstarvio2026') {
+    toast('Password admin salah — penambahan kredit dibatalkan', 'error');
+    return;
+  }
 
   var btn = inp.nextElementSibling;
   btn.textContent = 'Menambahkan...';
@@ -1427,10 +1526,16 @@ function resubmitTemplate(id) {
 function deleteTemplate(id) {
   var t = TEMPLATES.find(function(x){ return x.id === id });
   if (!t) return;
-  if (!confirm('Hapus template "' + t.name + '"? Aksi ini tidak bisa di-undo.')) return;
+  // Two-step confirm: type the template name to delete (prevent fat-finger accidents)
+  var typed = prompt('⚠ HAPUS TEMPLATE PERMANEN\n\nTemplate: "' + t.name + '"\nStatus: ' + t.status + '\n\nKetik nama template di bawah untuk konfirmasi:\n(case-sensitive)');
+  if (typed === null) return;
+  if (typed.trim() !== t.name) {
+    toast('Nama template tidak cocok — penghapusan dibatalkan', 'error');
+    return;
+  }
   TEMPLATES = TEMPLATES.filter(function(x){ return x.id !== id });
   renderTemplates();
-  toast('Template dihapus.', 'success');
+  toast('Template "' + t.name + '" dihapus.', 'success');
 }
 
 // ══════════════════════════════════════════════
@@ -1439,46 +1544,46 @@ function deleteTemplate(id) {
 
 var BIZ_TYPES = [
   { id:'salon', name:'Salon', icon:'💇', presets:[
-    { id:'keriting',  name:'Keriting',   icon:'💇', interval:60, templateId:'reminder_return' },
-    { id:'smoothing', name:'Smoothing',  icon:'✨', interval:90, templateId:'reminder_return' },
-    { id:'haircolor', name:'Hair Color', icon:'🎨', interval:45, templateId:'soft_invite' },
-    { id:'hairmask',  name:'Hair Mask',  icon:'🧴', interval:21, templateId:'reminder_return' },
-    { id:'blowdry',   name:'Blow Dry',   icon:'💨', interval:14, templateId:'soft_invite' },
-    { id:'creambath', name:'Creambath',  icon:'🧖', interval:21, templateId:'reminder_return' }
+    { id:'keriting',  name:'Keriting',   icon:'💇', interval:60, templateId:'aftercare_followup_1' },
+    { id:'smoothing', name:'Smoothing',  icon:'✨', interval:90, templateId:'aftercare_followup_1' },
+    { id:'haircolor', name:'Hair Color', icon:'🎨', interval:45, templateId:'aftercare_followup_3' },
+    { id:'hairmask',  name:'Hair Mask',  icon:'🧴', interval:21, templateId:'aftercare_followup_1' },
+    { id:'blowdry',   name:'Blow Dry',   icon:'💨', interval:14, templateId:'aftercare_followup_3' },
+    { id:'creambath', name:'Creambath',  icon:'🧖', interval:21, templateId:'aftercare_followup_1' }
   ]},
   { id:'spa', name:'Spa', icon:'🧖', presets:[
-    { id:'fullbody',  name:'Full Body Massage', icon:'🤲', interval:21, templateId:'reminder_return' },
-    { id:'facial',    name:'Facial',            icon:'💆', interval:30, templateId:'reminder_return' },
-    { id:'bodyscrub', name:'Body Scrub',        icon:'🛁', interval:28, templateId:'reminder_return' },
-    { id:'aroma',     name:'Aromaterapi',       icon:'🌿', interval:21, templateId:'soft_invite' }
+    { id:'fullbody',  name:'Full Body Massage', icon:'🤲', interval:21, templateId:'aftercare_followup_1' },
+    { id:'facial',    name:'Facial',            icon:'💆', interval:30, templateId:'aftercare_followup_1' },
+    { id:'bodyscrub', name:'Body Scrub',        icon:'🛁', interval:28, templateId:'aftercare_followup_1' },
+    { id:'aroma',     name:'Aromaterapi',       icon:'🌿', interval:21, templateId:'aftercare_followup_3' }
   ]},
   { id:'klinik', name:'Klinik/Dokter', icon:'🩺', presets:[
-    { id:'konsul',    name:'Konsultasi',       icon:'🩺', interval:30, templateId:'care_checkin' },
-    { id:'skincare2', name:'Perawatan Kulit',  icon:'🧴', interval:21, templateId:'reminder_return' },
-    { id:'laser',     name:'Laser Treatment',  icon:'⚡', interval:30, templateId:'reminder_return' },
-    { id:'chemical',  name:'Chemical Peel',    icon:'⚗️', interval:21, templateId:'reminder_return' }
+    { id:'konsul',    name:'Konsultasi',       icon:'🩺', interval:30, templateId:'aftercare_followup_4' },
+    { id:'skincare2', name:'Perawatan Kulit',  icon:'🧴', interval:21, templateId:'aftercare_followup_1' },
+    { id:'laser',     name:'Laser Treatment',  icon:'⚡', interval:30, templateId:'aftercare_followup_1' },
+    { id:'chemical',  name:'Chemical Peel',    icon:'⚗️', interval:21, templateId:'aftercare_followup_1' }
   ]},
   { id:'barbershop', name:'Barbershop', icon:'💈', presets:[
-    { id:'potong',  name:'Potong Rambut',  icon:'✂️', interval:21, templateId:'reminder_return' },
-    { id:'cukur',   name:'Cukur Jenggot',  icon:'🪒', interval:14, templateId:'reminder_return' },
-    { id:'hairwax', name:'Hair Wax',       icon:'💈', interval:14, templateId:'soft_invite' }
+    { id:'potong',  name:'Potong Rambut',  icon:'✂️', interval:21, templateId:'aftercare_followup_1' },
+    { id:'cukur',   name:'Cukur Jenggot',  icon:'🪒', interval:14, templateId:'aftercare_followup_1' },
+    { id:'hairwax', name:'Hair Wax',       icon:'💈', interval:14, templateId:'aftercare_followup_3' }
   ]},
   { id:'nail', name:'Nail Studio', icon:'💅', presets:[
-    { id:'mani',     name:'Manicure',  icon:'💅', interval:14, templateId:'reminder_return' },
-    { id:'pedi',     name:'Pedicure',  icon:'🦶', interval:14, templateId:'reminder_return' },
-    { id:'nailart',  name:'Nail Art',  icon:'🎨', interval:21, templateId:'soft_invite' },
-    { id:'gelnails', name:'Gel Nails', icon:'✨', interval:21, templateId:'reminder_return' }
+    { id:'mani',     name:'Manicure',  icon:'💅', interval:14, templateId:'aftercare_followup_1' },
+    { id:'pedi',     name:'Pedicure',  icon:'🦶', interval:14, templateId:'aftercare_followup_1' },
+    { id:'nailart',  name:'Nail Art',  icon:'🎨', interval:21, templateId:'aftercare_followup_3' },
+    { id:'gelnails', name:'Gel Nails', icon:'✨', interval:21, templateId:'aftercare_followup_1' }
   ]},
   { id:'bengkel', name:'Bengkel', icon:'🔧', presets:[
-    { id:'oli',    name:'Ganti Oli',    icon:'🛢️', interval:90,  templateId:'urgency_light' },
-    { id:'servis', name:'Servis Rutin', icon:'🔧', interval:180, templateId:'reminder_return' }
+    { id:'oli',    name:'Ganti Oli',    icon:'🛢️', interval:90,  templateId:'aftercare_followup_2' },
+    { id:'servis', name:'Servis Rutin', icon:'🔧', interval:180, templateId:'aftercare_followup_1' }
   ]},
   { id:'skincare', name:'Skincare/Estetik', icon:'✨', presets:[
-    { id:'facial3', name:'Facial',        icon:'💆', interval:30, templateId:'reminder_return' },
-    { id:'chem3',   name:'Chemical Peel', icon:'⚗️', interval:21, templateId:'reminder_return' }
+    { id:'facial3', name:'Facial',        icon:'💆', interval:30, templateId:'aftercare_followup_1' },
+    { id:'chem3',   name:'Chemical Peel', icon:'⚗️', interval:21, templateId:'aftercare_followup_1' }
   ]},
   { id:'lainnya', name:'Lainnya', icon:'🏪', presets:[
-    { id:'l1', name:'Layanan Utama', icon:'✨', interval:30, templateId:'reminder_return' }
+    { id:'l1', name:'Layanan Utama', icon:'✨', interval:30, templateId:'aftercare_followup_1' }
   ]}
 ];
 
@@ -1500,17 +1605,21 @@ function renderBizTypes() {
         '</div>' +
       '</div>' +
       '<div class="bt-cats">' +
-        '<div class="bt-cats-hd">Preset Kategori (' + bt.presets.length + ')</div>';
+        '<div class="bt-cats-hd">Preset Kategori (' + bt.presets.length + ')</div>' +
+        '<div class="bt-cats-grid">';
     bt.presets.forEach(function(p) {
       html += '<div class="bt-cat-row">' +
         '<span class="bt-cat-icon">' + p.icon + '</span>' +
-        '<span class="bt-cat-name">' + p.name + '</span>' +
-        '<span class="bt-cat-meta">' + p.interval + ' hr</span>' +
-        '<span class="bt-cat-meta" style="background:var(--lime-bg);color:var(--lime-dk);border-color:var(--lime-bd)">' + p.templateId + '</span>' +
-        '<button class="bt-icon-btn" onclick="openPresetCatModal(\'' + bt.id + '\',\'' + p.id + '\')" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2l3 3-7 7-4 1 1-4 7-7z"/></svg></button>' +
-        '<button class="bt-icon-btn danger" onclick="deletePresetCat(\'' + bt.id + '\',\'' + p.id + '\')" title="Delete"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg></button>' +
+        '<span class="bt-cat-name" title="' + p.name + '">' + p.name + '</span>' +
+        '<span class="bt-cat-meta">' + p.interval + ' hari</span>' +
+        '<span class="bt-cat-actions">' +
+          '<button class="bt-icon-btn" onclick="openPresetCatModal(\'' + bt.id + '\',\'' + p.id + '\')" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2l3 3-7 7-4 1 1-4 7-7z"/></svg></button>' +
+          '<button class="bt-icon-btn danger" onclick="deletePresetCat(\'' + bt.id + '\',\'' + p.id + '\')" title="Delete"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg></button>' +
+        '</span>' +
+        '<span class="bt-cat-tpl" title="Template default">' + p.templateId + '</span>' +
       '</div>';
     });
+    html += '</div>'; // close .bt-cats-grid
     html += '<button class="bt-cat-add" onclick="openPresetCatModal(\'' + bt.id + '\')">+ Tambah preset kategori</button>';
     html += '</div></div>';
   });
@@ -1570,7 +1679,7 @@ function openPresetCatModal(btId, pId) {
   document.getElementById('pc-name').value = p ? p.name : '';
   document.getElementById('pc-icon').value = p ? p.icon : '✨';
   document.getElementById('pc-interval').value = p ? p.interval : 30;
-  document.getElementById('pc-template').value = p ? p.templateId : 'reminder_return';
+  document.getElementById('pc-template').value = p ? p.templateId : 'aftercare_followup_1';
   document.getElementById('modal-preset-cat').classList.add('show');
 }
 
@@ -1615,16 +1724,15 @@ function deletePresetCat(btId, pId) {
 // PLAN CONFIG
 // ══════════════════════════════
 function recalcTier(n) {
-  // Flat tier pricing — display per-credit (price ÷ credits), no more bonus calculation
-  var price = parseInt(document.getElementById('pc-tier' + n + '-price').value) || 0
-  var credits = parseInt(document.getElementById('pc-tier' + n + '-credits').value) || 0
+  var price = parseIDR(document.getElementById('pc-tier' + n + '-price').value)
+  var credits = parseInt(document.getElementById('pc-tier' + n + '-credits').value, 10) || 0
   var perCredit = credits > 0 ? Math.round(price / credits) : 0
   document.getElementById('pc-tier' + n + '-bonus').textContent = 'Rp ' + perCredit.toLocaleString('id-ID') + '/kredit'
 }
 
 function recalcSubDiscount() {
-  var normal = parseInt(document.getElementById('pc-sub-price-normal').value) || 0
-  var early = parseInt(document.getElementById('pc-sub-price').value) || 0
+  var normal = parseIDR(document.getElementById('pc-sub-price-normal').value)
+  var early = parseIDR(document.getElementById('pc-sub-price').value)
   var pct = normal > 0 ? Math.round((1 - early / normal) * 100) : 0
   document.getElementById('pc-sub-discount').textContent = pct > 0 ? '-' + pct + '%' : ''
 }
@@ -1639,11 +1747,11 @@ function loadPlanConfig() {
     if (pc.freeBonus !== undefined) document.getElementById('pc-free-bonus').value = pc.freeBonus
     if (pc.trialDays !== undefined) document.getElementById('pc-trial-days').value = pc.trialDays
     if (pc.subCredits !== undefined) document.getElementById('pc-sub-credit').value = pc.subCredits
-    if (pc.subPrice !== undefined) document.getElementById('pc-sub-price').value = pc.subPrice
-    if (pc.subPriceNormal !== undefined) document.getElementById('pc-sub-price-normal').value = pc.subPriceNormal
+    if (pc.subPrice !== undefined) document.getElementById('pc-sub-price').value = fmtIDR(pc.subPrice)
+    if (pc.subPriceNormal !== undefined) document.getElementById('pc-sub-price-normal').value = fmtIDR(pc.subPriceNormal)
     var tiers = pc.tiers || []
     for (var i = 0; i < tiers.length && i < 3; i++) {
-      document.getElementById('pc-tier' + (i+1) + '-price').value = tiers[i].price
+      document.getElementById('pc-tier' + (i+1) + '-price').value = fmtIDR(tiers[i].price)
       document.getElementById('pc-tier' + (i+1) + '-credits').value = tiers[i].credits
       recalcTier(i+1)
     }
@@ -1653,23 +1761,43 @@ function loadPlanConfig() {
 
 function savePlanConfig() {
   var btn = event.target;
+
+  // Validation: tiers harus ada price > 0 + credits > 0 (cegah div by zero / data corrupt)
+  var tiers = []
+  for (var i = 1; i <= 3; i++) {
+    var price = parseIDR(document.getElementById('pc-tier' + i + '-price').value)
+    var credits = parseInt(document.getElementById('pc-tier' + i + '-credits').value, 10) || 0
+    if (price <= 0 || credits <= 0) {
+      toast('Tier ' + i + ': harga & kredit harus lebih dari 0', 'error');
+      return;
+    }
+    tiers.push({ price: price, credits: credits })
+  }
+
+  var freeBonus = parseInt(document.getElementById('pc-free-bonus').value, 10) || 0
+  var trialDays = parseInt(document.getElementById('pc-trial-days').value, 10) || 0
+  var subCredits = parseInt(document.getElementById('pc-sub-credit').value, 10) || 0
+  var subPrice = parseIDR(document.getElementById('pc-sub-price').value)
+  var subPriceNormal = parseIDR(document.getElementById('pc-sub-price-normal').value)
+
+  if (freeBonus < 1 || trialDays < 1 || subCredits < 1 || subPrice < 1 || subPriceNormal < 1) {
+    toast('Semua field plan config harus lebih dari 0', 'error');
+    return;
+  }
+  if (subPrice > subPriceNormal) {
+    toast('Harga Early Access tidak boleh lebih besar dari harga normal', 'error');
+    return;
+  }
+
   btn.textContent = 'Menyimpan...';
   btn.disabled = true;
 
-  var tiers = []
-  for (var i = 1; i <= 3; i++) {
-    tiers.push({
-      price: parseInt(document.getElementById('pc-tier' + i + '-price').value) || 0,
-      credits: parseInt(document.getElementById('pc-tier' + i + '-credits').value) || 0
-    })
-  }
-
   var planConfig = {
-    freeBonus: parseInt(document.getElementById('pc-free-bonus').value) || 100,
-    trialDays: parseInt(document.getElementById('pc-trial-days').value) || 14,
-    subCredits: parseInt(document.getElementById('pc-sub-credit').value) || 300,
-    subPrice: parseInt(document.getElementById('pc-sub-price').value) || 249000,
-    subPriceNormal: parseInt(document.getElementById('pc-sub-price-normal').value) || 499000,
+    freeBonus: freeBonus,
+    trialDays: trialDays,
+    subCredits: subCredits,
+    subPrice: subPrice,
+    subPriceNormal: subPriceNormal,
     tiers: tiers
   }
 
