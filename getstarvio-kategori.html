@@ -85,8 +85,26 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .kat-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
 
 /* ── KAT CARD ── */
-.kat-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:border-color .15s}
+.kat-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:border-color .15s,box-shadow .2s,opacity .2s}
 .kat-card:hover{border-color:var(--border2)}
+.kat-card.dragging{opacity:.5;box-shadow:0 14px 40px rgba(0,0,0,.18);border-color:var(--lime2)}
+.kat-card.drag-over{border-color:var(--lime2);box-shadow:0 0 0 2px rgba(184,240,74,.3) inset}
+.drag-handle{
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+  color:var(--ink4);cursor:grab;user-select:none;flex-shrink:0;border-radius:6px;
+  transition:background .12s,color .12s;
+}
+.drag-handle:hover{background:var(--bg3);color:var(--ink2)}
+.drag-handle:active{cursor:grabbing}
+.arrow-btns{display:none;flex-direction:column;gap:2px;flex-shrink:0}
+.arrow-btn{
+  width:26px;height:18px;border:1px solid var(--border2);background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  border-radius:5px;color:var(--ink2);font-size:9px;font-family:inherit;
+  transition:background .12s,opacity .12s;padding:0;
+}
+.arrow-btn:hover:not(:disabled){background:var(--bg3)}
+.arrow-btn:disabled{opacity:.3;cursor:not-allowed}
 .kc-head{padding:14px 16px;display:flex;align-items:center;gap:10px}
 .kc-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .kc-info{flex:1;min-width:0}
@@ -136,6 +154,13 @@ select.fi{cursor:pointer;appearance:auto}
 .msg-preview{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 13px;font-size:12px;color:var(--ink2);line-height:1.7;margin-top:8px}
 .msg-var{color:var(--blue);font-weight:600;background:var(--blue-bg);padding:0 3px;border-radius:3px;font-size:11px}
 
+/* ── INTERVAL HINT ── */
+.interval-hint{
+  font-size:11px;color:var(--ink3);margin-top:6px;line-height:1.4;
+  display:flex;align-items:center;gap:5px;
+}
+.interval-hint::before{content:'💡';font-size:11px}
+
 /* ── COLOR SCHEMES for cards ── */
 .col-0{background:#fde8e7;border:1.5px solid #f5c5c3} .pill-0{background:#fde8e7;border:1.5px solid #f5c5c3;color:#7a1a16}
 .col-1{background:var(--lime-bg);border:1.5px solid #c8f07a} .pill-1{background:var(--lime-bg);border:1.5px solid #c8f07a;color:var(--lime-dk)}
@@ -158,6 +183,8 @@ select.fi{cursor:pointer;appearance:auto}
   .def-bar{flex-direction:column;align-items:stretch;gap:10px}
   .def-inputs{justify-content:flex-end}
   .g2{grid-template-columns:1fr}
+  .drag-handle{display:none}
+  .arrow-btns{display:flex}
 }
 @media(min-width:768px) and (max-width:1023px){
   .sidebar{width:60px}
@@ -266,6 +293,7 @@ select.fi{cursor:pointer;appearance:auto}
       <div class="fg">
         <label class="fl">Nama Kategori <span style="color:var(--red-dk);font-size:10px">*</span></label>
         <input id="kat-name" class="fi" placeholder="Contoh: Facial, Potong Rambut, Cuci Mobil...">
+        <div id="kat-name-hint" class="interval-hint" style="display:none"></div>
       </div>
       <div class="g2" style="margin-bottom:14px">
         <div>
@@ -317,6 +345,7 @@ select.fi{cursor:pointer;appearance:auto}
       <div class="fg">
         <label class="fl">Nama Kategori</label>
         <input id="edit-name" class="fi">
+        <div id="edit-name-hint" class="interval-hint" style="display:none"></div>
       </div>
       <div class="g2" style="margin-bottom:14px">
         <div>
@@ -427,13 +456,8 @@ function saveU(u) {
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
 }
 
-function showTrialLockOverlay() { var el = document.getElementById('trialLockOverlay'); if (el) el.style.display = 'flex' }
-function checkTrialLock() {
-  var u = loadU()
-  if (!u || !u.trialExpired) return
-  if (location.pathname.includes('billing')) return
-  showTrialLockOverlay()
-}
+/* Kategori EXEMPT dari trial lock — setup kategori ga butuh kredit, owner harus bisa atur sebelum subscribe */
+function checkTrialLock() {}
 
 function bootSidebar(u) {
   // Active nav
@@ -567,6 +591,107 @@ function renderMsgHtml(msg, days, serviceName, bizName, customTiming) {
 }
 
 /* ══════════════════════════════════════════
+   INTERVAL SUGGESTIONS — auto-suggest by service name
+   ══════════════════════════════════════════ */
+var INTERVAL_SUGGESTIONS = {
+  // Salon
+  'keriting':90,'smoothing':90,'hair smoothing':90,'hair rebonding':90,
+  'hair color':60,'hair mask':30,'blow dry':14,'creambath':30,
+  'hair treatment':45,'hair spa':30,
+  // Spa
+  'facial':30,'facial treatment':30,'full body massage':21,'body massage':21,
+  'body scrub':21,'aromaterapi':21,
+  // Klinik
+  'konsultasi':30,'perawatan kulit':30,'laser treatment':30,'chemical peel':30,
+  // Barbershop
+  'potong rambut':21,'cukur jenggot':14,'hair wax':14,
+  // Nail Studio
+  'manicure':21,'pedicure':21,'manicure & pedicure':21,
+  'nail art':21,'gel nails':21,
+  // Bengkel
+  'ganti oli':90,'servis rutin':180,
+  // Skincare / Lashes
+  'lash lift':42,'lash lift & tint':42,'eyelash extension':21,'waxing':14,
+  // Generic
+  'layanan utama':30
+}
+
+function getSuggestedInterval(serviceName) {
+  if (!serviceName) return null
+  var key = serviceName.toLowerCase().trim()
+  return INTERVAL_SUGGESTIONS[key] || null
+}
+
+function attachIntervalSuggest(nameInputId, intervalInputId, hintId) {
+  var nameEl = document.getElementById(nameInputId)
+  var intvEl = document.getElementById(intervalInputId)
+  var hintEl = document.getElementById(hintId)
+  if (!nameEl || !intvEl || !hintEl) return
+  var defaultIntv = (U && U.defaultInterval) || 30
+  var userOverridden = false
+  intvEl.addEventListener('input', function() { userOverridden = true })
+  nameEl.addEventListener('input', function() {
+    var suggested = getSuggestedInterval(this.value)
+    if (suggested) {
+      hintEl.textContent = 'Disarankan: ' + suggested + ' hari untuk ' + this.value.trim()
+      hintEl.style.display = 'flex'
+      var cur = parseInt(intvEl.value, 10)
+      if (!userOverridden && (isNaN(cur) || cur === defaultIntv || intvEl.value === '')) {
+        intvEl.value = suggested
+      }
+    } else {
+      hintEl.style.display = 'none'
+    }
+  })
+}
+
+/* ══════════════════════════════════════════
+   REORDER — drag (desktop) + arrows (mobile)
+   ══════════════════════════════════════════ */
+function reorderCat(fromIndex, toIndex) {
+  if (fromIndex === toIndex) return
+  if (!U.cats || fromIndex < 0 || toIndex < 0 || fromIndex >= U.cats.length || toIndex >= U.cats.length) return
+  var item = U.cats.splice(fromIndex, 1)[0]
+  U.cats.splice(toIndex, 0, item)
+  saveU(U)
+  renderKat()
+}
+
+function moveCat(idx, dir) {
+  reorderCat(idx, idx + dir)
+}
+
+function initDragReorder() {
+  var cards = document.querySelectorAll('.kat-card[data-idx]')
+  cards.forEach(function(card) {
+    var handle = card.querySelector('.drag-handle')
+    if (!handle) return
+    handle.addEventListener('mousedown', function() { card.draggable = true })
+    handle.addEventListener('touchstart', function() { card.draggable = true }, {passive:true})
+    card.addEventListener('dragstart', function(e) {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('text/plain', card.getAttribute('data-idx'))
+      card.classList.add('dragging')
+    })
+    card.addEventListener('dragend', function() {
+      card.classList.remove('dragging')
+      card.draggable = false
+      document.querySelectorAll('.kat-card.drag-over').forEach(function(c){ c.classList.remove('drag-over') })
+    })
+    card.addEventListener('dragover', function(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move' })
+    card.addEventListener('dragenter', function() { card.classList.add('drag-over') })
+    card.addEventListener('dragleave', function() { card.classList.remove('drag-over') })
+    card.addEventListener('drop', function(e) {
+      e.preventDefault()
+      var from = parseInt(e.dataTransfer.getData('text/plain'), 10)
+      var to = parseInt(card.getAttribute('data-idx'), 10)
+      card.classList.remove('drag-over')
+      reorderCat(from, to)
+    })
+  })
+}
+
+/* ══════════════════════════════════════════
    PAGE LOGIC
    ══════════════════════════════════════════ */
 var U = null
@@ -579,6 +704,8 @@ function boot() {
   document.getElementById('def-intv').value = U.defaultInterval || 30
   renderKat()
   updateAddPreview()
+  attachIntervalSuggest('kat-name', 'kat-days', 'kat-name-hint')
+  attachIntervalSuggest('edit-name', 'edit-days', 'edit-name-hint')
 }
 
 function renderKat() {
@@ -610,8 +737,22 @@ function renderKat() {
     var msgBody = TEMPLATES[tplKey] || cat.msg || TEMPLATES.aftercare_followup_1
     var msgHtml = renderMsgHtml(msgBody, cat.interval, cat.name, biz, cat.timing)
 
-    return '<div class="kat-card">' +
+    var isFirst = i === 0
+    var isLast = i === cats.length - 1
+
+    return '<div class="kat-card" data-idx="' + i + '" draggable="false">' +
       '<div class="kc-head">' +
+        '<div class="drag-handle" title="Drag untuk ubah urutan" data-idx="' + i + '">' +
+          '<svg width="11" height="14" viewBox="0 0 11 14" fill="none">' +
+            '<circle cx="3" cy="3" r="1.3" fill="currentColor"/><circle cx="8" cy="3" r="1.3" fill="currentColor"/>' +
+            '<circle cx="3" cy="7" r="1.3" fill="currentColor"/><circle cx="8" cy="7" r="1.3" fill="currentColor"/>' +
+            '<circle cx="3" cy="11" r="1.3" fill="currentColor"/><circle cx="8" cy="11" r="1.3" fill="currentColor"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="arrow-btns">' +
+          '<button class="arrow-btn" onclick="moveCat(' + i + ',-1)" ' + (isFirst ? 'disabled' : '') + ' aria-label="Pindah ke atas">▲</button>' +
+          '<button class="arrow-btn" onclick="moveCat(' + i + ',1)" ' + (isLast ? 'disabled' : '') + ' aria-label="Pindah ke bawah">▼</button>' +
+        '</div>' +
         '<div class="kc-icon" style="background:' + col.bg + ';border:1.5px solid ' + col.bd + '">' + cat.icon + '</div>' +
         '<div class="kc-info">' +
           '<div class="kc-name">' + cat.name + '</div>' +
@@ -646,14 +787,16 @@ function renderKat() {
   '</div>'
 
   document.getElementById('kat-grid').innerHTML = html
+  initDragReorder()
 }
 
 /* ── ADD ── */
 function openAdd() {
   document.getElementById('kat-name').value = ''
   document.getElementById('kat-icon').value = '✨'
-  document.getElementById('kat-days').value = 30
+  document.getElementById('kat-days').value = U.defaultInterval || 30
   document.getElementById('kat-tpl').value = 'aftercare_followup_1'
+  document.getElementById('kat-name-hint').style.display = 'none'
   updateAddPreview()
   openM('m-addkat')
 }
@@ -699,6 +842,7 @@ function openEdit(id) {
   document.getElementById('edit-days').value = cat.interval
   var tplKey = cat.tplKey || tplKeyFromMsg(cat.msg)
   document.getElementById('edit-tpl').value = tplKey
+  document.getElementById('edit-name-hint').style.display = 'none'
   updateEditPreview()
   openM('m-editkat')
 }
@@ -766,22 +910,6 @@ function saveDef() {
 /* ── INIT ── */
 window.addEventListener('DOMContentLoaded', function(){ boot(); checkTrialLock() })
 </script>
-
-<!-- Trial Hard Lock Overlay -->
-<div id="trialLockOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;font-family:'Sora',sans-serif">
-  <div style="background:#fff;border-radius:16px;padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)">
-    <div style="font-size:48px;margin-bottom:14px">🔒</div>
-    <div style="font-size:22px;font-weight:700;color:#1a1917;margin-bottom:8px">Trial selesai</div>
-    <div style="font-size:13px;color:#5c5b55;line-height:1.6;margin-bottom:20px">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:#edfac8;border:1px solid #c8f07a;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#2d4a00">
-      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
-      <strong style="font-size:18px;font-weight:700">Rp 249.000/bulan</strong>
-      <span style="font-size:10px;font-weight:700;background:#b8f04a;color:#2d4a00;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em">Early Access 50% off</span>
-    </div>
-    <a href="getstarvio-billing.html" style="display:block;width:100%;padding:14px;background:#b8f04a;color:#2d4a00;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;box-shadow:0 4px 16px rgba(184,240,74,.3);box-sizing:border-box">Subscribe Sekarang →</a>
-    <a href="getstarvio-billing.html" style="display:inline-block;font-size:11px;color:#9b9a92;text-decoration:underline">Lihat detail di Billing</a>
-  </div>
-</div>
 
 </body>
 </html>

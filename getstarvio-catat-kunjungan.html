@@ -300,16 +300,21 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
       <button class="modal-close" onclick="closeVisitModal()">&times;</button>
     </div>
     <div class="modal-body">
-      <!-- Step indicators -->
-      <div class="steps">
+      <!-- Step indicators (2-step flow) -->
+      <div class="steps" id="steps-indicator">
         <div class="step-dot active" id="dot-1"></div>
         <div class="step-dot" id="dot-2"></div>
-        <div class="step-dot" id="dot-3"></div>
-        <span class="step-label" id="step-label">Langkah 1 dari 3</span>
+        <span class="step-label" id="step-label">Langkah 1 dari 2</span>
       </div>
 
-      <!-- Step 1: Search -->
+      <!-- Step 1: Search + Recent Customers -->
       <div id="step-1">
+        <!-- Recent Customers Row (8 latest, horizontal scroll, tap to skip search) -->
+        <div id="recent-cx-wrap" style="margin-bottom:14px;display:none">
+          <div style="font-size:13px;color:var(--ink3);margin-bottom:8px;font-weight:500">Terakhir dicatat:</div>
+          <div id="recent-cx-row" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;-webkit-overflow-scrolling:touch"></div>
+        </div>
+
         <div class="search-wrap" id="search-wrap">
           <svg class="search-icon" id="search-icon-svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
           <input type="text" class="search-input" id="cx-search" placeholder="Cari nama atau nomor WA..." autocomplete="off">
@@ -350,30 +355,35 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
         </div>
       </div>
 
-      <!-- Step 2: Pick Services -->
+      <!-- Step 2: Pick Services + Save (merged, no separate konfirmasi) -->
       <div id="step-2" style="display:none">
         <div class="found-card" id="selected-cx-info">
-          <div class="greeting" id="cx-greeting"></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+            <div class="greeting" id="cx-greeting"></div>
+            <button class="btn btn-ghost btn-sm" onclick="goStep(1)" style="padding:5px 12px;font-size:11px">Ganti</button>
+          </div>
           <div class="date-row" style="margin-top:8px">
             <span class="date-label">Tanggal Kunjungan</span>
             <input type="date" class="date-input" id="visit-date" readonly style="background:var(--bg3);color:var(--ink3)">
             <a href="#" class="date-toggle" id="date-toggle" onclick="enableDateEdit(event)">Bukan hari ini?</a>
           </div>
+          <div id="backdate-warn" style="display:none;font-size:11px;color:var(--amber-dk);background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:7px 10px;margin-top:8px">Kunjungan akan dicatat untuk tanggal <span id="backdate-warn-date"></span></div>
           <div style="font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-top:14px">Pilih layanan hari ini:</div>
           <div class="svc-list" id="service-checklist" style="margin-top:8px"></div>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-ghost" onclick="goStep(1)">Kembali</button>
-          <button class="btn btn-lime" id="btn-step3" onclick="goStep(3)" disabled>Lanjut</button>
+          <button class="btn btn-lime btn-full" id="btn-save-visit" onclick="saveVisit()" disabled style="margin-top:14px;height:48px;font-size:14px;font-weight:700">Simpan Kunjungan</button>
         </div>
       </div>
 
-      <!-- Step 3: Confirm -->
-      <div id="step-3" style="display:none">
-        <div class="summary-card" id="summary-card"></div>
-        <div class="modal-actions">
-          <button class="btn btn-ghost" onclick="goStep(2)">Kembali</button>
-          <button class="btn btn-lime" onclick="saveVisit()">Simpan Kunjungan</button>
+      <!-- Success Screen (replace modal content after save) -->
+      <div id="step-success" style="display:none;text-align:center;padding:20px 8px">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--lime-bg);border:2px solid var(--lime2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;animation:popIn .35s cubic-bezier(.34,1.56,.64,1)">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="var(--lime-dk)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16l5 5 11-11"/></svg>
+        </div>
+        <div style="font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px">Tersimpan!</div>
+        <div id="success-summary" style="font-size:14px;color:var(--ink3);line-height:1.55;margin-bottom:24px;padding:0 12px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <button class="btn btn-lime" onclick="catatLagi()" style="background:transparent;border:2px solid var(--lime);color:var(--lime-dk);height:48px;font-weight:700">Catat Lagi</button>
+          <button class="btn btn-lime" onclick="finishVisit()" style="height:48px;font-weight:700;font-size:14px">Selesai</button>
         </div>
       </div>
     </div>
@@ -436,13 +446,11 @@ function saveU(u) {
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
 }
 
-function showTrialLockOverlay() { var el = document.getElementById('trialLockOverlay'); if (el) el.style.display = 'flex' }
-function checkTrialLock() {
-  var u = loadU()
-  if (!u || !u.trialExpired) return
-  if (location.pathname.includes('billing')) return
-  showTrialLockOverlay()
-}
+// Catat Kunjungan TIDAK pernah di-lock (per spec — kasir harus selalu bisa catat data,
+// kalau di-block data pelanggan hilang). Yang berhenti saat trial expired = automation
+// (handled by Automation page). Stub functions kept untuk konsistensi pattern.
+function showTrialLockOverlay() {}
+function checkTrialLock() {}
 
 function bootSidebar() {
   var page = location.pathname.split('/').pop()
@@ -537,11 +545,13 @@ function openVisitModal() {
   document.getElementById('cx-search').style.display = ''
   document.getElementById('search-icon-svg').style.display = ''
 
-  // Show/hide steps
+  // Show/hide steps (success state always hidden on open)
   document.getElementById('step-1').style.display = ''
   document.getElementById('step-2').style.display = 'none'
-  document.getElementById('step-3').style.display = 'none'
+  document.getElementById('step-success').style.display = 'none'
+  document.getElementById('steps-indicator').style.display = ''
   updateStepUI()
+  renderRecentCustomers()
 
   document.getElementById('visit-modal').classList.add('show')
   document.body.style.overflow = 'hidden'
@@ -554,11 +564,12 @@ function closeVisitModal() {
 }
 
 function updateStepUI() {
-  var titles = { 1: 'Cari Pelanggan', 2: 'Pilih Layanan', 3: 'Konfirmasi' }
-  document.getElementById('modal-step-title').textContent = titles[currentStep]
-  document.getElementById('step-label').textContent = 'Langkah ' + currentStep + ' dari 3'
-  for (var i = 1; i <= 3; i++) {
+  var titles = { 1: 'Cari Pelanggan', 2: 'Pilih Layanan' }
+  document.getElementById('modal-step-title').textContent = titles[currentStep] || 'Cari Pelanggan'
+  document.getElementById('step-label').textContent = 'Langkah ' + currentStep + ' dari 2'
+  for (var i = 1; i <= 2; i++) {
     var dot = document.getElementById('dot-' + i)
+    if (!dot) continue
     dot.className = 'step-dot'
     if (i < currentStep) dot.classList.add('done')
     else if (i === currentStep) dot.classList.add('active')
@@ -569,11 +580,41 @@ function goStep(step) {
   currentStep = step
   document.getElementById('step-1').style.display = step === 1 ? '' : 'none'
   document.getElementById('step-2').style.display = step === 2 ? '' : 'none'
-  document.getElementById('step-3').style.display = step === 3 ? '' : 'none'
+  document.getElementById('step-success').style.display = 'none'
+  document.getElementById('steps-indicator').style.display = ''
   updateStepUI()
-
+  if (step === 1) renderRecentCustomers()
   if (step === 2) renderStep2()
-  if (step === 3) renderStep3()
+}
+
+/* Render Recent Customers Row — 8 latest by service.date */
+function renderRecentCustomers() {
+  var wrap = document.getElementById('recent-cx-wrap')
+  var row = document.getElementById('recent-cx-row')
+  var cxs = (U && U.customers) ? U.customers : []
+  // Get latest service.date per customer, sort desc, take top 8
+  var withLastVisit = cxs.map(function(cx) {
+    var latest = (cx.services || []).reduce(function(acc, s) {
+      if (!s.date) return acc
+      var d = new Date(s.date).getTime()
+      return d > acc ? d : acc
+    }, 0)
+    return { cx: cx, ts: latest }
+  }).filter(function(x) { return x.ts > 0 }).sort(function(a, b) { return b.ts - a.ts }).slice(0, 8)
+
+  if (withLastVisit.length === 0) {
+    wrap.style.display = 'none'
+    return
+  }
+  wrap.style.display = ''
+  row.innerHTML = withLastVisit.map(function(x) {
+    return '<button class="recent-cx-pill" data-cx-id="' + x.cx.id + '" style="background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;color:var(--ink);white-space:nowrap;cursor:pointer;font-family:inherit;flex-shrink:0;min-height:40px;transition:all .15s">' + escHtml(x.cx.name) + '</button>'
+  }).join('')
+  row.querySelectorAll('.recent-cx-pill').forEach(function(btn) {
+    btn.addEventListener('click', function() { selectCustomer(this.getAttribute('data-cx-id')) })
+    btn.addEventListener('mouseenter', function() { this.style.background = 'var(--lime)'; this.style.color = 'var(--lime-dk)'; this.style.borderColor = 'var(--lime2)' })
+    btn.addEventListener('mouseleave', function() { this.style.background = 'var(--bg3)'; this.style.color = 'var(--ink)'; this.style.borderColor = 'var(--border)' })
+  })
 }
 
 /* ── STEP 1: SEARCH ── */
@@ -693,6 +734,9 @@ function enableDateEdit(e) {
   var minDate = new Date()
   minDate.setDate(minDate.getDate() - 7)
   input.min = minDate.toISOString().split('T')[0]
+  // Re-render warning when date changes
+  input.addEventListener('change', updateSelectedServices)
+  input.addEventListener('input', updateSelectedServices)
   toggle.textContent = 'Maks 7 hari ke belakang'
   toggle.style.color = 'var(--ink3)'
   toggle.style.cursor = 'default'
@@ -753,38 +797,34 @@ function updateSelectedServices() {
       if (cat) selectedServices.push(cat)
     }
   })
-  document.getElementById('btn-step3').disabled = selectedServices.length === 0
-}
-
-/* ── STEP 3: CONFIRM ── */
-function renderStep3() {
-  var date = document.getElementById('visit-date').value
-  var card = document.getElementById('summary-card')
-
-  var svcHtml = selectedServices.map(function(s) {
-    return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;background:var(--lime-bg);color:var(--lime-dk);font-weight:500">' + s.icon + ' ' + escHtml(s.name) + '</span>'
-  }).join(' ')
-
-  var isBackdate = (date !== todayISO())
-  var backdateHtml = ''
-  if (isBackdate) {
-    backdateHtml = '<div style="margin-top:8px;padding:8px 10px;background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);font-size:11px;color:var(--amber-dk);font-weight:600">' +
-      '⚠️ Kunjungan akan dicatat untuk tanggal ' + date + ' (bukan hari ini)</div>'
+  // Enable Save button only when at least 1 service selected
+  var saveBtn = document.getElementById('btn-save-visit')
+  if (saveBtn) saveBtn.disabled = selectedServices.length === 0
+  // Show backdate warning if date != today
+  var dateInput = document.getElementById('visit-date')
+  var warn = document.getElementById('backdate-warn')
+  if (dateInput && warn) {
+    if (dateInput.value && dateInput.value !== todayISO()) {
+      warn.style.display = ''
+      document.getElementById('backdate-warn-date').textContent = formatDateID(dateInput.value)
+    } else {
+      warn.style.display = 'none'
+    }
   }
-
-  card.innerHTML =
-    '<div class="summary-row"><span class="summary-label">Pelanggan</span><span class="summary-val">' + escHtml(selectedCustomer.name) + '</span></div>' +
-    '<div class="summary-row"><span class="summary-label">Layanan</span><span class="summary-val" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end">' + svcHtml + '</span></div>' +
-    '<div class="summary-row"><span class="summary-label">Tanggal</span><span class="summary-val" style="font-family:\'JetBrains Mono\',monospace">' + date + '</span></div>' +
-    backdateHtml
 }
 
-/* ── SAVE VISIT ── */
+function formatDateID(iso) {
+  if (!iso) return ''
+  var d = new Date(iso)
+  return d.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })
+}
+
+/* ── SAVE VISIT → SUCCESS SCREEN (no separate konfirmasi step) ── */
 function saveVisit() {
+  if (selectedServices.length === 0) return
   var date = document.getElementById('visit-date').value
   var cxId = selectedCustomer.id
 
-  // Find customer in U.customers by id
   var cx = (U.customers || []).find(function(c) { return c.id === cxId })
   if (!cx) return
 
@@ -806,9 +846,39 @@ function saveVisit() {
   })
 
   saveU(U)
+
+  // Show Success Screen (replace modal content)
+  var svcNames = selectedServices.map(function(s) { return s.icon + ' ' + s.name }).join(', ')
+  var summary = '<strong>' + escHtml(selectedCustomer.name) + '</strong> — ' + svcNames
+  if (date !== todayISO()) {
+    summary += '<br><span style="color:var(--amber-dk);font-size:12px">(tanggal ' + formatDateID(date) + ')</span>'
+  }
+  document.getElementById('success-summary').innerHTML = summary
+  document.getElementById('step-1').style.display = 'none'
+  document.getElementById('step-2').style.display = 'none'
+  document.getElementById('step-success').style.display = ''
+  document.getElementById('steps-indicator').style.display = 'none'
+  document.getElementById('modal-step-title').textContent = 'Berhasil'
+
+  // Refresh underlying lists (today section + recent customers will re-render on next open)
+  renderTodayVisits()
+}
+
+/* Success Screen handlers */
+function catatLagi() {
+  // Reset state, return to Step 1 — recent customers row will pick up the new entry
+  selectedCustomer = null
+  selectedServices = []
+  goStep(1)
+  document.getElementById('cx-search').value = ''
+  document.getElementById('ac-dropdown').classList.remove('show')
+  document.getElementById('ac-dropdown').innerHTML = ''
+  setTimeout(function() { document.getElementById('cx-search').focus() }, 50)
+}
+
+function finishVisit() {
   closeVisitModal()
   renderTodayVisits()
-  showToast('Kunjungan berhasil dicatat!')
 }
 
 /* ── RENDER TODAY'S VISITS ── */
@@ -902,7 +972,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   bootSidebarData()
   bootSidebar()
-  checkTrialLock()
+  // Note: NO checkTrialLock — page must always be accessible (kasir can't be blocked)
   renderTodayVisits()
 
   // Search input with debounce
@@ -926,22 +996,6 @@ window.addEventListener('DOMContentLoaded', function() {
   })
 })
 </script>
-
-<!-- Trial Hard Lock Overlay -->
-<div id="trialLockOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;font-family:'Sora',sans-serif">
-  <div style="background:#fff;border-radius:16px;padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)">
-    <div style="font-size:48px;margin-bottom:14px">🔒</div>
-    <div style="font-size:22px;font-weight:700;color:#1a1917;margin-bottom:8px">Trial selesai</div>
-    <div style="font-size:13px;color:#5c5b55;line-height:1.6;margin-bottom:20px">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:#edfac8;border:1px solid #c8f07a;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#2d4a00">
-      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
-      <strong style="font-size:18px;font-weight:700">Rp 249.000/bulan</strong>
-      <span style="font-size:10px;font-weight:700;background:#b8f04a;color:#2d4a00;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em">Early Access 50% off</span>
-    </div>
-    <a href="getstarvio-billing.html" style="display:block;width:100%;padding:14px;background:#b8f04a;color:#2d4a00;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;box-shadow:0 4px 16px rgba(184,240,74,.3);box-sizing:border-box">Subscribe Sekarang →</a>
-    <a href="getstarvio-billing.html" style="display:inline-block;font-size:11px;color:#9b9a92;text-decoration:underline">Lihat detail di Billing</a>
-  </div>
-</div>
 
 </body>
 </html>
