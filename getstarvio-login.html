@@ -427,7 +427,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
         </div>
 
         <div class="trust-block">
-          <div class="trust-line">14 hari gratis · 100 kredit pengingat</div>
+          <div class="trust-line"><span id="login-trial-days">14</span> hari gratis · <span id="login-free-bonus">100</span> kredit pengingat</div>
           <div class="trust-line">Tanpa kartu kredit · Garansi 30 hari</div>
         </div>
 
@@ -493,6 +493,13 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
+/* ── PLAN CONFIG DEFAULTS — read admin override if exists ── */
+var BAKED_PC_DEFAULTS = { freeBonus:100, trialDays:14, subCredits:300, subPrice:249000, subPriceNormal:499000 }
+function getPlanConfigDefaults() {
+  try { var r = localStorage.getItem('getstarvio_pc_defaults'); if (r) return Object.assign({}, BAKED_PC_DEFAULTS, JSON.parse(r)) } catch(e) {}
+  return Object.assign({}, BAKED_PC_DEFAULTS)
+}
+
 function showToast(msg) {
   const c = document.getElementById('toastContainer');
   const el = document.createElement('div');
@@ -556,6 +563,11 @@ document.getElementById('overlay').addEventListener('click', function(e){
 window.addEventListener('DOMContentLoaded', function() {
   const ls = document.getElementById('loadingScreen');
   const ml = document.getElementById('mainLayout');
+
+  // Populate trust badges from planConfig defaults
+  var pc = getPlanConfigDefaults()
+  var td = document.getElementById('login-trial-days'); if (td) td.textContent = pc.trialDays
+  var fb = document.getElementById('login-free-bonus'); if (fb) fb.textContent = pc.freeBonus
 
   let loggedIn = false;
   try {

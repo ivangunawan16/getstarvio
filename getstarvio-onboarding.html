@@ -681,8 +681,8 @@ select.fi{cursor:pointer}
       <!-- Status chips: what's ready -->
       <div class="done-stats">
         <span class="ds-chip"><span class="ic">●</span>WhatsApp Coexist aktif</span>
-        <span class="ds-chip"><span class="ic">●</span>100 kredit gratis (permanent)</span>
-        <span class="ds-chip"><span class="ic">●</span>Free Trial 14 hari</span>
+        <span class="ds-chip"><span class="ic">●</span><span id="ds-bonus">100</span> kredit gratis (permanent)</span>
+        <span class="ds-chip"><span class="ic">●</span>Free Trial <span id="ds-trial-days">14</span> hari</span>
         <span class="ds-chip" id="ds-cats"><span class="ic">●</span>Kategori siap</span>
       </div>
 
@@ -755,6 +755,33 @@ select.fi{cursor:pointer}
 </div>
 
 <script>
+/* ── PLAN CONFIG DEFAULTS ──
+   Source of truth untuk app-level pricing. Admin Plan Config save ke
+   'getstarvio_pc_defaults' key supaya new user onboarding pakai nilai terbaru. */
+var BAKED_PC_DEFAULTS = {
+  freeBonus: 100,
+  trialDays: 14,
+  subCredits: 300,
+  subPrice: 249000,
+  subPriceNormal: 499000,
+  tiers: [
+    { price: 399000,  credits: 200 },
+    { price: 749000,  credits: 500,  label: 'Terlaris' },
+    { price: 1299000, credits: 1000, label: 'Hemat 35%' }
+  ]
+}
+function getPlanConfigDefaults() {
+  try {
+    var raw = localStorage.getItem('getstarvio_pc_defaults')
+    if (raw) {
+      var p = JSON.parse(raw)
+      // Shallow merge biar kalau ada field baru di baked, tetap ada
+      return Object.assign({}, BAKED_PC_DEFAULTS, p)
+    }
+  } catch(e) {}
+  return Object.assign({}, BAKED_PC_DEFAULTS)
+}
+
 /* ── STATE ── */
 const D = { bizType:'salon', cats:[], idx:0, editId:null }
 
@@ -821,6 +848,13 @@ window.addEventListener('DOMContentLoaded', function() {
   })
 
   renderBizGrid()
+
+  // Populate status chips from planConfig (admin dapat override via pc_defaults)
+  var pc = getPlanConfigDefaults()
+  var bonusEl = document.getElementById('ds-bonus')
+  var daysEl = document.getElementById('ds-trial-days')
+  if (bonusEl) bonusEl.textContent = pc.freeBonus
+  if (daysEl) daysEl.textContent = pc.trialDays
 })
 
 function renderBizGrid() {
@@ -1052,8 +1086,10 @@ function buildDone() {
     templateBody: c.msg || TEMPLATES[0].msg
   })) : [{id:'default',name:'Semua Layanan',icon:'✨',interval:30,templateId:'reminder_return',templateBody:TEMPLATES[0].msg}]
 
-  // Set trial fields (DATA_VERSION 5)
-  var trialDays = 14
+  // Set trial fields (DATA_VERSION 5) — read from admin pc_defaults if admin sudah publish
+  var pc = getPlanConfigDefaults()
+  var trialDays = pc.trialDays
+  var freeBonus = pc.freeBonus
   var nowIso = new Date().toISOString()
   var trialEndsIso = new Date(Date.now() + trialDays * 86400000).toISOString()
 
@@ -1070,32 +1106,21 @@ function buildDone() {
     country: country,
     plan: 'trial',                               // schema v5: "trial" (sebelumnya "free")
     subCreditsLeft: 0,
-    subCreditsMax: 300,                          // sub max kalau nanti subscribe
-    topupCreditsLeft: 100,                       // welcome bonus 100 kredit langsung masuk topup (permanent)
+    subCreditsMax: pc.subCredits,                // sub max kalau nanti subscribe
+    topupCreditsLeft: freeBonus,                 // welcome bonus langsung masuk topup (permanent)
     subRenewsAt: null,
     trialStartedAt: nowIso,
-    trialEndsAt: trialEndsIso,                   // snapshot: nowIso + 14 hari
+    trialEndsAt: trialEndsIso,                   // snapshot: nowIso + trialDays
     trialUsed: false,                            // belum expired/subscribe
-    remMax: 100,
+    remMax: freeBonus,
     defaultInterval: 30,
     automationEnabled: true,
     bizLogo: null,                               // belum upload, fallback ke initial circle
     setupComplete: false,                        // 3-step setup checklist di dashboard
     avgServiceValue: 150000,                     // default Rp 150.000 untuk ROI calc
-    planConfig: {
-      freeBonus: 100,
-      trialDays: trialDays,
-      subCredits: 300,
-      subPrice: 249000,
-      subPriceNormal: 499000,
-      tiers: [
-        { price: 399000,  credits: 200 },
-        { price: 749000,  credits: 500,  label: 'Terlaris' },
-        { price: 1299000, credits: 1000, label: 'Hemat 35%' }
-      ]
-    },
+    planConfig: pc,
     billingHistory: [
-      { date: nowIso.slice(0,10), type:'welcome', label:'Welcome Bonus', delta:100, balAfter:100, note:'Welcome bonus 100 kredit (permanent — tidak hilang setelah trial)' }
+      { date: nowIso.slice(0,10), type:'welcome', label:'Welcome Bonus', delta:freeBonus, balAfter:freeBonus, note:'Welcome bonus ' + freeBonus + ' kredit (permanent — tidak hilang setelah trial)' }
     ],
     notifSettings: { lowCredit:true, criticalCredit:true, subLow:true, preRenewal:true },
     cats: finalCats,
