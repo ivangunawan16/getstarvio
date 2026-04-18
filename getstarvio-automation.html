@@ -353,35 +353,22 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
 </div>
 
 <script>
-/* == TEMPLATES (Meta Cloud API placeholder format {{1}}-{{5}}) ==
+/* == TEMPLATES (Meta Cloud API placeholder format {{1}}-{{4}}, semua UTILITY-compliant) ==
    {{1}} = Nama customer        (customer.name)
    {{2}} = Jenis treatment      (service.name)
    {{3}} = Tanggal kunjungan    (service.date, "DD MMMM YYYY")
    {{4}} = Nama bisnis          (bizName)
-   {{5}} = Waktu perawatan lanjutan (cats[].timing, default "4-6 minggu") */
+
+   Catatan: TIDAK ada {{5}} timing — pesan dikirim TEPAT WAKTU sesuai cats[].interval,
+   jadi pelanggan ga perlu disebut durasi spesifik di teks. Lebih fleksibel buat semua
+   cadence (3 hari, 7 hari, 3 bulan, dst). */
 var TEMPLATES = [
-  {id:'aftercare_followup_1',label:'Aftercare #1 — formal',  msg:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nUntuk hasil terbaik, perawatan lanjutan biasanya dilakukan dalam {{5}} ya.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.'},
-  {id:'aftercare_followup_2',label:'Aftercare #2 — terima kasih', msg:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, perawatan lanjutan bisa dijadwalkan dalam {{5}} ke depan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.'},
-  {id:'aftercare_followup_3',label:'Aftercare #3 — casual',  msg:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nBiasanya untuk perawatan seperti ini, lanjutannya dalam {{5}} supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!'},
-  {id:'aftercare_followup_4',label:'Aftercare #4 — semoga puas', msg:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSekedar info, jadwal perawatan lanjutannya dalam {{5}} dari kunjungan terakhir.\n\nButuh bantuan? Langsung balas chat ini aja.'},
-  {id:'aftercare_followup_5',label:'Aftercare #5 — tanya hasil', msg:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, perawatan lanjutan bisa dilakukan dalam {{5}}.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.'}
+  {id:'aftercare_followup_1',label:'Aftercare #1 — formal',  msg:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nKalau kamu butuh konsultasi lanjutan atau ingin booking sesi berikutnya, langsung balas chat ini ya.'},
+  {id:'aftercare_followup_2',label:'Aftercare #2 — terima kasih', msg:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nKalau ada pertanyaan atau ingin booking sesi lanjutan, balas chat ini aja ya.'},
+  {id:'aftercare_followup_3',label:'Aftercare #3 — casual',  msg:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nKalau mau tanya-tanya atau booking sesi lanjutan, balas aja ya!'},
+  {id:'aftercare_followup_4',label:'Aftercare #4 — semoga puas', msg:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nKalau perlu info perawatan lanjutan atau ada pertanyaan, langsung balas chat ini aja.'},
+  {id:'aftercare_followup_5',label:'Aftercare #5 — tanya hasil', msg:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nKalau ada keluhan atau ingin booking sesi berikutnya, balas langsung di sini.'}
 ]
-
-/* Treatment timing fallback — dipakai untuk {{5}} kalau cat.timing belum di-set */
-var TIMING_DEFAULTS = {
-  'Hair Smoothing':'3-4 bulan','Hair Rebonding':'3-4 bulan','Smoothing':'3-4 bulan','Keriting':'3-4 bulan',
-  'Hair Color':'6-8 minggu','Hair Mask':'3-4 minggu','Creambath':'2-4 minggu','Hair Spa':'2-4 minggu','Blow Dry':'1-2 minggu',
-  'Facial':'4-6 minggu','Body Scrub':'4 minggu','Aromaterapi':'3-4 minggu','Full Body Massage':'3-4 minggu',
-  'Manicure':'2-3 minggu','Pedicure':'2-3 minggu','Nail Art':'3 minggu','Gel Nails':'3 minggu',
-  'Eyelash Extension':'2-3 minggu','Waxing':'3-4 minggu',
-  'Potong Rambut':'3 minggu','Cukur Jenggot':'2 minggu','Hair Wax':'2 minggu',
-  'Konsultasi':'4 minggu','Perawatan Kulit':'3 minggu','Laser Treatment':'4-6 minggu','Chemical Peel':'3-4 minggu',
-  'Ganti Oli':'3 bulan','Servis Rutin':'6 bulan'
-}
-
-function getTiming(catName) {
-  return TIMING_DEFAULTS[catName] || '3-4 minggu'
-}
 
 function fmtDate(iso) {
   if (!iso) return new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
@@ -389,7 +376,7 @@ function fmtDate(iso) {
   return d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
 }
 
-/* Render template with real data — replace {{1}}-{{5}} */
+/* Render template with real data — replace {{1}}-{{4}} */
 function renderTemplate(msg, opts) {
   opts = opts || {}
   var bizName = (loadU()||{}).bizName || 'Bisnis Kamu'
@@ -398,7 +385,6 @@ function renderTemplate(msg, opts) {
     .replace(/\{\{2\}\}/g, opts.service || 'Layanan')
     .replace(/\{\{3\}\}/g, opts.date || fmtDate())
     .replace(/\{\{4\}\}/g, opts.bizName || bizName)
-    .replace(/\{\{5\}\}/g, opts.timing || '4-6 minggu')
 }
 
 /* == SHARED == */
@@ -639,7 +625,7 @@ function toggleCat(catId) {
 }
 
 /* == CHANGE INTERVAL == */
-/* == PREVIEW TEMPLATE ON CHANGE (no save) — render {{1}}-{{5}} dengan data sample == */
+/* == PREVIEW TEMPLATE ON CHANGE (no save) — render {{1}}-{{4}} dengan data sample == */
 function previewCatTemplate(catId) {
   var sel = document.getElementById('tpl-' + catId)
   var tplId = sel.value
@@ -655,8 +641,7 @@ function previewCatTemplate(catId) {
     name: sampleName,
     service: cat ? cat.name : 'Layanan',
     date: fmtDate(),
-    bizName: U.bizName || 'Bisnis Kamu',
-    timing: (cat && cat.timing) || getTiming(cat ? cat.name : '')
+    bizName: U.bizName || 'Bisnis Kamu'
   })
   // Wrap variables yang sudah di-replace dengan span var styling — split by sample values
   prev.innerHTML = rendered
@@ -720,13 +705,11 @@ function renderFlows(U) {
     var tplId = cat.templateId || 'aftercare_followup_1'
     var tplObj = TEMPLATES.find(function(t){ return t.id === tplId }) || TEMPLATES[0]
     var msg = tplObj.msg
-    var timingStr = cat.timing || getTiming(cat.name)
     var rendered = renderTemplate(msg, {
       name: sample,
       service: cat.name || 'Layanan',
       date: fmtDate(),
-      bizName: biz,
-      timing: timingStr
+      bizName: biz
     })
     var msgHtml = rendered
       .replace(new RegExp(escapeReg(sample), 'g'), '<span class="msg-var">' + sample + '</span>')
@@ -771,7 +754,6 @@ function renderFlows(U) {
             '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Jenis treatment">{{2}} treatment</code>' +
             '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Tanggal kunjungan">{{3}} tanggal</code>' +
             '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Nama bisnis">{{4}} bisnis</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Waktu perawatan lanjutan">{{5}} timing</code>' +
           '</div>' +
           '<button id="save-' + cat.id + '" class="btn btn-lime btn-sm" onclick="saveFlowChanges(\'' + cat.id + '\')">Simpan</button>' +
         '</div>' +
