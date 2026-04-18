@@ -18,7 +18,7 @@
 --amber:#f5a623;--red:#e8453c;
 --r:12px;--r-sm:8px;--r-lg:16px;
 }
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-text-size-adjust:100%}
 body{font-family:'Sora',sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;overflow-x:hidden}
 .mono{font-family:'JetBrains Mono',monospace}
 a{color:inherit;text-decoration:none}
@@ -160,10 +160,17 @@ img,svg{display:block;max-width:100%}
   .hero-content{margin:0 auto}
   .hero-content h1,.hero-content p,.hero-content .sub-cta{text-align:center}
   .hero-cta-row{justify-content:center}
-  .hero-visual{min-height:auto}
+  .hero-visual{min-height:auto;overflow:visible}
   .phone-mock{width:240px}
-  .hero-mockup-tag.t1{left:-12px}
-  .hero-mockup-tag.t2{right:-12px}
+  /* Tags sekarang OVERLAP MASUK ke phone edge (positive offset), bukan keluar.
+     Ini biar ga pernah ke-clip sama body overflow-x:hidden di narrow viewport. */
+  .hero-mockup-tag.t1{top:50px;left:12px;transform:rotate(-5deg)}
+  .hero-mockup-tag.t2{bottom:60px;right:12px;transform:rotate(4deg)}
+}
+@media(max-width:480px){
+  .hero-mockup-tag{font-size:.66rem;padding:6px 10px}
+  .hero-mockup-tag.t1{top:40px;left:8px}
+  .hero-mockup-tag.t2{bottom:50px;right:8px}
 }
 
 /* ── Social Proof / Testimonials ── */
@@ -187,6 +194,25 @@ img,svg{display:block;max-width:100%}
 /* ── Pain → Solution bridge ── */
 .pain-bridge{text-align:center;font-size:1.05rem;color:var(--ink2);max-width:560px;margin:36px auto 0;font-weight:500;line-height:1.6}
 .pain-bridge strong{color:var(--ink);font-weight:700}
+
+/* ── Scroll to Top button ── */
+.scroll-top{
+  position:fixed;right:20px;bottom:20px;z-index:90;
+  width:44px;height:44px;border-radius:50%;
+  background:var(--lime);color:var(--lime-dk);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 20px rgba(0,0,0,.18),0 2px 6px rgba(0,0,0,.1);
+  opacity:0;pointer-events:none;transform:translateY(8px);
+  transition:opacity .25s,transform .25s,background .15s;
+}
+.scroll-top.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+.scroll-top:hover{background:var(--lime2)}
+.scroll-top:active{transform:scale(.92)}
+.scroll-top svg{width:20px;height:20px}
+@media(max-width:600px){
+  .scroll-top{right:14px;bottom:14px;width:42px;height:42px}
+}
 
 /* ── Footer ── */
 .footer{background:var(--ink);color:#cccbc2;padding:48px 24px}
@@ -216,8 +242,8 @@ img,svg{display:block;max-width:100%}
       getstarvio
     </a>
     <ul class="nav-links">
-      <li><a href="#fitur">Fitur</a></li>
       <li><a href="#cara-kerja">Cara Kerja</a></li>
+      <li><a href="#fitur">Fitur</a></li>
       <li><a href="#harga">Harga</a></li>
       <li><a href="#kontak">Kontak</a></li>
       <li><a href="#daftar" class="btn btn-lime">Coba Gratis 14 Hari</a></li>
@@ -228,8 +254,8 @@ img,svg{display:block;max-width:100%}
   </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#fitur" onclick="closeMenu()">Fitur</a>
   <a href="#cara-kerja" onclick="closeMenu()">Cara Kerja</a>
+  <a href="#fitur" onclick="closeMenu()">Fitur</a>
   <a href="#harga" onclick="closeMenu()">Harga</a>
   <a href="#kontak" onclick="closeMenu()">Kontak</a>
   <a href="#daftar" class="btn btn-lime" onclick="closeMenu()">Coba Gratis 14 Hari</a>
@@ -518,13 +544,47 @@ img,svg{display:block;max-width:100%}
   </div>
 </footer>
 
+<!-- Scroll to Top button -->
+<button class="scroll-top" id="scrollTop" onclick="scrollToTop()" aria-label="Kembali ke atas" title="Kembali ke atas">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg>
+</button>
+
 <script>
+function scrollToTop(){
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+window.addEventListener('scroll', function(){
+  var btn = document.getElementById('scrollTop')
+  if (!btn) return
+  if (window.pageYOffset > 400) btn.classList.add('show')
+  else btn.classList.remove('show')
+}, { passive: true })
+
 function toggleMenu(){
   document.getElementById('mobileMenu').classList.toggle('open');
 }
 function closeMenu(){
   document.getElementById('mobileMenu').classList.remove('open');
 }
+
+/* Anchor scroll handler — explicit fallback karena beberapa embed/preview context
+   ga handle native :target scroll consistently. Offset 80px biar section title
+   ga ketutup sticky navbar. */
+document.addEventListener('click', function(e) {
+  var a = e.target.closest('a[href^="#"]')
+  if (!a) return
+  var href = a.getAttribute('href')
+  if (href === '#' || href.length < 2) return
+  var target = document.querySelector(href)
+  if (!target) return
+  e.preventDefault()
+  var navH = document.querySelector('.navbar')
+  var offset = (navH ? navH.offsetHeight : 64) + 16
+  var top = target.getBoundingClientRect().top + window.pageYOffset - offset
+  window.scrollTo({ top: top, behavior: 'smooth' })
+  // Update URL hash tanpa trigger default scroll jump
+  history.pushState(null, '', href)
+})
 </script>
 </body>
 </html>
