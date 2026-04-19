@@ -317,6 +317,26 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .field-help{font-size:11px;color:var(--ink3);margin-top:-10px;margin-bottom:16px;line-height:1.55}
 .field-help code{font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:1px 6px;border-radius:3px;color:var(--ink2);font-size:10.5px}
 
+/* Template Edit — Example Parameters section */
+.tpl-example-sec{margin-top:14px;padding:14px;background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r-sm)}
+.tpl-example-head{margin-bottom:10px}
+.tpl-example-title{font-size:11px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.tpl-example-sub{font-size:11px;color:var(--ink3);line-height:1.5}
+.tpl-example-fields{display:flex;flex-direction:column;gap:8px}
+.tpl-example-empty{padding:14px;text-align:center;color:var(--ink3);font-size:11px;font-style:italic;background:var(--bg3);border-radius:var(--r-sm)}
+.tpl-example-empty code{font-family:'JetBrains Mono',monospace;background:#fff;padding:2px 6px;border-radius:3px;color:var(--ink);font-size:10px;font-style:normal;font-weight:600}
+.tpl-example-row{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.tpl-example-key{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--lime-dk);background:var(--lime-bg);padding:5px 9px;border-radius:4px;white-space:nowrap;min-width:42px;text-align:center}
+.tpl-example-label{font-size:10px;color:var(--ink3);font-weight:600;margin-bottom:3px}
+.tpl-example-input{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:12px;color:var(--ink);background:#fff;outline:none;transition:border-color .15s}
+.tpl-example-input:focus{border-color:var(--lime2)}
+
+/* Template Edit — Preview section */
+.tpl-preview-sec{margin-top:14px;padding:14px;background:#e5ddd5;border-radius:var(--r-sm)}
+.tpl-preview-bubble{background:#fff;border-radius:8px 8px 8px 0;padding:10px 12px;max-width:340px;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.tpl-preview-body{font-size:13px;color:#202020;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.tpl-preview-body strong{font-weight:700;color:var(--lime-dk);background:var(--lime-bg);padding:0 3px;border-radius:3px}
+
 /* Meta API payload preview modal */
 .pl-endpoint{margin-bottom:14px;border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;background:var(--bg2)}
 .pl-ep-label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
@@ -800,19 +820,32 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
       </select>
       <div class="field-help">Meta dapat <strong>mengubah kategori</strong> setelah review. Kalau berubah, notifikasi muncul di inbox di atas.</div>
 
-      <label class="field-lbl">Header (opsional)</label>
-      <input class="field-inp" id="tpl-header" placeholder="contoh: Pengingat dari {{1}}">
-
       <label class="field-lbl">Body Pesan</label>
-      <textarea class="field-textarea mono" id="tpl-body" placeholder="Halo {{1}}, sudah {{2}} hari sejak {{3}} di {{4}}. Saatnya kembali!"></textarea>
-      <div class="field-help">Pakai placeholder <code>{{1}}</code>, <code>{{2}}</code>, dst untuk variabel. Variabel diisi otomatis dari data customer (nama, layanan, hari, nama bisnis).</div>
+      <textarea class="field-textarea mono" id="tpl-body" placeholder="Halo {{1}}, sudah waktunya perawatan lanjutan setelah {{2}} di {{3}} pada {{4}}..." oninput="onTplBodyChange()"></textarea>
+      <div class="field-help">Pakai placeholder <code>{{1}}</code>, <code>{{2}}</code>, dst untuk variabel. Variabel diisi otomatis dari data customer saat pesan dikirim.</div>
 
-      <label class="field-lbl">Footer (opsional)</label>
-      <input class="field-inp" id="tpl-footer" placeholder="contoh: Balas STOP untuk berhenti">
+      <!-- ═══ CONTOH PARAMETER (Meta requirement) ═══ -->
+      <div class="tpl-example-sec">
+        <div class="tpl-example-head">
+          <div class="tpl-example-title">Contoh Parameter</div>
+          <div class="tpl-example-sub">Meta <strong>wajib</strong> lihat contoh nyata untuk setiap variabel sebelum approve. Isi dengan data customer yang realistic — bukan "test" atau "xxx".</div>
+        </div>
+        <div id="tpl-example-fields" class="tpl-example-fields">
+          <!-- Auto-rendered dari {{N}} yang detected di body -->
+          <div class="tpl-example-empty">Ketik placeholder <code>{{1}}</code> di body untuk mulai mengisi contoh parameter.</div>
+        </div>
+      </div>
 
-      <label class="field-lbl">Buttons (opsional, max 3) — pisah dengan baris baru</label>
-      <textarea class="field-textarea" id="tpl-buttons" placeholder="Booking Sekarang&#10;Hubungi Kami" style="min-height:60px"></textarea>
-      <div class="field-help">Quick reply buttons. Untuk MARKETING, button "Booking Sekarang" bantu konversi. Maksimal 3.</div>
+      <!-- ═══ PREVIEW RENDERED ═══ -->
+      <div class="tpl-preview-sec" id="tpl-preview-sec" style="display:none">
+        <div class="tpl-example-head">
+          <div class="tpl-example-title">Preview Pesan</div>
+          <div class="tpl-example-sub">Seperti inilah pesan akan terlihat di WhatsApp customer.</div>
+        </div>
+        <div class="tpl-preview-bubble">
+          <div class="tpl-preview-body" id="tpl-preview-body"></div>
+        </div>
+      </div>
     </div>
     <div class="mft">
       <button class="btn-secondary" onclick="closeModal('modal-template')">Batal</button>
@@ -1998,6 +2031,21 @@ function renderTemplates() {
   document.getElementById('tpl-tbody').innerHTML = html;
 }
 
+/* ── TEMPLATE EDIT ──
+   Simplified modal: name + lang + category + body + example params + preview.
+   HEADER/FOOTER/BUTTONS dihapus dari UI (tetap ada di data model untuk
+   backward compat; legacy templates seperti tpl-001 punya buttons yang
+   ga di-expose di edit UI, tapi tidak dihapus otomatis). */
+
+// Helpful variable labels untuk aftercare templates yang standard.
+// Kalau template custom atau variable di luar 1-4, pakai generic "Variabel {{N}}".
+var AFTERCARE_VAR_LABELS = {
+  1: 'Nama pelanggan',
+  2: 'Jenis layanan',
+  3: 'Tanggal kunjungan',
+  4: 'Nama bisnis'
+};
+
 function openTemplateModal(id) {
   var t = id ? TEMPLATES.find(function(x){ return x.id === id }) : null;
   document.getElementById('tpl-modal-title').textContent = t ? 'Edit Template' : 'Tambah Template Baru';
@@ -2006,11 +2054,101 @@ function openTemplateModal(id) {
   document.getElementById('tpl-name').readOnly = !!t;  // name immutable after submit
   document.getElementById('tpl-lang').value = t ? t.language : 'id';
   document.getElementById('tpl-category').value = t ? t.category : 'UTILITY';
-  document.getElementById('tpl-header').value = t ? (t.header || '') : '';
   document.getElementById('tpl-body').value = t ? t.body : '';
-  document.getElementById('tpl-footer').value = t ? (t.footer || '') : '';
-  document.getElementById('tpl-buttons').value = t ? (t.buttons || []).join('\n') : '';
+
+  // Populate example parameters dari existing template atau kosong untuk template baru
+  var existingExample = (t && t.example && t.example.body_text && t.example.body_text[0]) || [];
+  window.__tplExampleCache = existingExample;  // simpan buat pre-fill saat render
+
   document.getElementById('modal-template').classList.add('show');
+  onTplBodyChange();  // initial render: fields + preview
+}
+
+/* Detect all {{N}} variables in body and render an input per unique variable.
+   Preserves user input saat variable masih ada, clear saat variable dihapus. */
+function onTplBodyChange() {
+  var body = document.getElementById('tpl-body').value || '';
+  // Find all {{N}} variables, sorted numerically unique
+  var matches = body.match(/\{\{(\d+)\}\}/g) || [];
+  var nums = [];
+  matches.forEach(function(m) {
+    var n = parseInt(m.replace(/[{}]/g, ''));
+    if (!isNaN(n) && nums.indexOf(n) === -1) nums.push(n);
+  });
+  nums.sort(function(a,b){ return a-b; });
+
+  var wrap = document.getElementById('tpl-example-fields');
+  var previewSec = document.getElementById('tpl-preview-sec');
+
+  if (nums.length === 0) {
+    wrap.innerHTML = '<div class="tpl-example-empty">Ketik placeholder <code>{{1}}</code> di body untuk mulai mengisi contoh parameter.</div>';
+    if (previewSec) previewSec.style.display = 'none';
+    return;
+  }
+
+  // Render input per variable — preserve existing values kalau ada
+  var existingInputs = {};
+  document.querySelectorAll('.tpl-example-input').forEach(function(el) {
+    var n = parseInt(el.getAttribute('data-var'));
+    if (!isNaN(n)) existingInputs[n] = el.value;
+  });
+
+  var html = '';
+  nums.forEach(function(n) {
+    var label = AFTERCARE_VAR_LABELS[n] || 'Variabel {{' + n + '}}';
+    // Priority: user's current input > cache dari openTemplateModal > empty
+    var val = existingInputs[n] !== undefined ? existingInputs[n] :
+              (window.__tplExampleCache && window.__tplExampleCache[n-1]) || '';
+    var placeholder = getTplPlaceholder(n);
+    html += '<div class="tpl-example-row">' +
+              '<span class="tpl-example-key">{{' + n + '}}</span>' +
+              '<div>' +
+                '<div class="tpl-example-label">' + label + '</div>' +
+                '<input type="text" class="tpl-example-input" data-var="' + n + '" ' +
+                       'value="' + escapeHtml(val) + '" ' +
+                       'placeholder="' + escapeHtml(placeholder) + '" ' +
+                       'oninput="updateTplPreview()">' +
+              '</div>' +
+            '</div>';
+  });
+  wrap.innerHTML = html;
+
+  if (previewSec) previewSec.style.display = 'block';
+  updateTplPreview();
+}
+
+/* Placeholder examples — contoh realistic per variable untuk aftercare UMKM */
+function getTplPlaceholder(n) {
+  var placeholders = {
+    1: 'contoh: Sarah',
+    2: 'contoh: Hair Smoothing',
+    3: 'contoh: 15 Maret 2026',
+    4: 'contoh: Salon Celestial'
+  };
+  return placeholders[n] || 'isi contoh realistic';
+}
+
+/* Live preview: render body dengan example values disubstitusi */
+function updateTplPreview() {
+  var body = document.getElementById('tpl-body').value || '';
+  var preview = body;
+  document.querySelectorAll('.tpl-example-input').forEach(function(el) {
+    var n = el.getAttribute('data-var');
+    var val = el.value || '{{' + n + '}}';
+    // Highlight substituted values with <strong> for visual differentiation
+    var wrapped = val === '{{' + n + '}}' ? val : '<strong>' + escapeHtml(val) + '</strong>';
+    preview = preview.split('{{' + n + '}}').join(wrapped);
+  });
+  // Escape remaining body, but we already wrapped example values
+  // Simpler: use innerHTML carefully — body parts already escaped via split
+  var body_el = document.getElementById('tpl-preview-body');
+  if (body_el) body_el.innerHTML = preview;
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, function(c) {
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
 }
 
 /* ── META API PAYLOAD PREVIEW ──
@@ -2103,20 +2241,41 @@ function saveTemplate() {
   if (!name || !body) { toast('Nama dan body template wajib diisi.', 'error'); return; }
   if (!/^[a-z0-9_]+$/.test(name)) { toast('Nama harus huruf kecil + angka + underscore.', 'error'); return; }
 
+  // Collect example parameters — Meta wajib untuk approval
+  var exampleValues = [];
+  var exampleInputs = document.querySelectorAll('.tpl-example-input');
+  var hasVariables = exampleInputs.length > 0;
+  var allFilled = true;
+  exampleInputs.forEach(function(el) {
+    var val = el.value.trim();
+    if (!val) allFilled = false;
+    exampleValues.push(val);
+  });
+
+  // Kalau body ada variable tapi example belum lengkap, blokir submit
+  if (hasVariables && !allFilled) {
+    toast('Lengkapi semua contoh parameter dulu. Meta wajib contoh untuk approve.', 'error');
+    return;
+  }
+
   var data = {
     name: name,
     language: document.getElementById('tpl-lang').value,
     category: document.getElementById('tpl-category').value,
-    header: document.getElementById('tpl-header').value.trim(),
     body: body,
-    footer: document.getElementById('tpl-footer').value.trim(),
-    buttons: document.getElementById('tpl-buttons').value.split('\n').map(function(s){ return s.trim() }).filter(Boolean).slice(0,3),
     updatedAt: new Date().toISOString().slice(0,10)
   };
+
+  // Attach example object kalau ada variables (Meta API format)
+  if (hasVariables) {
+    data.example = { body_text: [exampleValues] };
+  }
 
   if (id) {
     var idx = TEMPLATES.findIndex(function(x){ return x.id === id });
     if (idx >= 0) {
+      // Merge: preserve existing header/footer/buttons (legacy templates backward compat)
+      // tapi overwrite body/category/example dengan nilai baru
       TEMPLATES[idx] = Object.assign({}, TEMPLATES[idx], data, { status:'PENDING' });
       logAdminAction('save_template', id, { name: name, category: data.category, mode: 'edit_resubmit' });
       toast('Template di-resubmit ke Meta untuk review.', 'success');
@@ -2124,6 +2283,9 @@ function saveTemplate() {
   } else {
     data.id = 'tpl-' + (Date.now() % 10000);
     data.status = 'PENDING';
+    data.header = '';      // Template baru: no header
+    data.footer = '';      // Template baru: no footer
+    data.buttons = [];     // Template baru: no buttons
     TEMPLATES.push(data);
     logAdminAction('save_template', data.id, { name: name, category: data.category, mode: 'create' });
     toast('Template baru di-submit ke Meta. Review biasanya 1-24 jam.', 'success');
