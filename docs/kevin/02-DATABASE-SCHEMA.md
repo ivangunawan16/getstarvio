@@ -592,14 +592,14 @@ const prisma = new PrismaClient()
 async function main() {
   // Create test user matching mockup DUMMY
   await prisma.user.upsert({
-    where: { email: 'cynthia@gmail.com' },
+    where: { email: 'meta_reviewer@getstarvio.com' },
     update: {},
     create: {
-      email: 'cynthia@gmail.com',
+      email: 'meta_reviewer@getstarvio.com',
       googleSub: 'test-google-sub-001',
-      bizName: 'Celestial Spa & Wellness',
+      bizName: 'Demo Business',
       bizType: 'spa',
-      bizSlug: 'celestial-spa-wellness',
+      bizSlug: 'demo-business',
       plan: 'subscriber',
       subCreditsLeft: 225,
       subCreditsMax: 300,

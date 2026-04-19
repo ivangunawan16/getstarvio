@@ -83,12 +83,12 @@ Get current authenticated user.
 ```json
 {
   "id": "uuid",
-  "email": "cynthia@gmail.com",
-  "bizName": "Celestial Spa & Wellness",
+  "email": "meta_reviewer@getstarvio.com",
+  "bizName": "Demo Business",
   "bizType": "spa",
-  "bizSlug": "celestial-spa-wellness",
+  "bizSlug": "demo-business",
   "bizLogo": null,
-  "adminName": "Cynthia",
+  "adminName": "Meta Reviewer",
   "ownerWa": "628123456789",
   "ownerWaVerifiedAt": "2026-03-16T10:15:00Z",
   "waNum": "628987654321",
@@ -182,20 +182,20 @@ Exchange Embedded Signup code for access token + store connection.
   "meta": {
     "waba": {
       "id": "105783024692731",
-      "name": "Celestial Spa WABA",
+      "name": "Demo Business WABA",
       "currency": "IDR",
       "templateNamespace": "abc-def-123"
     },
     "phoneNumber": {
       "id": "698201013402857",
       "displayNumber": "+62 812 3456 7890",
-      "verifiedName": "Celestial Spa & Wellness",
+      "verifiedName": "Demo Business",
       "qualityRating": "GREEN",
       "messagingLimitTier": "TIER_1K"
     },
     "business": {
       "id": "492187365201744",
-      "portfolioName": "Celestial Spa Business Portfolio",
+      "portfolioName": "Demo Business Portfolio",
       "verificationStatus": "VERIFIED"
     },
     "coexistence": {
@@ -425,7 +425,7 @@ Template:
   "category": "UTILITY",
   "language": "id",
   "body": "Hi {{1}}, {{2}} kamu...",
-  "example": { "body_text": [["Sarah", "Hair Smoothing", "15 Maret 2026", "Salon Celestial"]] },
+  "example": { "body_text": [["Sarah", "Hair Smoothing", "15 Maret 2026", "Salon Wangi"]] },
   "metaTemplateId": "9876543210",
   "status": "APPROVED",
   "statusReason": null,
@@ -447,7 +447,7 @@ Submit new template to Meta.
   "category": "UTILITY",
   "language": "id",
   "body": "Hi {{1}}, {{2}} kamu...",
-  "example": { "body_text": [["Sarah", "Hair Smoothing", "15 Maret 2026", "Salon Celestial"]] }
+  "example": { "body_text": [["Sarah", "Hair Smoothing", "15 Maret 2026", "Salon Wangi"]] }
 }
 ```
 
@@ -483,7 +483,7 @@ Preview exact JSON payload yang akan di-submit ke Meta.
       {
         "type": "BODY",
         "text": "Hi {{1}}, {{2}} kamu...",
-        "example": { "body_text": [["Sarah", "Hair Smoothing", "15 Maret 2026", "Salon Celestial"]] }
+        "example": { "body_text": [["Sarah", "Hair Smoothing", "15 Maret 2026", "Salon Wangi"]] }
       }
     ]
   }
@@ -681,7 +681,7 @@ Get business info for check-in page.
 **Response 200:**
 ```json
 {
-  "bizName": "Celestial Spa & Wellness",
+  "bizName": "Demo Business",
   "bizLogo": "data:image/png;base64,...",
   "categories": [
     { "id": "uuid", "name": "Facial", "icon": "💆" },

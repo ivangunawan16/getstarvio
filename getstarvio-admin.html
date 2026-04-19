@@ -1022,7 +1022,7 @@ function formatIDRInput(el) {
 function _daysFromNow(n) { var d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); }
 
 const ADMIN_DATA = [
-  { id:'biz-1', name:'Celestial Spa & Wellness', type:'spa', joinDate:'2025-11-15', status:'active', creditLeft:63, creditMax:300, remindersSent:37, waStatus:'connected', owner:'Cynthia', email:'cynthia@gmail.com' },
+  { id:'biz-1', name:'Demo Business', type:'spa', joinDate:'2025-11-15', status:'active', creditLeft:63, creditMax:300, remindersSent:37, waStatus:'connected', owner:'Meta Reviewer', email:'meta_reviewer@getstarvio.com' },
   { id:'biz-2', name:'Salon Cantik', type:'salon', joinDate:'2026-01-20', status:'active', creditLeft:12, creditMax:300, remindersSent:88, waStatus:'connected', owner:'Diana', email:'diana@gmail.com' },
   { id:'biz-3', name:'Barber Bros', type:'barbershop', joinDate:'2026-02-01', status:'trial_aktif', trialEndsAt:_daysFromNow(8),  creditLeft:85, creditMax:100, remindersSent:15, waStatus:'connected', owner:'Riko', email:'riko@gmail.com' },
   { id:'biz-4', name:'Nail Palace', type:'nail', joinDate:'2025-09-10', status:'suspended', creditLeft:0, creditMax:500, remindersSent:423, waStatus:'disconnected', owner:'Jessica', email:'jessica@gmail.com' },
@@ -1927,7 +1927,7 @@ function switchTab(tab, el) {
 
 var TEMPLATES = [
   // ═══ AFTERCARE FOLLOW-UP (utility-compliant, post-visit) — 4 variabel, no rigid timing ═══
-  { id:'tpl-aft-1', name:'aftercare_followup_1', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nSekarang waktunya untuk perawatan lanjutan supaya hasilnya tetap optimal.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.', example: { body_text: [['Sarah','Hair Smoothing','15 Maret 2026','Salon Celestial']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:00:00.000Z', approvedAt:'2026-04-10T09:24:00.000Z' },
+  { id:'tpl-aft-1', name:'aftercare_followup_1', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nSekarang waktunya untuk perawatan lanjutan supaya hasilnya tetap optimal.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.', example: { body_text: [['Sarah','Hair Smoothing','15 Maret 2026','Salon Wangi']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:00:00.000Z', approvedAt:'2026-04-10T09:24:00.000Z' },
   { id:'tpl-aft-2', name:'aftercare_followup_2', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, sekarang waktu yang pas untuk menjadwalkan perawatan lanjutan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.', example: { body_text: [['Budi','Facial Treatment','12 April 2026','Klinik Estetika Sehat']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:01:00.000Z', approvedAt:'2026-04-10T09:48:00.000Z' },
   { id:'tpl-aft-3', name:'aftercare_followup_3', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nSekarang waktu yang pas untuk perawatan lanjutan supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!', example: { body_text: [['Maya','Manicure & Pedicure','08 April 2026','Pretty Nails Studio']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:02:00.000Z', approvedAt:'2026-04-10T10:15:00.000Z' },
   { id:'tpl-aft-4', name:'aftercare_followup_4', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSudah waktunya untuk perawatan lanjutan nih — biar hasilnya tetap optimal.\n\nButuh bantuan booking? Langsung balas chat ini aja.', example: { body_text: [['Rian','Potong Rambut','10 April 2026','Barbershop Ganteng']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:03:00.000Z', approvedAt:'2026-04-10T11:02:00.000Z' },
@@ -2123,7 +2123,7 @@ function getTplPlaceholder(n) {
     1: 'contoh: Sarah',
     2: 'contoh: Hair Smoothing',
     3: 'contoh: 15 Maret 2026',
-    4: 'contoh: Salon Celestial'
+    4: 'contoh: Salon Wangi'
   };
   return placeholders[n] || 'isi contoh realistic';
 }
@@ -2592,7 +2592,7 @@ function savePlanConfig() {
   }
 
   try {
-    // 1) Update current user (Cynthia demo) — mempengaruhi billing / display di app
+    // 1) Update current user (Meta Reviewer demo) — mempengaruhi billing / display di app
     var raw = localStorage.getItem('getstarvio_user')
     if (raw) {
       var u = JSON.parse(raw)

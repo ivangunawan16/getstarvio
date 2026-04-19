@@ -77,17 +77,17 @@ Object `DUMMY` harus berisi:
 **Profil:**
 ```js
 DATA_VERSION: 5,                       // v5 schema (migrated from v4 via loadU() auto-migration)
-bizName: "Celestial Spa & Wellness",
+bizName: "Demo Business",
 bizType: "spa",
-bizSlug: "celestial-spa-wellness",
-adminName: "Cynthia",
-adminEmail: "cynthia@gmail.com",
+bizSlug: "demo-business",
+adminName: "Meta Reviewer",
+adminEmail: "meta_reviewer@getstarvio.com",
 ownerWa: "628123456789",
 waNum: "628987654321",
 timezone: "Asia/Jakarta",
 country: "ID",
 // Billing fields (v5 model):
-plan: "subscriber",           // Cynthia sudah subscribe ("trial" | "subscriber")
+plan: "subscriber",           // Meta Reviewer sudah subscribe ("trial" | "subscriber")
 subCreditsLeft: 237,          // dari 300/bulan, sudah terpakai bulan ini
 subCreditsMax: 300,           // max subscription credits per bulan
 topupCreditsLeft: 50,         // kredit top-up permanent (tidak ada expiry)
@@ -146,5 +146,5 @@ notifSettings: { lowCredit:true, criticalCredit:true, subLow:true, preRenewal:tr
 | 2026-03-26 | Sync: subCreditsMax=375. 9 billing presets (not 6). billingHistory format: delta/balAfter/label/note. Dev panel has billing condition switcher. |
 | 2026-03-27 | Subscription credits: 375 → 250 (flat, no early access bonus). subCreditsMax=250, remMax=250. |
 | 2026-03-27 | Quick nav link names updated to match sidebar: "Catat Kunjungan" (was "Catat"), "Log Reminder" (was "Log"). |
-| 2026-04-19 | **META OBJECT ADDED to DUMMY.** Tambah field `meta` lengkap di DUMMY (Cynthia subscriber) berisi realistic Meta Cloud API data dari Embedded Signup: `waba` (id: 105783024692731, templateNamespace UUID, accountReviewStatus APPROVED), `phoneNumber` (id: 698201013402857, displayNumber +62 812 3456 7890, verifiedName Celestial Spa & Wellness, qualityRating GREEN, messagingLimitTier TIER_1K, platformType CLOUD_API), `business` (id: 492187365201744, portfolioName Celestial Spa Business Portfolio, verificationStatus VERIFIED), `coexistence` (enabled true, contactsSynced + historySynced both timestamped), `assets` (pageIds, instagramAccountIds). Access token TIDAK disimpan (production server-side). Dipakai untuk populate onboarding success state + settings Meta detail modal + admin per-customer display. |
-| 2026-04-19 | **Setup checklist fields populated in DUMMY.** Tambah `templatesReviewedAt: '2026-03-15T11:00:00.000Z'` (Cynthia sudah review templates per kategori) + `qrPosted: true` (QR sudah dipasang) di DUMMY. Bersama dengan `bizLogo` (null — untuk testing upload flow), `customers.length > 0`, `automationEnabled: true`, semua 5 setup checklist step sudah complete. Dashboard setup card otomatis hidden kalau `setupComplete === true` + semua step done. |
+| 2026-04-19 | **META OBJECT ADDED to DUMMY.** Tambah field `meta` lengkap di DUMMY (Meta Reviewer subscriber) berisi realistic Meta Cloud API data dari Embedded Signup: `waba` (id: 105783024692731, templateNamespace UUID, accountReviewStatus APPROVED), `phoneNumber` (id: 698201013402857, displayNumber +62 812 3456 7890, verifiedName Demo Business, qualityRating GREEN, messagingLimitTier TIER_1K, platformType CLOUD_API), `business` (id: 492187365201744, portfolioName Demo Business Portfolio, verificationStatus VERIFIED), `coexistence` (enabled true, contactsSynced + historySynced both timestamped), `assets` (pageIds, instagramAccountIds). Access token TIDAK disimpan (production server-side). Dipakai untuk populate onboarding success state + settings Meta detail modal + admin per-customer display. |
+| 2026-04-19 | **Setup checklist fields populated in DUMMY.** Tambah `templatesReviewedAt: '2026-03-15T11:00:00.000Z'` (Meta Reviewer sudah review templates per kategori) + `qrPosted: true` (QR sudah dipasang) di DUMMY. Bersama dengan `bizLogo` (null — untuk testing upload flow), `customers.length > 0`, `automationEnabled: true`, semua 5 setup checklist step sudah complete. Dashboard setup card otomatis hidden kalau `setupComplete === true` + semua step done. |

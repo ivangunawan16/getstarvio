@@ -87,7 +87,7 @@ Multi-tenant SaaS where **each customer (salon/spa)** has their own:
            { type: "text", text: "Sarah" },
            { type: "text", text: "Hair Smoothing" },
            { type: "text", text: "15 Maret 2026" },
-           { type: "text", text: "Salon Celestial" }
+           { type: "text", text: "Salon Wangi" }
          ]
        }]
      }

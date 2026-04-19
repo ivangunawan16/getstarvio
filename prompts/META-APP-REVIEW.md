@@ -8,19 +8,18 @@
 
 Dokumen ini punya **placeholder** yang WAJIB di-fill dulu sebelum paste ke Meta form. Cari & ganti yang berikut:
 
-| Placeholder | Isi dengan | Dipakai di |
+| Placeholder | Status | Nilai |
 |---|---|---|
-| `[LEGAL_ENTITY_NAME]` | Nama PT actual (contoh: "PT Cakra Digital Indonesia") | Data Handling responsible-1 + Reviewer Instructions |
-| `[Jakarta office address]` | Alamat kantor actual lengkap | Data Handling responsible-1 |
-| `[number from Business Verification]` | NIB dari Business Verification yang udah approved | Data Handling responsible-1 |
-| `[number]` (NPWP) | Nomor NPWP PT | Data Handling responsible-1 |
-| `GetstarvioReview2026!` (hardcoded password) | Generate password baru yang strong, simpan di password manager | accesscode-web-1 |
-| `GetstarvioReview2026!Fallback` (hardcoded password) | Generate fallback password baru | accesscode-web-1 |
-| `meta_reviewer_celestial@tfbnw.net` | Actual test user email setelah register di App Dashboard | accesscode-web-1 |
+| `[LEGAL_ENTITY_NAME]` | ✅ DONE | PT CAKRA DIGITAL INDONESIA |
+| `[Jakarta office address]` | ✅ DONE | Jl. Raya Kelapa Puan Blok AD14 No. 16 & 17, Kel. Pakulonan Barat, Kec. Kelapa Dua, Kab. Tangerang, Banten 15810 |
+| `[number from Business Verification]` (NIB) | ✅ DONE | 2402220064559 |
+| `[number]` (NPWP) | ✅ DONE | 63.496.854.9-451.000 |
+| Password admin + fallback | ✅ DONE | `jiccu5-coVwux-jizput` (sama untuk admin + fallback) |
+| `meta_reviewer@getstarvio.com` | ⚠️ BELUM | Buat akun di Google Workspace admin → lalu register di Meta App Dashboard |
 
-**⚠️ SECURITY:** Kalau dokumen ini pernah di-share ke reviewer/external, regenerate semua password SEBELUM submit ke Meta. Password di doc ini cuma placeholder untuk structure.
+**⚠️ SECURITY:** Kalau dokumen ini pernah di-share ke reviewer/external, regenerate semua password SEBELUM submit ke Meta.
 
-**Cara cepat check:** Ctrl+F `[LEGAL_ENTITY_NAME]` di file ini — kalau masih ada yang belum di-replace, berarti belum ready submit.
+**Cara cepat check:** 6/7 placeholder sudah replaced. Sisa: 1 test user email (buat akun Google Workspace `meta_reviewer@getstarvio.com`).
 
 ---
 
@@ -292,7 +291,7 @@ that clients explicitly onboard into via Embedded Signup.
 3. `[0:50-1:20]` Customer completes signup → returns with `waba_id`, `phone_number_id`, `business_id`
 4. `[1:20-2:00]` DevTools Network tab → `GET /{business_id}` shows business portfolio details being fetched (name, verification_status)
 5. `[2:00-2:40]` Show DevTools: `GET /{business_id}/owned_whatsapp_business_accounts` listing WABAs
-6. `[2:40-3:10]` Client's new entry appears in getstarvio dashboard with business portfolio name visible ("Celestial Spa & Wellness")
+6. `[2:40-3:10]` Client's new entry appears in getstarvio dashboard with business portfolio name visible ("Demo Business")
 7. `[3:10-3:45]` Show getstarvio dashboard displaying business verification status badge (VERIFIED lime chip)
 
 **Required API test calls:**
@@ -416,7 +415,7 @@ Alternative login: test-reviewer-2026 / [generated-password]
 
 ### Pre-populated Test Account
 Isi test account dengan:
-- 1 demo salon business (Celestial Spa)
+- 1 demo business (Demo Business)
 - 20 demo customers dengan berbagai service history
 - 5 templates aftercare sudah APPROVED
 - Recent reminder logs (mix terkirim/gagal/pending)
@@ -542,7 +541,7 @@ HOW TO ACCESS THE APP FOR REVIEW:
 
 1. LOGIN AS END-USER (SMB OWNER DEMO)
    URL: https://getstarvio.com/getstarvio-login.html
-   Click "Lanjut dengan Google" → select "Cynthia" from the account picker
+   Click "Lanjut dengan Google" → select "Meta Reviewer" from the account picker
    → lands on Dashboard pre-populated with demo data (50 customers,
    42+ reminder logs, 6 service categories, full subscription state).
 
@@ -572,22 +571,22 @@ Contact: dev@getstarvio.com (48h SLA)
 ```
 END-USER DEMO (Google OAuth):
 - URL: https://getstarvio.com/getstarvio-login.html
-- Method: Click "Lanjut dengan Google" → select "Cynthia"
+- Method: Click "Lanjut dengan Google" → select "Meta Reviewer"
 - No password — demo-mode OAuth returns pre-seeded account
 
 TECH PROVIDER ADMIN:
 - URL: https://getstarvio.com/getstarvio-admin.html
-- Password: GetstarvioReview2026!
+- Password: jiccu5-coVwux-jizput
 - Valid through: 19 April 2027
 
 FACEBOOK TEST USER:
 - Registered at: developers.facebook.com/apps/{APP_ID}/roles/test-users/
-- Email: meta_reviewer_celestial@tfbnw.net
-- Business Portfolio: "Celestial Test Portfolio"
+- Email: meta_reviewer@getstarvio.com
+- Business Portfolio: "Demo Test Portfolio"
 - Test WABA: Meta sandbox +1 555 0199 0001
 
 FALLBACK:
-- Admin: reviewer2@getstarvio.com / GetstarvioReview2026!Fallback
+- Admin: reviewer2@getstarvio.com / jiccu5-coVwux-jizput
 - Support: dev@getstarvio.com
 ```
 
@@ -598,7 +597,7 @@ Not applicable. getstarvio is web-based SaaS at https://getstarvio.com —
 no App Store / Play Store distribution.
 
 Paid subscription (Rp 249.000/month) billed via Stripe after onboarding.
-For review, Cynthia demo account is pre-seeded in subscriber state —
+For review, Meta Reviewer demo account is pre-seeded in subscriber state —
 no payment required.
 ```
 
@@ -704,16 +703,16 @@ in production.
 ### Field 2: `responsible-1` (Who is responsible for Platform Data?)
 
 ```
-PT [LEGAL_ENTITY_NAME]
+PT CAKRA DIGITAL INDONESIA
 
 ROLE: Data Controller (GDPR/UU PDP)
 ENTITY TYPE: Perseroan Terbatas (Indonesian LLC)
 
 LEGAL DETAILS:
-- Registered address: [Jakarta office address]
-- NIB: [number from Business Verification]
-- NPWP: [number]
-- KBLI: 62019 / 63122
+- Registered address: Jl. Raya Kelapa Puan Blok AD14 No. 16 & 17, Kel. Pakulonan Barat, Kec. Kelapa Dua, Kab. Tangerang, Banten 15810, Indonesia
+- NIB: 2402220064559
+- NPWP: 63.496.854.9-451.000
+- KBLI: 62012 / 63122
 
 CONTACTS:
 - DPO: dpo@getstarvio.com
@@ -730,7 +729,7 @@ current Business Verification.
 Day-to-day: Engineering + Compliance team, reporting to Director/CEO.
 ```
 
-> ⚠️ **Replace `[LEGAL_ENTITY_NAME]` and details with actual PT data.**
+> ✅ **Placeholders replaced with PT Cakra Digital Indonesia data (19 Apr 2026).**
 
 ### Field 3: `responsible-2` (Country dropdown)
 
@@ -753,13 +752,13 @@ Day-to-day: Engineering + Compliance team, reporting to Director/CEO.
 
 ## 🎯 PRE-SUBMIT CHECKLIST FINAL
 
-1. **Fill `[LEGAL_ENTITY_NAME]` placeholders** dengan nama PT actual
+1. ~~**Fill `[LEGAL_ENTITY_NAME]` placeholders**~~ ✅ DONE (PT CAKRA DIGITAL INDONESIA, NIB, NPWP, alamat)
 2. **Verify public pages accessible:**
    - https://getstarvio.com/privacy.html
    - https://getstarvio.com/terms.html
    - https://getstarvio.com/data-deletion.html
 3. **Privacy policy** must include "Government Requests" section (4 items)
-4. **Create Facebook test user** `meta_reviewer_celestial@tfbnw.net` di Roles → Test Users
+4. **Create Facebook test user** `meta_reviewer@getstarvio.com` di Roles → Test Users
 5. **Setup fallback admin** `reviewer2@getstarvio.com`
 6. **Upload to documents-web-1**: video + diagrams + policies + DPAs
 7. **Record 2 videos** per Allowed Usage section specs
@@ -775,3 +774,4 @@ Day-to-day: Engineering + Compliance team, reporting to Director/CEO.
 | 2026-04-19 | File dibuat. Lengkap: business descriptions, permission descriptions, screencast storylines, API test calls, data handling, reviewer instructions, submission checklist, common rejection reasons |
 | 2026-04-19 | **Tambah Reviewer Instructions section** (5 fields: instructions-web-2, accesscode-web-1, accesscode-web-2, geo-web-5, documents-web-1) + **Data Handling section** (processor-0, responsible-1/2, requests-3/4) dengan copy-paste ready content per Meta App Review form field. |
 | 2026-04-19 | **Pre-submission readiness improvements.** (1) Added prominent "CRITICAL: MUST DO BEFORE SUBMITTING" section at top dengan placeholder replacement table — list semua `[LEGAL_ENTITY_NAME]`, NIB, NPWP, password placeholder yang wajib di-fill sebelum submit. (2) `public_profile` section extended — added Business Description (1-liner) + full usage description + 30-60s screencast storyline untuk kasus Meta form minta field lengkap. (3) `documents-web-1` extended dengan table: where to get each file (record new / create new / export from public URL / download from AWS Console), priority tier, storage location recommendation, file format/size limits. (4) Security warning about hardcoded password placeholder — regenerate before sharing externally. |
+| 2026-04-19 | **PLACEHOLDER REPLACEMENT.** Replaced 4/7 placeholders: `[LEGAL_ENTITY_NAME]` → PT CAKRA DIGITAL INDONESIA, `[Jakarta office address]` → Jl. Raya Kelapa Puan Blok AD14 No. 16 & 17 Tangerang Banten 15810, NIB → 2402220064559, NPWP → 63.496.854.9-451.000. KBLI corrected 62019 → 62012. Remaining: 2 passwords (generate before submit) + 1 test user (create in Meta). Source: Google Drive NIB CDI.pdf + index.html footer. |

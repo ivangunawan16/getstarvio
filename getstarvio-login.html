@@ -455,13 +455,13 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
       <div class="picker-title">Pilih akun untuk masuk</div>
     </div>
 
-    <!-- Existing user: Cynthia → dashboard -->
-    <div class="account-item" id="acctCynthia">
+    <!-- Existing user: Meta Reviewer → dashboard -->
+    <div class="account-item" id="acctMeta">
       <div class="acct-avatar acct-av-c">C</div>
       <div class="acct-info">
-        <div class="acct-name">Cynthia</div>
-        <div class="acct-email">cynthia@gmail.com</div>
-        <div class="acct-biz">✦ Celestial Spa &amp; Wellness</div>
+        <div class="acct-name">Meta Reviewer</div>
+        <div class="acct-email">meta_reviewer@getstarvio.com</div>
+        <div class="acct-biz">✦ Demo Business</div>
       </div>
       <div class="acct-arrow">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -521,15 +521,15 @@ function closePicker() {
   document.getElementById('overlay').classList.remove('open');
 }
 
-// Cynthia = existing user → load seed data if needed, go to dashboard
-function loginCynthia() {
+// Meta Reviewer = existing user → load seed data if needed, go to dashboard
+function loginMeta() {
   const existing = localStorage.getItem('getstarvio_user');
   if (existing) {
     try {
       const u = JSON.parse(existing);
       if (u && u.DATA_VERSION === 5) {
         closePicker();
-        showToast('Masuk sebagai Cynthia...');
+        showToast('Masuk sebagai Meta Reviewer...');
         setTimeout(()=>{ window.location.href = 'getstarvio-dashboard.html'; }, 750);
         return;
       }
@@ -552,7 +552,7 @@ function loginNew() {
 // Event bindings
 document.getElementById('btnGoogle').addEventListener('click', openPicker);
 document.getElementById('btnDemo').addEventListener('click', openPicker);
-document.getElementById('acctCynthia').addEventListener('click', loginCynthia);
+document.getElementById('acctMeta').addEventListener('click', loginMeta);
 document.getElementById('acctNew').addEventListener('click', loginNew);
 document.getElementById('pickerClose').addEventListener('click', closePicker);
 document.getElementById('overlay').addEventListener('click', function(e){

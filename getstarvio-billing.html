@@ -428,10 +428,10 @@ body.imp-active{padding-top:36px}
               <div style="font-size:11px;color:var(--lime-dk);line-height:1.5;opacity:.85">Kredit permanent (tidak ada expiry). Hemat per kredit dibanding beli terpisah.</div>
             </div>
           </label>
-          <select id="bundle-tier" onchange="updateBundleUI()" style="width:100%;margin-top:10px;padding:8px 10px;background:#fff;border:1px solid var(--lime-bd);border-radius:var(--r-sm);font-size:12px;font-weight:600;color:var(--ink);font-family:inherit;cursor:pointer">
+          <select id="bundle-tier" onchange="updateBundleUI()" style="width:100%;margin-top:10px;padding:10px 36px 10px 12px;background:#fff;border:1px solid var(--lime-bd);border-radius:var(--r-sm);font-size:12px;font-weight:600;color:var(--ink);font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%232d4a00' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center;text-overflow:ellipsis;overflow:hidden;white-space:nowrap">
             <option value="0">200 kredit — Rp 399.000 (Rp 1.995/kredit)</option>
             <option value="1" selected>500 kredit — Rp 749.000 (Rp 1.498/kredit) ⭐ Terlaris</option>
-            <option value="2">1.000 kredit — Rp 1.299.000 (Rp 1.299/kredit) — Hemat 35%</option>
+            <option value="2">1.000 kredit — Rp 1.299.000 (Rp 1.299/kredit) · Hemat 35%</option>
           </select>
         </div>
 
@@ -1264,12 +1264,10 @@ function render() {
   var autoPkgId = U.autoTopupPackage || 'p1'
   var canAutoTopup = (plan === 'subscriber')
 
-  html += '<div class="auto-topup"' + (canAutoTopup ? '' : ' style="opacity:.6;position:relative"') + '>'
-  if (!canAutoTopup) {
-    html += '<div style="position:absolute;top:12px;right:14px;background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:5px">\uD83D\uDD12 Subscriber only</div>'
-  }
+  html += '<div class="auto-topup"' + (canAutoTopup ? '' : ' style="opacity:.75"') + '>'
   html += '<div class="toggle-row">'
-  html += '<div><div class="toggle-label">Auto Top-Up</div><div class="toggle-sub">Otomatis top up kredit top-up saat di bawah batas tertentu</div></div>'
+  var lockBadge = canAutoTopup ? '' : ' <span style="display:inline-flex;align-items:center;gap:4px;background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;white-space:nowrap">\uD83D\uDD12 Subscriber only</span>'
+  html += '<div style="flex:1;min-width:0"><div class="toggle-label">Auto Top-Up' + lockBadge + '</div><div class="toggle-sub">Otomatis top up kredit top-up saat di bawah batas tertentu</div></div>'
   html += '<label class="toggle-switch"' + (canAutoTopup ? '' : ' style="pointer-events:none"') + '><input type="checkbox" id="autoToggle" ' + (autoOn && canAutoTopup ? 'checked' : '') + (canAutoTopup ? '' : ' disabled') + ' onchange="toggleAutoTopup(this.checked)"><span class="toggle-track"></span><span class="toggle-knob"></span></label>'
   html += '</div>'
   if (!canAutoTopup) {

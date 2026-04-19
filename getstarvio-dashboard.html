@@ -100,6 +100,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* ── QUICK LINKS ── */
 .ql-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px}
+/* Quick Links redundant di desktop (sidebar sudah kasih akses) — hanya tampil di mobile untuk shortcut */
+@media (min-width: 768px){ .ql-grid{display:none} }
 .ql-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:18px 16px;cursor:pointer;transition:all .15s;text-decoration:none;display:block}
 .ql-card:hover{border-color:var(--lime2);background:var(--lime-bg)}
 .ql-icon{font-size:24px;margin-bottom:8px}
@@ -378,10 +380,17 @@ body.imp-active{padding-top:36px}
       <!-- ① GREETING CARD -->
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;margin-bottom:14px;position:relative;overflow:hidden">
         <div style="position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
-          <div>
+          <div style="flex:1;min-width:220px">
             <div style="font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.3px" id="h-greeting">Selamat pagi 👋</div>
             <div style="font-size:12px;color:var(--ink3);margin-top:4px" id="h-date"></div>
             <a href="getstarvio-automation.html" id="h-auto-badge" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;text-decoration:none;cursor:pointer;transition:opacity .15s" title="Klik untuk buka pengaturan Automation"></a>
+            <!-- Primary daily CTA — most frequent action for UMKM owner -->
+            <div style="margin-top:14px">
+              <a href="getstarvio-catat-kunjungan.html" id="h-primary-cta" data-always="1" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;background:var(--lime);color:var(--lime-dk);border-radius:var(--r-sm);font-size:13px;font-weight:700;text-decoration:none;transition:all .15s;box-shadow:0 2px 8px rgba(184,240,74,.3)">
+                <span style="font-size:15px">📋</span> Catat Kunjungan Hari Ini
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+              </a>
+            </div>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;text-align:center;min-width:80px">
@@ -391,10 +400,6 @@ body.imp-active{padding-top:36px}
             <div style="background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:10px 14px;text-align:center;min-width:80px">
               <div style="font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;line-height:1" id="h-credit">0</div>
               <div style="font-size:10px;color:var(--lime-dk);opacity:.6;margin-top:3px">Kredit Tersisa</div>
-            </div>
-            <div style="background:var(--red-bg);border:1px solid rgba(232,69,60,.2);border-radius:var(--r-sm);padding:10px 14px;text-align:center;min-width:80px" id="h-lost-tile">
-              <div style="font-size:22px;font-weight:700;color:var(--red-dk);font-family:'JetBrains Mono',monospace;line-height:1" id="h-lost-n">0</div>
-              <div style="font-size:10px;color:var(--red-dk);opacity:.6;margin-top:3px">Belum Balik</div>
             </div>
           </div>
         </div>
@@ -769,10 +774,14 @@ function boot() {
   const nearCxs = cxs.filter(cx => worstStatus(cx) === 'mendekati')
   const attnCxs = [...lostCxs, ...nearCxs]
 
-  document.getElementById('h-lost-n').textContent = lostCxs.length
-  if (lostCxs.length === 0) {
-    document.getElementById('h-lost-tile').style.background = 'rgba(255,255,255,.06)'
-    document.getElementById('h-lost-tile').style.border = '1px solid rgba(255,255,255,.1)'
+  // h-lost-n + h-lost-tile removed from Greeting (dedup — "Belum Balik" tetap ada di Metrics + Perlu Perhatian)
+  // Null-safe in case old DOM masih ada dari cache
+  var hLostN = document.getElementById('h-lost-n')
+  if (hLostN) hLostN.textContent = lostCxs.length
+  var hLostTile = document.getElementById('h-lost-tile')
+  if (hLostTile && lostCxs.length === 0) {
+    hLostTile.style.background = 'rgba(255,255,255,.06)'
+    hLostTile.style.border = '1px solid rgba(255,255,255,.1)'
   }
 
   // Lost badge in sidebar
