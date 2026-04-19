@@ -4,6 +4,26 @@
 
 ---
 
+## ⚠️ CRITICAL: MUST DO BEFORE SUBMITTING
+
+Dokumen ini punya **placeholder** yang WAJIB di-fill dulu sebelum paste ke Meta form. Cari & ganti yang berikut:
+
+| Placeholder | Isi dengan | Dipakai di |
+|---|---|---|
+| `[LEGAL_ENTITY_NAME]` | Nama PT actual (contoh: "PT Cakra Digital Indonesia") | Data Handling responsible-1 + Reviewer Instructions |
+| `[Jakarta office address]` | Alamat kantor actual lengkap | Data Handling responsible-1 |
+| `[number from Business Verification]` | NIB dari Business Verification yang udah approved | Data Handling responsible-1 |
+| `[number]` (NPWP) | Nomor NPWP PT | Data Handling responsible-1 |
+| `GetstarvioReview2026!` (hardcoded password) | Generate password baru yang strong, simpan di password manager | accesscode-web-1 |
+| `GetstarvioReview2026!Fallback` (hardcoded password) | Generate fallback password baru | accesscode-web-1 |
+| `meta_reviewer_celestial@tfbnw.net` | Actual test user email setelah register di App Dashboard | accesscode-web-1 |
+
+**⚠️ SECURITY:** Kalau dokumen ini pernah di-share ke reviewer/external, regenerate semua password SEBELUM submit ke Meta. Password di doc ini cuma placeholder untuk structure.
+
+**Cara cepat check:** Ctrl+F `[LEGAL_ENTITY_NAME]` di file ini — kalau masih ada yang belum di-replace, berarti belum ready submit.
+
+---
+
 ## 🎯 Konteks Getstarvio (untuk konsistensi semua deskripsi)
 
 **Singkat:** getstarvio adalah Tech Provider yang bangun aplikasi SaaS untuk UMKM Indonesia (salon, spa, klinik, barbershop, nail studio, bengkel, pet grooming, laundry) — layanan: kirim pengingat WhatsApp otomatis ke pelanggan saat waktunya kembali untuk perawatan lanjutan, berdasarkan tanggal kunjungan terakhir dan interval per kategori layanan.
@@ -288,12 +308,42 @@ that clients explicitly onboard into via Embedded Signup.
 
 ### 7. `public_profile`
 
-**Agree compliance only** — tidak perlu description atau screencast. Ini auto-granted untuk semua app.
+**Auto-granted** — biasanya tidak perlu description atau screencast panjang. Tapi kalau Meta form tetap minta Business Description + description:
 
-**What it does:** Reads default public profile fields (name, profile pic) of admin user yang login via Facebook OAuth.
+**Business Description (1-liner, kalau field muncul):**
+> getstarvio reads basic Facebook public profile data (name) to identify the admin user during Embedded Signup for WhatsApp Business account onboarding.
 
-**Compliance statement** (jika diminta):
-> getstarvio only uses public_profile to identify the admin user logging in via Facebook OAuth for the initial Embedded Signup flow. We do not display, store beyond session, or share any profile information with third parties.
+**How will this app use this permission? (kalau field muncul):**
+
+```
+getstarvio uses the public_profile permission solely as a prerequisite for
+the Embedded Signup flow that Meta requires for Tech Providers to onboard
+WhatsApp Business customers.
+
+We use this permission to:
+
+1. Identify the Facebook user who is completing the Embedded Signup flow
+   on behalf of their business — needed because Meta's JavaScript SDK
+   requires a valid FB login session before initiating Embedded Signup.
+
+2. Display the name of the admin who authorized the connection in our
+   internal admin dashboard's audit log, for accountability.
+
+We do NOT:
+- Display Facebook profile information to end-users or third parties
+- Store profile pictures or any extended profile fields
+- Use this data for marketing, analytics, or advertising
+- Share this data with any third-party processor
+
+Facebook profile data is held only for the duration of the active session
+and not persisted in long-term storage beyond the admin name string.
+```
+
+**Screencast storyline (kalau diminta — 30-60 detik):**
+
+1. `[0:00-0:15]` Show Facebook OAuth login dialog triggering di Embedded Signup flow
+2. `[0:15-0:30]` Admin name ter-capture dan muncul di getstarvio admin dashboard audit log
+3. `[0:30-0:45]` Admin logs out — confirm profile data cleared from session
 
 ---
 
@@ -580,14 +630,27 @@ FUTURE EXPANSION:
 
 ### Field 5: `documents-web-1` (Supporting documentation)
 
-Upload:
-1. `getstarvio-full-walkthrough.mp4` — 5-7 min end-to-end demo
-2. `getstarvio-architecture.pdf` — System architecture diagram
-3. `getstarvio-data-flow.png` — Data flow diagram
-4. `privacy-policy.pdf` — Export dari /privacy.html
-5. `terms-of-service.pdf` — Export dari /terms.html
-6. `data-deletion-process.pdf` — Export dari /data-deletion.html
-7. `dpa-with-aws.pdf` — AWS Data Processing Agreement
+**Where to get/create each file:**
+
+| File to upload | Source / How to create | Priority |
+|---|---|---|
+| `getstarvio-full-walkthrough.mp4` | **Record baru** dengan tool screencast (QuickTime / Loom / OBS) mengikuti storyline di Video 1 + Video 2 sections di atas, gabung jadi 5-7 menit | Required |
+| `getstarvio-architecture.pdf` | **Create baru** — diagram sederhana (bisa pakai Excalidraw/draw.io): Client Browser ↔ getstarvio Backend (AWS Jakarta) ↔ Meta Cloud API ↔ Customer WhatsApp | Required |
+| `getstarvio-data-flow.png` | **Create baru** — flow diagram: Embedded Signup → waba_id/phone_id/business_id captured → stored encrypted (AWS KMS) → used untuk API calls | Required |
+| `privacy-policy.pdf` | Export dari `https://getstarvio.com/privacy.html` — browser Print → Save as PDF | Required |
+| `terms-of-service.pdf` | Export dari `https://getstarvio.com/terms.html` — browser Print → Save as PDF | Required |
+| `data-deletion-process.pdf` | Export dari `https://getstarvio.com/data-deletion.html` — browser Print → Save as PDF | Required |
+| `dpa-with-aws.pdf` | Download dari `https://aws.amazon.com/compliance/data-processing-agreement/` setelah sign di AWS Console | Optional but recommended |
+| `meta-business-verification-approval.png` | Screenshot hasil Business Verification approved dari Meta Business Manager → Security Center | Optional |
+
+**Storage location rekomendasi:**
+- Simpan semua file di folder `assets/app-review/` di repo getstarvio (atau Google Drive shared folder)
+- Naming convention: `{YYYY-MM-DD}-{filename}` biar versioning jelas kalau perlu re-submit
+- Max file size Meta: 2GB per file, 8 file max
+
+**Format Meta accept:** `.xls, .xlsx, .csv, .doc, .docx, .pdf, .txt, .jpeg, .jpg, .png, .ppt, .pptx, .mov, .mp4, .zip, .zipx`
+
+**File path saat upload** — nanti di Meta form tinggal drag-drop atau click "Choose file". Pastikan file size < 100MB per file untuk cepet upload.
 
 ---
 
@@ -711,3 +774,4 @@ Day-to-day: Engineering + Compliance team, reporting to Director/CEO.
 |---|---|
 | 2026-04-19 | File dibuat. Lengkap: business descriptions, permission descriptions, screencast storylines, API test calls, data handling, reviewer instructions, submission checklist, common rejection reasons |
 | 2026-04-19 | **Tambah Reviewer Instructions section** (5 fields: instructions-web-2, accesscode-web-1, accesscode-web-2, geo-web-5, documents-web-1) + **Data Handling section** (processor-0, responsible-1/2, requests-3/4) dengan copy-paste ready content per Meta App Review form field. |
+| 2026-04-19 | **Pre-submission readiness improvements.** (1) Added prominent "CRITICAL: MUST DO BEFORE SUBMITTING" section at top dengan placeholder replacement table — list semua `[LEGAL_ENTITY_NAME]`, NIB, NPWP, password placeholder yang wajib di-fill sebelum submit. (2) `public_profile` section extended — added Business Description (1-liner) + full usage description + 30-60s screencast storyline untuk kasus Meta form minta field lengkap. (3) `documents-web-1` extended dengan table: where to get each file (record new / create new / export from public URL / download from AWS Console), priority tier, storage location recommendation, file format/size limits. (4) Security warning about hardcoded password placeholder — regenerate before sharing externally. |
