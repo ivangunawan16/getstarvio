@@ -902,25 +902,30 @@ function renderSetupChecklist(U) {
   }
   const cxs = U.customers || []
   const qrCxCount = cxs.filter(function(c){ return c.via === 'qr' }).length
+  const hasCats = (U.cats || []).length > 0
+
+  // Setup steps — urutan: brand identity (logo) → brand voice (template) → data → physical → go-live
   const steps = [
     { id: 'logo',       done: !!U.bizLogo,                                   label: 'Upload logo bisnis',           sub: 'Tampil di halaman check-in pelanggan',                subDone: 'Logo siap ✓' },
+    { id: 'templates',  done: !!U.templatesReviewedAt,                       label: 'Pilih template pengingat',     sub: 'Tentukan gaya pesan per kategori (formal, casual, dsb.)', subDone: 'Template sudah disesuaikan ✓' },
     { id: 'customers',  done: cxs.length > 0,                                label: 'Tambah pelanggan pertama',     sub: 'Manual atau import CSV — biar sistem punya data',     subDone: cxs.length + ' pelanggan terdaftar ✓' },
     { id: 'qr',         done: !!U.qrPosted || qrCxCount > 0,                 label: 'Pasang QR check-in',           sub: 'Print/share QR — pelanggan bisa daftar sendiri',      subDone: qrCxCount > 0 ? qrCxCount + ' pelanggan via QR ✓' : 'QR sudah dipasang ✓' },
     { id: 'automation', done: !!U.automationEnabled,                         label: 'Aktifkan automation',          sub: 'Pengingat otomatis ke WhatsApp pelanggan',            subDone: 'Automation aktif ✓' }
   ]
+  const TOTAL_STEPS = steps.length
   const doneCount = steps.filter(s => s.done).length
   const card = document.getElementById('setupCard')
 
   // Sembunyikan HANYA kalau semua step beneran masih done DAN owner sudah dismiss success card sebelumnya.
   // Kalau ada step yang turun (misal automation di-matiin lagi), checklist muncul lagi.
-  if (doneCount === 4 && U.setupComplete) {
+  if (doneCount === TOTAL_STEPS && U.setupComplete) {
     card.style.display = 'none'
     return
   }
   card.style.display = ''
 
   // All done — show success state, set setupComplete (dismissed flag)
-  if (doneCount === 4) {
+  if (doneCount === TOTAL_STEPS) {
     card.innerHTML =
       '<div class="setup-success">' +
         '<div class="setup-success-ic">🎉</div>' +
@@ -935,16 +940,15 @@ function renderSetupChecklist(U) {
   }
 
   // Render checklist
-  document.getElementById('setupTitle').textContent = 'Selesaikan setup — ' + doneCount + ' dari 4 selesai'
-  document.getElementById('setupProgressFill').style.width = (doneCount / 4 * 100) + '%'
-
+  const titleText = 'Selesaikan setup — ' + doneCount + ' dari ' + TOTAL_STEPS + ' selesai'
+  const progressPct = Math.round(doneCount / TOTAL_STEPS * 100)
   card.innerHTML =
-    '<div class="setup-hd"><div class="setup-title" id="setupTitle">Selesaikan setup — ' + doneCount + ' dari 4 selesai</div></div>' +
-    '<div class="setup-progress-wrap"><div class="setup-progress-fill" style="width:' + (doneCount / 4 * 100) + '%"></div></div>' +
-    '<div id="setupSteps">' + steps.map((s, i) => renderSetupStep(s, i + 1, U)).join('') + '</div>'
+    '<div class="setup-hd"><div class="setup-title" id="setupTitle">' + titleText + '</div></div>' +
+    '<div class="setup-progress-wrap"><div class="setup-progress-fill" style="width:' + progressPct + '%"></div></div>' +
+    '<div id="setupSteps">' + steps.map((s, i) => renderSetupStep(s, i + 1, U, hasCats)).join('') + '</div>'
 }
 
-function renderSetupStep(step, num, U) {
+function renderSetupStep(step, num, U, hasCats) {
   const numHtml = step.done
     ? '<div class="setup-num">✓</div>'
     : '<div class="setup-num">' + num + '</div>'
@@ -953,6 +957,13 @@ function renderSetupStep(step, num, U) {
   if (!step.done) {
     if (step.id === 'logo') {
       actionHtml = '<button class="setup-action lime" onclick="document.getElementById(\'setupLogoFile\').click()">📤 Upload</button>'
+    } else if (step.id === 'templates') {
+      // Edge case: kalau belum ada kategori, arahkan ke Kategori dulu
+      if (!hasCats) {
+        actionHtml = '<a class="setup-action" href="getstarvio-kategori.html" title="Tambah kategori dulu">Tambah kategori →</a>'
+      } else {
+        actionHtml = '<a class="setup-action" href="getstarvio-automation.html#per-category">Pilih template →</a>'
+      }
     } else if (step.id === 'customers') {
       actionHtml = '<a class="setup-action" href="getstarvio-pelanggan.html?action=add">Tambah →</a>'
     } else if (step.id === 'qr') {

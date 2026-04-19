@@ -28,32 +28,46 @@ Halaman utama setelah login. **ROI selling machine** — owner harus segera mera
 
 ## Must-Have
 
-### Setup Checklist (top, conditional, auto-detect)
+### Setup Checklist (top, conditional, auto-detect) — 5 STEPS
 
-Tampil kalau `U.setupComplete === false`. Auto-dismiss permanent (set `setupComplete: true`) saat 3 step selesai. Progress bar visual: X dari 3 selesai.
+Tampil kalau `U.setupComplete === false` atau ada step yang "turun" setelahnya (misal automation di-matiin lagi). Auto-dismiss permanent (set `setupComplete: true`) saat **semua 5 step** selesai. Progress bar visual: X dari 5 selesai.
 
-**Step 1: Upload logo bisnis**
+**Urutan step mengikuti story: brand → data → physical → go-live.**
+
+**Step 1: Upload logo bisnis** (brand identity)
 - Action: **inline** file picker dari card ini (no redirect)
 - Accept PNG/JPG, max 200KB, resize via canvas ke 120x120
 - Save ke `getstarvio_user.bizLogo`
 - Complete condition: `bizLogo !== null`
 - Setelah complete: preview thumbnail 32px circle + "Logo siap ✓"
 
-**Step 2: Tambah pelanggan pertama**
+**Step 2: Pilih template pengingat** (brand voice) — NEW STEP
+- Tujuan: owner aktif memilih template per kategori (formal/casual/appreciation/etc.) biar match brand tone — bukan terima default
+- Action: button "Pilih template →" link ke `getstarvio-automation.html#per-category`
+- **Edge case:** kalau `(U.cats || []).length === 0`, button berubah jadi "Tambah kategori →" link ke `getstarvio-kategori.html` (harus setup kategori dulu)
+- Complete condition: `templatesReviewedAt !== null` (set otomatis di Automation page `saveFlowChanges()` — idempotent, set sekali saat owner klik Simpan di category pertama)
+- Setelah complete: "Template sudah disesuaikan ✓"
+
+**Step 3: Tambah pelanggan pertama** (populate data)
 - Action: button "Tambah →" link ke `getstarvio-pelanggan.html?action=add`
 - Complete condition: `(customers || []).length > 0`
 - Auto-detect saat user kembali ke dashboard
 - Setelah complete: "X pelanggan terdaftar ✓"
 
-**Step 3: Aktifkan automation**
+**Step 4: Pasang QR check-in** (physical setup)
+- Action: button "Pasang QR →" link ke `getstarvio-settings.html#qr`
+- Complete condition: `qrPosted === true` OR ada customer dengan `via === 'qr'`
+- Setelah complete: "QR sudah dipasang ✓" atau "X pelanggan via QR ✓"
+
+**Step 5: Aktifkan automation** (go-live)
 - Action: button "Aktifkan →" link ke `getstarvio-automation.html`
 - Complete condition: `automationEnabled === true`
 - Setelah complete: "Automation aktif ✓"
 
-**All done state:**
+**All done state (5/5):**
 - Card ganti jadi success message: "🎉 Setup selesai! getstarvio siap kirim pengingat otomatis ke pelangganmu."
 - Auto-hide setelah 5 detik + tombol "Tutup" manual
-- Set `setupComplete: true` permanent (card tidak muncul lagi)
+- Set `setupComplete: true` permanent (card tidak muncul lagi — kecuali ada step yang turun, check `doneCount === 5 && U.setupComplete` → hide)
 
 ### Greeting Card (background `var(--bg2)` / light)
 - Teks: "Selamat pagi/siang/sore, [adminName]!" — berdasarkan jam (pagi <11, siang 11–14, sore ≥14)
@@ -180,3 +194,4 @@ Saat `trialExpired === true`:
 | 2026-03-26 | Update: action-first layout, tambah credit alert dari doc lama |
 | 2026-03-26 | Tambah Reference section — acuan v2.0, warning jangan pakai v2.1 |
 | 2026-04-18 | **MAJOR UIUX OVERHAUL.** Setup Checklist 3 step (logo inline upload / pelanggan / automation, persistent sampai semua selesai, auto-detect + auto-dismiss permanent setelah selesai). ROI Card baru (untuk user dengan reminder data — pelanggan kembali, response rate, estimasi revenue, ROI multiplier, ROI framing copy). Projection Card untuk user baru tanpa reminder data. Metrics Grid reframe: "Kembali via Pengingat" jadi metric utama (was Kunjungan Bulan Ini), "Pelanggan Hilang" → "Belum Balik" (softer label). Quick Links pindah dari atas ke bawah (after Jadwal Pengingat) — ROI Card jadi star. Tips Section bawah (Print QR + Salin Link). **Trial Behavior HYBRID MODEL:** Dashboard SOFT lock (banner + Quick Links 2/3 disabled, Catat Kunjungan tetap aktif), sidebar pages lain tetap HARD lock overlay. Greeting tile #3 label change. |
+| 2026-04-19 | **SETUP CHECKLIST 4 → 5 STEPS + REORDER.** Tambah step baru "Pilih template pengingat" (Step 2) untuk paksa owner aktif customize template per kategori — bukan terima default `aftercare_followup_1`. Reorder total jadi story flow: brand identity (logo) → brand voice (templates) → data (customers) → physical (QR) → go-live (automation). Complete detection via new `templatesReviewedAt` field (ISO string, set otomatis di Automation page `saveFlowChanges()` idempotent). Edge case: kalau `cats.length === 0`, step 2 CTA redirect ke Kategori dulu. Progress bar sekarang X/5. |

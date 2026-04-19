@@ -303,7 +303,7 @@ body.imp-active{padding-top:36px}
       </div>
 
       <!-- PER KATEGORI -->
-      <div class="sec-title" style="margin-top:6px">
+      <div class="sec-title" id="per-category" style="margin-top:6px;scroll-margin-top:80px">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
         Automation per Kategori
       </div>
@@ -698,6 +698,10 @@ function saveFlowChanges(catId) {
   if (tpl) {
     cat.templateId = tplId
     cat.templateBody = tpl.msg
+  }
+  // Mark template review done (idempotent — first Simpan only)
+  if (!U.templatesReviewedAt) {
+    U.templatesReviewedAt = new Date().toISOString()
   }
   saveU(U)
   // Flash button
