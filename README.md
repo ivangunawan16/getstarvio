@@ -38,18 +38,34 @@ getstarvio/
 │   ├── getstarvio-design-system.md
 │   └── README.md
 │
-├── mockup/                      ← HTML prototype (visual reference)
-│   ├── getstarvio-*.html
-│   ├── index.html               ← Landing page
-│   ├── privacy.html             ← Privacy policy (live)
-│   ├── terms.html               ← Terms of service (live)
-│   └── data-deletion.html       ← Data deletion page (live)
+├── *.html                       ← HTML files at root (2 kinds):
+│   │
+│   ├── Mockup app pages (13 files — visual reference, NOT deployed)
+│   │   ├── getstarvio-login.html
+│   │   ├── getstarvio-onboarding.html
+│   │   ├── getstarvio-dashboard.html
+│   │   ├── getstarvio-catat-kunjungan.html
+│   │   ├── getstarvio-pelanggan.html
+│   │   ├── getstarvio-automation.html
+│   │   ├── getstarvio-log-reminder.html
+│   │   ├── getstarvio-kategori.html
+│   │   ├── getstarvio-billing.html
+│   │   ├── getstarvio-checkin.html
+│   │   ├── getstarvio-settings.html
+│   │   ├── getstarvio-admin.html
+│   │   └── getstarvio-seed-data.html
+│   │
+│   └── Public pages (4 files — deployed via Vercel, Meta submission URLs)
+│       ├── index.html           ← Landing page
+│       ├── privacy.html         ← https://getstarvio.com/privacy.html
+│       ├── terms.html           ← https://getstarvio.com/terms.html
+│       └── data-deletion.html   ← https://getstarvio.com/data-deletion.html
 │
-├── frontend/                    ← Okta builds here (Sprint 1+)
-└── backend/                     ← Kevin builds here (Sprint 1+)
+├── frontend/                    ← Okta builds here (init Sprint 1)
+└── backend/                     ← Kevin builds here (init Sprint 1)
 ```
 
-> ⚠️ **For developers:** Mockup HTML is **visual reference only** — tidak dipakai as production code. Read `docs/shared/README.md` first untuk handoff instructions.
+> ⚠️ **For developers:** The 13 `getstarvio-*.html` files are **visual reference only** — tidak dipakai as production code. Okta re-implement dengan chosen FE framework di `frontend/` folder. Landing page (`index.html`) + compliance pages (`privacy.html`, `terms.html`, `data-deletion.html`) tetap live as static di getstarvio.com sampai FE production-ready, lalu di-port ke framework juga. Read `docs/shared/README.md` first untuk handoff instructions.
 
 ## 🚀 Quick Start for Devs
 

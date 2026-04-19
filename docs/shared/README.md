@@ -22,13 +22,18 @@ getstarvio/
 │   ├── META-APP-REVIEW.md ← compliance checklist untuk submission
 │   └── ...
 │
-├── mockup/            ← HTML mockup (visual reference, Okta baca ini)
-│   ├── getstarvio-*.html
-│   └── ...
+├── *.html (at root)   ← HTML files (mockup + public pages):
+│   ├── getstarvio-*.html  (13 files) ← MOCKUP visual reference, Okta baca ini
+│   ├── index.html         ← Landing page (public, deployed)
+│   ├── privacy.html       ← Compliance public page (Meta submission URL)
+│   ├── terms.html         ← Compliance public page (Meta submission URL)
+│   └── data-deletion.html ← Compliance public page (Meta submission URL)
 │
-├── frontend/          ← Okta kerja di sini (empty, setup di Sprint 1)
-└── backend/           ← Kevin kerja di sini (empty, setup di Sprint 1)
+├── frontend/          ← Okta kerja di sini (init Sprint 1)
+└── backend/           ← Kevin kerja di sini (init Sprint 1)
 ```
+
+> 📝 **Note:** HTML mockup files ada di ROOT folder, bukan di `mockup/` subfolder. Supaya simpler akses. Jangan edit 13 file `getstarvio-*.html` — treat as visual reference read-only. Re-implement dengan framework pilihan kamu di `frontend/` folder.
 
 ## 🗺 Reading Order (MUST)
 
