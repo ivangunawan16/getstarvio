@@ -149,7 +149,20 @@ html,body{
 
 .phone-hint{
   font-size:12px;color:var(--ink3);margin-top:-8px;
+  line-height:1.5;
 }
+.phone-hint strong{color:var(--ink2);font-weight:600}
+.phone-err{
+  font-size:12px;color:var(--red-dk);margin-top:-8px;
+  line-height:1.5;display:none;align-items:center;gap:6px;
+}
+.phone-err.show{display:flex}
+.phone-err::before{
+  content:'';width:4px;height:4px;border-radius:50%;
+  background:var(--red);flex-shrink:0;
+}
+.phone-input.error{border-color:#f5c5c3;background:#fff7f6}
+.phone-input.error:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(232,69,60,.15)}
 
 /* ---- BUTTONS ---- */
 .btn{
@@ -415,13 +428,14 @@ html,body{
           id="phoneInput"
           type="tel"
           inputmode="numeric"
-          placeholder="81234567890"
+          placeholder="812 3456 7890"
           autocomplete="tel"
           aria-label="Nomor WhatsApp"
-          maxlength="15"
+          maxlength="19"
         >
       </div>
-      <div class="phone-hint">Awalan 0 akan dihapus otomatis</div>
+      <div class="phone-hint" id="phoneHint">Ketik aja nomor WA kamu — boleh pakai <strong>0</strong> atau <strong>+62</strong>, otomatis rapih sendiri.</div>
+      <div class="phone-err" id="phoneErr">Nomor kurang panjang — minimal 8 angka setelah kode negara.</div>
       <button id="phoneNextBtn" onclick="doSearch()" disabled style="margin-top:16px;width:100%;padding:14px;background:var(--lime);color:var(--lime-dk);border:none;border-radius:var(--r);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s,background .15s;box-shadow:0 4px 14px rgba(184,240,74,.3)">Lanjut &rarr;</button>
       <div id="spinnerWrap" class="spinner-wrap" style="display:none;">
         <div class="spinner"></div>
@@ -673,9 +687,28 @@ function init() {
 
   showState('state1')
 
-  // Phone input: strip leading 0 real-time. Search HANYA saat klik "Lanjut" atau Enter.
+  // Phone input: auto-format + strip country codes + inline validation
   var phoneInput = document.getElementById('phoneInput')
+  var phoneErr = document.getElementById('phoneErr')
+  var phoneHint = document.getElementById('phoneHint')
+  var countrySel = document.getElementById('countryCode')
   var nextBtn = document.getElementById('phoneNextBtn')
+
+  function normalizeAndFormat(raw) {
+    var digits = raw.replace(/\D/g, '')
+    // Strip country code if user typed it (match current countrySel)
+    var cc = (countrySel && countrySel.value) || '62'
+    if (digits.startsWith(cc)) digits = digits.slice(cc.length)
+    // Strip leading 0 (Indonesian style)
+    if (digits.startsWith('0')) digits = digits.slice(1)
+    // Format as 3-4-4 (xxx xxxx xxxx) — max 13 digits total
+    digits = digits.slice(0, 13)
+    var formatted = ''
+    if (digits.length <= 3) formatted = digits
+    else if (digits.length <= 7) formatted = digits.slice(0,3) + ' ' + digits.slice(3)
+    else formatted = digits.slice(0,3) + ' ' + digits.slice(3,7) + ' ' + digits.slice(7)
+    return { digits: digits, formatted: formatted }
+  }
 
   function updateNextBtn() {
     var digits = phoneInput.value.replace(/\D/g,'')
@@ -687,22 +720,49 @@ function init() {
     }
   }
 
+  function hideErr() {
+    phoneErr.classList.remove('show')
+    phoneInput.classList.remove('error')
+    phoneHint.style.display = 'block'
+  }
+  function showErr(msg) {
+    if (msg) phoneErr.textContent = msg
+    phoneErr.classList.add('show')
+    phoneInput.classList.add('error')
+    phoneHint.style.display = 'none'
+  }
+
   phoneInput.addEventListener('input', function() {
-    // Strip leading 0 real-time
-    var val = phoneInput.value.replace(/\D/g, '')
-    if (val.startsWith('0')) {
-      val = val.slice(1)
-      phoneInput.value = val
-    }
+    var r = normalizeAndFormat(phoneInput.value)
+    phoneInput.value = r.formatted
+    hideErr()
     updateNextBtn()
+  })
+
+  phoneInput.addEventListener('blur', function() {
+    var digits = phoneInput.value.replace(/\D/g,'')
+    if (digits.length > 0 && digits.length < 8) {
+      showErr('Nomor kurang panjang — minimal 8 angka setelah kode negara.')
+    }
   })
 
   phoneInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       var digits = phoneInput.value.replace(/\D/g,'')
       if (digits.length >= 8) doSearch()
+      else showErr('Nomor kurang panjang — minimal 8 angka setelah kode negara.')
     }
   })
+
+  // When user changes country code, re-format (strip new CC if present)
+  if (countrySel) {
+    countrySel.addEventListener('change', function() {
+      var r = normalizeAndFormat(phoneInput.value)
+      phoneInput.value = r.formatted
+      hideErr()
+      updateNextBtn()
+    })
+  }
 
   updateNextBtn()
 
@@ -718,12 +778,16 @@ function init() {
 // ---- SEARCH ----
 function doSearch() {
   var raw = document.getElementById('phoneInput').value
+  var cc = document.getElementById('countryCode').value
   var norm = raw.replace(/\D/g, '')
+  // Strip country code if user typed it
+  if (norm.startsWith(cc)) norm = norm.slice(cc.length)
+  // Strip leading 0
   if (norm.startsWith('0')) norm = norm.slice(1)
   if (norm.length < 7) return
 
   currentPhone = norm
-  currentCountryCode = document.getElementById('countryCode').value
+  currentCountryCode = cc
 
   // Show spinner
   document.getElementById('spinnerWrap').style.display = 'flex'

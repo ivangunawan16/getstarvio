@@ -102,12 +102,18 @@ select.fi{cursor:pointer}
 .pv-num{width:20px;height:20px;border-radius:50%;background:var(--lime-bg);border:1.5px solid var(--lime-bd);color:var(--lime-dk);font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .pv-item strong{color:var(--ink);font-weight:700}
 
-/* Checklist (pre-requisites) */
+/* Checklist (pre-requisites) — interactive checkboxes */
 .checklist-card{background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
 .cl-title{font-size:10px;font-weight:700;color:var(--lime-dk);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.cl-item{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--lime-dk);line-height:1.55;padding:3px 0}
+.cl-item{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--lime-dk);line-height:1.55;padding:5px 0;cursor:pointer;user-select:none}
+.cl-item:hover .cl-chk{border-color:var(--lime-dk)}
 .cl-item .cl-ic{font-size:14px;flex-shrink:0;line-height:1.4;margin-top:1px}
 .cl-item strong{color:var(--lime-dk);font-weight:700}
+.cl-chk{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--lime-dk);background:transparent;flex-shrink:0;margin-top:2px;position:relative;transition:all .15s}
+.cl-chk.ticked{background:var(--lime-dk);border-color:var(--lime-dk)}
+.cl-chk.ticked::after{content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.cl-item.ticked{opacity:.75}
+.cl-progress{margin-top:8px;padding-top:8px;border-top:1px dashed var(--lime-dk);font-size:10px;font-weight:700;color:var(--lime-dk);opacity:.8;letter-spacing:.04em;text-transform:uppercase}
 
 /* WA Active Check (Meta Coexistence 7-day requirement) */
 .wa-active-check{background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
@@ -422,12 +428,13 @@ select.fi{cursor:pointer}
           <div class="pv-item"><span class="pv-num">4</span><span><strong>Scan QR di popup</strong> pakai WA Business app di HP — selesai!</span></div>
         </div>
 
-        <!-- Pre-requisites -->
+        <!-- Pre-requisites — interactive checklist (user harus centang untuk enable tombol) -->
         <div class="checklist-card">
-          <div class="cl-title">Sebelum mulai, pastikan kamu punya:</div>
-          <div class="cl-item"><span class="cl-ic">📱</span><span><strong>WhatsApp Business app versi 2.24.17+</strong> di HP (cek di App Store / Play Store — update kalau perlu)</span></div>
-          <div class="cl-item"><span class="cl-ic">👤</span><span><strong>Akun Facebook</strong> pribadi (untuk login resmi Meta)</span></div>
-          <div class="cl-item"><span class="cl-ic">⏱️</span><span><strong>2–3 menit waktu kosong</strong> untuk selesaikan flow</span></div>
+          <div class="cl-title">Centang dulu yang sudah kamu siapkan:</div>
+          <div class="cl-item" id="cl-item-1" onclick="toggleChecklist(1)"><span class="cl-chk" id="cl-chk-1"></span><span class="cl-ic">📱</span><span><strong>WhatsApp Business app 2.24.17+</strong> sudah terinstal di HP saya (bukan WA biasa)</span></div>
+          <div class="cl-item" id="cl-item-2" onclick="toggleChecklist(2)"><span class="cl-chk" id="cl-chk-2"></span><span class="cl-ic">👤</span><span><strong>Akun Facebook</strong> pribadi saya siap untuk login</span></div>
+          <div class="cl-item" id="cl-item-3" onclick="toggleChecklist(3)"><span class="cl-chk" id="cl-chk-3"></span><span class="cl-ic">⏱️</span><span><strong>2–3 menit waktu kosong</strong> — HP saya dekat untuk scan QR</span></div>
+          <div class="cl-progress" id="cl-progress">0 / 3 — centang semua untuk aktifkan tombol</div>
         </div>
 
         <!-- NEW: 7-day active check (Meta Coexistence requirement) -->
@@ -446,7 +453,7 @@ select.fi{cursor:pointer}
               <span class="wa-ac-hint">✓ OK</span>
             </label>
             <label class="wa-ac-opt">
-              <input type="radio" name="wa-active" value="gt30" onchange="onWaActiveChange()" checked>
+              <input type="radio" name="wa-active" value="gt30" onchange="onWaActiveChange()">
               <span class="wa-ac-label">Lebih dari 30 hari</span>
               <span class="wa-ac-hint">✅ Direkomendasikan</span>
             </label>
@@ -470,12 +477,12 @@ select.fi{cursor:pointer}
           </div>
         </div>
 
-        <button class="btn-fb" id="btn-connect" onclick="openMetaPopup()">
+        <button class="btn-fb" id="btn-connect" onclick="openMetaPopup()" disabled style="opacity:.45;cursor:not-allowed">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
           Hubungkan dengan Facebook
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
         </button>
-        <div class="btn-fb-sub">🔒 Buka popup Meta resmi · Login terverifikasi</div>
+        <div class="btn-fb-sub" id="btn-fb-sub">🔒 Centang checklist + pilih durasi aktif WA untuk mulai</div>
       </div>
 
       <!-- ── STATE 2: EMBEDDED SIGNUP IN PROGRESS ── -->
@@ -1027,29 +1034,83 @@ function go(n) {
 
 /* ── S1: EMBEDDED SIGNUP + COEXIST FLOW ── */
 
-// Handle WA active duration radio change — block signup kalau <7 hari
-function onWaActiveChange() {
-  var checked = document.querySelector('input[name="wa-active"]:checked')
-  var btn = document.getElementById('btn-connect')
-  var warn = document.getElementById('waActiveWarn')
-  if (!checked || !btn) return
-  if (checked.value === 'lt7') {
-    btn.disabled = true
-    btn.style.opacity = '.45'
-    btn.style.cursor = 'not-allowed'
-    if (warn) warn.style.display = 'flex'
+// Prerequisite checklist state
+var _clState = { 1: false, 2: false, 3: false }
+
+function toggleChecklist(n) {
+  _clState[n] = !_clState[n]
+  var chk = document.getElementById('cl-chk-' + n)
+  var item = document.getElementById('cl-item-' + n)
+  if (_clState[n]) {
+    chk.classList.add('ticked')
+    item.classList.add('ticked')
   } else {
-    btn.disabled = false
-    btn.style.opacity = ''
-    btn.style.cursor = ''
-    if (warn) warn.style.display = 'none'
+    chk.classList.remove('ticked')
+    item.classList.remove('ticked')
+  }
+  updateS1GateState()
+}
+
+function updateS1GateState() {
+  var btn = document.getElementById('btn-connect')
+  var sub = document.getElementById('btn-fb-sub')
+  var warn = document.getElementById('waActiveWarn')
+  var progress = document.getElementById('cl-progress')
+  if (!btn) return
+
+  var tickedN = (_clState[1] ? 1 : 0) + (_clState[2] ? 1 : 0) + (_clState[3] ? 1 : 0)
+  if (progress) {
+    if (tickedN === 3) {
+      progress.textContent = '✓ Semua siap — lanjut pilih durasi WA di bawah'
+    } else {
+      progress.textContent = tickedN + ' / 3 — centang semua untuk aktifkan tombol'
+    }
+  }
+
+  var waChecked = document.querySelector('input[name="wa-active"]:checked')
+  var waValid = waChecked && (waChecked.value === '7to30' || waChecked.value === 'gt30')
+  var waBlock = waChecked && waChecked.value === 'lt7'
+
+  // Show wa-active warning only when explicitly picked lt7
+  if (warn) warn.style.display = waBlock ? 'flex' : 'none'
+
+  var enabled = (tickedN === 3) && waValid
+  btn.disabled = !enabled
+  btn.style.opacity = enabled ? '' : '.45'
+  btn.style.cursor = enabled ? '' : 'not-allowed'
+
+  if (sub) {
+    if (enabled) {
+      sub.innerHTML = '🔒 Buka popup Meta resmi · Login terverifikasi'
+    } else if (waBlock) {
+      sub.innerHTML = '⚠️ Tunggu sampai WA Business app kamu aktif min. 7 hari'
+    } else if (tickedN < 3) {
+      sub.innerHTML = '🔒 Centang ' + (3 - tickedN) + ' hal di atas dulu untuk mulai'
+    } else if (!waChecked) {
+      sub.innerHTML = '🔒 Pilih durasi aktif WA Business app di bawah'
+    }
   }
 }
 
+// Handle WA active duration radio change
+function onWaActiveChange() {
+  updateS1GateState()
+}
+
 function openMetaPopup() {
+  // Guard: semua 3 checklist harus dicentang
+  var tickedN = (_clState[1] ? 1 : 0) + (_clState[2] ? 1 : 0) + (_clState[3] ? 1 : 0)
+  if (tickedN < 3) {
+    alert('Centang dulu semua ' + (3 - tickedN) + ' hal di atas ya — itu wajib supaya flow koneksi lancar.')
+    return
+  }
   // Guard: cek 7-day active check — kalau <7 hari, block
   var waActive = document.querySelector('input[name="wa-active"]:checked')
-  if (waActive && waActive.value === 'lt7') {
+  if (!waActive) {
+    alert('Pilih durasi aktif WA Business app dulu di bawah ya.')
+    return
+  }
+  if (waActive.value === 'lt7') {
     alert('Tunggu sampai WA Business app kamu aktif minimum 7 hari ya. Meta butuh riwayat aktif untuk approve Coexistence onboarding.')
     return
   }

@@ -97,9 +97,20 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .filter-tab.active{background:var(--lime-bg);border-color:var(--lime2);color:var(--lime-dk)}
 .filter-tab .ft-count{font-size:10px;font-weight:800;background:rgba(0,0,0,.06);padding:1px 6px;border-radius:99px;min-width:18px;text-align:center}
 .filter-tab.active .ft-count{background:rgba(45,74,0,.1)}
-.date-chip{padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);transition:all .15s;user-select:none}
+.date-chip{padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);transition:all .15s;user-select:none;display:inline-flex;align-items:center;gap:5px}
 .date-chip:hover{background:var(--bg3)}
 .date-chip.active{background:var(--ink);border-color:var(--ink);color:#fff}
+/* Custom date range picker popover */
+.date-custom-wrap{position:relative;display:inline-block}
+.date-pop{position:absolute;top:calc(100% + 6px);right:0;z-index:20;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.12);display:none;min-width:240px;animation:fadeUp .15s ease}
+.date-pop.open{display:block}
+.date-pop-row{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.date-pop-row label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
+.date-pop-row input[type=date]{padding:7px 10px;border:1.5px solid var(--border2);border-radius:var(--r-sm);font-family:inherit;font-size:12px;color:var(--ink);outline:none;background:#fff}
+.date-pop-row input[type=date]:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.12)}
+.date-pop-foot{display:flex;gap:6px;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+.date-pop-err{font-size:10px;color:var(--red-dk);margin-top:4px;display:none}
+.date-pop-err.show{display:block}
 .search-input{
   width:200px;padding:7px 12px;border-radius:var(--r-sm);
   background:var(--bg2);border:1.5px solid var(--border2);
@@ -343,10 +354,31 @@ body.imp-active{padding-top:36px}
         <div class="filter-tab" data-filter="gagal" onclick="setStatusFilter(this,'gagal')">Gagal <span class="ft-count" id="fc-fail">0</span></div>
         <div class="filter-tab" data-filter="pending" onclick="setStatusFilter(this,'pending')">Pending <span class="ft-count" id="fc-pending">0</span></div>
 
-        <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
-          <div class="date-chip active" onclick="setDateRange(this,'week')">Minggu Ini</div>
-          <div class="date-chip" onclick="setDateRange(this,'month')">Bulan Ini</div>
-          <div class="date-chip" onclick="setDateRange(this,'all')">Semua</div>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <div class="date-chip active" data-range="week" onclick="setDateRange(this,'week')">Minggu Ini</div>
+          <div class="date-chip" data-range="month" onclick="setDateRange(this,'month')">Bulan Ini</div>
+          <div class="date-chip" data-range="all" onclick="setDateRange(this,'all')">Semua</div>
+          <div class="date-custom-wrap">
+            <div class="date-chip" id="date-chip-custom" data-range="custom" onclick="toggleDatePop(event)">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6h12M6 1.5v2M10 1.5v2"/></svg>
+              <span id="date-custom-label">Custom</span>
+            </div>
+            <div class="date-pop" id="date-pop">
+              <div class="date-pop-row">
+                <label>Dari</label>
+                <input type="date" id="date-from">
+              </div>
+              <div class="date-pop-row">
+                <label>Sampai</label>
+                <input type="date" id="date-to">
+              </div>
+              <div class="date-pop-err" id="date-pop-err">Tanggal "Dari" harus sebelum "Sampai"</div>
+              <div class="date-pop-foot">
+                <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="clearDatePop()">Reset</button>
+                <button class="btn btn-lime btn-sm" style="padding:5px 12px;font-size:10px" onclick="applyDatePop()">Terapkan</button>
+              </div>
+            </div>
+          </div>
           <input type="text" id="search-input" class="search-input" placeholder="Cari nama atau WA..." oninput="onSearchInput()">
         </div>
       </div>
@@ -523,7 +555,9 @@ function closeSidebar() { document.getElementById('sidebar').classList.remove('o
 
 /* ── STATE ── */
 let statusFilter = 'semua'
-let dateRange = 'week'
+let dateRange = 'week'  // 'week' | 'month' | 'all' | 'custom'
+let customFrom = null   // Date object, inclusive start of day
+let customTo = null     // Date object, inclusive end of day
 let searchQuery = ''
 let currentPage = 1
 const PER_PAGE = 10
@@ -560,20 +594,30 @@ function getMonthStart() {
 }
 
 /* ── FILTER / RENDER ── */
+function getDateBounds() {
+  // Returns { start: Date|null, end: Date|null } — null means unbounded
+  if (dateRange === 'week') return { start: getWeekStart(), end: null }
+  if (dateRange === 'month') return { start: getMonthStart(), end: null }
+  if (dateRange === 'custom' && customFrom && customTo) {
+    return { start: customFrom, end: customTo }
+  }
+  return { start: null, end: null }
+}
+
 function getFilteredReminders(u) {
   const rems = u.reminders || []
   const cxs = u.customers || []
 
   // date range filter
-  let rangeStart = null
-  if (dateRange === 'week') rangeStart = getWeekStart()
-  else if (dateRange === 'month') rangeStart = getMonthStart()
+  const { start: rangeStart, end: rangeEnd } = getDateBounds()
 
   let filtered = rems
-  if (rangeStart) {
+  if (rangeStart || rangeEnd) {
     filtered = filtered.filter(r => {
       const d = new Date(r.scheduledAt || r.sentAt)
-      return d >= rangeStart
+      if (rangeStart && d < rangeStart) return false
+      if (rangeEnd && d > rangeEnd) return false
+      return true
     })
   }
 
@@ -608,15 +652,15 @@ function getFilteredReminders(u) {
 
 function countByStatus(u) {
   const rems = u.reminders || []
-  let rangeStart = null
-  if (dateRange === 'week') rangeStart = getWeekStart()
-  else if (dateRange === 'month') rangeStart = getMonthStart()
+  const { start: rangeStart, end: rangeEnd } = getDateBounds()
 
   let filtered = rems
-  if (rangeStart) {
+  if (rangeStart || rangeEnd) {
     filtered = filtered.filter(r => {
       const d = new Date(r.scheduledAt || r.sentAt)
-      return d >= rangeStart
+      if (rangeStart && d < rangeStart) return false
+      if (rangeEnd && d > rangeEnd) return false
+      return true
     })
   }
 
@@ -767,13 +811,25 @@ function renderTable() {
   tbody.innerHTML = tableHtml
   mobileWrap.innerHTML = cardHtml
 
-  // Pagination
+  // Pagination — smart window (first, prev, window around current, next, last)
   document.getElementById('pag-info').textContent = 'Menampilkan ' + (start+1) + '\u2013' + Math.min(start+PER_PAGE, total) + ' dari ' + total + ' log'
   const btns = document.getElementById('pag-btns')
   let html = '<button class="page-btn" onclick="changePage(' + (currentPage-1) + ')" ' + (currentPage <= 1 ? 'disabled' : '') + '>\u2190 Prev</button>'
-  const maxPgs = Math.min(totalPages, 5)
-  for (let i = 1; i <= maxPgs; i++) {
+
+  // Determine which page buttons to show: first, last, and window around current
+  const windowSize = 2  // pages on each side of current
+  const pagesToShow = new Set([1, totalPages])
+  for (let i = Math.max(1, currentPage - windowSize); i <= Math.min(totalPages, currentPage + windowSize); i++) {
+    pagesToShow.add(i)
+  }
+  const sorted = Array.from(pagesToShow).sort((a, b) => a - b)
+  let lastShown = 0
+  for (const i of sorted) {
+    if (i - lastShown > 1) {
+      html += '<span class="page-btn" style="border:none;background:transparent;cursor:default;padding:5px 4px">…</span>'
+    }
     html += '<button class="page-btn' + (i === currentPage ? ' active' : '') + '" onclick="changePage(' + i + ')">' + i + '</button>'
+    lastShown = i
   }
   html += '<button class="page-btn" onclick="changePage(' + (currentPage+1) + ')" ' + (currentPage >= totalPages ? 'disabled' : '') + '>Next \u2192</button>'
   btns.innerHTML = html
@@ -801,8 +857,82 @@ function onSearchInput() {
 function setDateRange(el, val) {
   dateRange = val
   currentPage = 1
+  if (val !== 'custom') {
+    customFrom = null
+    customTo = null
+    const lbl = document.getElementById('date-custom-label')
+    if (lbl) lbl.textContent = 'Custom'
+    closeDatePop()
+  }
   document.querySelectorAll('.date-chip').forEach(t => t.classList.remove('active'))
   el.classList.add('active')
+  const u = loadU()
+  if (u) renderBadgeCounts(u)
+  renderTable()
+}
+
+/* ── CUSTOM DATE RANGE POPOVER ── */
+function toggleDatePop(ev) {
+  if (ev) ev.stopPropagation()
+  const pop = document.getElementById('date-pop')
+  if (!pop) return
+  if (pop.classList.contains('open')) {
+    closeDatePop()
+  } else {
+    // Pre-fill inputs if we have existing custom range
+    const from = document.getElementById('date-from')
+    const to = document.getElementById('date-to')
+    if (customFrom && from) from.value = customFrom.toISOString().slice(0,10)
+    if (customTo && to) to.value = customTo.toISOString().slice(0,10)
+    pop.classList.add('open')
+    // Dismiss on outside click
+    setTimeout(() => document.addEventListener('click', outsideDatePopHandler), 0)
+  }
+}
+function closeDatePop() {
+  const pop = document.getElementById('date-pop')
+  if (pop) pop.classList.remove('open')
+  document.removeEventListener('click', outsideDatePopHandler)
+  const err = document.getElementById('date-pop-err')
+  if (err) err.classList.remove('show')
+}
+function outsideDatePopHandler(e) {
+  const wrap = e.target.closest('.date-custom-wrap')
+  if (!wrap) closeDatePop()
+}
+function clearDatePop() {
+  const from = document.getElementById('date-from')
+  const to = document.getElementById('date-to')
+  if (from) from.value = ''
+  if (to) to.value = ''
+  const err = document.getElementById('date-pop-err')
+  if (err) err.classList.remove('show')
+}
+function applyDatePop() {
+  const fromStr = document.getElementById('date-from').value
+  const toStr = document.getElementById('date-to').value
+  const err = document.getElementById('date-pop-err')
+  if (!fromStr || !toStr) {
+    if (err) { err.textContent = 'Isi kedua tanggal dulu ya'; err.classList.add('show') }
+    return
+  }
+  const fromD = new Date(fromStr + 'T00:00:00')
+  const toD = new Date(toStr + 'T23:59:59')
+  if (fromD > toD) {
+    if (err) { err.textContent = 'Tanggal "Dari" harus sebelum "Sampai"'; err.classList.add('show') }
+    return
+  }
+  customFrom = fromD
+  customTo = toD
+  dateRange = 'custom'
+  currentPage = 1
+  // Update chip label + active state
+  const lbl = document.getElementById('date-custom-label')
+  const opts = { day: 'numeric', month: 'short' }
+  if (lbl) lbl.textContent = fromD.toLocaleDateString('id-ID', opts) + ' – ' + toD.toLocaleDateString('id-ID', opts)
+  document.querySelectorAll('.date-chip').forEach(t => t.classList.remove('active'))
+  document.getElementById('date-chip-custom').classList.add('active')
+  closeDatePop()
   const u = loadU()
   if (u) renderBadgeCounts(u)
   renderTable()

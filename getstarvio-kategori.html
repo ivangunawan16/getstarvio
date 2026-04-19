@@ -19,6 +19,10 @@
 }
 html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidden;background:var(--bg)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+/* -- TOAST -- */
+.toast-container{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;pointer-events:none;align-items:center}
+.toast{background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,.3);animation:fadeUp .3s ease;white-space:nowrap;transition:opacity .3s}
+.toast-err{background:var(--red-dk)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* ── LAYOUT ── */
@@ -842,6 +846,7 @@ function saveKat() {
   saveU(U)
   renderKat()
   closeM('m-addkat')
+  showToast(icon + ' Kategori "' + name + '" ditambahkan')
 }
 
 /* ── EDIT ── */
@@ -890,6 +895,7 @@ function saveEditKat() {
   saveU(U)
   renderKat()
   closeM('m-editkat')
+  showToast(cat.icon + ' Perubahan "' + cat.name + '" disimpan')
 }
 
 /* ── DELETE ── */
@@ -904,11 +910,14 @@ function delKat(id) {
 
 function confirmDel() {
   if (!pendingDelId) return
+  var delCat = (U.cats || []).find(function(c) { return c.id === pendingDelId })
+  var delName = delCat ? delCat.name : 'Kategori'
   U.cats = (U.cats || []).filter(function(c) { return c.id !== pendingDelId })
   pendingDelId = null
   saveU(U)
   renderKat()
   closeM('m-delkat')
+  showToast('🗑️ Kategori "' + delName + '" dihapus')
 }
 
 /* ── DEFAULT INTERVAL ── */
@@ -918,6 +927,24 @@ function saveDef() {
   var btn = document.getElementById('def-btn')
   btn.textContent = '\u2713 Tersimpan'
   setTimeout(function() { btn.textContent = 'Simpan' }, 1500)
+  showToast('Default interval disimpan — ' + v + ' hari')
+}
+
+/* ── TOAST ── */
+function showToast(msg, kind) {
+  var wrap = document.getElementById('toast-wrap')
+  if (!wrap) {
+    wrap = document.createElement('div')
+    wrap.id = 'toast-wrap'
+    wrap.className = 'toast-container'
+    document.body.appendChild(wrap)
+  }
+  var t = document.createElement('div')
+  t.className = 'toast' + (kind === 'error' ? ' toast-err' : '')
+  t.textContent = msg
+  wrap.appendChild(t)
+  setTimeout(function() { t.style.opacity = '0' }, 2400)
+  setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t) }, 2900)
 }
 
 /* ── INIT ── */

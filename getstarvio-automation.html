@@ -139,6 +139,15 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 /* -- SELECT -- */
 select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9a92' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
 
+/* -- TEMPLATE HELP TEXT -- */
+.tpl-help{font-size:10px;color:var(--ink3);margin-top:5px;line-height:1.5}
+.tpl-help strong{color:var(--ink2);font-weight:600}
+
+/* -- TOAST -- */
+.toast-container{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;pointer-events:none;align-items:center}
+.toast{background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,.3);animation:fadeUp .3s ease;white-space:nowrap;transition:opacity .3s}
+.toast-err{background:var(--red-dk)}
+
 /* -- SIDEBAR OVERLAY (mobile) -- */
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
 .sidebar-overlay.open{display:block}
@@ -265,8 +274,11 @@ body.imp-active{padding-top:36px}
           <div style="display:flex;align-items:center;gap:14px">
             <div style="text-align:right">
               <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em">Kirim pukul</div>
-              <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;line-height:1;margin-top:3px" id="send-time">09:00</div>
-              <div style="font-size:10px;color:var(--ink4);margin-top:2px" id="send-tz">WIB</div>
+              <div style="display:flex;align-items:baseline;gap:4px;margin-top:3px;justify-content:flex-end">
+                <input type="time" id="send-time-inline" value="09:00" onchange="saveSendTimeInline()" style="font-size:18px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;line-height:1;background:transparent;border:none;padding:0;cursor:pointer;width:auto;outline:none;text-align:right">
+                <span style="font-size:10px;color:var(--ink4)" id="send-tz">WIB</span>
+              </div>
+              <div style="font-size:9px;color:var(--ink4);margin-top:3px;font-weight:600;letter-spacing:.04em" title="Klik jam untuk ubah">✏️ klik untuk ubah</div>
             </div>
             <div class="master-toggle on" id="master-toggle" onclick="toggleMaster()"></div>
           </div>
@@ -621,8 +633,24 @@ function saveSendTime() {
   var val = document.getElementById('default-send-time').value
   U.sendTime = val
   saveU(U)
-  document.getElementById('send-time').textContent = val || '09:00'
+  // Sync top input
+  var top = document.getElementById('send-time-inline')
+  if (top) top.value = val || '09:00'
   flashSaved()
+  showToast('Jam kirim disimpan — ' + (val || '09:00'))
+}
+
+function saveSendTimeInline() {
+  var U = loadU()
+  if (!U) return
+  var val = document.getElementById('send-time-inline').value
+  U.sendTime = val
+  saveU(U)
+  // Sync bottom input
+  var bot = document.getElementById('default-send-time')
+  if (bot) bot.value = val || '09:00'
+  flashSaved()
+  showToast('Jam kirim disimpan — ' + (val || '09:00'))
 }
 
 function saveDefaultInterval() {
@@ -632,12 +660,30 @@ function saveDefaultInterval() {
   U.defaultInterval = val
   saveU(U)
   flashSaved()
+  showToast('Default interval disimpan — ' + val + ' hari')
 }
 
 function flashSaved() {
   var el = document.getElementById('default-saved')
   el.style.display = 'inline'
   setTimeout(function(){ el.style.display = 'none' }, 1500)
+}
+
+/* == TOAST == */
+function showToast(msg, kind) {
+  var wrap = document.getElementById('toast-wrap')
+  if (!wrap) {
+    wrap = document.createElement('div')
+    wrap.id = 'toast-wrap'
+    wrap.className = 'toast-container'
+    document.body.appendChild(wrap)
+  }
+  var t = document.createElement('div')
+  t.className = 'toast' + (kind === 'error' ? ' toast-err' : '')
+  t.textContent = msg
+  wrap.appendChild(t)
+  setTimeout(function() { t.style.opacity = '0' }, 2400)
+  setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t) }, 2900)
 }
 
 /* == CATEGORY TOGGLE == */
@@ -783,6 +829,7 @@ function renderFlows(U) {
           '<div>' +
             '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Template Pesan</div>' +
             '<select id="tpl-' + cat.id + '" class="fi" onchange="previewCatTemplate(\'' + cat.id + '\')">' + tplOptions + '</select>' +
+            '<div class="tpl-help">5 variasi bahasa (formal → casual). Ganti kalau ga cocok dengan tone bisnismu — preview di bawah auto-update.</div>' +
           '</div>' +
         '</div>' +
         '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Preview Pesan WA</div>' +
@@ -814,9 +861,10 @@ function boot() {
   document.getElementById('send-tz').textContent = tzLabel
   document.getElementById('default-tz').textContent = tzLabel
 
-  // Send time
+  // Send time — synced across top (inline edit) + bottom (advanced default)
   var sendTime = U.sendTime || '09:00'
-  document.getElementById('send-time').textContent = sendTime
+  var topInput = document.getElementById('send-time-inline')
+  if (topInput) topInput.value = sendTime
   document.getElementById('default-send-time').value = sendTime
 
   // Default interval
