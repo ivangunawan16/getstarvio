@@ -317,6 +317,12 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .field-help{font-size:11px;color:var(--ink3);margin-top:-10px;margin-bottom:16px;line-height:1.55}
 .field-help code{font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:1px 6px;border-radius:3px;color:var(--ink2);font-size:10.5px}
 
+/* Meta API payload preview modal */
+.pl-endpoint{margin-bottom:14px;border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;background:var(--bg2)}
+.pl-ep-label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.pl-ep-code{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);background:var(--bg3);padding:8px 10px;border-radius:4px;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pl-json{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);background:var(--bg3);padding:10px 12px;border-radius:4px;white-space:pre-wrap;word-break:break-word;line-height:1.55;margin:0;overflow-x:auto;max-height:260px}
+
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .stats-row{grid-template-columns:repeat(2,1fr)}
@@ -811,6 +817,70 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
     <div class="mft">
       <button class="btn-secondary" onclick="closeModal('modal-template')">Batal</button>
       <button class="btn-primary" onclick="saveTemplate()">Submit ke Meta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ META API PAYLOAD PREVIEW MODAL ══════════════════ -->
+<div class="overlay" id="modal-payload" onclick="if(event.target===this)closeModal('modal-payload')">
+  <div class="modal" style="max-width:680px">
+    <div class="mhd">
+      <div class="m-title">Meta Graph API — Template Submission Payload</div>
+      <button class="m-close" onclick="closeModal('modal-payload')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <div class="field-help" style="margin-bottom:12px">
+        Payload exact yang di-submit ke <code style="background:var(--bg3);padding:2px 5px;border-radius:3px;font-size:10px">POST /{WABA_ID}/message_templates</code> saat template di-submit ke Meta untuk review. Reviewer Meta lihat ini untuk approve/reject.
+      </div>
+
+      <div class="pl-endpoint">
+        <div class="pl-ep-label">Endpoint</div>
+        <code class="pl-ep-code" id="pl-endpoint">POST https://graph.facebook.com/v21.0/{WABA_ID}/message_templates</code>
+      </div>
+
+      <div class="pl-endpoint">
+        <div class="pl-ep-label">Request Headers</div>
+        <code class="pl-ep-code">Authorization: Bearer {ACCESS_TOKEN}
+Content-Type: application/json</code>
+      </div>
+
+      <div class="pl-endpoint">
+        <div class="pl-ep-label">Request Body</div>
+        <pre class="pl-json" id="pl-body">{}</pre>
+        <button class="btn-secondary" style="margin-top:6px;font-size:11px;padding:6px 10px" onclick="copyPayloadToClip()">Copy to clipboard</button>
+      </div>
+
+      <div class="pl-endpoint">
+        <div class="pl-ep-label">Expected Response (success)</div>
+        <pre class="pl-json" id="pl-response">{
+  "id": "xxxxxxxxxxxxxxx",
+  "status": "PENDING",
+  "category": "UTILITY"
+}</pre>
+      </div>
+
+      <div class="pl-endpoint" style="border:1px solid var(--lime-bd);background:var(--lime-bg)">
+        <div class="pl-ep-label" style="color:var(--lime-dk)">Webhook after review (~24h)</div>
+        <pre class="pl-json" style="background:#fff" id="pl-webhook">{
+  "object": "whatsapp_business_account",
+  "entry": [{
+    "id": "{WABA_ID}",
+    "changes": [{
+      "field": "message_template_status_update",
+      "value": {
+        "event": "APPROVED",
+        "message_template_id": "xxxxxxxxxxxxxxx",
+        "message_template_name": "{TEMPLATE_NAME}",
+        "message_template_language": "id",
+        "reason": "NONE"
+      }
+    }]
+  }]
+}</pre>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-payload')">Close</button>
     </div>
   </div>
 </div>
@@ -1392,6 +1462,9 @@ function openDetail(id) {
   html += '</div>';
   html += '</div>';
 
+  // Meta WhatsApp Business Connection Section
+  html += buildMetaConnectionSection(b);
+
   // Activity Log
   var logs = ACTIVITY_LOG[b.id] || [];
   html += '<div>';
@@ -1412,6 +1485,117 @@ function openDetail(id) {
   document.getElementById('md-footer').innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'modal-detail\')">Tutup</button>';
 
   openModal('modal-detail');
+}
+
+/* ── Build Meta WABA Connection section in business detail ── */
+function buildMetaConnectionSection(b) {
+  // Seed realistic Meta data from business (use seeded IDs if available, else generate deterministic mock)
+  var meta = b.meta || generateMockMetaForBiz(b);
+
+  // Quality rating visual mapping
+  var qr = meta.phoneNumber.qualityRating;
+  var qrColor = qr === 'GREEN' ? 'var(--lime-dk)' : (qr === 'YELLOW' ? 'var(--amber-dk)' : (qr === 'RED' ? 'var(--red)' : 'var(--ink3)'));
+  var qrBg    = qr === 'GREEN' ? 'var(--lime-bg)' : (qr === 'YELLOW' ? 'var(--amber-bg)' : (qr === 'RED' ? 'var(--red-bg)' : 'var(--bg3)'));
+  var qrLabel = qr === 'GREEN' ? 'HIGH' : (qr === 'YELLOW' ? 'MEDIUM' : (qr === 'RED' ? 'LOW' : 'UNKNOWN'));
+
+  // Mask helper
+  function mask(id) { if (!id || id.length < 8) return id; return id.slice(0,4) + '\u2022\u2022\u2022' + id.slice(-4); }
+
+  var html = '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:6px">';
+  html += '<span style="font-size:13px">\uD83D\uDCF1</span> Meta WhatsApp Business Connection';
+  html += '</div>';
+
+  // Top row: display number + verified name
+  html += '<div style="background:#fff;border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;margin-bottom:8px">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px">';
+  html += '<div>';
+  html += '<div style="font-size:13px;font-weight:700;color:var(--ink);font-family:\'JetBrains Mono\',monospace">' + (meta.phoneNumber.displayNumber || '—') + '</div>';
+  html += '<div style="font-size:11px;color:var(--ink3);margin-top:2px">' + (meta.phoneNumber.verifiedName || '—') + ' <span style="color:var(--lime-dk)">\u2713 verified</span></div>';
+  html += '<div style="font-size:10px;color:var(--ink4);margin-top:2px">Business Portfolio: ' + (meta.business.portfolioName || '—') + '</div>';
+  html += '</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">';
+  html += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;background:' + qrBg + ';color:' + qrColor + '"><span style="width:5px;height:5px;border-radius:50%;background:' + qrColor + '"></span>Quality: ' + qrLabel + '</span>';
+  html += '<span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:600;background:var(--bg3);color:var(--ink2)">Tier: ' + (meta.phoneNumber.messagingLimitTier || 'TIER_1K').replace('TIER_', '') + '/day</span>';
+  html += '</div>';
+  html += '</div>';
+
+  // Coexistence status
+  if (meta.coexistence && meta.coexistence.enabled) {
+    html += '<div style="border-top:1px dashed var(--border);padding-top:8px;display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--ink2)">';
+    html += '<span style="display:inline-flex;align-items:center;gap:4px"><span>\uD83C\uDFAF</span>Coexistence aktif</span>';
+    html += '<span style="color:var(--ink4)">\u2022</span>';
+    html += '<span style="display:inline-flex;align-items:center;gap:4px">' + (meta.coexistence.contactsSynced ? '\u2713 kontak tersinkron' : '\u26A0 kontak belum sync') + '</span>';
+    html += '<span style="color:var(--ink4)">\u2022</span>';
+    html += '<span style="display:inline-flex;align-items:center;gap:4px">' + (meta.coexistence.historySynced ? '\u2713 history tersinkron' : '\u26A0 history belum sync') + '</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Technical IDs (small grid)
+  html += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;font-family:\'JetBrains Mono\',monospace">';
+  html += '<div style="display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;font-size:10px">';
+  html += '<span style="color:var(--ink3);font-weight:600">WABA ID</span><code style="background:#fff;padding:3px 6px;border-radius:3px;color:var(--ink)">' + mask(meta.waba.id) + '</code><button class="btn btn-ghost btn-sm" style="padding:3px 7px;font-size:9px" onclick="copyMetaId(\'' + meta.waba.id + '\', this)">copy</button>';
+  html += '<span style="color:var(--ink3);font-weight:600">Phone ID</span><code style="background:#fff;padding:3px 6px;border-radius:3px;color:var(--ink)">' + mask(meta.phoneNumber.id) + '</code><button class="btn btn-ghost btn-sm" style="padding:3px 7px;font-size:9px" onclick="copyMetaId(\'' + meta.phoneNumber.id + '\', this)">copy</button>';
+  html += '<span style="color:var(--ink3);font-weight:600">Business ID</span><code style="background:#fff;padding:3px 6px;border-radius:3px;color:var(--ink)">' + mask(meta.business.id) + '</code><button class="btn btn-ghost btn-sm" style="padding:3px 7px;font-size:9px" onclick="copyMetaId(\'' + meta.business.id + '\', this)">copy</button>';
+  html += '<span style="color:var(--ink3);font-weight:600">Platform</span><code style="background:#fff;padding:3px 6px;border-radius:3px;color:var(--ink);grid-column:span 2">' + (meta.phoneNumber.platformType || 'CLOUD_API') + '</code>';
+  html += '</div>';
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+/* Generate deterministic mock meta data from business (for seeded ADMIN_DATA entries) */
+function generateMockMetaForBiz(b) {
+  // Deterministic seed from bizId
+  var seed = parseInt((b.id || 'biz-001').replace(/\D/g,'')) || 1;
+  var pad = function(n, w) { var s = String(n); while (s.length < w) s = '0' + s; return s; };
+  var wabaId = '10' + pad(5783024692731 + seed * 7, 13);
+  var phoneId = '6' + pad(98201013402857 + seed * 11, 14);
+  var bizPortfolioId = '4' + pad(92187365201744 + seed * 13, 14);
+
+  return {
+    waba: {
+      id: wabaId,
+      name: (b.bizName || 'Business') + ' WABA',
+      accountReviewStatus: 'APPROVED'
+    },
+    phoneNumber: {
+      id: phoneId,
+      displayNumber: '+62 ' + (b.ownerWa || '812345678901').slice(2, 5) + ' ' + (b.ownerWa || '812345678901').slice(5, 9) + ' ' + (b.ownerWa || '812345678901').slice(9, 13),
+      verifiedName: b.bizName || 'Business',
+      qualityRating: seed % 5 === 0 ? 'YELLOW' : 'GREEN',
+      platformType: 'CLOUD_API',
+      codeVerificationStatus: 'VERIFIED',
+      messagingLimitTier: (seed % 3 === 0 ? 'TIER_10K' : 'TIER_1K'),
+      throughputLevel: 'STANDARD'
+    },
+    business: {
+      id: bizPortfolioId,
+      portfolioName: (b.bizName || 'Business') + ' Business Portfolio',
+      verificationStatus: 'VERIFIED',
+      twoFactorType: 'admin_required'
+    },
+    coexistence: {
+      enabled: true,
+      contactsSynced: true,
+      historySynced: seed % 2 === 0  // mix: some synced history, some didn't approve
+    }
+  };
+}
+
+function copyMetaId(id, btn) {
+  try {
+    navigator.clipboard.writeText(id).then(function() {
+      if (btn) {
+        var orig = btn.textContent;
+        btn.textContent = 'copied!';
+        btn.style.color = 'var(--lime-dk)';
+        setTimeout(function() { btn.textContent = orig; btn.style.color = ''; }, 1200);
+      }
+    });
+  } catch (e) { console.warn('Clipboard error', e); }
 }
 
 /* ── Business-detail quick action handlers ── */
@@ -1710,11 +1894,11 @@ function switchTab(tab, el) {
 
 var TEMPLATES = [
   // ═══ AFTERCARE FOLLOW-UP (utility-compliant, post-visit) — 4 variabel, no rigid timing ═══
-  { id:'tpl-aft-1', name:'aftercare_followup_1', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nSekarang waktunya untuk perawatan lanjutan supaya hasilnya tetap optimal.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
-  { id:'tpl-aft-2', name:'aftercare_followup_2', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, sekarang waktu yang pas untuk menjadwalkan perawatan lanjutan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
-  { id:'tpl-aft-3', name:'aftercare_followup_3', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nSekarang waktu yang pas untuk perawatan lanjutan supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
-  { id:'tpl-aft-4', name:'aftercare_followup_4', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSudah waktunya untuk perawatan lanjutan nih — biar hasilnya tetap optimal.\n\nButuh bantuan booking? Langsung balas chat ini aja.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
-  { id:'tpl-aft-5', name:'aftercare_followup_5', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, sekarang pas waktunya untuk perawatan lanjutan.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.', header:'', footer:'', buttons:[], updatedAt:'2026-04-18' },
+  { id:'tpl-aft-1', name:'aftercare_followup_1', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nSekarang waktunya untuk perawatan lanjutan supaya hasilnya tetap optimal.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.', example: { body_text: [['Sarah','Hair Smoothing','15 Maret 2026','Salon Celestial']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:00:00.000Z', approvedAt:'2026-04-10T09:24:00.000Z' },
+  { id:'tpl-aft-2', name:'aftercare_followup_2', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, sekarang waktu yang pas untuk menjadwalkan perawatan lanjutan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.', example: { body_text: [['Budi','Facial Treatment','12 April 2026','Klinik Estetika Sehat']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:01:00.000Z', approvedAt:'2026-04-10T09:48:00.000Z' },
+  { id:'tpl-aft-3', name:'aftercare_followup_3', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nSekarang waktu yang pas untuk perawatan lanjutan supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!', example: { body_text: [['Maya','Manicure & Pedicure','08 April 2026','Pretty Nails Studio']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:02:00.000Z', approvedAt:'2026-04-10T10:15:00.000Z' },
+  { id:'tpl-aft-4', name:'aftercare_followup_4', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSudah waktunya untuk perawatan lanjutan nih — biar hasilnya tetap optimal.\n\nButuh bantuan booking? Langsung balas chat ini aja.', example: { body_text: [['Rian','Potong Rambut','10 April 2026','Barbershop Ganteng']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:03:00.000Z', approvedAt:'2026-04-10T11:02:00.000Z' },
+  { id:'tpl-aft-5', name:'aftercare_followup_5', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, sekarang pas waktunya untuk perawatan lanjutan.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.', example: { body_text: [['Citra','Body Massage','05 April 2026','Spa Harmoni']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:04:00.000Z', approvedAt:'2026-04-10T12:20:00.000Z' },
 
   // ═══ AUTH & LEGACY (kompatibilitas) ═══
   { id:'tpl-001', name:'reminder_balik',   category:'UTILITY',        language:'id', status:'APPROVED', body:'Halo {{1}}, sudah {{2}} hari sejak {{3}} di {{4}}. Saatnya kembali ✨ Balas untuk booking ya!', header:'', footer:'', buttons:['Booking Sekarang'], updatedAt:'2026-04-10' },
@@ -1791,13 +1975,19 @@ function renderTemplates() {
     html = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada template ditemukan.</td></tr>';
   } else {
     filtered.forEach(function(t) {
+      var exampleStr = '';
+      if (t.example && t.example.body_text && t.example.body_text[0]) {
+        var ex = t.example.body_text[0];
+        exampleStr = '<div style="font-size:10px;color:var(--ink3);margin-top:3px;font-family:\'JetBrains Mono\',monospace">e.g. {{1}}=' + ex[0] + ' · {{2}}=' + (ex[1]||'—') + ' · {{3}}=' + (ex[2]||'—') + ' · {{4}}=' + (ex[3]||'—') + '</div>';
+      }
       html += '<tr>' +
-        '<td><span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:var(--ink)">' + t.name + '</span></td>' +
+        '<td><span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:var(--ink)">' + t.name + '</span>' + exampleStr + '</td>' +
         '<td><span class="tpl-cat ' + t.category.toLowerCase() + '">' + t.category + '</span></td>' +
         '<td><span style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--ink2)">' + t.language + '</span></td>' +
         '<td><span class="tpl-status ' + t.status.toLowerCase() + '">' + t.status + '</span></td>' +
         '<td style="font-size:11px;color:var(--ink3);font-family:\'JetBrains Mono\',monospace">' + t.updatedAt + '</td>' +
         '<td><div style="display:flex;gap:5px">' +
+          '<button class="bt-icon-btn" onclick="openPayloadModal(\'' + t.id + '\')" title="View Meta API Payload"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h8M4 8h8M4 12h5"/><circle cx="13" cy="12" r="1"/></svg></button>' +
           '<button class="bt-icon-btn" onclick="openTemplateModal(\'' + t.id + '\')" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2l3 3-7 7-4 1 1-4 7-7z"/></svg></button>' +
           (t.status === 'REJECTED' || t.status === 'PAUSED' ? '<button class="bt-icon-btn" onclick="resubmitTemplate(\'' + t.id + '\')" title="Resubmit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8a6 6 0 1011-3"/><path d="M13 2v3h-3"/></svg></button>' : '') +
           '<button class="bt-icon-btn danger" onclick="deleteTemplate(\'' + t.id + '\')" title="Delete"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg></button>' +
@@ -1821,6 +2011,89 @@ function openTemplateModal(id) {
   document.getElementById('tpl-footer').value = t ? (t.footer || '') : '';
   document.getElementById('tpl-buttons').value = t ? (t.buttons || []).join('\n') : '';
   document.getElementById('modal-template').classList.add('show');
+}
+
+/* ── META API PAYLOAD PREVIEW ──
+   Show exact JSON that getstarvio sends to Meta Graph API when submitting
+   a template for review. Critical for Meta App Review Video 2 demonstration. */
+function openPayloadModal(id) {
+  var t = TEMPLATES.find(function(x){ return x.id === id });
+  if (!t) return;
+
+  // Build example payload exactly as Meta expects
+  var components = [];
+  if (t.header) components.push({ type: 'HEADER', format: 'TEXT', text: t.header });
+  var bodyComp = { type: 'BODY', text: t.body };
+  if (t.example && t.example.body_text) bodyComp.example = { body_text: t.example.body_text };
+  components.push(bodyComp);
+  if (t.footer) components.push({ type: 'FOOTER', text: t.footer });
+  if (t.buttons && t.buttons.length) {
+    components.push({
+      type: 'BUTTONS',
+      buttons: t.buttons.map(function(b){ return { type: 'QUICK_REPLY', text: b }; })
+    });
+  }
+
+  var payload = {
+    name: t.name,
+    category: t.category,
+    language: t.language,
+    components: components
+  };
+
+  var bodyEl = document.getElementById('pl-body');
+  if (bodyEl) bodyEl.textContent = JSON.stringify(payload, null, 2);
+
+  var wabaId = '{WABA_ID}';
+  try {
+    var u = JSON.parse(localStorage.getItem('getstarvio_user') || '{}');
+    if (u.meta && u.meta.waba && u.meta.waba.id) wabaId = u.meta.waba.id;
+  } catch (e) {}
+  var epEl = document.getElementById('pl-endpoint');
+  if (epEl) epEl.textContent = 'POST https://graph.facebook.com/v21.0/' + wabaId + '/message_templates';
+
+  // Response mock based on status
+  var respEl = document.getElementById('pl-response');
+  if (respEl) {
+    respEl.textContent = JSON.stringify({
+      id: t.id.replace('tpl-', '9876543210'),
+      status: 'PENDING',
+      category: t.category
+    }, null, 2);
+  }
+
+  // Webhook with current status
+  var wbEl = document.getElementById('pl-webhook');
+  if (wbEl) {
+    wbEl.textContent = JSON.stringify({
+      object: 'whatsapp_business_account',
+      entry: [{
+        id: wabaId,
+        changes: [{
+          field: 'message_template_status_update',
+          value: {
+            event: t.status === 'PENDING' ? 'PENDING' : t.status,
+            message_template_id: t.id.replace('tpl-', '9876543210'),
+            message_template_name: t.name,
+            message_template_language: t.language,
+            reason: t.status === 'REJECTED' ? 'PROMOTIONAL_CONTENT_IN_UTILITY' : 'NONE'
+          }
+        }]
+      }]
+    }, null, 2);
+  }
+
+  document.getElementById('modal-payload').classList.add('show');
+}
+
+function copyPayloadToClip() {
+  var el = document.getElementById('pl-body');
+  if (!el) return;
+  try {
+    navigator.clipboard.writeText(el.textContent).then(function() {
+      toast('Payload copied to clipboard.', 'success');
+    });
+  } catch (e) { console.warn('Clipboard error', e); }
 }
 
 function saveTemplate() {

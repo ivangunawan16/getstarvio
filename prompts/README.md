@@ -27,7 +27,7 @@ Tidak perlu paste file page lain yang tidak dikerjakan.
 | `03-dashboard.md` | `getstarvio-dashboard.html` | Setup checklist, metrics, ROI card, quick links, soft trial lock |
 | `04-catat-kunjungan.md` | `getstarvio-catat-kunjungan.html` | 2-step flow, recent customers, NO trial lock |
 | `05-pelanggan.md` | `getstarvio-pelanggan.html` | Daftar pelanggan + CSV import/export |
-| `06-automation.md` | `getstarvio-automation.html` | Toggle, 5 aftercare templates Meta `{{1}}-{{5}}` |
+| `06-automation.md` | `getstarvio-automation.html` | Toggle, 5 aftercare templates Meta `{{1}}-{{4}}` |
 | `07-log-reminder.md` | `getstarvio-log-reminder.html` | Riwayat reminder, search, bulk retry |
 | `08-kategori.md` | `getstarvio-kategori.html` | Kelola kategori (drag/arrow reorder), interval auto-suggest |
 | `09-billing.md` | `getstarvio-billing.html` | Subscription + top-up tiers, bundle subscribe |
@@ -95,7 +95,7 @@ Kalau perlu rebuild semua halaman dari nol (sesi baru Claude Code):
 ## Aturan Kritis (repeat dari 00-global.md)
 
 1. **Sidebar LIGHT** — `var(--bg2)` / white. Bukan dark.
-2. **Template WA = SELECT ONLY** — tidak bisa diedit teksnya. Format Meta Cloud API `{{1}}-{{5}}`.
+2. **Template WA = SELECT ONLY** — tidak bisa diedit teksnya. Format Meta Cloud API `{{1}}-{{4}}`.
 3. **Icon emoji = dropdown pre-made** — bukan input manual.
 4. **Nomor HP** — strip leading 0 real-time, simpan dengan country code (628xxx).
 5. **Semua data dari localStorage `getstarvio_user`** — tidak ada hardcoded dummy di halaman production.

@@ -97,7 +97,7 @@ a:hover{color:var(--ink)}
 <div class="page-header">
   <h1>Penghapusan Data Pengguna</h1>
   <p class="subtitle">User Data Deletion Instructions</p>
-  <p class="updated">Terakhir diperbarui: April 2026 · Last updated: April 2026</p>
+  <p class="updated">Terakhir diperbarui: 19 April 2026 · Last updated: 19 April 2026</p>
 </div>
 
 <!-- Content -->
@@ -114,9 +114,18 @@ a:hover{color:var(--ink)}
     <li><strong>Data pelanggan bisnis:</strong> daftar pelanggan, nomor WhatsApp pelanggan, kategori, dan catatan yang Anda input</li>
     <li><strong>Log kunjungan (Catat Kunjungan):</strong> seluruh riwayat kunjungan pelanggan yang Anda catat</li>
     <li><strong>Log pengingat:</strong> riwayat pesan pengingat WhatsApp yang dikirim melalui akun Anda</li>
-    <li><strong>Data Meta/Facebook:</strong> jika Anda login via Facebook, profil publik (nama, email) dan nomor WhatsApp Business yang terhubung juga akan dihapus</li>
+    <li><strong>Meta Platform Data:</strong> seluruh data yang kami terima dari Meta terkait akun Anda akan dihapus dan access token direvoke ke Meta:
+      <ul>
+        <li>WhatsApp Business Account ID (<code>waba_id</code>)</li>
+        <li>Phone Number ID (<code>phone_number_id</code>)</li>
+        <li>Business Portfolio ID (<code>business_id</code>)</li>
+        <li>Access token (direvoke via <code>DELETE /{app-id}/permissions</code>)</li>
+        <li>Profil Facebook publik (nama, email) jika Anda login via FB OAuth</li>
+        <li>Webhook subscriptions untuk WABA Anda</li>
+      </ul>
+    </li>
   </ul>
-  <p class="en">When you submit a deletion request, the following data will be permanently deleted: your account profile, customer records you created, visit logs, reminder logs, and any data received from Facebook/Meta (public profile, WhatsApp Business number).</p>
+  <p class="en">When you submit a deletion request, the following data will be permanently deleted: your account profile, customer records, visit logs, reminder logs, and all Meta Platform Data (waba_id, phone_number_id, business_id, access tokens, and any FB profile data). Meta access tokens are revoked via Graph API immediately upon request receipt.</p>
 
   <h2>3. Cara Meminta Penghapusan</h2>
   <p>Untuk meminta penghapusan akun dan data Anda, kirimkan email dengan ketentuan berikut:</p>

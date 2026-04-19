@@ -225,6 +225,51 @@ var DUMMY = {
   bizLogo: null,                            // Cynthia belum upload
   avgServiceValue: 175000,                  // spa rata-rata
   setupComplete: true,                      // semua step setup sudah
+
+  // Meta WhatsApp Business connection data (captured dari Embedded Signup)
+  meta: {
+    connectedAt: '2026-03-15T10:30:00.000Z',
+    coexistenceEnabled: true,
+    waba: {
+      id: '105783024692731',
+      name: 'Celestial Spa WABA',
+      currency: 'IDR',
+      timezoneId: '62',
+      templateNamespace: 'a7b3c9f0-1d4e-4a8b-9c2d-5e6f7a8b9c0d',
+      accountReviewStatus: 'APPROVED'
+    },
+    phoneNumber: {
+      id: '698201013402857',
+      displayNumber: '+62 812 3456 7890',
+      verifiedName: 'Celestial Spa & Wellness',
+      qualityRating: 'GREEN',
+      platformType: 'CLOUD_API',
+      codeVerificationStatus: 'VERIFIED',
+      messagingLimitTier: 'TIER_1K',
+      throughputLevel: 'STANDARD'
+    },
+    business: {
+      id: '492187365201744',
+      portfolioName: 'Celestial Spa Business Portfolio',
+      verificationStatus: 'VERIFIED',
+      twoFactorType: 'admin_required'
+    },
+    coexistence: {
+      enabled: true,
+      contactsSynced: true,
+      contactsSyncedAt: '2026-03-15T10:32:15.000Z',
+      historySynced: true,
+      historySyncedAt: '2026-03-15T10:33:42.000Z',
+      syncWindowEndsAt: '2026-03-16T10:30:00.000Z'  // 24h window (lewat)
+    },
+    assets: {
+      pageIds: ['267489135682471'],
+      instagramAccountIds: ['17841402938475612']
+    }
+    // SECURITY NOTE: access_token tidak disimpan di localStorage.
+    // Production: server-side encrypted storage dengan AWS KMS.
+  },
+
   planConfig: {
     freeBonus: 100,
     trialDays: 14,

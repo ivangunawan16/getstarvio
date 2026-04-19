@@ -38,8 +38,8 @@ Tampilkan sebagai tombol quick-add berdasarkan `bizType` (match daftar di onboar
 - **Interval:** number input (hari) — default dari `defaultInterval`
 - **Template WA:** `<select>` dropdown dengan 5 template aftercare pre-made + preview body pesan
   - **Tidak bisa edit konten template** — hanya bisa SELECT (edit template di admin panel)
-  - **Placeholder format Meta Cloud API:** `{{1}}`-`{{5}}` (positional)
-    - `{{1}}` = Nama customer · `{{2}}` = Treatment · `{{3}}` = Tanggal kunjungan · `{{4}}` = Nama bisnis · `{{5}}` = Waktu perawatan lanjutan
+  - **Placeholder format Meta Cloud API:** `{{1}}`-`{{4}}` (positional)
+    - `{{1}}` = Nama customer · `{{2}}` = Treatment · `{{3}}` = Tanggal kunjungan · `{{4}}` = Nama bisnis
   - Template options (semua UTILITY-compliant, APPROVED Meta):
     1. **`aftercare_followup_1`** — formal "sudah berjalan dengan baik"
     2. **`aftercare_followup_2`** — terima kasih + jadwal lanjutan
@@ -73,5 +73,6 @@ Tampilkan sebagai tombol quick-add berdasarkan `bizType` (match daftar di onboar
 | 2026-03-26 | File dibuat. Ikon wajib dropdown pre-made (bukan input manual). Template hanya SELECT, tidak bisa diedit |
 | 2026-03-26 | Tambah Reference section — acuan v2.1, icon/template constraint |
 | 2026-03-26 | Sync: Icon = `<select>` dropdown 24 emojis (not text input). Template = `<select>` 5 options (not 4). Layout = 2-column grid cards. Emoji list updated to match HTML. |
-| 2026-04-18 | **TEMPLATE OVERHAUL.** Replaced 5 old reminder templates with 5 utility-compliant aftercare templates (`aftercare_followup_1`-`_5`). Placeholder format Meta Cloud API: `{{1}}`-`{{5}}`. Variable mapping: nama/treatment/tanggal/bisnis/timing. Preview render dengan data sungguhan. |
+| 2026-04-18 | **TEMPLATE OVERHAUL.** Replaced 5 old reminder templates with 5 utility-compliant aftercare templates (`aftercare_followup_1`-`_5`). Placeholder format Meta Cloud API: `{{1}}`-`{{4}}`. Variable mapping: nama/treatment/tanggal/bisnis. Preview render dengan data sungguhan. |
+| 2026-04-19 | **REMOVE {{5}} TIMING.** Variables reduced to 4. Removed timing variable + `cats[].timing` field reference. |
 | 2026-04-18 | **SPEC CONSISTENCY PATCH.** Pre-fill suggestions expanded untuk match bizType options di onboarding + PRODUCT CONTEXT: added Bengkel (Tune Up, Ganti Ban), Pet Grooming (Bath & Brush, Full Grooming, Nail Trim, Ear Cleaning), Laundry (Cuci Kering, Dry Clean, Setrika, Express), Lainnya (empty state no preset). |

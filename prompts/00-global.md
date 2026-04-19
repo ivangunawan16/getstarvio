@@ -109,9 +109,8 @@ Key rules yang tidak boleh dilanggar:
       name: "string",          // contoh: "Keriting", "Hair Color", "Facial"
       icon: "string",          // emoji, dipilih dari daftar pre-made
       interval: number,        // hari antar kunjungan untuk layanan ini
-      timing: "string",        // waktu perawatan lanjutan untuk template {{5}} (format: "4-6 minggu", "3 bulan", "1 tahun"). Editable di Kategori page. Default derive dari interval (e.g. 30 hari → "4-6 minggu").
       templateId: "string",    // ID template WA pre-made yang dipilih (aftercare_followup_1 sampai _5)
-      templateBody: "string"   // copy template (read-only preview, rendered dengan {{1}}-{{5}} di UI)
+      templateBody: "string"   // copy template (read-only preview, rendered dengan {{1}}-{{4}} di UI)
     }
   ],
   customers: [
@@ -142,6 +141,49 @@ Key rules yang tidak boleh dilanggar:
       kredit: number           // selalu 1
     }
   ],
+  meta: {                      // Meta WhatsApp Business connection data (captured dari Embedded Signup)
+                               // NULL saat belum onboard. Populated setelah Step 1 Embedded Signup sukses.
+    connectedAt: "ISO string",  // kapan Embedded Signup selesai
+    coexistenceEnabled: boolean, // true kalau pakai Coexistence mode (default true untuk getstarvio)
+    waba: {                    // WhatsApp Business Account info (from GET /{waba_id})
+      id: "string",            // waba_id dari Embedded Signup
+      name: "string",          // WABA name (auto-generated saat signup)
+      currency: "string",      // "IDR" untuk Indonesia
+      timezoneId: "string",    // "62" untuk WIB (Asia/Jakarta)
+      templateNamespace: "string",  // unique ID untuk send template API
+      accountReviewStatus: "APPROVED" | "PENDING" | "REJECTED"
+    },
+    phoneNumber: {             // Phone number info (from GET /{phone_number_id})
+      id: "string",            // phone_number_id — PRIMARY untuk /messages endpoint
+      displayNumber: "string", // "+62 812 3456 7890" (formatted untuk UI)
+      verifiedName: "string",  // registered business name yang di-verify Meta
+      qualityRating: "GREEN" | "YELLOW" | "RED" | "UNKNOWN",
+      platformType: "CLOUD_API",
+      codeVerificationStatus: "VERIFIED" | "NOT_VERIFIED" | "EXPIRED",
+      messagingLimitTier: "TIER_1K" | "TIER_10K" | "TIER_100K" | "UNLIMITED",
+      throughputLevel: "STANDARD" | "HIGH"  // STANDARD=20msg/s, HIGH=1000msg/s
+    },
+    business: {                // Business Portfolio info (from GET /{business_id})
+      id: "string",            // business_id dari Embedded Signup
+      portfolioName: "string", // Business Portfolio name
+      verificationStatus: "VERIFIED" | "PENDING" | "NOT_VERIFIED",
+      twoFactorType: "admin_required" | "none"
+    },
+    coexistence: {             // Coexistence sync state (only if coexistenceEnabled)
+      enabled: boolean,
+      contactsSynced: boolean,
+      contactsSyncedAt: "ISO string | null",
+      historySynced: boolean,  // user approve sharing? true=yes
+      historySyncedAt: "ISO string | null",
+      syncWindowEndsAt: "ISO string"  // 24h deadline setelah signup
+    },
+    assets: {                  // Associated FB assets (optional — dari Embedded Signup response)
+      pageIds: ["string"],     // FB pages connected
+      instagramAccountIds: ["string"]  // IG accounts connected
+    }
+    // ⚠️ SECURITY: access_token TIDAK disimpan di localStorage — production harus server-side.
+    // Mockup boleh simulate expiry tracking saja (tokenExpiresAt), ga tampil value asli.
+  },
   planConfig: {                // opsional — di-set dari admin page, dibaca oleh billing page
     freeBonus: number,         // welcome bonus credits (default 100)
     trialDays: number,         // trial period dalam hari (default 14)
@@ -578,4 +620,6 @@ Build satu halaman per sesi. Untuk setiap halaman:
 | 2026-04-18 | **CHECK-IN BRANDING + bizLogo SCHEMA.** Tambah `bizLogo` field (base64 data URL, opsional, max 200KB resized 120x120). Check-in page rebrand: bizLogo/initial circle + bizName heading sebagai header (hapus topbar getstarvio), "Powered by getstarvio" pindah ke footer kecil. WA consent line wajib di State 2 & 3 ("Dengan check-in, kamu setuju menerima pengingat... dari [bizName]."). Hapus tombol "Scan lagi" di success — final state, sebut bizName di message + subtle "boleh tutup" hint. Error state friendly (no internal terms). Settings: tambah logo upload field di Section 2 Profil Bisnis (canvas resize, validate size+format+aspect). |
 | 2026-04-18 | **DASHBOARD UIUX OVERHAUL.** Tambah `setupComplete` (boolean, auto-detect 3 steps) + `avgServiceValue` (number, default 150000, editable di Settings) ke schema. Dashboard: Setup Checklist card (logo upload inline / tambah pelanggan / aktifkan automation, auto-dismiss permanent setelah semua selesai). ROI Card baru (untuk user dengan reminder data — pelanggan kembali, response rate, estimasi revenue, ROI multiplier) ATAU Projection Card (untuk new users — proyeksi pengingat + revenue). Metrics Grid reframe: "Kembali via Pengingat" jadi metric utama. Tips Section bawah (Print QR + Salin Link). Section order baru. **Trial Behavior Hybrid:** Dashboard = soft lock (banner merah + Quick Links 2/3 disabled, Catat Kunjungan + Billing tetap aktif), sidebar pages lain tetap hard lock overlay. Konsisten dengan filosofi: dashboard punya value sebagai "preview" untuk push subscribe, action pages tetap forced. |
 | 2026-04-18 | **SPEC CONSISTENCY PATCH (pre-build review).** (1) Added canonical **TRIAL LOCK MATRIX** (13 pages × mode HARD/SOFT/NONE/SKIP) — single source of truth, replaces scattered inline notes in page specs. (2) Added `subCreditsMax: number` field to DATA SCHEMA block (was used in seed + admin but missing from canonical schema). (3) Clarified `remMax` sebagai legacy alias dari subCreditsMax (backward compat), bukan field baru. (4) Cross-patched: `09-billing.md` plan references (7 lines `"free"` → `"trial"`), `11-seed-data.md` (DATA_VERSION 4→5 + 11 presets covering 5 trial + 6 subscriber states + v5 fields), `07-log-reminder.md` retry credit order (sub first per global rule, bukan top-up first), `12-admin.md` (duplicate status badge line removed, status enum canonicalized ke 5 nilai, ADMIN_DATA example extended dengan plan/trialEndsAt/subCreditsMax). |
-| 2026-04-18 | **SPEC CONSISTENCY PATCH #2 (cross-page review).** (1) Added `automationEnabled: boolean` field to DATA SCHEMA — referenced di 06-automation.md + 03-dashboard.md setup checklist tapi belum ada di canonical schema. (2) Added `cats[].timing: string` field — dipakai untuk template variable `{{5}}` di 06-automation.md + 08-kategori.md. (3) Cross-patched: `05-pelanggan.md` added TRIAL BEHAVIOR SOFT LOCK section (data ownership: banner + disable Tambah/Edit/Import, Export via `data-always`), `09-billing.md` Section 3 `plan === 'free'` → `'trial'` + Known Bug #3 updated (subscription wajib untuk top-up), `07-log-reminder.md` retry credit order clarification in changelog (superseded 2026-03-27 entry). |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH #2 (cross-page review).** (1) Added `automationEnabled: boolean` field to DATA SCHEMA — referenced di 06-automation.md + 03-dashboard.md setup checklist tapi belum ada di canonical schema. (2) Removed `cats[].timing` field — template variables reduced to `{{1}}`-`{{4}}` (no timing variable). (3) Cross-patched: `05-pelanggan.md` added TRIAL BEHAVIOR SOFT LOCK section (data ownership: banner + disable Tambah/Edit/Import, Export via `data-always`), `09-billing.md` Section 3 `plan === 'free'` → `'trial'` + Known Bug #3 updated (subscription wajib untuk top-up), `07-log-reminder.md` retry credit order clarification in changelog (superseded 2026-03-27 entry). |
+| 2026-04-19 | **REMOVE {{5}} TIMING VARIABLE.** `cats[].timing` field dihapus dari schema. Template aftercare pakai 4 variables saja: `{{1}}` nama, `{{2}}` treatment, `{{3}}` tanggal, `{{4}}` bisnis. Synced across: 00-global, 06-automation, 08-kategori, 12-admin, README. |
+| 2026-04-19 | **META APP REVIEW READINESS — `meta` object added to schema.** Captures all Meta Cloud API connection data dari Embedded Signup: `waba` (WhatsApp Business Account — id, name, currency, timezone, templateNamespace, accountReviewStatus), `phoneNumber` (phone_number_id, displayNumber, verifiedName, qualityRating GREEN/YELLOW/RED/UNKNOWN, platformType, messagingLimitTier TIER_1K/10K/100K/UNLIMITED, throughputLevel), `business` (business_id, portfolioName, verificationStatus), `coexistence` (syncState untuk Coexistence mode Tech Provider), `assets` (pageIds, instagramAccountIds). Security note: access_token TIDAK di localStorage production — server-side only. Dokumentasi lengkap submission Meta App Review di `META-APP-REVIEW.md`. |

@@ -129,6 +129,33 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .wa-num{font-size:14px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace}
 .wa-label{font-size:11px;color:var(--ink3)}
 
+/* Meta connection persistent display */
+.meta-conn{margin:10px 0 16px;padding:12px 14px;background:var(--bg2);border:1.5px solid var(--lime-bd);border-radius:var(--r-sm)}
+.meta-conn-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.meta-conn-title{font-size:12px;font-weight:700;color:var(--ink)}
+.meta-conn-btn{padding:4px 10px;background:none;border:1px solid var(--border2);border-radius:var(--r-sm);font-family:inherit;font-size:10px;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .15s}
+.meta-conn-btn:hover{border-color:var(--lime2);background:var(--lime-bg);color:var(--lime-dk)}
+.meta-conn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+.meta-conn-item{display:flex;flex-direction:column;gap:2px}
+.meta-conn-k{font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.meta-conn-v{font-size:12px;color:var(--ink);font-weight:600}
+.mc-quality-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:var(--lime-bg);color:var(--lime-dk);border:1px solid var(--lime-bd)}
+.mc-quality-badge.yellow{background:#fff8ec;color:#8a5e00;border-color:#f5d28a}
+.mc-quality-badge.red{background:var(--red-bg);color:var(--red-dk);border-color:#f5c5c3}
+.mc-quality-badge::before{content:'●';font-size:7px}
+@media (max-width:600px){ .meta-conn-grid{grid-template-columns:1fr} }
+
+/* Meta detail modal rows */
+.md-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.md-row:last-of-type{border-bottom:none}
+.md-k{color:var(--ink3);font-weight:600;font-size:11px}
+.md-v{color:var(--ink);font-weight:700;text-align:right}
+.md-tech-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:5px 0;font-size:11px}
+.md-tech-k{color:var(--ink3);font-weight:600;min-width:95px;font-size:10px}
+.md-tech-v{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink);background:var(--bg3);padding:4px 8px;border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.md-copy-btn{padding:3px 7px;background:none;border:1px solid var(--border);border-radius:3px;font-family:inherit;font-size:9px;font-weight:700;color:var(--ink2);cursor:pointer;text-transform:uppercase;letter-spacing:.04em;transition:all .15s}
+.md-copy-btn:hover{border-color:var(--lime2);background:var(--lime-bg);color:var(--lime-dk)}
+
 /* OTP verify block */
 .otp-wrap{margin:10px 0 16px}
 .otp-state{padding:12px 14px;border-radius:var(--r-sm);border:1.5px solid}
@@ -704,11 +731,37 @@ body.imp-active{padding-top:36px}
           <!-- WA Status -->
           <div class="wa-status" id="waStatus" style="margin-top:14px">
             <div class="wa-dot" id="waDot"></div>
-            <div>
+            <div style="flex:1;min-width:0">
               <div class="wa-num" id="waNumDisplay">—</div>
               <div class="wa-label" id="waLabel">Belum terhubung</div>
             </div>
-            <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="openQrModal()">Hubungkan ulang</button>
+            <button class="btn btn-ghost btn-sm" onclick="openQrModal()">Hubungkan ulang</button>
+          </div>
+
+          <!-- Meta Connection Details (persistent, post-onboarding) -->
+          <div class="meta-conn" id="metaConn" style="display:none">
+            <div class="meta-conn-header">
+              <div class="meta-conn-title">Detail Koneksi WhatsApp Business</div>
+              <button class="meta-conn-btn" onclick="openMetaDetailModal()">Lihat teknis →</button>
+            </div>
+            <div class="meta-conn-grid">
+              <div class="meta-conn-item">
+                <div class="meta-conn-k">Nama Bisnis</div>
+                <div class="meta-conn-v" id="mc-verified-name">—</div>
+              </div>
+              <div class="meta-conn-item">
+                <div class="meta-conn-k">Business Portfolio</div>
+                <div class="meta-conn-v" id="mc-portfolio">—</div>
+              </div>
+              <div class="meta-conn-item">
+                <div class="meta-conn-k">Quality</div>
+                <div class="meta-conn-v"><span class="mc-quality-badge" id="mc-quality">—</span></div>
+              </div>
+              <div class="meta-conn-item">
+                <div class="meta-conn-k">Messaging Tier</div>
+                <div class="meta-conn-v" id="mc-tier">—</div>
+              </div>
+            </div>
           </div>
 
           <div class="field">
@@ -897,6 +950,61 @@ body.imp-active{padding-top:36px}
     <div class="mftr">
       <button class="btn btn-ghost btn-sm" onclick="closeQrModal()">Tutup</button>
       <button class="btn btn-lime btn-sm" onclick="simulateQrConnect()">Simulasi Terhubung</button>
+    </div>
+  </div>
+</div>
+
+<!-- META CONNECTION DETAIL MODAL -->
+<div class="overlay" id="m-meta-detail">
+  <div class="modal">
+    <div class="mhd">
+      <div class="m-title">Detail Koneksi WhatsApp Business</div>
+      <div class="m-sub">Info teknis dari Meta Cloud API — untuk troubleshooting kalau ada issue</div>
+    </div>
+    <div style="padding:8px 22px 16px">
+      <div class="md-row">
+        <div class="md-k">Nomor WA (display)</div>
+        <div class="md-v" id="md-display-number">—</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Verified Name</div>
+        <div class="md-v" id="md-verified-name">—</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Business Portfolio</div>
+        <div class="md-v" id="md-portfolio-name">—</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Platform</div>
+        <div class="md-v" id="md-platform">CLOUD_API</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Coexistence</div>
+        <div class="md-v" id="md-coexistence">—</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Terhubung sejak</div>
+        <div class="md-v" id="md-connected-at">—</div>
+      </div>
+
+      <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)">
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Technical IDs</div>
+        <div class="md-tech-row"><span class="md-tech-k">WABA ID</span><code class="md-tech-v" id="md-waba-id">—</code><button class="md-copy-btn" onclick="copyMetaDetailId('waba-id-real', this)">copy</button></div>
+        <div class="md-tech-row"><span class="md-tech-k">Phone ID</span><code class="md-tech-v" id="md-phone-id">—</code><button class="md-copy-btn" onclick="copyMetaDetailId('phone-id-real', this)">copy</button></div>
+        <div class="md-tech-row"><span class="md-tech-k">Business ID</span><code class="md-tech-v" id="md-biz-id">—</code><button class="md-copy-btn" onclick="copyMetaDetailId('biz-id-real', this)">copy</button></div>
+        <div class="md-tech-row"><span class="md-tech-k">Template NS</span><code class="md-tech-v" id="md-tpl-ns">—</code><button class="md-copy-btn" onclick="copyMetaDetailId('tpl-ns-real', this)">copy</button></div>
+        <input type="hidden" id="waba-id-real" value="">
+        <input type="hidden" id="phone-id-real" value="">
+        <input type="hidden" id="biz-id-real" value="">
+        <input type="hidden" id="tpl-ns-real" value="">
+      </div>
+
+      <div style="margin-top:12px;padding:10px 12px;background:var(--bg3);border-radius:var(--r-sm);font-size:10px;color:var(--ink3);line-height:1.55">
+        ⚠️ Info ini disimpan oleh getstarvio setelah kamu selesai Embedded Signup via Meta. Kalau mau ganti nomor atau reconnect, klik "Hubungkan ulang" di atas. Access token-nya disimpan aman server-side, bukan di browser.
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeMetaDetailModal()">Tutup</button>
     </div>
   </div>
 </div>
@@ -1425,6 +1533,86 @@ function renderWaStatus(u) {
     labelEl.style.color = 'var(--ink3)'
     if (accSub) accSub.textContent = 'Belum terhubung'
   }
+
+  // Render Meta connection card (persistent display kalau onboarding sudah selesai)
+  renderMetaConn(u)
+}
+
+/* ── RENDER META CONNECTION CARD ── */
+function renderMetaConn(u) {
+  var box = document.getElementById('metaConn')
+  if (!box) return
+  if (!u.meta || !u.meta.waba) {
+    box.style.display = 'none'
+    return
+  }
+  box.style.display = 'block'
+
+  var m = u.meta
+  var verified = document.getElementById('mc-verified-name')
+  var portfolio = document.getElementById('mc-portfolio')
+  var quality = document.getElementById('mc-quality')
+  var tier = document.getElementById('mc-tier')
+
+  if (verified) verified.textContent = (m.phoneNumber && m.phoneNumber.verifiedName) || '—'
+  if (portfolio) portfolio.textContent = (m.business && m.business.portfolioName) || '—'
+  if (quality) {
+    var qr = m.phoneNumber && m.phoneNumber.qualityRating
+    var qrLabel = qr === 'GREEN' ? 'HIGH' : qr === 'YELLOW' ? 'MEDIUM' : qr === 'RED' ? 'LOW' : 'UNKNOWN'
+    quality.textContent = qrLabel
+    quality.className = 'mc-quality-badge' + (qr === 'YELLOW' ? ' yellow' : qr === 'RED' ? ' red' : '')
+  }
+  if (tier) {
+    var t = (m.phoneNumber && m.phoneNumber.messagingLimitTier) || 'TIER_1K'
+    var tLabel = { TIER_1K: '1.000/hari', TIER_10K: '10.000/hari', TIER_100K: '100.000/hari', UNLIMITED: 'Unlimited' }[t] || t
+    tier.textContent = tLabel
+  }
+}
+
+function openMetaDetailModal() {
+  var u = loadU()
+  if (!u || !u.meta) return
+  var m = u.meta
+  function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—' }
+  function setVal(id, val) { var el = document.getElementById(id); if (el) el.value = val || '' }
+  function mask(v) { if (!v || v.length < 8) return v; return v.slice(0,4) + '\u2022\u2022\u2022' + v.slice(-4) }
+
+  set('md-display-number', m.phoneNumber && m.phoneNumber.displayNumber)
+  set('md-verified-name', m.phoneNumber && m.phoneNumber.verifiedName)
+  set('md-portfolio-name', m.business && m.business.portfolioName)
+  set('md-platform', (m.phoneNumber && m.phoneNumber.platformType) || 'CLOUD_API')
+  set('md-coexistence', m.coexistenceEnabled ? 'Aktif · WA Business app tetap jalan di HP' : 'Tidak aktif')
+  set('md-connected-at', m.connectedAt ? new Date(m.connectedAt).toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—')
+
+  set('md-waba-id',  mask(m.waba && m.waba.id))
+  set('md-phone-id', mask(m.phoneNumber && m.phoneNumber.id))
+  set('md-biz-id',   mask(m.business && m.business.id))
+  set('md-tpl-ns',   (m.waba && m.waba.templateNamespace) || '—')
+
+  setVal('waba-id-real',  m.waba && m.waba.id)
+  setVal('phone-id-real', m.phoneNumber && m.phoneNumber.id)
+  setVal('biz-id-real',   m.business && m.business.id)
+  setVal('tpl-ns-real',   m.waba && m.waba.templateNamespace)
+
+  document.getElementById('m-meta-detail').classList.add('show')
+}
+
+function closeMetaDetailModal() { document.getElementById('m-meta-detail').classList.remove('show') }
+
+function copyMetaDetailId(fieldId, btn) {
+  var el = document.getElementById(fieldId)
+  if (!el) return
+  var val = el.value || el.textContent
+  try {
+    navigator.clipboard.writeText(val).then(function() {
+      if (btn) {
+        var orig = btn.textContent
+        btn.textContent = 'copied!'
+        btn.style.color = 'var(--lime-dk)'
+        setTimeout(function() { btn.textContent = orig; btn.style.color = '' }, 1200)
+      }
+    })
+  } catch (e) { console.warn('Clipboard error', e) }
 }
 
 /* ══════════════════════════════════════════

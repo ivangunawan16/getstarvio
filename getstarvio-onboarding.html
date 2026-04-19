@@ -109,6 +109,26 @@ select.fi{cursor:pointer}
 .cl-item .cl-ic{font-size:14px;flex-shrink:0;line-height:1.4;margin-top:1px}
 .cl-item strong{color:var(--lime-dk);font-weight:700}
 
+/* WA Active Check (Meta Coexistence 7-day requirement) */
+.wa-active-check{background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+.wa-ac-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.wa-ac-sub{font-size:11px;color:var(--ink3);line-height:1.5;margin-bottom:12px}
+.wa-ac-options{display:flex;flex-direction:column;gap:6px}
+.wa-ac-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .15s;background:var(--bg2)}
+.wa-ac-opt:hover{border-color:var(--lime2);background:var(--lime-bg)}
+.wa-ac-opt:has(input:checked){border-color:var(--lime2);background:var(--lime-bg)}
+.wa-ac-opt input[type=radio]{accent-color:var(--lime2);cursor:pointer}
+.wa-ac-opt .wa-ac-label{flex:1;font-size:12px;font-weight:600;color:var(--ink)}
+.wa-ac-opt .wa-ac-hint{font-size:11px;color:var(--ink3)}
+.wa-ac-opt:has(input[value=lt7]:checked){border-color:#f5a623;background:#fff8ec}
+.wa-ac-opt:has(input[value=lt7]:checked) .wa-ac-hint{color:#8a5e00;font-weight:700}
+.wa-ac-warn{display:flex;gap:10px;margin-top:12px;padding:12px 14px;background:#fff8ec;border:1.5px solid #f5d28a;border-radius:var(--r-sm);font-size:12px;color:#8a5e00;line-height:1.55}
+.wa-ac-warn .ic{font-size:16px;flex-shrink:0}
+
+/* Country availability note */
+.country-avail{display:flex;gap:10px;padding:10px 14px;background:var(--bg2);border:1px dashed var(--border2);border-radius:var(--r-sm);margin-bottom:14px;font-size:11px;color:var(--ink2);line-height:1.55}
+.country-avail .ic{font-size:14px;flex-shrink:0;line-height:1.4;margin-top:1px}
+
 /* Facebook button */
 .btn-fb{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px 18px;background:var(--fb);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(24,119,242,.25)}
 .btn-fb:hover{background:var(--fb-dk);box-shadow:0 4px 14px rgba(24,119,242,.35)}
@@ -165,6 +185,32 @@ select.fi{cursor:pointer}
 .sc-v{color:var(--ink);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:12px;text-align:right}
 .sc-v.coexist-tag{font-family:'Sora',sans-serif;display:inline-flex;align-items:center;gap:5px;background:var(--lime-bg);color:var(--lime-dk);padding:2px 9px;border-radius:99px;font-size:10px;border:1px solid var(--lime-bd)}
 .sc-v.coexist-tag::before{content:'●';font-size:8px;color:var(--lime2)}
+
+/* Status badges row */
+.sc-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.sc-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.sc-badge-quality{background:var(--lime-bg);color:var(--lime-dk);border:1px solid var(--lime-bd)}
+.sc-badge-quality .dot{width:6px;height:6px;border-radius:50%;background:var(--lime2);animation:pulse 2s ease-in-out infinite}
+.sc-badge-tier{background:var(--bg3);color:var(--ink);border:1px solid var(--border)}
+.sc-badge-coexist{background:#e9f4ff;color:#1e5fa0;border:1px solid #b8d8f5}
+
+/* Sync status rows */
+.sc-sync{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:10px}
+.sc-sync-row{display:flex;gap:9px;align-items:flex-start;font-size:11px;color:var(--ink2);line-height:1.5;padding:3px 0}
+.sc-sync-ic{font-size:13px;flex-shrink:0;line-height:1.4;margin-top:1px}
+
+/* Technical IDs collapsible */
+.sc-tech{margin-bottom:10px;border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;background:var(--bg2)}
+.sc-tech-toggle{display:flex;align-items:center;gap:7px;width:100%;padding:9px 13px;background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;color:var(--ink2);text-align:left;transition:background .15s}
+.sc-tech-toggle:hover{background:var(--bg3)}
+.sc-tech-chev{transition:transform .2s;flex-shrink:0}
+.sc-tech-chev.open{transform:rotate(180deg)}
+.sc-tech-body{padding:4px 13px 10px;display:flex;flex-direction:column;gap:5px;border-top:1px dashed var(--border)}
+.sc-tech-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:4px 0;font-size:10px}
+.sc-tech-k{color:var(--ink3);font-weight:600;min-width:110px}
+.sc-tech-v{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink);background:var(--bg3);padding:3px 7px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-copy-btn{padding:3px 8px;background:none;border:1px solid var(--border);border-radius:4px;font-family:inherit;font-size:9px;font-weight:700;color:var(--ink2);cursor:pointer;text-transform:uppercase;letter-spacing:.04em;transition:all .15s}
+.sc-copy-btn:hover{border-color:var(--lime2);background:var(--lime-bg);color:var(--lime-dk)}
 
 .sc-template{display:flex;align-items:center;gap:11px;background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:10px 13px}
 .sct-spinner{width:14px;height:14px;border:2px solid rgba(245,166,35,.25);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
@@ -379,9 +425,49 @@ select.fi{cursor:pointer}
         <!-- Pre-requisites -->
         <div class="checklist-card">
           <div class="cl-title">Sebelum mulai, pastikan kamu punya:</div>
-          <div class="cl-item"><span class="cl-ic">📱</span><span><strong>WhatsApp Business app</strong> di HP (bukan WA biasa)</span></div>
+          <div class="cl-item"><span class="cl-ic">📱</span><span><strong>WhatsApp Business app versi 2.24.17+</strong> di HP (cek di App Store / Play Store — update kalau perlu)</span></div>
           <div class="cl-item"><span class="cl-ic">👤</span><span><strong>Akun Facebook</strong> pribadi (untuk login resmi Meta)</span></div>
           <div class="cl-item"><span class="cl-ic">⏱️</span><span><strong>2–3 menit waktu kosong</strong> untuk selesaikan flow</span></div>
+        </div>
+
+        <!-- NEW: 7-day active check (Meta Coexistence requirement) -->
+        <div class="wa-active-check">
+          <div class="wa-ac-title">🗓️ Nomor WhatsApp Business kamu sudah aktif berapa lama?</div>
+          <div class="wa-ac-sub">Meta butuh minimum 7 hari riwayat pemakaian WA Business app untuk approve Coexistence onboarding.</div>
+          <div class="wa-ac-options">
+            <label class="wa-ac-opt">
+              <input type="radio" name="wa-active" value="lt7" onchange="onWaActiveChange()">
+              <span class="wa-ac-label">Kurang dari 7 hari</span>
+              <span class="wa-ac-hint">⚠️ Belum siap</span>
+            </label>
+            <label class="wa-ac-opt">
+              <input type="radio" name="wa-active" value="7to30" onchange="onWaActiveChange()">
+              <span class="wa-ac-label">7–30 hari</span>
+              <span class="wa-ac-hint">✓ OK</span>
+            </label>
+            <label class="wa-ac-opt">
+              <input type="radio" name="wa-active" value="gt30" onchange="onWaActiveChange()" checked>
+              <span class="wa-ac-label">Lebih dari 30 hari</span>
+              <span class="wa-ac-hint">✅ Direkomendasikan</span>
+            </label>
+          </div>
+          <div class="wa-ac-warn" id="waActiveWarn" style="display:none">
+            <span class="ic">⚠️</span>
+            <div>
+              <strong>Tunggu beberapa hari dulu ya.</strong><br>
+              Meta biasanya butuh minimum 7 hari riwayat aktif untuk approve Coexistence onboarding. Pakai WA Business app dulu beberapa hari untuk kirim/terima pesan customer, balik ke sini setelah 7+ hari.
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW: Country code availability -->
+        <div class="country-avail">
+          <span class="ic">🌐</span>
+          <div>
+            <strong>Coexistence mode didukung di:</strong> Indonesia (+62), Malaysia (+60), Singapore (+65), Philippines (+63), Thailand (+66), Vietnam (+84), dan negara lain.
+            <br>
+            <span style="color:var(--ink3)">⚠️ Tidak didukung: Nigeria (+234), South Africa (+27) — Meta limitation.</span>
+          </div>
         </div>
 
         <button class="btn-fb" id="btn-connect" onclick="openMetaPopup()">
@@ -474,15 +560,52 @@ select.fi{cursor:pointer}
               <div class="sc-sub">Sistem siap kirim pengingat otomatis ke pelangganmu.</div>
             </div>
           </div>
+
+          <!-- Tier 1: user-friendly info -->
           <div class="sc-info">
-            <div class="sc-row"><span class="sc-k">Nomor WhatsApp</span><span class="sc-v">+62 812-xxxx-xxxx</span></div>
-            <div class="sc-row"><span class="sc-k">Mode</span><span class="sc-v coexist-tag">Coexist aktif</span></div>
+            <div class="sc-row"><span class="sc-k">📱 Nomor WhatsApp</span><span class="sc-v" id="sc-phone">+62 812 3456 7890</span></div>
+            <div class="sc-row"><span class="sc-k">🏢 Nama Bisnis</span><span class="sc-v" id="sc-verified-name">Salon Celestial <span style="color:var(--lime-dk);font-size:10px">✓ verified</span></span></div>
+            <div class="sc-row"><span class="sc-k">🗂️ Business Portfolio</span><span class="sc-v" id="sc-portfolio">Celestial Spa Business Portfolio</span></div>
           </div>
+
+          <!-- Status badges -->
+          <div class="sc-badges">
+            <div class="sc-badge sc-badge-quality"><span class="dot"></span>Quality: HIGH</div>
+            <div class="sc-badge sc-badge-tier">📈 Tier 1.000 pesan/hari</div>
+            <div class="sc-badge sc-badge-coexist">🎯 Coexist aktif</div>
+          </div>
+
+          <!-- Coexistence sync status -->
+          <div class="sc-sync">
+            <div class="sc-sync-row"><span class="sc-sync-ic">🔄</span><span><strong>Kontak tersinkron</strong> — semua kontak dari WA Business app kamu sudah masuk sistem</span></div>
+            <div class="sc-sync-row"><span class="sc-sync-ic">💬</span><span><strong>Riwayat chat tersinkron</strong> — chat dalam 24 jam terakhir ikut ter-sync (one-time)</span></div>
+          </div>
+
+          <!-- Tier 2: Technical IDs (collapsible for troubleshooting) -->
+          <div class="sc-tech">
+            <button class="sc-tech-toggle" onclick="toggleScTech()">
+              <svg class="sc-tech-chev" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              <span>Info Teknis (untuk troubleshooting)</span>
+            </button>
+            <div class="sc-tech-body" id="sc-tech-body" style="display:none">
+              <div class="sc-tech-row"><span class="sc-tech-k">WABA ID</span><code class="sc-tech-v" id="sc-waba-id">xxxx•••2731</code><button class="sc-copy-btn" onclick="copyFieldToClip('waba-id-full')">copy</button></div>
+              <div class="sc-tech-row"><span class="sc-tech-k">Phone Number ID</span><code class="sc-tech-v" id="sc-phone-id">xxxx•••2857</code><button class="sc-copy-btn" onclick="copyFieldToClip('phone-id-full')">copy</button></div>
+              <div class="sc-tech-row"><span class="sc-tech-k">Business ID</span><code class="sc-tech-v" id="sc-biz-id">xxxx•••1744</code><button class="sc-copy-btn" onclick="copyFieldToClip('biz-id-full')">copy</button></div>
+              <div class="sc-tech-row"><span class="sc-tech-k">Template Namespace</span><code class="sc-tech-v" id="sc-tpl-ns">a7b3c9f0-1d4e-4a8b-9c2d-5e6f7a8b9c0d</code><button class="sc-copy-btn" onclick="copyFieldToClip('tpl-ns-full')">copy</button></div>
+              <div class="sc-tech-row"><span class="sc-tech-k">Platform</span><code class="sc-tech-v">CLOUD_API</code></div>
+              <!-- Hidden full values untuk copy-to-clipboard -->
+              <input type="hidden" id="waba-id-full" value="105783024692731">
+              <input type="hidden" id="phone-id-full" value="698201013402857">
+              <input type="hidden" id="biz-id-full" value="492187365201744">
+              <input type="hidden" id="tpl-ns-full" value="a7b3c9f0-1d4e-4a8b-9c2d-5e6f7a8b9c0d">
+            </div>
+          </div>
+
           <div class="sc-template">
             <div class="sct-spinner"></div>
             <div>
               <div class="sct-title">Menyiapkan template pesan...</div>
-              <div class="sct-sub">Meta sedang review template kamu (1–24 jam). Lanjut setup sambil menunggu, sistem akan aktif otomatis pas template di-approve.</div>
+              <div class="sct-sub">Meta sedang review 5 template aftercare kamu (1–24 jam). Lanjut setup sambil menunggu, sistem akan aktif otomatis pas template di-approve.</div>
             </div>
           </div>
         </div>
@@ -903,7 +1026,34 @@ function go(n) {
 }
 
 /* ── S1: EMBEDDED SIGNUP + COEXIST FLOW ── */
+
+// Handle WA active duration radio change — block signup kalau <7 hari
+function onWaActiveChange() {
+  var checked = document.querySelector('input[name="wa-active"]:checked')
+  var btn = document.getElementById('btn-connect')
+  var warn = document.getElementById('waActiveWarn')
+  if (!checked || !btn) return
+  if (checked.value === 'lt7') {
+    btn.disabled = true
+    btn.style.opacity = '.45'
+    btn.style.cursor = 'not-allowed'
+    if (warn) warn.style.display = 'flex'
+  } else {
+    btn.disabled = false
+    btn.style.opacity = ''
+    btn.style.cursor = ''
+    if (warn) warn.style.display = 'none'
+  }
+}
+
 function openMetaPopup() {
+  // Guard: cek 7-day active check — kalau <7 hari, block
+  var waActive = document.querySelector('input[name="wa-active"]:checked')
+  if (waActive && waActive.value === 'lt7') {
+    alert('Tunggu sampai WA Business app kamu aktif minimum 7 hari ya. Meta butuh riwayat aktif untuk approve Coexistence onboarding.')
+    return
+  }
+
   // Hide pre-state, show progress (simulating Meta popup opened)
   document.getElementById('conn-pre').style.display = 'none'
   document.getElementById('conn-progress').style.display = 'block'
@@ -952,6 +1102,46 @@ function simScanQR() {
       document.getElementById('conn-success').scrollIntoView({behavior:'smooth',block:'nearest'})
     }, 500)
   }, 900)
+}
+
+// Toggle technical IDs collapsible in success card
+function toggleScTech() {
+  var body = document.getElementById('sc-tech-body')
+  var chev = document.querySelector('.sc-tech-chev')
+  if (!body) return
+  if (body.style.display === 'none' || !body.style.display) {
+    body.style.display = 'flex'
+    if (chev) chev.classList.add('open')
+  } else {
+    body.style.display = 'none'
+    if (chev) chev.classList.remove('open')
+  }
+}
+
+// Copy Meta ID value to clipboard
+function copyFieldToClip(fieldId) {
+  var el = document.getElementById(fieldId)
+  if (!el) return
+  var val = el.value || el.textContent
+  try {
+    navigator.clipboard.writeText(val).then(function() {
+      // Quick visual feedback
+      var btns = document.querySelectorAll('.sc-copy-btn')
+      btns.forEach(function(b) {
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(fieldId)) {
+          var orig = b.textContent
+          b.textContent = 'copied!'
+          b.style.color = 'var(--lime-dk)'
+          b.style.borderColor = 'var(--lime2)'
+          setTimeout(function() {
+            b.textContent = orig
+            b.style.color = ''
+            b.style.borderColor = ''
+          }, 1200)
+        }
+      })
+    })
+  } catch (e) { console.warn('Clipboard error', e) }
 }
 
 function sendTest() {
