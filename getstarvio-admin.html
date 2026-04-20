@@ -150,6 +150,14 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .credit-inp{flex:1;padding:9px 12px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:14px;font-family:'JetBrains Mono',monospace;font-weight:700;outline:none;text-align:center}
 .credit-inp:focus{border-color:var(--lime2)}
 
+/* ── GRANT FREE SUBSCRIPTION ── */
+.grant-preset{padding:7px 12px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink2);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .12s}
+.grant-preset:hover{border-color:var(--ink4);background:var(--bg3)}
+.grant-preset.active{background:var(--lime);border-color:var(--lime2);color:var(--lime-dk)}
+.grant-mode-opt{transition:all .12s}
+.grant-mode-opt:hover{border-color:var(--lime2)}
+.grant-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#78350f;border:1px solid #fcd34d}
+
 /* ── ACTIVITY LOG ── */
 .log-list{max-height:180px;overflow-y:auto;margin-top:14px;border-top:1px solid var(--border);padding-top:10px}
 .log-item{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:11px;color:var(--ink2);line-height:1.5}
@@ -740,6 +748,9 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
         <select class="filter-sel" id="audit-filter" onchange="renderAuditLog()" style="min-width:200px">
           <option value="all">Semua Action</option>
           <option value="credit_topup">💳 Tambah Kredit</option>
+          <option value="grant_free_subscription">🎁 Grant Free Subscription</option>
+          <option value="revoke_free_grant">🔁 Revoke Grant</option>
+          <option value="extend_trial">⏱ Extend Trial</option>
           <option value="suspend_account">🚫 Suspend Account</option>
           <option value="activate_account">✅ Activate Account</option>
           <option value="impersonate_start">🎭 Login as User</option>
@@ -783,6 +794,88 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
     </div>
     <div class="mbd" id="md-body"></div>
     <div class="mft" id="md-footer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ GRANT FREE SUBSCRIPTION MODAL ══════════════════ -->
+<div class="overlay" id="modal-grant" onclick="if(event.target===this)closeModal('modal-grant')">
+  <div class="modal" style="max-width:540px">
+    <div class="mhd">
+      <div class="m-title">🎁 Grant Free Subscription</div>
+      <button class="m-close" onclick="closeModal('modal-grant')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="grant-biz-id">
+
+      <!-- Current state snapshot -->
+      <div id="grant-current" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:14px;font-size:11px;line-height:1.6;color:var(--ink2)">
+        <!-- Populated by openGrantModal -->
+      </div>
+
+      <!-- Mode selector -->
+      <label class="field-lbl" style="margin-bottom:6px">Mode Grant</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">
+        <label class="grant-mode-opt" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--r-sm);cursor:pointer;font-size:12px;background:var(--lime-bg);border-color:var(--lime2)">
+          <input type="radio" name="grant-mode" value="extend" checked onchange="setGrantMode('extend')" style="accent-color:var(--lime-dk)">
+          <span><strong>Tambah durasi</strong><br><span style="font-size:10px;color:var(--ink3)">+1/3/6/12 bulan dari sekarang</span></span>
+        </label>
+        <label class="grant-mode-opt" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--r-sm);cursor:pointer;font-size:12px;background:var(--bg2)">
+          <input type="radio" name="grant-mode" value="date" onchange="setGrantMode('date')" style="accent-color:var(--lime-dk)">
+          <span><strong>Set end date</strong><br><span style="font-size:10px;color:var(--ink3)">Gratis sampai tanggal X</span></span>
+        </label>
+      </div>
+
+      <!-- Extend mode UI -->
+      <div id="grant-extend-ui">
+        <label class="field-lbl">Durasi</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          <button type="button" class="grant-preset" data-days="30" onclick="setGrantPreset(30)">+1 bulan</button>
+          <button type="button" class="grant-preset active" data-days="90" onclick="setGrantPreset(90)">+3 bulan</button>
+          <button type="button" class="grant-preset" data-days="180" onclick="setGrantPreset(180)">+6 bulan</button>
+          <button type="button" class="grant-preset" data-days="365" onclick="setGrantPreset(365)">+1 tahun</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span style="font-size:11px;color:var(--ink3)">Atau custom:</span>
+          <input type="number" id="grant-custom-days" value="90" min="1" max="3650" class="field-inp" style="width:100px;margin-bottom:0;font-family:'JetBrains Mono',monospace;text-align:center" oninput="onGrantCustomDays()">
+          <span style="font-size:11px;color:var(--ink3)">hari</span>
+        </div>
+      </div>
+
+      <!-- Date mode UI -->
+      <div id="grant-date-ui" style="display:none">
+        <label class="field-lbl">Gratis sampai tanggal</label>
+        <input type="date" id="grant-end-date" class="field-inp" style="margin-bottom:14px;font-family:'JetBrains Mono',monospace" onchange="updateGrantPreview()">
+      </div>
+
+      <!-- Reason (required) -->
+      <label class="field-lbl">Alasan <span style="color:var(--red);font-weight:400">*</span></label>
+      <select class="field-select" id="grant-reason" onchange="onGrantReasonChange()">
+        <option value="">Pilih alasan...</option>
+        <option value="beta_tester">🧪 Beta tester comp</option>
+        <option value="partnership">🤝 Partnership / Influencer</option>
+        <option value="churn_recovery">💚 Churn recovery (win-back)</option>
+        <option value="bug_apology">🐛 Bug / outage apology</option>
+        <option value="internal_demo">🎯 Internal demo / training</option>
+        <option value="early_adopter">⭐ Early adopter promo</option>
+        <option value="other">✏️ Other (butuh note wajib)</option>
+      </select>
+
+      <!-- Internal note -->
+      <label class="field-lbl" style="margin-top:4px">Catatan Internal <span id="grant-note-req" style="color:var(--ink4);font-weight:400;font-size:10px">opsional</span></label>
+      <textarea id="grant-note" class="field-textarea" placeholder="Context tambahan: PO number, nama influencer, ticket ID, dll." style="min-height:60px;margin-bottom:14px;resize:vertical" oninput="updateGrantPreview()"></textarea>
+
+      <!-- Live preview -->
+      <div style="background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:12px 14px;font-size:12px;line-height:1.7;color:var(--lime-dk)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;opacity:.75">📊 Preview setelah grant</div>
+        <div id="grant-preview">
+          <!-- Populated by updateGrantPreview -->
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-grant')">Batal</button>
+      <button class="btn-primary" id="grant-confirm-btn" onclick="doGrantFree()" style="background:var(--lime);color:var(--lime-dk)">🔒 Confirm Grant</button>
+    </div>
   </div>
 </div>
 
@@ -1103,6 +1196,11 @@ function fmtAuditTime(iso) {
 function auditActionLabel(action) {
   var labels = {
     credit_topup: '💳 Tambah Kredit',
+    grant_free_subscription: '🎁 Grant Free Subscription',
+    revoke_free_grant: '🔁 Revoke Grant',
+    extend_trial: '⏱ Extend Trial',
+    send_wa_owner: '💬 Send WA to Owner',
+    export_biz_data: '📥 Export Biz Data',
     suspend_account: '🚫 Suspend Account',
     activate_account: '✅ Activate Account',
     impersonate_start: '🎭 Login as User',
@@ -1283,6 +1381,11 @@ function renderTable() {
   var html = '';
   filtered.forEach(function(b) {
     var statusBadge = getStatusBadge(b.status);
+    var hasActiveGrant = b.grantedSubEndsAt && (new Date(b.grantedSubEndsAt) > new Date());
+    if (hasActiveGrant) {
+      var gDaysLeft = Math.ceil((new Date(b.grantedSubEndsAt) - Date.now()) / 86400000);
+      statusBadge += ' <span class="grant-badge" title="Free sub sampai ' + b.grantedSubEndsAt + ' (' + gDaysLeft + ' hari lagi)">🎁</span>';
+    }
     var waBadge = b.waStatus === 'connected'
       ? '<span class="badge b-lime"><span class="dot" style="background:var(--lime-dk)"></span>Connected</span>'
       : '<span class="badge b-red"><span class="dot" style="background:var(--red)"></span>Disconnected</span>';
@@ -1343,6 +1446,10 @@ function saveBizTags() {
 /* Churn risk score 0-100 dari sinyal yang ada */
 function computeChurnRisk(b) {
   var score = 0, reasons = [];
+  // Admin-granted free subscription = healthy (we comp'd them, they're not at churn risk)
+  var hasActiveGrant = b.grantedSubEndsAt && (new Date(b.grantedSubEndsAt) > new Date());
+  if (hasActiveGrant) return { score: 0, reasons: [] };
+
   var pctCredit = b.creditMax > 0 ? (b.creditLeft / b.creditMax) : 0;
   if (pctCredit <= 0) { score += 40; reasons.push('Kredit habis'); }
   else if (pctCredit < 0.2) { score += 20; reasons.push('Kredit <20%'); }
@@ -1421,7 +1528,21 @@ function openDetail(id) {
   // ── SUBSCRIPTION ──
   html += '<div style="margin-bottom:16px">';
   html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Subscription</div>';
-  if (isSubscriber) {
+  // Check for admin-granted free subscription (separate from paid subscription)
+  var hasActiveGrant = b.grantedSubEndsAt && (new Date(b.grantedSubEndsAt) > new Date());
+  if (hasActiveGrant) {
+    var grantDaysLeft = Math.ceil((new Date(b.grantedSubEndsAt) - Date.now()) / 86400000);
+    var grantReasonLabel = (GRANT_REASON_LABELS[b.grantReason] || b.grantReason || 'Unspecified');
+    html += '<div class="kv"><span class="kv-key">Plan</span><span class="kv-val"><span class="grant-badge">\uD83C\uDF81 Subscriber (Admin-Granted)</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">Gratis Sampai</span><span class="kv-val mono" style="font-weight:700;color:#78350f">' + b.grantedSubEndsAt + ' <span style="font-family:inherit">(' + grantDaysLeft + ' hari lagi)</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">Granted By</span><span class="kv-val" style="font-size:11px">' + (b.grantedBy || 'admin') + '</span></div>';
+    html += '<div class="kv"><span class="kv-key">Alasan</span><span class="kv-val" style="font-size:11px">' + grantReasonLabel + '</span></div>';
+    if (b.grantNote) {
+      html += '<div class="kv"><span class="kv-key">Catatan</span><span class="kv-val" style="font-size:11px;color:var(--ink3);font-style:italic">' + escHtml(b.grantNote) + '</span></div>';
+    }
+    html += '<div class="kv"><span class="kv-key">MRR Lost</span><span class="kv-val mono" style="color:var(--amber-dk)">Rp ' + (249000).toLocaleString('id-ID') + '/bln <span style="font-family:inherit;font-size:10px">(comp)</span></span></div>';
+    html += '<div style="margin-top:8px"><button class="btn btn-ghost btn-sm" onclick="revokeGrant(\'' + b.id + '\')" style="font-size:10px;padding:5px 10px">\u21BA Revoke grant</button></div>';
+  } else if (isSubscriber) {
     html += '<div class="kv"><span class="kv-key">Plan</span><span class="kv-val"><span class="badge b-lime">\u2B50 Subscriber</span></span></div>';
     html += '<div class="kv"><span class="kv-key">MRR</span><span class="kv-val mono" style="font-weight:700;color:var(--lime-dk)">Rp ' + mrr.toLocaleString('id-ID') + '/bln</span></div>';
     if (b.nextRenewal) html += '<div class="kv"><span class="kv-key">Next Renewal</span><span class="kv-val mono">'+b.nextRenewal+'</span></div>';
@@ -1484,6 +1605,10 @@ function openDetail(id) {
     html += '<button class="btn btn-lime btn-sm" onclick="extendTrial(\'' + b.id + '\')" style="background:var(--amber);color:var(--amber-dk)">\u23F1 Extend Trial</button>';
   } else {
     html += '<button class="btn btn-ghost btn-sm" disabled style="opacity:.4;cursor:not-allowed">\u23F1 Extend Trial</button>';
+  }
+  // Grant Free Subscription — available for all except churned
+  if (b.status !== 'churned') {
+    html += '<button class="btn btn-sm" onclick="openGrantModal(\'' + b.id + '\')" style="grid-column:span 2;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#78350f;border:1.5px solid #fcd34d;font-weight:700">\uD83C\uDF81 Grant Free Subscription</button>';
   }
   html += '<button class="btn btn-ghost btn-sm" onclick="sendWAToOwner(\'' + b.id + '\')">\uD83D\uDCAC Kirim WA Owner</button>';
   html += '<button class="btn btn-ghost btn-sm" onclick="exportBizData(\'' + b.id + '\')">\uD83D\uDCE5 Export Data</button>';
@@ -1665,6 +1790,320 @@ function extendTrial(bizId) {
   logAdminAction('extend_trial', bizId, { days: days, newEndDate: b.trialEndsAt });
   toast('Trial extended +' + days + ' hari ke ' + b.trialEndsAt, 'success');
   renderTable();
+  openDetail(bizId);
+}
+
+// ══════════════════════════════
+// GRANT FREE SUBSCRIPTION — admin comp untuk beta/partner/churn-recovery
+// ══════════════════════════════
+var GRANT_REASON_LABELS = {
+  beta_tester: '🧪 Beta tester comp',
+  partnership: '🤝 Partnership / Influencer',
+  churn_recovery: '💚 Churn recovery (win-back)',
+  bug_apology: '🐛 Bug / outage apology',
+  internal_demo: '🎯 Internal demo / training',
+  early_adopter: '⭐ Early adopter promo',
+  other: '✏️ Other'
+};
+var GRANT_SUB_VALUE_IDR = 249000;  // Rp 249.000/bulan (early access price)
+var _grantCurrentPreset = 90;      // default +3 months
+var _grantCurrentBizId = null;
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+function openGrantModal(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  _grantCurrentBizId = bizId;
+
+  // Reset form
+  document.getElementById('grant-biz-id').value = bizId;
+  document.querySelector('input[name="grant-mode"][value="extend"]').checked = true;
+  setGrantMode('extend');
+  setGrantPreset(90);
+  document.getElementById('grant-custom-days').value = 90;
+  document.getElementById('grant-reason').value = '';
+  document.getElementById('grant-note').value = '';
+  onGrantReasonChange();
+
+  // Pre-fill end date input (90 days from now)
+  var futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + 90);
+  document.getElementById('grant-end-date').value = futureDate.toISOString().slice(0,10);
+  document.getElementById('grant-end-date').min = new Date().toISOString().slice(0,10);
+
+  // Populate current state snapshot
+  var planLabel = 'Unknown';
+  var accessLabel = '—';
+  if (b.grantedSubEndsAt && new Date(b.grantedSubEndsAt) > new Date()) {
+    var existingLeft = Math.ceil((new Date(b.grantedSubEndsAt) - Date.now()) / 86400000);
+    planLabel = '🎁 Sudah di-grant (expires ' + b.grantedSubEndsAt + ', ' + existingLeft + ' hari lagi)';
+    accessLabel = b.grantedSubEndsAt;
+  } else if (b.status === 'active') {
+    planLabel = '⭐ Subscriber paid';
+    accessLabel = b.nextRenewal || 'active';
+  } else if (b.status === 'trial' || b.status === 'trial_aktif') {
+    planLabel = '🎁 Trial aktif';
+    accessLabel = b.trialEndsAt || '—';
+  } else if (b.status === 'trial_expired') {
+    planLabel = '⏰ Trial expired';
+    accessLabel = 'locked';
+  } else {
+    planLabel = b.status;
+  }
+  document.getElementById('grant-current').innerHTML =
+    '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">State saat ini</div>' +
+    '<div><strong>' + escHtml(b.name) + '</strong> · ' + planLabel + '</div>' +
+    '<div style="color:var(--ink3);margin-top:2px">Akses sekarang sampai: <code style="font-family:\'JetBrains Mono\',monospace">' + accessLabel + '</code></div>';
+
+  updateGrantPreview();
+  openModal('modal-grant');
+}
+
+function setGrantMode(mode) {
+  document.getElementById('grant-extend-ui').style.display = (mode === 'extend') ? 'block' : 'none';
+  document.getElementById('grant-date-ui').style.display = (mode === 'date') ? 'block' : 'none';
+  // Update radio card visual state
+  document.querySelectorAll('.grant-mode-opt').forEach(function(el) {
+    var input = el.querySelector('input[type=radio]');
+    if (input && input.checked) {
+      el.style.background = 'var(--lime-bg)';
+      el.style.borderColor = 'var(--lime2)';
+    } else {
+      el.style.background = 'var(--bg2)';
+      el.style.borderColor = 'var(--border2)';
+    }
+  });
+  updateGrantPreview();
+}
+
+function setGrantPreset(days) {
+  _grantCurrentPreset = days;
+  document.querySelectorAll('.grant-preset').forEach(function(btn) {
+    btn.classList.toggle('active', parseInt(btn.dataset.days, 10) === days);
+  });
+  document.getElementById('grant-custom-days').value = days;
+  updateGrantPreview();
+}
+
+function onGrantCustomDays() {
+  var v = parseInt(document.getElementById('grant-custom-days').value, 10);
+  if (!v || v < 1) v = 1;
+  _grantCurrentPreset = v;
+  // De-activate preset buttons if value doesn't match
+  document.querySelectorAll('.grant-preset').forEach(function(btn) {
+    btn.classList.toggle('active', parseInt(btn.dataset.days, 10) === v);
+  });
+  updateGrantPreview();
+}
+
+function onGrantReasonChange() {
+  var reason = document.getElementById('grant-reason').value;
+  var reqLbl = document.getElementById('grant-note-req');
+  if (reason === 'other') {
+    reqLbl.textContent = 'wajib untuk "Other"';
+    reqLbl.style.color = 'var(--red)';
+  } else {
+    reqLbl.textContent = 'opsional';
+    reqLbl.style.color = 'var(--ink4)';
+  }
+  updateGrantPreview();
+}
+
+function computeGrantEndDate() {
+  var mode = (document.querySelector('input[name="grant-mode"]:checked') || {}).value || 'extend';
+  if (mode === 'date') {
+    var dateStr = document.getElementById('grant-end-date').value;
+    if (!dateStr) return null;
+    return new Date(dateStr + 'T23:59:59');
+  }
+  // Extend mode: base = max(now, existing grant end, existing trial end)
+  var b = ADMIN_DATA.find(function(x){ return x.id === _grantCurrentBizId });
+  var base = new Date();
+  if (b) {
+    if (b.grantedSubEndsAt && new Date(b.grantedSubEndsAt) > base) base = new Date(b.grantedSubEndsAt);
+  }
+  var days = parseInt(document.getElementById('grant-custom-days').value, 10) || _grantCurrentPreset;
+  var result = new Date(base);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function updateGrantPreview() {
+  var prev = document.getElementById('grant-preview');
+  if (!prev) return;
+  var b = ADMIN_DATA.find(function(x){ return x.id === _grantCurrentBizId });
+  if (!b) { prev.innerHTML = '—'; return; }
+
+  var endDate = computeGrantEndDate();
+  if (!endDate || isNaN(endDate.getTime())) {
+    prev.innerHTML = '<span style="color:var(--red-dk)">⚠ Pilih durasi atau tanggal dulu</span>';
+    return;
+  }
+
+  var nowD = new Date(); nowD.setHours(0,0,0,0);
+  var endD = new Date(endDate); endD.setHours(0,0,0,0);
+  var totalDays = Math.ceil((endD - nowD) / 86400000);
+
+  // Plan transition
+  var fromPlan, toPlan;
+  if (b.grantedSubEndsAt && new Date(b.grantedSubEndsAt) > new Date()) {
+    fromPlan = '🎁 Subscriber (granted)';
+    toPlan = '🎁 Subscriber (grant extended)';
+  } else if (b.status === 'active') {
+    fromPlan = '⭐ Subscriber (paid)';
+    toPlan = '⭐ + 🎁 Subscriber (paid + grant)';
+  } else if (b.status === 'trial' || b.status === 'trial_aktif') {
+    fromPlan = '🎁 Trial';
+    toPlan = '⭐ Subscriber (admin-granted)';
+  } else {
+    fromPlan = '⏰ ' + b.status;
+    toPlan = '⭐ Subscriber (admin-granted)';
+  }
+
+  var endStr = endDate.toISOString().slice(0,10);
+  var monthsEstimate = Math.round(totalDays / 30 * 10) / 10;
+  var valueIdr = Math.round((totalDays / 30) * GRANT_SUB_VALUE_IDR);
+
+  prev.innerHTML =
+    '<div><strong>Plan:</strong> ' + fromPlan + ' → <strong>' + toPlan + '</strong></div>' +
+    '<div><strong>Akses sampai:</strong> <code style="font-family:\'JetBrains Mono\',monospace;background:#fff;padding:1px 6px;border-radius:3px">' + endStr + '</code> (' + totalDays + ' hari / ~' + monthsEstimate + ' bulan)</div>' +
+    '<div><strong>Credit:</strong> 300/bulan (auto-reset setiap siklus)</div>' +
+    '<div><strong>Value comp:</strong> <code style="font-family:\'JetBrains Mono\',monospace;background:#fff;padding:1px 6px;border-radius:3px">Rp ' + valueIdr.toLocaleString('id-ID') + '</code> MRR foregone</div>';
+}
+
+function doGrantFree() {
+  var bizId = document.getElementById('grant-biz-id').value;
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+
+  var reason = document.getElementById('grant-reason').value;
+  var note = document.getElementById('grant-note').value.trim();
+  var endDate = computeGrantEndDate();
+
+  // Validation
+  if (!reason) { toast('Pilih alasan dulu ya', 'error'); return; }
+  if (reason === 'other' && !note) { toast('Catatan wajib untuk alasan "Other"', 'error'); return; }
+  if (!endDate || isNaN(endDate.getTime())) { toast('Durasi / tanggal belum valid', 'error'); return; }
+  if (endDate <= new Date()) { toast('End date harus di masa depan', 'error'); return; }
+
+  var endDateStr = endDate.toISOString().slice(0,10);
+  var totalDays = Math.ceil((endDate - new Date()) / 86400000);
+
+  // Password gate
+  var pw = prompt('⚠ KONFIRMASI GRANT FREE SUBSCRIPTION\n\n' +
+    'Beri "' + b.name + '" akses gratis sampai ' + endDateStr + ' (' + totalDays + ' hari)?\n' +
+    'Alasan: ' + (GRANT_REASON_LABELS[reason] || reason) + '\n' +
+    'Value yang di-comp: ~Rp ' + Math.round((totalDays / 30) * GRANT_SUB_VALUE_IDR).toLocaleString('id-ID') + '\n\n' +
+    'Masukkan password admin untuk konfirmasi:');
+  if (pw === null) return;
+  if (pw !== 'getstarvio2026') {
+    toast('Password admin salah — grant dibatalkan', 'error');
+    return;
+  }
+
+  // Apply grant
+  var prevState = {
+    status: b.status,
+    grantedSubEndsAt: b.grantedSubEndsAt || null
+  };
+  b.grantedSubEndsAt = endDateStr;
+  b.grantedBy = _adminEmail || 'admin@getstarvio.com';
+  b.grantReason = reason;
+  b.grantNote = note;
+  b.grantDays = totalDays;
+  b.grantedAt = new Date().toISOString();
+
+  // Upgrade status: trial/trial_expired → active (subscriber-like)
+  // Note: we don't overwrite paid subscribers' status; grant is additive via grantedSubEndsAt
+  if (b.status === 'trial' || b.status === 'trial_aktif' || b.status === 'trial_expired') {
+    b.status = 'active';
+  }
+
+  // Refill credits — 300 initial (monthly allocation)
+  if (typeof b.creditLeft === 'number' && b.creditLeft < 300) {
+    b.creditLeft = 300;
+    b.creditMax = Math.max(b.creditMax || 0, 300);
+  }
+
+  // Activity log (user-facing)
+  if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
+  var now = new Date();
+  var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  ACTIVITY_LOG[b.id].unshift({
+    time: ts,
+    text: '🎁 Free subscription granted until ' + endDateStr + ' · ' + (GRANT_REASON_LABELS[reason] || reason)
+  });
+
+  // Audit log (admin-facing)
+  logAdminAction('grant_free_subscription', bizId, {
+    endDate: endDateStr,
+    days: totalDays,
+    reason: reason,
+    reasonLabel: GRANT_REASON_LABELS[reason] || reason,
+    note: note,
+    valueIdr: Math.round((totalDays / 30) * GRANT_SUB_VALUE_IDR),
+    prevStatus: prevState.status,
+    prevGrantEnd: prevState.grantedSubEndsAt
+  });
+
+  toast('🎁 Granted free sub sampai ' + endDateStr + ' ke ' + b.name, 'success');
+  closeModal('modal-grant');
+  renderTable();
+  updateStats();
+  openDetail(bizId);  // refresh detail modal
+}
+
+function revokeGrant(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b || !b.grantedSubEndsAt) return;
+
+  var confirmed = confirm('🔁 REVOKE GRANT\n\nBatalkan free subscription grant ke "' + b.name + '"?\n\n' +
+    'Akses akan kembali ke state sebelum grant (trial / expired / active-paid).\n' +
+    'Action ini tercatat di audit log.');
+  if (!confirmed) return;
+
+  var pw = prompt('Masukkan password admin untuk konfirmasi revoke:');
+  if (pw === null) return;
+  if (pw !== 'getstarvio2026') { toast('Password salah', 'error'); return; }
+
+  var revokedEnd = b.grantedSubEndsAt;
+  var revokedReason = b.grantReason;
+  var revokedDays = b.grantDays || 0;
+
+  delete b.grantedSubEndsAt;
+  delete b.grantedBy;
+  delete b.grantReason;
+  delete b.grantNote;
+  delete b.grantDays;
+  delete b.grantedAt;
+
+  // Re-derive status: if they were on trial before grant, and trial still valid → trial; else → trial_expired
+  if (b.trialEndsAt && new Date(b.trialEndsAt) > new Date()) {
+    b.status = 'trial_aktif';
+  } else if (!b.nextRenewal) {
+    // No paid subscription either → trial_expired
+    b.status = 'trial_expired';
+  }
+  // else: leave as-is (paid subscriber, grant was additive)
+
+  if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
+  var now = new Date();
+  var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  ACTIVITY_LOG[b.id].unshift({
+    time: ts,
+    text: '🔁 Free subscription grant revoked (was until ' + revokedEnd + ')'
+  });
+
+  logAdminAction('revoke_free_grant', bizId, {
+    revokedEndDate: revokedEnd,
+    revokedReason: revokedReason,
+    revokedDays: revokedDays
+  });
+
+  toast('Grant revoked untuk ' + b.name, 'success');
+  renderTable();
+  updateStats();
   openDetail(bizId);
 }
 
