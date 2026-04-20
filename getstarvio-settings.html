@@ -869,6 +869,99 @@ body.imp-active{padding-top:36px}
         </div>
       </div>
 
+      <!-- ══ ACCORDION: PIN ADMIN — secondary auth untuk aksi kritis ══ -->
+      <div class="accordion" id="acc-pin">
+        <div class="acc-header" onclick="toggleAcc('acc-pin')">
+          <div class="acc-title"><span class="acc-icon">🔐</span> PIN Admin</div>
+          <span class="acc-sub" id="acc-pin-sub">Belum diatur</span>
+          <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+        <div class="acc-body">
+          <div style="background:var(--bg3);border:1px dashed var(--border2);border-radius:var(--r-sm);padding:12px 14px;margin-top:14px;margin-bottom:14px;font-size:12px;color:var(--ink2);line-height:1.6">
+            Karena login pakai Google (tanpa password), PIN ini jadi lapisan kedua untuk aksi kritis seperti:
+            <ul style="margin:6px 0 0 18px;padding:0;color:var(--ink3);font-size:11px">
+              <li>Hapus kategori / pelanggan</li>
+              <li>Ubah jam kirim automation</li>
+              <li>Reset semua data</li>
+            </ul>
+          </div>
+
+          <!-- ── STATE A: PIN belum diatur ── -->
+          <div id="pin-setup-wrap">
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:5px;letter-spacing:.04em">PIN Baru (4 digit angka)</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-new" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-new')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin:12px 0 5px;letter-spacing:.04em">Konfirmasi PIN</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-confirm" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-confirm')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <div id="pin-error" style="display:none;font-size:11px;color:var(--red-dk);margin-top:8px;font-weight:600"></div>
+
+            <div style="margin-top:14px">
+              <button class="btn btn-lime" onclick="savePinSetup()">Simpan PIN</button>
+            </div>
+
+            <div style="margin-top:12px;font-size:10px;color:var(--ink3);line-height:1.55">
+              💡 <strong>Tips:</strong> Jangan pakai PIN yang mudah ditebak (0000, 1234, tahun lahir). Jangan share ke orang lain.
+            </div>
+          </div>
+
+          <!-- ── STATE B: PIN sudah diatur ── -->
+          <div id="pin-change-wrap" style="display:none">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);margin-bottom:14px">
+              <div style="font-size:22px">✅</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:700;color:var(--lime-dk)">PIN Terpasang</div>
+                <div style="font-size:11px;color:var(--lime-dk);opacity:.75;margin-top:1px" id="pin-set-date">Diatur baru saja</div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--lime-dk);letter-spacing:.25em">••••</div>
+            </div>
+
+            <!-- Change flow: current PIN → new PIN -->
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:5px;letter-spacing:.04em">PIN Sekarang</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-current" placeholder="0000" autocomplete="current-password" oninput="onPinInput(this,'pin-current')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin:12px 0 5px;letter-spacing:.04em">PIN Baru (4 digit)</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-new2" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-new2')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin:12px 0 5px;letter-spacing:.04em">Konfirmasi PIN Baru</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-confirm2" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-confirm2')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <div id="pin-error2" style="display:none;font-size:11px;color:var(--red-dk);margin-top:8px;font-weight:600"></div>
+
+            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-lime" onclick="savePinChange()">Ubah PIN</button>
+              <button class="btn btn-ghost btn-sm" onclick="removePin()" style="color:var(--red-dk);border-color:#f5c5c3">Hapus PIN</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══ ACCORDION: KATEGORI DEFAULTS — global defaults for new categories ══ -->
+      <div class="accordion" id="acc-kat-default">
+        <div class="acc-header" onclick="toggleAcc('acc-kat-default')">
+          <div class="acc-title"><span class="acc-icon">⚙️</span> Kategori Defaults</div>
+          <span class="acc-sub" id="acc-kat-default-sub">Interval fallback 30 hari</span>
+          <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+        <div class="acc-body">
+          <div style="background:var(--bg3);border:1px dashed var(--border2);border-radius:var(--r-sm);padding:12px 14px;margin-top:14px;margin-bottom:14px;font-size:12px;color:var(--ink2);line-height:1.6">
+            Setting default untuk kategori baru. Tiap kategori bisa override ini di
+            <a href="getstarvio-kategori.html" style="color:var(--lime-dk);font-weight:700;text-decoration:none">page Kategori →</a>.
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0">
+            <div style="flex:1;min-width:200px">
+              <div style="font-size:13px;font-weight:700;color:var(--ink)">Default Interval — Fallback</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.5">Dipakai jika pelanggan belum punya kategori layanan.</div>
+            </div>
+            <input type="number" value="30" min="1" max="365" id="def-intv-settings" style="width:70px;padding:8px 10px;border-radius:var(--r-sm);background:#fff;border:1.5px solid var(--border2);color:var(--ink);font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:center;outline:none">
+            <span style="font-size:12px;color:var(--ink3)">hari</span>
+            <button onclick="saveDefaultIntervalSettings()" class="btn btn-lime btn-sm">Simpan</button>
+          </div>
+        </div>
+      </div>
+
       <!-- ══ ACCORDION: DANGER ZONE ══ -->
       <div class="accordion" id="acc-danger">
         <div class="acc-header" onclick="toggleAcc('acc-danger')">
@@ -1156,6 +1249,126 @@ function toggleAcc(id) {
   var wasOpen = el.classList.contains('open')
   document.querySelectorAll('.accordion').forEach(function(a) { a.classList.remove('open') })
   if (!wasOpen) el.classList.add('open')
+}
+
+/* ══════════════════════════════════════════════
+   PIN ADMIN — secondary auth untuk aksi kritis
+   Stored plain (mockup) — in production: hash + salt server-side
+   ══════════════════════════════════════════════ */
+function onPinInput(el, fieldId) {
+  // Strip non-digits + clamp to 4
+  var v = el.value.replace(/\D/g, '').slice(0, 4)
+  if (el.value !== v) el.value = v
+  // Reset error state on input
+  var err = document.getElementById('pin-error')
+  var err2 = document.getElementById('pin-error2')
+  if (err) err.style.display = 'none'
+  if (err2) err2.style.display = 'none'
+}
+
+function renderPinAccordion(u) {
+  var hasPin = !!(u && u.adminPin)
+  var setupWrap = document.getElementById('pin-setup-wrap')
+  var changeWrap = document.getElementById('pin-change-wrap')
+  var subLabel = document.getElementById('acc-pin-sub')
+  if (hasPin) {
+    if (setupWrap) setupWrap.style.display = 'none'
+    if (changeWrap) changeWrap.style.display = 'block'
+    if (subLabel) subLabel.textContent = 'Terpasang · ••••'
+    var dateEl = document.getElementById('pin-set-date')
+    if (dateEl && u.adminPinSetAt) {
+      var d = new Date(u.adminPinSetAt)
+      dateEl.textContent = 'Diatur pada ' + d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})
+    }
+  } else {
+    if (setupWrap) setupWrap.style.display = 'block'
+    if (changeWrap) changeWrap.style.display = 'none'
+    if (subLabel) subLabel.textContent = 'Belum diatur'
+  }
+}
+
+function savePinSetup() {
+  var u = loadU()
+  if (!u) return
+  var pin = (document.getElementById('pin-new').value || '').trim()
+  var confirm = (document.getElementById('pin-confirm').value || '').trim()
+  var err = document.getElementById('pin-error')
+
+  if (pin.length !== 4) { err.textContent = 'PIN harus 4 digit angka'; err.style.display = 'block'; return }
+  if (!/^\d{4}$/.test(pin)) { err.textContent = 'PIN hanya boleh angka 0-9'; err.style.display = 'block'; return }
+  if (pin !== confirm) { err.textContent = 'Konfirmasi PIN tidak cocok'; err.style.display = 'block'; return }
+  // Warn on common weak PINs
+  var weakPins = ['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1212']
+  if (weakPins.indexOf(pin) !== -1) {
+    if (!window.confirm('PIN "' + pin + '" mudah ditebak. Tetap lanjut?')) return
+  }
+
+  u.adminPin = pin
+  u.adminPinSetAt = new Date().toISOString()
+  saveU(u)
+  document.getElementById('pin-new').value = ''
+  document.getElementById('pin-confirm').value = ''
+  err.style.display = 'none'
+  renderPinAccordion(u)
+  showToast('🔐 PIN admin berhasil diatur!')
+}
+
+function savePinChange() {
+  var u = loadU()
+  if (!u) return
+  var current = (document.getElementById('pin-current').value || '').trim()
+  var newPin = (document.getElementById('pin-new2').value || '').trim()
+  var confirm = (document.getElementById('pin-confirm2').value || '').trim()
+  var err = document.getElementById('pin-error2')
+
+  if (current !== u.adminPin) { err.textContent = 'PIN sekarang salah'; err.style.display = 'block'; return }
+  if (newPin.length !== 4 || !/^\d{4}$/.test(newPin)) { err.textContent = 'PIN baru harus 4 digit angka'; err.style.display = 'block'; return }
+  if (newPin !== confirm) { err.textContent = 'Konfirmasi PIN baru tidak cocok'; err.style.display = 'block'; return }
+  if (newPin === current) { err.textContent = 'PIN baru sama dengan PIN sekarang'; err.style.display = 'block'; return }
+  var weakPins = ['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1212']
+  if (weakPins.indexOf(newPin) !== -1) {
+    if (!window.confirm('PIN "' + newPin + '" mudah ditebak. Tetap lanjut?')) return
+  }
+
+  u.adminPin = newPin
+  u.adminPinSetAt = new Date().toISOString()
+  saveU(u)
+  document.getElementById('pin-current').value = ''
+  document.getElementById('pin-new2').value = ''
+  document.getElementById('pin-confirm2').value = ''
+  err.style.display = 'none'
+  renderPinAccordion(u)
+  showToast('🔐 PIN admin berhasil diubah!')
+}
+
+function removePin() {
+  var u = loadU()
+  if (!u || !u.adminPin) return
+  var current = window.prompt('Masukkan PIN sekarang untuk hapus PIN admin:')
+  if (current === null) return
+  if (current !== u.adminPin) { showToast('PIN salah', 'error'); return }
+  if (!window.confirm('Yakin mau hapus PIN admin?\n\nSetelah dihapus, aksi kritis tidak akan terproteksi lagi. Kamu bisa setup PIN lagi kapan aja.')) return
+
+  delete u.adminPin
+  delete u.adminPinSetAt
+  saveU(u)
+  renderPinAccordion(u)
+  showToast('PIN admin dihapus — aksi kritis tidak terproteksi lagi')
+}
+
+/* ══════════════════════════════════════════════
+   KATEGORI DEFAULTS — moved from Kategori page
+   ══════════════════════════════════════════════ */
+function saveDefaultIntervalSettings() {
+  var u = loadU()
+  if (!u) return
+  var v = parseInt(document.getElementById('def-intv-settings').value)
+  if (!(v > 0 && v <= 365)) { showToast('Interval harus 1-365 hari', 'error'); return }
+  u.defaultInterval = v
+  saveU(u)
+  var subLabel = document.getElementById('acc-kat-default-sub')
+  if (subLabel) subLabel.textContent = 'Interval fallback ' + v + ' hari'
+  showToast('Default interval disimpan — ' + v + ' hari')
 }
 
 /* ── SAVE PROFILE ── */
@@ -1928,6 +2141,16 @@ function boot() {
   document.getElementById('nf-criticalCredit').checked  = nf.criticalCredit  !== false
   document.getElementById('nf-subLow').checked          = nf.subLow          !== false
   document.getElementById('nf-renewalReminder').checked = nf.renewalReminder !== false
+
+  // PIN Admin accordion state
+  renderPinAccordion(U)
+
+  // Default interval (migrated from Kategori page)
+  var defIntv = U.defaultInterval || 30
+  var defIntvEl = document.getElementById('def-intv-settings')
+  if (defIntvEl) defIntvEl.value = defIntv
+  var accKatDefSub = document.getElementById('acc-kat-default-sub')
+  if (accKatDefSub) accKatDefSub.textContent = 'Interval fallback ' + defIntv + ' hari'
 }
 
 /* ── INIT ── */
@@ -1940,7 +2163,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   // Auto-open accordion on load: hash anchor wins, else default QR
   var hash = (location.hash || '').replace('#', '')
-  var allowed = { qr: 'acc-qr', profil: 'acc-profil', wa: 'acc-wa', danger: 'acc-danger' }
+  var allowed = { qr: 'acc-qr', profil: 'acc-profil', wa: 'acc-wa', pin: 'acc-pin', 'kat-default': 'acc-kat-default', danger: 'acc-danger' }
   var target = allowed[hash] || 'acc-qr'
   var el = document.getElementById(target)
   if (el) el.classList.add('open')

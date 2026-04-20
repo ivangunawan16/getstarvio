@@ -913,12 +913,13 @@ function renderSetupChecklist(U) {
   const qrCxCount = cxs.filter(function(c){ return c.via === 'qr' }).length
   const hasCats = (U.cats || []).length > 0
 
-  // Setup steps — urutan: brand identity (logo) → brand voice (template) → data → physical → go-live
+  // Setup steps — urutan: brand identity (logo) → brand voice (template) → data → physical → security → go-live
   const steps = [
     { id: 'logo',       done: !!U.bizLogo,                                   label: 'Upload logo bisnis',           sub: 'Tampil di halaman check-in pelanggan',                subDone: 'Logo siap ✓' },
     { id: 'templates',  done: !!U.templatesReviewedAt,                       label: 'Pilih template pengingat',     sub: 'Tentukan gaya pesan per kategori (formal, casual, dsb.)', subDone: 'Template sudah disesuaikan ✓' },
     { id: 'customers',  done: cxs.length > 0,                                label: 'Tambah pelanggan pertama',     sub: 'Manual atau import CSV — biar sistem punya data',     subDone: cxs.length + ' pelanggan terdaftar ✓' },
     { id: 'qr',         done: !!U.qrPosted || qrCxCount > 0,                 label: 'Pasang QR check-in',           sub: 'Print/share QR — pelanggan bisa daftar sendiri',      subDone: qrCxCount > 0 ? qrCxCount + ' pelanggan via QR ✓' : 'QR sudah dipasang ✓' },
+    { id: 'pin',        done: !!U.adminPin,                                  label: 'Setup PIN Admin',              sub: 'Proteksi aksi kritis (hapus data, ubah jam kirim)',   subDone: 'PIN aktif ✓' },
     { id: 'automation', done: !!U.automationEnabled,                         label: 'Aktifkan automation',          sub: 'Pengingat otomatis ke WhatsApp pelanggan',            subDone: 'Automation aktif ✓' }
   ]
   const TOTAL_STEPS = steps.length
@@ -977,6 +978,8 @@ function renderSetupStep(step, num, U, hasCats) {
       actionHtml = '<a class="setup-action" href="getstarvio-pelanggan.html?action=add">Tambah →</a>'
     } else if (step.id === 'qr') {
       actionHtml = '<a class="setup-action" href="getstarvio-settings.html#qr">Pasang QR →</a>'
+    } else if (step.id === 'pin') {
+      actionHtml = '<a class="setup-action" href="getstarvio-settings.html#pin">Atur PIN →</a>'
     } else if (step.id === 'automation') {
       actionHtml = '<a class="setup-action" href="getstarvio-automation.html">Aktifkan →</a>'
     }

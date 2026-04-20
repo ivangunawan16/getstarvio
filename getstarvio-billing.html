@@ -464,6 +464,26 @@ body.imp-active{padding-top:36px}
   </div>
 </div>
 
+<!-- ══════════ SHARED PIN GATE MODAL ══════════ -->
+<div class="overlay" id="m-pin-gate">
+  <div class="modal" style="max-width:380px">
+    <div class="mhd" style="text-align:center">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--lime-bg);border:1px solid #c8f07a;display:flex;align-items:center;justify-content:center;margin:0 auto 11px;font-size:20px">🔐</div>
+      <div class="m-title">Masukkan PIN Admin</div>
+      <div class="m-sub" id="pin-gate-sub">Konfirmasi untuk lanjut</div>
+    </div>
+    <div style="padding:18px 22px 4px">
+      <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-gate-input" placeholder="••••" onkeydown="if(event.key==='Enter')verifyPinGate()" oninput="onPinGateInput(this)" style="width:100%;padding:14px;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:.6em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+      <div id="pin-gate-error" style="display:none;font-size:11px;color:var(--red-dk);margin-top:8px;font-weight:600;text-align:center">PIN salah — coba lagi</div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:10px;text-align:center">Lupa PIN? <a href="getstarvio-settings.html#pin" style="color:var(--lime-dk);font-weight:600">Reset di Settings →</a></div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closePinGate()">Batal</button>
+      <button class="btn btn-lime btn-sm" id="pin-gate-ok" onclick="verifyPinGate()" disabled style="opacity:.4;cursor:not-allowed">Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ══════════════════════════════════════════════
    SHARED UTILITIES
@@ -918,12 +938,95 @@ function confirmCancelSub() {
 }
 
 /* ══════════════════════════════════════════════
-   AUTO TOP-UP
+   SHARED PIN GATE — verification pattern
+   ══════════════════════════════════════════════ */
+var _pinGatePending = null
+
+function requirePin(actionFn, contextLabel) {
+  var U = loadU()
+  if (!U) return
+  if (!U.adminPin) {
+    if (!window.confirm('⚠️ PIN admin belum diatur.\n\nAksi ini seharusnya pakai PIN untuk proteksi. Lanjut tanpa PIN?\n\n(Setup PIN di Settings → PIN Admin untuk proteksi ekstra)')) return
+    actionFn()
+    return
+  }
+  _pinGatePending = { fn: actionFn, label: contextLabel || 'Konfirmasi aksi' }
+  document.getElementById('pin-gate-sub').textContent = _pinGatePending.label
+  document.getElementById('pin-gate-input').value = ''
+  document.getElementById('pin-gate-error').style.display = 'none'
+  var okBtn = document.getElementById('pin-gate-ok')
+  okBtn.disabled = true
+  okBtn.style.opacity = '.4'
+  okBtn.style.cursor = 'not-allowed'
+  document.getElementById('m-pin-gate').classList.add('show')
+  setTimeout(function() { document.getElementById('pin-gate-input').focus() }, 100)
+}
+
+function onPinGateInput(el) {
+  var v = el.value.replace(/\D/g, '').slice(0, 4)
+  if (el.value !== v) el.value = v
+  document.getElementById('pin-gate-error').style.display = 'none'
+  var okBtn = document.getElementById('pin-gate-ok')
+  var ready = v.length === 4
+  okBtn.disabled = !ready
+  okBtn.style.opacity = ready ? '' : '.4'
+  okBtn.style.cursor = ready ? '' : 'not-allowed'
+}
+
+function closePinGate() {
+  document.getElementById('m-pin-gate').classList.remove('show')
+  _pinGatePending = null
+}
+
+function verifyPinGate() {
+  var U = loadU()
+  if (!U || !_pinGatePending) return
+  var entered = (document.getElementById('pin-gate-input').value || '').trim()
+  if (entered.length !== 4) return
+  if (entered !== U.adminPin) {
+    var errEl = document.getElementById('pin-gate-error')
+    errEl.style.display = 'block'
+    var inp = document.getElementById('pin-gate-input')
+    inp.value = ''
+    inp.focus()
+    inp.style.transition = 'transform .05s'
+    var i = 0
+    var shake = setInterval(function() {
+      inp.style.transform = i % 2 === 0 ? 'translateX(-4px)' : 'translateX(4px)'
+      i++
+      if (i > 5) { clearInterval(shake); inp.style.transform = '' }
+    }, 50)
+    return
+  }
+  var pending = _pinGatePending
+  _pinGatePending = null
+  document.getElementById('m-pin-gate').classList.remove('show')
+  pending.fn()
+}
+
+/* ══════════════════════════════════════════════
+   AUTO TOP-UP — PIN-gated toggle (automatic charges = critical)
    ══════════════════════════════════════════════ */
 
 function toggleAutoTopup(val) {
-  var details = document.getElementById('autoDetails')
-  if (details) details.style.display = val ? 'block' : 'none'
+  // Event fired AFTER visual change. Revert temporarily, PIN-gate the actual state change.
+  var toggle = document.getElementById('autoToggle')
+  if (!toggle) return
+  var prevState = !val  // what it was before clicking
+  // Revert visual immediately pending PIN
+  toggle.checked = prevState
+
+  requirePin(function() {
+    var U = loadU()
+    if (!U) return
+    U = ensureBillingFields(U)
+    U.autoTopup = val
+    saveU(U)
+    toggle.checked = val
+    var details = document.getElementById('autoDetails')
+    if (details) details.style.display = val ? 'block' : 'none'
+    toast(val ? '✅ Auto Top-Up diaktifkan' : '🛑 Auto Top-Up dimatikan', 'success')
+  }, val ? 'Aktifkan Auto Top-Up (charge otomatis)' : 'Matikan Auto Top-Up')
 }
 
 function saveAutoTopup() {

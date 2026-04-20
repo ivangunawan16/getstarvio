@@ -79,11 +79,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .btn-xs{display:inline-flex;align-items:center;justify-content:center;padding:3px 9px;font-size:10px;font-weight:700;border-radius:var(--r-sm);cursor:pointer;font-family:inherit;border:none;transition:all .15s}
 
 /* ── DEFAULT INTERVAL BAR (light theme) ── */
-.def-bar{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
-.def-info{flex:1}
-.def-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
-.def-sub{font-size:11px;color:var(--ink3)}
-.def-inputs{display:flex;align-items:center;gap:8px}
 
 /* ── KAT GRID ── */
 .kat-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
@@ -189,8 +184,6 @@ select.fi{cursor:pointer;appearance:auto}
   .hamburger-btn{display:flex}
   .kat-grid{grid-template-columns:1fr}
   .db-content{padding:16px 16px 32px}
-  .def-bar{flex-direction:column;align-items:stretch;gap:10px}
-  .def-inputs{justify-content:flex-end}
   .g2{grid-template-columns:1fr}
   .drag-handle{display:none}
   .arrow-btns{display:flex}
@@ -291,22 +284,14 @@ body.imp-active{padding-top:36px}
   <div class="db-content">
     <div class="page">
 
-      <!-- DEFAULT INTERVAL BAR (light theme) -->
-      <div class="def-bar">
-        <div class="def-info">
-          <div class="def-name">Default Interval — Fallback</div>
-          <div class="def-sub">Dipakai jika pelanggan tidak punya kategori layanan.</div>
-        </div>
-        <div class="def-inputs">
-          <input type="number" value="30" min="1" max="365" id="def-intv"
-            style="width:62px;padding:7px 9px;border-radius:var(--r-sm);background:#fff;border:1.5px solid var(--border2);color:var(--ink);font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:center;outline:none">
-          <span style="font-size:12px;color:var(--ink3)">hari</span>
-          <button id="def-btn" onclick="saveDef()" class="btn btn-lime btn-sm">Simpan</button>
-        </div>
-      </div>
-
       <!-- KAT GRID -->
       <div class="kat-grid" id="kat-grid"></div>
+
+      <!-- Footer hint about default interval — now in Settings -->
+      <div style="font-size:11px;color:var(--ink3);margin-top:14px;line-height:1.55;text-align:center;padding:10px 14px;background:var(--bg2);border:1px dashed var(--border2);border-radius:var(--r-sm)">
+        💡 Default interval fallback untuk kategori baru diatur di
+        <a href="getstarvio-settings.html#kat-default" style="color:var(--lime-dk);font-weight:700;text-decoration:none">Settings → Kategori Defaults →</a>
+      </div>
 
     </div>
   </div>
@@ -417,7 +402,7 @@ body.imp-active{padding-top:36px}
   </div>
 </div>
 
-<!-- DELETE CONFIRMATION MODAL -->
+<!-- DELETE CONFIRMATION MODAL (with PIN gate) -->
 <div class="overlay" id="m-delkat">
   <div class="modal modal-sm">
     <div class="mhd" style="text-align:center">
@@ -427,9 +412,32 @@ body.imp-active{padding-top:36px}
       <div class="m-title" id="del-title">Hapus kategori?</div>
       <div class="m-sub" id="del-sub">Pelanggan di kategori ini tidak akan mendapat reminder kategori ini lagi.</div>
     </div>
+
+    <!-- PIN entry (when PIN set) -->
+    <div id="del-pin-wrap" style="padding:14px 20px 4px;display:none">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--ink2);line-height:1.55;display:flex;align-items:center;gap:8px">
+        <span style="font-size:14px">🔐</span>
+        <span>Aksi kritis — masukkan PIN admin 4 digit</span>
+      </div>
+      <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="del-pin-input" placeholder="••••" oninput="onDelPinInput(this)" onkeydown="if(event.key==='Enter')confirmDel()" style="width:100%;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.5em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+      <div id="del-pin-error" style="display:none;font-size:11px;color:var(--red-dk);margin-top:6px;font-weight:600">PIN salah — coba lagi</div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:8px;text-align:center">Lupa PIN? <a href="getstarvio-settings.html#pin" style="color:var(--lime-dk);font-weight:600">Reset di Settings →</a></div>
+    </div>
+
+    <!-- No-PIN warning (when PIN not set) -->
+    <div id="del-no-pin-wrap" style="padding:14px 20px 4px;display:none">
+      <div style="background:#fff8ec;border:1px solid #f5d28a;border-radius:var(--r-sm);padding:10px 12px;font-size:11px;color:var(--amber-dk);line-height:1.55;display:flex;align-items:flex-start;gap:8px">
+        <span style="font-size:14px">⚠️</span>
+        <div>
+          <strong>PIN admin belum diatur.</strong> Untuk proteksi ekstra, setup PIN di
+          <a href="getstarvio-settings.html#pin" style="color:var(--amber-dk);font-weight:700">Settings →</a>
+        </div>
+      </div>
+    </div>
+
     <div class="mftr">
       <button class="btn btn-ghost btn-sm" onclick="closeM('m-delkat')">Batal</button>
-      <button class="btn btn-danger btn-sm" onclick="confirmDel()">Ya, Hapus</button>
+      <button class="btn btn-danger btn-sm" id="del-confirm-btn" onclick="confirmDel()">Ya, Hapus</button>
     </div>
   </div>
 </div>
@@ -547,7 +555,7 @@ function openLogout() { openM('m-logout') }
    TEMPLATE SYSTEM
    ══════════════════════════════════════════ */
 /* TEMPLATES — Meta Cloud API placeholder format {{1}}-{{4}}, semua UTILITY-compliant
-   {{1}} = Nama customer · {{2}} = Treatment · {{3}} = Tanggal kunjungan · {{4}} = Nama bisnis
+   {{1}} = Nama customer · {{2}} = Layanan · {{3}} = Tanggal kunjungan · {{4}} = Nama bisnis
    Catatan: TIDAK ada {{5}} timing — pesan dikirim tepat waktu sesuai cats[].interval. */
 var TEMPLATES = {
   aftercare_followup_1: 'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nKalau kamu butuh konsultasi lanjutan atau ingin booking sesi berikutnya, langsung balas chat ini ya.',
@@ -718,7 +726,6 @@ function boot() {
   U = loadU()
   if (!U) { location.href = 'getstarvio-login.html'; return }
   bootSidebar(U)
-  document.getElementById('def-intv').value = U.defaultInterval || 30
   renderKat()
   updateAddPreview()
   attachIntervalSuggest('kat-name', 'kat-days', 'kat-name-hint')
@@ -898,18 +905,79 @@ function saveEditKat() {
   showToast(cat.icon + ' Perubahan "' + cat.name + '" disimpan')
 }
 
-/* ── DELETE ── */
+/* ── DELETE ── PIN-gated kalau PIN sudah diatur */
 function delKat(id) {
   var cat = (U.cats || []).find(function(c) { return c.id === id })
   if (!cat) return
   pendingDelId = id
   document.getElementById('del-title').textContent = 'Hapus "' + cat.name + '"?'
   document.getElementById('del-sub').textContent = 'Pelanggan di kategori ini tidak akan mendapat reminder kategori ini lagi.'
+
+  // PIN gate state — show PIN input kalau user punya PIN, warning kalau belum
+  var hasPin = !!(U && U.adminPin)
+  var pinWrap = document.getElementById('del-pin-wrap')
+  var noPinWrap = document.getElementById('del-no-pin-wrap')
+  var confirmBtn = document.getElementById('del-confirm-btn')
+  var pinInput = document.getElementById('del-pin-input')
+  var pinErr = document.getElementById('del-pin-error')
+
+  if (hasPin) {
+    pinWrap.style.display = 'block'
+    noPinWrap.style.display = 'none'
+    confirmBtn.disabled = true
+    confirmBtn.style.opacity = '.4'
+    confirmBtn.style.cursor = 'not-allowed'
+    pinInput.value = ''
+    pinErr.style.display = 'none'
+    setTimeout(function() { pinInput.focus() }, 100)
+  } else {
+    pinWrap.style.display = 'none'
+    noPinWrap.style.display = 'block'
+    confirmBtn.disabled = false
+    confirmBtn.style.opacity = ''
+    confirmBtn.style.cursor = ''
+  }
+
   openM('m-delkat')
+}
+
+function onDelPinInput(el) {
+  var v = el.value.replace(/\D/g, '').slice(0, 4)
+  if (el.value !== v) el.value = v
+  var confirmBtn = document.getElementById('del-confirm-btn')
+  var pinErr = document.getElementById('del-pin-error')
+  pinErr.style.display = 'none'
+  var canConfirm = v.length === 4
+  confirmBtn.disabled = !canConfirm
+  confirmBtn.style.opacity = canConfirm ? '' : '.4'
+  confirmBtn.style.cursor = canConfirm ? '' : 'not-allowed'
 }
 
 function confirmDel() {
   if (!pendingDelId) return
+
+  // PIN verification kalau PIN diatur
+  if (U && U.adminPin) {
+    var entered = (document.getElementById('del-pin-input').value || '').trim()
+    if (entered.length !== 4) return
+    if (entered !== U.adminPin) {
+      var pinErr = document.getElementById('del-pin-error')
+      pinErr.style.display = 'block'
+      var pinInput = document.getElementById('del-pin-input')
+      pinInput.value = ''
+      pinInput.focus()
+      // Shake animation
+      pinInput.style.transition = 'transform .05s'
+      var i = 0
+      var shake = setInterval(function() {
+        pinInput.style.transform = i % 2 === 0 ? 'translateX(-4px)' : 'translateX(4px)'
+        i++
+        if (i > 5) { clearInterval(shake); pinInput.style.transform = '' }
+      }, 50)
+      return
+    }
+  }
+
   var delCat = (U.cats || []).find(function(c) { return c.id === pendingDelId })
   var delName = delCat ? delCat.name : 'Kategori'
   U.cats = (U.cats || []).filter(function(c) { return c.id !== pendingDelId })
@@ -918,16 +986,6 @@ function confirmDel() {
   renderKat()
   closeM('m-delkat')
   showToast('🗑️ Kategori "' + delName + '" dihapus')
-}
-
-/* ── DEFAULT INTERVAL ── */
-function saveDef() {
-  var v = parseInt(document.getElementById('def-intv').value)
-  if (v > 0) { U.defaultInterval = v; saveU(U) }
-  var btn = document.getElementById('def-btn')
-  btn.textContent = '\u2713 Tersimpan'
-  setTimeout(function() { btn.textContent = 'Simpan' }, 1500)
-  showToast('Default interval disimpan — ' + v + ' hari')
 }
 
 /* ── TOAST ── */
