@@ -2,15 +2,19 @@
 
 WhatsApp aftercare reminder SaaS untuk UMKM Indonesia (salon, spa, klinik, barbershop, nail studio, dll). Meta WhatsApp Business Platform Tech Provider.
 
-## 📌 Current Status (19 April 2026)
+## 📌 Current Status (20 April 2026)
 
 - ✅ **Mockup** — Full HTML prototype dengan design system finalized
+  - 🔒 Layered auth: OAuth → OTP (WA verify) → PIN (4-digit action gate)
+  - 🎨 Custom modal system (22 native dialogs replaced)
+  - 📢 Notification bell di topbar (replaced inline activity feed)
+  - 🧩 Automation/Kategori separation finalized (no duplicate inputs)
 - ✅ **Spec** — Canonical specs per-page di `prompts/`
 - ✅ **Compliance** — Privacy, ToS, Data Deletion pages live
 - ✅ **Meta prep** — 14/16 API test calls done, 2 remaining
 - 🚧 **Production build** — In progress (Okta FE + Kevin BE)
-- 🎯 **Meta submit:** **29 April 2026 23:59 WIB**
-- 🚀 **Beta launch:** **10 Mei 2026** dengan 5 paid users
+- 🎯 **Meta submit:** **29 April 2026 23:59 WIB** (9 hari lagi)
+- 🚀 **Beta launch:** **10 Mei 2026** dengan 5 paid users (20 hari lagi)
 
 ## 📁 Repo Structure
 

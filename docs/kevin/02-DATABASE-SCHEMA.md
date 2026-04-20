@@ -447,6 +447,14 @@ model User {
   ownerWa              String?      @map("owner_wa")
   ownerWaVerifiedAt    DateTime?    @map("owner_wa_verified_at")
   ownerWaOtpPending    Json?        @map("owner_wa_otp_pending")
+
+  // PIN Admin — 4-digit secondary auth for critical actions
+  // IMPORTANT: Hash with bcrypt/argon2 BEFORE storing. NEVER store plain PIN.
+  // Field stores the hash (e.g., bcrypt with cost 10). Plain-PIN comparison happens at API layer.
+  adminPinHash         String?      @map("admin_pin_hash")
+  adminPinSetAt        DateTime?    @map("admin_pin_set_at")
+  notifLastSeenAt      DateTime?    @map("notif_last_seen_at")
+
   waNum                String?      @map("wa_num")
   timezone             String       @default("Asia/Jakarta")
   country              String       @default("ID")

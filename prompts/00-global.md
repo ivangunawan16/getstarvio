@@ -86,8 +86,11 @@ Key rules yang tidak boleh dilanggar:
   adminName: "string",
   adminEmail: "string",        // read-only, dari Google OAuth
   ownerWa: "string",           // WA pemilik untuk notif billing (bisa beda dari waNum). Format 628xxx (no +, no space).
-  ownerWaVerifiedAt: "ISO string | null",  // kapan ownerWa terverifikasi via OTP. null = belum terverifikasi. Auto-reset ke null kalau ownerWa diubah (paksa re-verify).
+  ownerWaVerifiedAt: "ISO string | null",  // kapan ownerWa terverifikasi via OTP. null = belum terverifikasi. Auto-reset ke null kalau ownerWa diubah (paksa re-verify). Wajib truthy sebelum user bisa setup/change/remove PIN.
   ownerWaOtpPending: "{ code, expiresAt } | null",  // pending OTP state selama verifikasi. code = 6-digit string, expiresAt = ms timestamp (5 min lifetime). Di-set oleh sendOwnerWaOtp(), di-clear oleh verifyOwnerWaOtp() atau resetOwnerWaVerify().
+  adminPin: "string | null",   // 4-digit admin PIN untuk proteksi aksi kritis. null = belum di-set. Hanya bisa di-set/ubah kalau ownerWaVerifiedAt truthy (OTP-gated). PIN-gated actions: delete kategori/pelanggan, toggle master automation, toggle per-kategori automation, ubah jam kirim, toggle auto-topup billing. Dalam production: HASH + SALT server-side, JANGAN store plain. Untuk mockup: plain string.
+  adminPinSetAt: "ISO string | null",  // kapan PIN di-set/diubah terakhir. Audit trail. Null kalau belum di-set.
+  notifLastSeenAt: "ISO string | null",  // kapan user terakhir buka notification bell dropdown di dashboard topbar. Dipakai untuk hitung unread badge count (events since last seen). Default null = semua event unread.
   waNum: "string",             // nomor WA yang digunakan untuk kirim reminder
   timezone: "string",
   country: "string",

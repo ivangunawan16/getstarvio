@@ -85,7 +85,57 @@ Konten QR check-in yang dulu ada di halaman Kumpulkan sekarang ada di sini:
 
 **Why semua di satu section:** notifikasi billing (low credit, kritis, renewal) dikirim ke `ownerWa`. Taruh nomor + verifikasi + pilihan notif di 1 tempat supaya owner langsung lihat connection: "nomor ini → notifikasi ini".
 
-### Section 4: Danger Zone (collapsible, paling bawah)
+### Section 4: PIN Admin (🔐, setelah WhatsApp)
+
+**Rationale:** Login via Google OAuth (tanpa password), jadi PIN 4-digit jadi secondary auth factor untuk aksi kritis. PIN-gated actions: delete kategori/pelanggan, toggle master automation, toggle per-kategori automation, ubah jam kirim automation, toggle Auto Top-Up billing.
+
+**4 state rendering via `renderPinAccordion(u)`:**
+
+- **State A: PIN exists + OTP verified** → show change/remove UI
+  - Card lime "PIN Terpasang" + tanggal di-set + masked `••••`
+  - Form: PIN sekarang + PIN baru + konfirmasi PIN baru → tombol "Ubah PIN" + "Hapus PIN"
+  - Sub label accordion: "Terpasang · ••••"
+
+- **State B: PIN exists + OTP NOT verified** → show gate card, block change/remove
+  - Amber gate card: "Verify WhatsApp owner untuk ubah PIN — PIN kamu masih aktif & proteksi jalan — tapi untuk ganti / hapus PIN, kamu harus re-verify WA owner dulu (proof of identity)."
+  - CTA button "Re-verify WhatsApp →" → anchor ke `#wa` accordion
+  - Sub label accordion: "Terpasang · Verify WA untuk edit"
+  - PIN tetap active untuk gate aksi lain (tidak di-invalidate saat OTP reset)
+
+- **State C: PIN not set + OTP NOT verified** → show gate card, block setup
+  - Amber gate card: "Verify WhatsApp owner dulu — Nomor WA owner harus diverify via OTP sebelum setup PIN — biar identitas pemilik akun jelas (OTP = proof of phone ownership, PIN = proof of intent)."
+  - CTA button "Verify WhatsApp →"
+  - Sub label accordion: "Verify WA dulu"
+
+- **State D: PIN not set + OTP verified** → show setup form
+  - Form: 2x field 4-digit numeric (PIN + Confirm) + validasi match + weak-PIN warning
+  - Weak PIN list: `['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1212']` → show `showConfirm` modal "PIN mudah ditebak, tetap lanjut?" sebelum save
+  - Tombol "Simpan PIN" → save ke `u.adminPin` + `u.adminPinSetAt = new Date().toISOString()`
+  - Sub label accordion: "Belum diatur"
+
+**Logika PIN:**
+- `savePinSetup()`: validate PIN 4-digit numeric + confirmation match + OTP verified guard → save
+- `savePinChange()`: validate current PIN + new PIN different + OTP verified guard → save
+- `removePin()`: prompt current PIN (via `showPrompt`) → confirm via `showConfirm` → delete `u.adminPin` + `u.adminPinSetAt`
+- **Defense-in-depth:** Internal `proceedSetup()` / `proceedChange()` re-check `u.ownerWaVerifiedAt` sebelum save (belt-and-suspenders, catches state changes between outer guard and deferred save via weak-PIN warning flow)
+- **OTP reset behavior:** `resetOwnerWaVerify()` memanggil `renderPinAccordion()` → auto-lock PIN accordion (transition ke state B kalau ada PIN, state C kalau belum)
+- **OTP verify success behavior:** `verifyOwnerWaOtp()` memanggil `renderPinAccordion()` → auto-unlock (transition ke state A kalau ada PIN, state D kalau belum)
+
+**Shared `requirePin(actionFn, contextLabel)` helper** (dipakai di automation/billing/kategori/pelanggan untuk gate aksi kritis):
+- Kalau `!u.adminPin` → `showWarning()` close-only modal dengan CTA ke `settings.html#pin` (TIDAK ada backdoor "Lanjut tanpa PIN")
+- Kalau `u.adminPin` set → buka `m-pin-gate` shared modal → user input 4-digit → validate match → jalankan `actionFn()`
+- On wrong PIN: shake animation + error "PIN salah — coba lagi"
+
+**Kategori/Pelanggan delete pakai inline PIN pattern** (bukan `requirePin()`) — PIN input di dalam delete confirm modal (1-step UX better than 2-modal chain). Shake animation on wrong PIN.
+
+### Section 5: Kategori Defaults
+- Field "Default Interval — Fallback" (number input 1-365) — dipakai kalau pelanggan tidak punya kategori layanan spesifik
+- Hint: "Setting default untuk kategori baru. Tiap kategori bisa override ini di page Kategori."
+- Tombol "Simpan" → clamp 1-365, save ke `u.defaultInterval`
+- Sub label accordion: "Interval fallback X hari"
+- **Moved from Kategori page** (was previously duplicated there, consolidated di Settings untuk remove duplikasi)
+
+### Section 6: Danger Zone (collapsible, paling bawah)
 - "Reset semua data" → konfirmasi modal → `localStorage.removeItem('getstarvio_user')` → redirect ke login
 - "Export data" → download `getstarvio_user` sebagai JSON file
 
