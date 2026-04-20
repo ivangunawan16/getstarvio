@@ -17,7 +17,7 @@
   --fb:#1877f2;--fb-dk:#166fe5;
   --r:12px;--r-sm:8px;--r-lg:16px;
 }
-html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:var(--bg)}
+html,body{height:100%;font-family:'Sora',sans-serif;font-size:14px;background:var(--bg)}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
@@ -34,7 +34,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .prog-fill{height:100%;background:var(--lime);border-radius:99px;transition:width .45s cubic-bezier(.4,0,.2,1)}
 .mobile-step-label{display:none;font-size:12px;font-weight:600;color:var(--ink2);margin:-14px 0 16px;letter-spacing:.02em}
 .content{flex:1;overflow-y:auto;padding:0 36px 36px}
-.screen{display:none;animation:fadeUp .2s ease;max-width:520px}
+.screen{display:none;animation:fadeUp .2s ease;max-width:560px;margin:0 auto}
 .screen.active{display:block}
 
 /* ── SIDEBAR ── */
@@ -56,26 +56,27 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .sb-free-l{font-size:10px;color:var(--ink3);line-height:1.45}
 
 /* ── TYPOGRAPHY ── */
-.ob-tag{display:inline-block;font-size:10px;font-weight:700;color:var(--lime-dk);background:var(--lime-bg);border:1px solid var(--lime-bd);padding:3px 9px;border-radius:99px;margin-bottom:9px;letter-spacing:.05em}
-.ob-title{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.4px;line-height:1.2;margin-bottom:7px}
-.ob-sub{font-size:13px;color:var(--ink3);line-height:1.65;margin-bottom:22px}
+.ob-tag{display:inline-block;font-size:11px;font-weight:700;color:var(--lime-dk);background:var(--lime-bg);border:1px solid var(--lime-bd);padding:4px 10px;border-radius:99px;margin-bottom:10px;letter-spacing:.05em}
+.ob-title{font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.4px;line-height:1.25;margin-bottom:8px}
+.ob-sub{font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:22px}
 
 /* ── FORM ── */
-.fg{margin-bottom:13px}
-.fl{display:block;font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
-.fi{width:100%;padding:10px 13px;border-radius:var(--r-sm);background:var(--bg2);border:1.5px solid var(--border2);color:var(--ink);font-size:13px;font-family:inherit;outline:none;transition:all .15s}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+.fl-req{color:var(--red);margin-left:2px}
+.fi{width:100%;padding:11px 14px;border-radius:var(--r-sm);background:var(--bg2);border:1.5px solid var(--border2);color:var(--ink);font-size:14px;font-family:inherit;outline:none;transition:all .15s;min-height:44px}
 .fi:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.12)}
 .fi::placeholder{color:var(--ink4)}
 select.fi{cursor:pointer}
-.fi-hint{font-size:11px;color:var(--ink3);margin-top:4px;line-height:1.5}
-.fi-error{font-size:11px;color:var(--red);margin-top:4px;display:none}
+.fi-hint{font-size:12px;color:var(--ink3);margin-top:5px;line-height:1.5}
+.fi-error{font-size:12px;color:var(--red);margin-top:5px;display:none}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:var(--r-sm);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s;min-height:44px}
 .btn:active{transform:scale(.98)}
 .btn-lime{background:var(--lime);color:var(--lime-dk)}.btn-lime:hover{background:var(--lime2)}.btn-lime:disabled{opacity:.4;cursor:not-allowed}
 .btn-ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}.btn-ghost:hover{background:var(--bg3)}
 .btn-row{display:flex;gap:9px;align-items:center;margin-top:20px}
-.coexist{display:flex;align-items:flex-start;gap:9px;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:10px 13px;font-size:12px;color:var(--lime-dk);line-height:1.5}
+.coexist{display:flex;align-items:flex-start;gap:10px;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--lime-dk);line-height:1.55}
 
 /* ── QR CONNECT ── */
 .qr-connect-wrap{display:flex;gap:18px;align-items:flex-start;margin-bottom:14px}
@@ -98,14 +99,14 @@ select.fi{cursor:pointer}
 
 /* Preview list — "what will happen" mini stepper */
 .preview-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
-.pv-item{display:flex;align-items:flex-start;gap:10px;padding:5px 0;font-size:12px;color:var(--ink2);line-height:1.55}
+.pv-item{display:flex;align-items:flex-start;gap:11px;padding:7px 0;font-size:13px;color:var(--ink2);line-height:1.6}
 .pv-num{width:20px;height:20px;border-radius:50%;background:var(--lime-bg);border:1.5px solid var(--lime-bd);color:var(--lime-dk);font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .pv-item strong{color:var(--ink);font-weight:700}
 
 /* Checklist (pre-requisites) — interactive checkboxes */
 .checklist-card{background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
 .cl-title{font-size:10px;font-weight:700;color:var(--lime-dk);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.cl-item{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--lime-dk);line-height:1.55;padding:5px 0;cursor:pointer;user-select:none}
+.cl-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--lime-dk);line-height:1.6;padding:7px 0;cursor:pointer;user-select:none;min-height:36px}
 .cl-item:hover .cl-chk{border-color:var(--lime-dk)}
 .cl-item .cl-ic{font-size:14px;flex-shrink:0;line-height:1.4;margin-top:1px}
 .cl-item strong{color:var(--lime-dk);font-weight:700}
@@ -117,8 +118,8 @@ select.fi{cursor:pointer}
 
 /* WA Active Check (Meta Coexistence 7-day requirement) */
 .wa-active-check{background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
-.wa-ac-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
-.wa-ac-sub{font-size:11px;color:var(--ink3);line-height:1.5;margin-bottom:12px}
+.wa-ac-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.wa-ac-sub{font-size:12px;color:var(--ink2);line-height:1.55;margin-bottom:12px}
 .wa-ac-options{display:flex;flex-direction:column;gap:6px}
 .wa-ac-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .15s;background:var(--bg2)}
 .wa-ac-opt:hover{border-color:var(--lime2);background:var(--lime-bg)}
@@ -366,6 +367,7 @@ select.fi{cursor:pointer}
   .prog-wrap{padding:16px 20px 0}
   .mobile-step-label{display:block}
   .content{padding:0 20px 28px}
+  .ob-title{font-size:22px}
   .qr-connect-wrap{flex-direction:column;align-items:center}
   .qr-box{width:140px;height:140px}
   .biz-grid{grid-template-columns:repeat(2,1fr)}
@@ -374,6 +376,15 @@ select.fi{cursor:pointer}
   .add-row{flex-direction:column;gap:10px}
   .add-row>div{width:100%!important;min-width:0!important}
   .qr-display-inner{flex-direction:column;text-align:center}
+  /* CTAs full-width di mobile — thumb-friendly */
+  .btn-fb{width:100%}
+  .btn-primary-lg{width:100%}
+  /* Narrow viewport (360px Android): tighter padding */
+}
+@media(max-width:380px){
+  .content{padding:0 16px 24px}
+  .prog-wrap{padding:14px 16px 0}
+  .ob-title{font-size:20px}
 }
 @media(min-width:768px) and (max-width:1023px){
   .sb{width:60px;padding:16px 8px}
@@ -428,13 +439,18 @@ select.fi{cursor:pointer}
           <div class="pv-item"><span class="pv-num">4</span><span><strong>Scan QR di popup</strong> pakai WA Business app di HP — selesai!</span></div>
         </div>
 
-        <!-- Pre-requisites — interactive checklist (user harus centang untuk enable tombol) -->
-        <div class="checklist-card">
-          <div class="cl-title">Centang dulu yang sudah kamu siapkan:</div>
-          <div class="cl-item" id="cl-item-1" onclick="toggleChecklist(1)"><span class="cl-chk" id="cl-chk-1"></span><span class="cl-ic">📱</span><span><strong>WhatsApp Business app 2.24.17+</strong> sudah terinstal di HP saya (bukan WA biasa)</span></div>
-          <div class="cl-item" id="cl-item-2" onclick="toggleChecklist(2)"><span class="cl-chk" id="cl-chk-2"></span><span class="cl-ic">👤</span><span><strong>Akun Facebook</strong> pribadi saya siap untuk login</span></div>
-          <div class="cl-item" id="cl-item-3" onclick="toggleChecklist(3)"><span class="cl-chk" id="cl-chk-3"></span><span class="cl-ic">⏱️</span><span><strong>2–3 menit waktu kosong</strong> — HP saya dekat untuk scan QR</span></div>
-          <div class="cl-progress" id="cl-progress">0 / 3 — centang semua untuk aktifkan tombol</div>
+        <!-- Pre-requisites — collapsible checklist (default expanded untuk first-time; auto-collapse setelah 3 centang untuk reduce scroll) -->
+        <div class="checklist-card" id="checklist-card">
+          <div class="cl-header" onclick="toggleChecklistCard()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none">
+            <div class="cl-title" style="margin-bottom:0;flex:1">📋 Persiapan — <span id="cl-progress-inline">centang 3 hal yang sudah siap</span></div>
+            <svg id="cl-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--lime-dk)" stroke-width="2" stroke-linecap="round" style="transition:transform .2s;transform:rotate(180deg)"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div id="cl-body" style="margin-top:8px">
+            <div class="cl-item" id="cl-item-1" onclick="toggleChecklist(1)"><span class="cl-chk" id="cl-chk-1"></span><span class="cl-ic">📱</span><span><strong>WhatsApp Business app 2.24.17+</strong> sudah terinstal di HP saya (bukan WA biasa)</span></div>
+            <div class="cl-item" id="cl-item-2" onclick="toggleChecklist(2)"><span class="cl-chk" id="cl-chk-2"></span><span class="cl-ic">👤</span><span><strong>Akun Facebook</strong> pribadi saya siap untuk login</span></div>
+            <div class="cl-item" id="cl-item-3" onclick="toggleChecklist(3)"><span class="cl-chk" id="cl-chk-3"></span><span class="cl-ic">⏱️</span><span><strong>2–3 menit waktu kosong</strong> — HP saya dekat untuk scan QR</span></div>
+            <div class="cl-progress" id="cl-progress">0 / 3 — centang semua untuk aktifkan tombol</div>
+          </div>
         </div>
 
         <!-- NEW: 7-day active check (Meta Coexistence requirement) -->
@@ -487,8 +503,14 @@ select.fi{cursor:pointer}
 
       <!-- ── STATE 2: EMBEDDED SIGNUP IN PROGRESS ── -->
       <div id="conn-progress" style="display:none">
-        <div class="sec-label"><span class="num">2</span>Popup Meta sedang terbuka</div>
-        <div class="demo-banner"><span class="ic">👁️</span><span><strong>Preview:</strong> Berikut tampilan yang akan kamu lihat di popup Meta. Klik tombol simulasi untuk lihat tiap langkah.</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+          <div class="sec-label" style="margin-bottom:0"><span class="num">2</span>Popup Meta sedang terbuka</div>
+          <button type="button" onclick="cancelMetaPopup()" style="background:none;border:1px solid var(--border2);border-radius:var(--r-sm);padding:6px 12px;font-size:11px;font-weight:600;color:var(--ink3);cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:all .15s" onmouseover="this.style.borderColor='var(--ink2)';this.style.color='var(--ink2)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--ink3)'">
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4L4 12M4 4l8 8"/></svg>
+            Batal / Mulai ulang
+          </button>
+        </div>
+        <div class="demo-banner"><span class="ic">👁️</span><span><strong>Preview:</strong> Berikut tampilan yang akan kamu lihat di popup Meta. Kalau popup ketutup gak sengaja atau ada masalah, klik <strong>Batal / Mulai ulang</strong> di atas.</span></div>
 
         <div class="meta-popup-mock">
           <div class="meta-pop-header">
@@ -667,7 +689,7 @@ select.fi{cursor:pointer}
       <div class="fg-section"><span class="num">1</span>Tentang bisnis</div>
 
       <div class="fg">
-        <label class="fl">Nama Bisnis</label>
+        <label class="fl">Nama Bisnis <span class="fl-req">*</span></label>
         <input class="fi" id="i-bizname" style="font-size:15px;font-weight:600" placeholder="Contoh: Serene Spa, Salon Cantik..." oninput="updSlug()">
         <div class="fi-hint">Tampil di pesan WA: <em>"...di <span id="biz-preview" style="font-weight:700;color:var(--ink2)">Nama Bisnis</span>"</em></div>
       </div>
@@ -705,7 +727,9 @@ select.fi{cursor:pointer}
             <option value="44">🇬🇧 +44</option>
             <option value="1">🇺🇸 +1</option>
           </select>
-          <input class="fi cc-input" id="i-owner-wa" type="tel" placeholder="812 xxxx xxxx" style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px">
+          <input class="fi cc-input" id="i-owner-wa" type="tel" inputmode="numeric" placeholder="812 3456 7890" style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px">
+        </div>
+        <div class="fi-hint">Format: ketik aja nomor (tanpa +, tanpa spasi, tanpa 0 di depan). Contoh: <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace">81234567890</code>
         </div>
         <div class="fi-hint">Notifikasi kredit habis, invoice, dan info penting dikirim ke nomor ini.</div>
         <div class="fi-error" id="wa-error">Minimum 9 digit setelah kode negara.</div>
@@ -814,6 +838,11 @@ select.fi{cursor:pointer}
         <span class="ds-chip"><span class="ic">●</span><span id="ds-bonus">100</span> kredit gratis (permanent)</span>
         <span class="ds-chip"><span class="ic">●</span>Free Trial <span id="ds-trial-days">14</span> hari</span>
         <span class="ds-chip" id="ds-cats"><span class="ic">●</span>Kategori siap</span>
+        <span class="ds-chip" style="background:var(--amber-bg);border-color:#fcd88a;color:var(--amber-dk)"><span class="ic" style="color:var(--amber)">⏳</span>Template review Meta (1-24 jam)</span>
+      </div>
+      <!-- Template review explanation -->
+      <div style="background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:10px 14px;margin:-8px auto 18px;font-size:12px;color:var(--amber-dk);line-height:1.55;max-width:460px">
+        <strong>ℹ️ Template pesan sedang di-review Meta</strong> (biasanya 1-24 jam). Begitu approved, automation akan otomatis jalan. Sementara itu, kamu bisa tambah pelanggan + pasang QR dulu.
       </div>
 
       <!-- Section: Pasang QR check-in -->
@@ -1036,6 +1065,7 @@ function go(n) {
 
 // Prerequisite checklist state
 var _clState = { 1: false, 2: false, 3: false }
+var _clCardCollapsed = false
 
 function toggleChecklist(n) {
   _clState[n] = !_clState[n]
@@ -1049,6 +1079,44 @@ function toggleChecklist(n) {
     item.classList.remove('ticked')
   }
   updateS1GateState()
+  // Auto-collapse card setelah 3/3 centang (reduce visual clutter, focus ke next step)
+  var tickedN = (_clState[1] ? 1 : 0) + (_clState[2] ? 1 : 0) + (_clState[3] ? 1 : 0)
+  if (tickedN === 3 && !_clCardCollapsed) {
+    setTimeout(function() { collapseChecklistCard() }, 800)  // slight delay biar user lihat last check animation
+  }
+}
+
+function toggleChecklistCard() {
+  if (_clCardCollapsed) expandChecklistCard()
+  else collapseChecklistCard()
+}
+
+function collapseChecklistCard() {
+  _clCardCollapsed = true
+  var body = document.getElementById('cl-body')
+  var chev = document.getElementById('cl-chevron')
+  if (body) body.style.display = 'none'
+  if (chev) chev.style.transform = 'rotate(0deg)'
+  updateChecklistInlineProgress()
+}
+
+function expandChecklistCard() {
+  _clCardCollapsed = false
+  var body = document.getElementById('cl-body')
+  var chev = document.getElementById('cl-chevron')
+  if (body) body.style.display = 'block'
+  if (chev) chev.style.transform = 'rotate(180deg)'
+}
+
+function updateChecklistInlineProgress() {
+  var inline = document.getElementById('cl-progress-inline')
+  if (!inline) return
+  var tickedN = (_clState[1] ? 1 : 0) + (_clState[2] ? 1 : 0) + (_clState[3] ? 1 : 0)
+  if (tickedN === 3) {
+    inline.innerHTML = '<span style="color:var(--lime-dk)">✓ Semua siap</span>'
+  } else {
+    inline.textContent = 'centang ' + (3 - tickedN) + ' hal lagi yang sudah siap'
+  }
 }
 
 function updateS1GateState() {
@@ -1066,6 +1134,7 @@ function updateS1GateState() {
       progress.textContent = tickedN + ' / 3 — centang semua untuk aktifkan tombol'
     }
   }
+  updateChecklistInlineProgress()
 
   var waChecked = document.querySelector('input[name="wa-active"]:checked')
   var waValid = waChecked && (waChecked.value === '7to30' || waChecked.value === 'gt30')
@@ -1119,6 +1188,34 @@ function openMetaPopup() {
   document.getElementById('conn-pre').style.display = 'none'
   document.getElementById('conn-progress').style.display = 'block'
   document.getElementById('conn-progress').scrollIntoView({behavior:'smooth',block:'nearest'})
+}
+
+/* Cancel / reset Meta popup flow — exit-door kalau popup ketutup / user confuse */
+function cancelMetaPopup() {
+  showConfirm('Batalkan koneksi dan mulai ulang?', {
+    title: 'Batal / Mulai ulang',
+    kind: 'warn',
+    icon: '↩️',
+    okLabel: 'Ya, mulai ulang',
+    cancelLabel: 'Tidak, lanjut'
+  }).then(function(ok) {
+    if (!ok) return
+    // Reset phase state
+    var mp3 = document.getElementById('mp-3')
+    var mp4 = document.getElementById('mp-4')
+    var mp5 = document.getElementById('mp-5')
+    if (mp3) { mp3.classList.add('active'); mp3.classList.remove('done'); mp3.querySelector('.mp-num').innerHTML = '<div class="mp-spinner"></div>' }
+    if (mp4) { mp4.classList.remove('active','done'); mp4.querySelector('.mp-num').textContent = '4' }
+    if (mp5) { mp5.classList.remove('active','done'); mp5.querySelector('.mp-num').textContent = '5' }
+    var phasePhone = document.getElementById('phase-phone')
+    var phaseQr = document.getElementById('phase-qr')
+    if (phasePhone) phasePhone.style.display = 'block'
+    if (phaseQr) phaseQr.style.display = 'none'
+    // Back to pre-state
+    document.getElementById('conn-progress').style.display = 'none'
+    document.getElementById('conn-pre').style.display = 'block'
+    document.getElementById('conn-pre').scrollIntoView({behavior:'smooth',block:'start'})
+  })
 }
 
 function moveToQR() {
@@ -1391,9 +1488,15 @@ function buildDone() {
 
 function doCopy() {
   const url = document.getElementById('done-link')?.textContent || 'getstarvio.com/checkin/bisnis-kamu'
-  navigator.clipboard.writeText('https://'+url).then(()=>{
+  const full = 'https://' + url
+  navigator.clipboard.writeText(full).then(()=>{
     const el = document.getElementById('done-copy-txt')
     if(el){el.textContent='✓ Disalin!';setTimeout(()=>el.textContent='Salin link',2000)}
+    // Toast tambahan untuk confirm di mobile (button mungkin off-viewport)
+    showToast('📋 Link check-in disalin ke clipboard')
+  }).catch(function() {
+    // Fallback kalau clipboard API gagal
+    showAlert(full, { title: 'Salin link manual', kind: 'info', icon: '📋' })
   })
 }
 
@@ -1458,6 +1561,22 @@ function showDialog(opts) {
   })
 }
 function showAlert(msg, opts) { opts = opts || {}; return showDialog({ title: opts.title || 'Info', message: msg, showCancel: false, kind: opts.kind || 'info', okLabel: opts.okLabel || 'OK', icon: opts.icon }) }
+/* Minimal toast helper (shared pattern — copied from settings) */
+function showToast(msg, kind) {
+  var wrap = document.getElementById('toast-wrap')
+  if (!wrap) {
+    wrap = document.createElement('div')
+    wrap.id = 'toast-wrap'
+    wrap.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none;align-items:center'
+    document.body.appendChild(wrap)
+  }
+  var t = document.createElement('div')
+  t.style.cssText = 'background:' + (kind === 'error' ? 'var(--red-dk)' : 'var(--ink)') + ';color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,.3);animation:fadeUp .3s ease;white-space:nowrap;transition:opacity .3s'
+  t.textContent = msg
+  wrap.appendChild(t)
+  setTimeout(function() { t.style.opacity = '0' }, 2400)
+  setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t) }, 2700)
+}
 function showConfirm(msg, opts) { opts = opts || {}; return showDialog({ title: opts.title || 'Konfirmasi', message: msg, kind: opts.kind || 'warn', okLabel: opts.okLabel || 'Ya', cancelLabel: opts.cancelLabel || 'Batal', icon: opts.icon }) }
 function showPrompt(msg, opts) { opts = opts || {}; return showDialog({ title: opts.title || 'Input', message: msg, kind: opts.kind || 'info', input: { type: opts.type || 'text', placeholder: opts.placeholder, value: opts.defaultValue || '', maxLength: opts.maxLength, inputMode: opts.inputMode, pattern: opts.pattern }, okLabel: opts.okLabel || 'Konfirmasi', cancelLabel: opts.cancelLabel || 'Batal', icon: opts.icon, validate: opts.validate }) }
 function showWarning(msg, opts) { opts = opts || {}; return showDialog({ title: opts.title || 'Perhatian', message: msg, showCancel: false, kind: 'warn', okLabel: opts.okLabel || 'Mengerti', icon: opts.icon || '⚠️', ctaLink: opts.ctaLink }) }
