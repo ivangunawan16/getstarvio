@@ -843,7 +843,13 @@ function saveKat() {
     return
   }
   var icon = document.getElementById('kat-icon').value
-  var days = parseInt(document.getElementById('kat-days').value) || 30
+  var rawDays = parseInt(document.getElementById('kat-days').value)
+  // Defense-in-depth: clamp 1-365 (HTML max= only gates spinner, not paste/devtools/programmatic)
+  if (!rawDays || rawDays < 1 || rawDays > 365) {
+    showAlert('Interval harus 1-365 hari. Untuk interval lebih panjang, hubungi support.', { title: 'Interval Tidak Valid', kind: 'warn', icon: '📅' })
+    return
+  }
+  var days = rawDays
   var tplKey = document.getElementById('kat-tpl').value
   var msg = TEMPLATES[tplKey]
   var id = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now()
@@ -885,10 +891,16 @@ function saveEditKat() {
   var id = document.getElementById('edit-kat-id').value
   var cat = (U.cats || []).find(function(c) { return c.id === id })
   if (!cat) return
+  // Defense-in-depth: clamp interval 1-365
+  var rawDays = parseInt(document.getElementById('edit-days').value)
+  if (!rawDays || rawDays < 1 || rawDays > 365) {
+    showAlert('Interval harus 1-365 hari. Untuk interval lebih panjang, hubungi support.', { title: 'Interval Tidak Valid', kind: 'warn', icon: '📅' })
+    return
+  }
   var oldName = cat.name
   cat.name = document.getElementById('edit-name').value.trim() || cat.name
   cat.icon = document.getElementById('edit-icon').value || cat.icon
-  cat.interval = parseInt(document.getElementById('edit-days').value) || cat.interval
+  cat.interval = rawDays
   cat.tplKey = document.getElementById('edit-tpl').value
   cat.msg = TEMPLATES[cat.tplKey]
   // Update customer service names if category was renamed

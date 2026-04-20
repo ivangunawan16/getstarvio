@@ -236,13 +236,22 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   .s-reset{font-size:0;padding:8px}
   .s-reset::after{content:'↺';font-size:14px}
 }
-/* ── LIVE ACTIVITY FEED ── */
-.feed-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
-.feed-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
-.feed-title{font-size:14px;font-weight:600;color:var(--ink)}
-.feed-status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--lime-dk)}
-.feed-dot{width:7px;height:7px;border-radius:50%;background:var(--lime2);animation:pulse-feed 1.8s infinite}
-@keyframes pulse-feed{0%,100%{box-shadow:0 0 0 0 rgba(159,217,58,.5)}50%{box-shadow:0 0 0 4px rgba(159,217,58,0)}}
+/* ── NOTIFICATION BELL + DROPDOWN ── */
+.notif-wrap{position:relative}
+.notif-btn{position:relative;width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--ink2)}
+.notif-btn:hover{background:var(--lime-bg);border-color:var(--lime2);color:var(--lime-dk)}
+.notif-btn.has-unread{color:var(--ink);border-color:var(--border2)}
+.notif-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--red);color:#fff;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;display:none;align-items:center;justify-content:center;border:2px solid var(--bg2);line-height:1}
+.notif-badge.show{display:flex}
+.notif-panel{position:fixed;top:68px;right:24px;width:360px;max-width:calc(100vw - 32px);background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 10px 40px rgba(0,0,0,.12);display:none;z-index:250;overflow:hidden;animation:notifSlide .18s ease}
+.notif-panel.open{display:block}
+@keyframes notifSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.notif-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:1}
+.notif-title{font-size:14px;font-weight:700;color:var(--ink)}
+.notif-status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--lime-dk)}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--lime2);animation:pulse-notif 1.8s infinite}
+@keyframes pulse-notif{0%,100%{box-shadow:0 0 0 0 rgba(159,217,58,.5)}50%{box-shadow:0 0 0 4px rgba(159,217,58,0)}}
+.notif-body{max-height:420px;overflow-y:auto}
 .feed-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;transition:background .12s}
 .feed-row:last-child{border-bottom:none}
 .feed-row:hover{background:var(--bg3)}
@@ -252,7 +261,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .feed-text{flex:1;font-size:12px;color:var(--ink);min-width:0;line-height:1.4}
 .feed-text strong{font-weight:700}
 .feed-time{font-size:11px;color:var(--ink3);white-space:nowrap;flex-shrink:0}
-.feed-empty{padding:24px 16px;text-align:center;font-size:12px;color:var(--ink3)}
+.feed-empty{padding:32px 20px;text-align:center;font-size:12px;color:var(--ink3);line-height:1.55}
+@media(max-width:480px){.notif-panel{right:16px;left:16px;width:auto;max-width:none}}
 
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
 
@@ -328,9 +338,23 @@ body.imp-active{padding-top:36px}
       </button>
       <span class="tb-title">Dashboard</span>
     </div>
-    <div style="display:flex;align-items:center;gap:8px">
+    <div style="display:flex;align-items:center;gap:10px">
       <!-- WA Status Chip -->
       <div id="wa-chip" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700"></div>
+      <!-- Notification Bell -->
+      <div class="notif-wrap">
+        <button class="notif-btn" id="notif-btn" onclick="toggleNotifPanel(event)" aria-label="Notifikasi">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="notif-badge" id="notif-badge">0</span>
+        </button>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-header">
+            <div class="notif-title">Yang baru terjadi</div>
+            <div class="notif-status"><div class="notif-dot"></div>Sistem berjalan</div>
+          </div>
+          <div class="notif-body" id="feed-body"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -365,14 +389,7 @@ body.imp-active{padding-top:36px}
         <div id="setupSteps"></div>
       </div>
 
-      <!-- ⓪ LIVE ACTIVITY FEED -->
-      <div class="feed-card" id="feed-card">
-        <div class="feed-header">
-          <div class="feed-title">Yang baru terjadi</div>
-          <div class="feed-status"><div class="feed-dot"></div>Sistem berjalan</div>
-        </div>
-        <div id="feed-body"></div>
-      </div>
+      <!-- Activity feed moved to bell icon (topbar) — panel opens on click -->
 
       <!-- Hidden file input for Setup Step 1 logo upload (inline, no modal) -->
       <input type="file" id="setupLogoFile" accept=".png,.jpg,.jpeg,image/png,image/jpeg" style="display:none" onchange="handleSetupLogoUpload(event)">
@@ -685,18 +702,79 @@ function renderFeed(U) {
   events.sort(function(a, b) { return new Date(b.date) - new Date(a.date) })
 
   var feedBody = document.getElementById('feed-body')
+  var badge = document.getElementById('notif-badge')
+  var btn = document.getElementById('notif-btn')
+
   if (events.length === 0) {
-    feedBody.innerHTML = '<div class="feed-empty">Belum ada aktivitas. Mulai dengan catat kunjungan pertama!</div>'
+    feedBody.innerHTML = '<div class="feed-empty">Belum ada aktivitas.<br>Mulai dengan catat kunjungan pertama!</div>'
+    if (badge) badge.classList.remove('show')
+    if (btn) btn.classList.remove('has-unread')
     return
   }
 
-  feedBody.innerHTML = events.slice(0, 8).map(function(ev) {
+  // Render last 15 events in panel
+  feedBody.innerHTML = events.slice(0, 15).map(function(ev) {
     return '<a href="' + ev.link + '" class="feed-row' + (ev.gagal ? ' gagal' : '') + '">' +
       '<span class="feed-icon">' + ev.icon + '</span>' +
       '<span class="feed-text">' + ev.text + '</span>' +
       '<span class="feed-time">' + relTime(ev.date) + '</span>' +
       '</a>'
   }).join('')
+
+  // Badge count = events since last-seen (default: all past 7 days)
+  var lastSeenMs = U.notifLastSeenAt ? new Date(U.notifLastSeenAt).getTime() : (Date.now() - 7 * 86400000)
+  var unreadCount = events.filter(function(ev) { return new Date(ev.date).getTime() > lastSeenMs }).length
+  if (badge && btn) {
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount > 99 ? '99+' : String(unreadCount)
+      badge.classList.add('show')
+      btn.classList.add('has-unread')
+    } else {
+      badge.classList.remove('show')
+      btn.classList.remove('has-unread')
+    }
+  }
+}
+
+/* Toggle notification panel (topbar bell) */
+function toggleNotifPanel(ev) {
+  if (ev) ev.stopPropagation()
+  var panel = document.getElementById('notif-panel')
+  if (!panel) return
+  var wasOpen = panel.classList.contains('open')
+  if (wasOpen) {
+    closeNotifPanel()
+  } else {
+    panel.classList.add('open')
+    // Mark all as seen
+    var u = loadU()
+    if (u) {
+      u.notifLastSeenAt = new Date().toISOString()
+      saveU(u)
+      var badge = document.getElementById('notif-badge')
+      var btn = document.getElementById('notif-btn')
+      if (badge) badge.classList.remove('show')
+      if (btn) btn.classList.remove('has-unread')
+    }
+    // Dismiss on outside click / escape
+    setTimeout(function() {
+      document.addEventListener('click', outsideNotifHandler)
+      document.addEventListener('keydown', escNotifHandler)
+    }, 0)
+  }
+}
+function closeNotifPanel() {
+  var panel = document.getElementById('notif-panel')
+  if (panel) panel.classList.remove('open')
+  document.removeEventListener('click', outsideNotifHandler)
+  document.removeEventListener('keydown', escNotifHandler)
+}
+function outsideNotifHandler(e) {
+  var wrap = e.target.closest('.notif-wrap')
+  if (!wrap) closeNotifPanel()
+}
+function escNotifHandler(e) {
+  if (e.key === 'Escape') closeNotifPanel()
 }
 
 /* ── BOOT ── */

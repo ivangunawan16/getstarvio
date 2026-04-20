@@ -2916,7 +2916,10 @@ function savePresetCat() {
   if (!bt) return;
   var name = document.getElementById('pc-name').value.trim();
   var icon = document.getElementById('pc-icon').value.trim() || '✨';
-  var interval = parseInt(document.getElementById('pc-interval').value) || 30;
+  var rawInterval = parseInt(document.getElementById('pc-interval').value);
+  // Defense-in-depth: clamp interval 1-365
+  if (!rawInterval || rawInterval < 1 || rawInterval > 365) { toast('Interval harus 1-365 hari.', 'error'); return; }
+  var interval = rawInterval;
   var templateId = document.getElementById('pc-template').value;
   if (!name) { toast('Nama layanan wajib diisi.', 'error'); return; }
 

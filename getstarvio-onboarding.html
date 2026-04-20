@@ -1303,9 +1303,15 @@ function checkS4() {
 
 function addCustomCat() {
   const name = document.getElementById('add-name').value.trim()
-  const iv = parseInt(document.getElementById('add-int').value) || 30
+  const rawIv = parseInt(document.getElementById('add-int').value)
   const icon = document.getElementById('add-icon').value || '✨'
   if (!name) return
+  // Defense-in-depth: clamp interval 1-365 (HTML max= only gates spinner UI)
+  if (!rawIv || rawIv < 1 || rawIv > 365) {
+    showAlert('Interval harus 1-365 hari. Untuk interval lebih panjang, hubungi support.', { title: 'Interval Tidak Valid', kind: 'warn', icon: '📅' })
+    return
+  }
+  const iv = rawIv
   D.idx++
   D.cats.push({ id: 'c' + D.idx, icon, name, interval: iv, tplId: TEMPLATES[0].id, msg: TEMPLATES[0].msg })
   document.getElementById('add-name').value = ''
