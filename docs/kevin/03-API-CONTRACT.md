@@ -755,10 +755,149 @@ Add manual credit. Password-gated.
 
 ---
 
+#### `POST /admin/businesses/:id/grant-subscription`
+Grant free subscription comp (beta tester, partnership, churn recovery, bug apology, etc.).
+Additive to paid subscription — doesn't replace. Sets `grantedSubEndsAt`, `grantedBy`, `grantReason`,
+`grantNote`, `grantDays`, `grantedAt`. If user was trial/trial_expired, upgrades `status` to 'active'.
+Refills credit to 300 if below.
+
+**Auth:** admin + password confirm.
+**Body:**
+```json
+{
+  "mode": "extend | date",      // "extend" = add N days | "date" = set specific end date
+  "days": 90,                    // required if mode='extend' (1-3650)
+  "endDate": "2026-07-20",       // required if mode='date' (ISO date, must be future)
+  "reason": "beta_tester",       // enum: beta_tester|partnership|churn_recovery|bug_apology|internal_demo|early_adopter|other
+  "note": "string",              // required if reason='other'
+  "password": "string"
+}
+```
+**Response 200:**
+```json
+{
+  "grantedSubEndsAt": "2026-07-20",
+  "days": 90,
+  "valueIdr": 747000,            // MRR foregone (Rp 249k × months)
+  "status": "active"
+}
+```
+**Errors:** 400 (invalid mode/date/reason), 401 (wrong password), 404 (biz not found)
+
+---
+
+#### `POST /admin/businesses/:id/revoke-grant`
+Revoke active free subscription grant. Clears all grant fields. Reverts status to 'trial_aktif'
+(if `trialEndsAt` still future) or 'trial_expired'. Paid subscribers stay active.
+
+**Auth:** admin + password confirm.
+**Body:** `{ password }`
+**Response 200:** `{ revokedEndDate, revokedReason, revokedDays }`
+
+---
+
 #### `GET /admin/audit-log`
 **Auth:** admin.
 **Query:** `adminId=`, `targetUserId=`, `action=`, `from=`, `to=`
 **Response 200:** paginated
+
+**Action types:** `credit_topup`, `grant_free_subscription`, `revoke_free_grant`, `extend_trial`,
+`suspend_account`, `activate_account`, `impersonate_start`, `impersonate_end`, `send_wa_owner`,
+`export_biz_data`, `save_plan_config`, `save_template`, `delete_template`, `save_biztype`,
+`delete_biztype`, `save_preset`, `delete_preset`.
+
+---
+
+### ═══════════════════════════════════════════
+### PIN ADMIN (4-digit secondary auth for critical user actions)
+### ═══════════════════════════════════════════
+
+**Security model:** Google OAuth (entry) → OTP verify owner WA (identity proof) → Admin PIN (intent
+proof for critical ops). PIN can only be set/changed when OTP-verified. PIN stays active even if OTP
+reset (protects existing proteksi from attacker who resets OTP — must prove phone ownership to
+disable PIN).
+
+**Storage:** Server-side WAJIB hash pakai bcrypt/argon2 (cost 10+). PLAIN PIN tidak boleh pernah
+disimpan. Compare via `bcrypt.compare(inputPin, user.adminPinHash)`.
+
+#### `POST /pin/set`
+Set initial PIN. Requires OTP verified.
+**Auth:** required + `ownerWaVerifiedAt` truthy
+**Body:** `{ pin: "1234", confirmPin: "1234" }`
+**Validation:** 4-digit numeric, pin === confirmPin, not in weak-pin list (0000,1111,...,1234,4321).
+Weak-PIN warning returned as 200 with `{ weak: true }` — client shows confirm dialog.
+**Response 201:** `{ adminPinSetAt: "2026-04-20T10:00:00Z" }`
+**Errors:** 400 (invalid format), 403 (OTP not verified), 409 (PIN already set — use /change)
+
+---
+
+#### `PUT /pin/change`
+Change existing PIN. Requires current PIN + OTP verified.
+**Auth:** required + `ownerWaVerifiedAt` truthy + current PIN correct
+**Body:** `{ currentPin: "1234", newPin: "5678", confirmNewPin: "5678" }`
+**Response 200:** `{ adminPinSetAt }`
+**Errors:** 400 (validation), 401 (wrong current PIN), 403 (OTP not verified)
+
+---
+
+#### `DELETE /pin`
+Remove PIN. Requires current PIN + OTP verified.
+**Auth:** required + OTP verified + current PIN
+**Body:** `{ pin: "1234" }`
+**Response 204**
+**Errors:** 401 (wrong PIN), 403 (OTP not verified), 404 (no PIN set)
+
+---
+
+#### `POST /pin/verify`
+Verify PIN for gated action (used by FE requirePin() helper).
+**Auth:** required
+**Body:** `{ pin: "1234", context?: "delete_kategori|toggle_automation|..." }`
+**Response 200:** `{ valid: true }`
+**Errors:** 401 (wrong PIN), 404 (no PIN set — FE should redirect to setup)
+**Rate limit:** 5 attempts / 15min per user — lockout after exceeded
+
+---
+
+### ═══════════════════════════════════════════
+### OTP VERIFICATION (Owner WhatsApp)
+### ═══════════════════════════════════════════
+
+**Flow:** User sets `ownerWa` in Settings → sends OTP via WA → user types code → verified. Sets
+`ownerWaVerifiedAt` truthy. Required before setup PIN.
+
+#### `POST /otp/owner-wa/send`
+Send 6-digit OTP to owner's WhatsApp number via Meta utility template.
+**Auth:** required
+**Body:** `{ ownerWa: "628123456789" }`  // e164 format, no +
+**Response 202:** `{ expiresAt: "2026-04-20T10:05:00Z" }`  // 5 min lifetime
+**Errors:** 400 (invalid WA format), 429 (rate limit — 3/hour per number)
+
+**Server:** Generate 6-digit code, store in `ownerWaOtpPending` (hashed), expire after 5 min.
+Send via WA template utility (NOT the approved aftercare templates — separate 'otp' template).
+
+---
+
+#### `POST /otp/owner-wa/verify`
+Verify OTP code.
+**Auth:** required
+**Body:** `{ code: "123456" }`
+**Response 200:** `{ ownerWaVerifiedAt: "2026-04-20T10:01:00Z" }`
+**Errors:** 400 (expired/invalid code), 429 (too many attempts)
+
+**Server:** Compare hashed code, if match: set `ownerWaVerifiedAt = now()`, clear
+`ownerWaOtpPending`. Invalidate `adminPin` if user changes `ownerWa` later (forces re-verify before
+PIN change).
+
+---
+
+#### `POST /otp/owner-wa/reset`
+Clear verified status (user wants to re-verify, e.g., after changing number).
+**Auth:** required + PIN (if set) — prevents casual attacker from resetting OTP+PIN chain
+**Body:** `{ pin?: string }`  // only required if PIN set
+**Response 204**
+**Side effect:** Does NOT invalidate existing PIN — PIN stays active. Only `ownerWaVerifiedAt`
+cleared. User can't modify PIN until re-verify.
 
 ---
 

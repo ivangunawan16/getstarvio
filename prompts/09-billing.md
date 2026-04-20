@@ -117,6 +117,16 @@ Tambahkan field ini ke `getstarvio_user`:
 - Teks: "Renewal: `subRenewsAt` (format: 15 April 2026)"
 - Tombol kecil: "Batalkan Langganan" (link style, bukan tombol merah — prototype: konfirmasi dulu)
 
+**Jika admin-granted free subscription aktif (`grantedSubEndsAt > now()`):**
+- Badge: "🎁 Subscriber (Admin-Granted)" (gradient amber/kuning, bukan lime)
+- Teks: "Free access sampai: `grantedSubEndsAt` (N hari lagi)"
+- Sub-text: "Gift dari getstarvio — nikmatin penuh fiturnya!"
+- Tombol top-up: **ENABLED** (treat user as subscriber — bisa beli kredit permanent)
+- Automation: ON (bypass trial expired check)
+- Bypass semua "subscribe dulu" gates di aksi lain (auto-topup, export, bulk retry)
+- Kalau `plan === "subscriber"` juga (paid + granted = additive): tampilkan 2 badge side-by-side dengan hint "Paid subscription + bonus grant"
+- User TIDAK bisa "Batalkan Langganan" kalau cuma granted (bukan paid) — grant di-revoke dari admin panel saja
+
 ---
 
 ### Section 2: Ringkasan Kredit

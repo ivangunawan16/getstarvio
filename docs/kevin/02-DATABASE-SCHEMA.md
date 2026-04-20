@@ -487,7 +487,18 @@ model User {
   autoTopupPackage     String       @default("p1") @map("auto_topup_package")
   
   status               String       @default("active")
-  
+
+  // === ADMIN-GRANTED FREE SUBSCRIPTION ===
+  // Set via admin panel for: beta testers, partnerships, churn recovery, bug apology, etc.
+  // When grantedSubEndsAt > now(): treat user as subscriber for billing/access gates
+  // (ignore plan='trial'). Additive to paid subscription (not replacement).
+  grantedSubEndsAt     DateTime?    @map("granted_sub_ends_at")
+  grantedBy            String?      @map("granted_by")           // admin email
+  grantReason          String?      @map("grant_reason")         // enum: beta_tester|partnership|churn_recovery|bug_apology|internal_demo|early_adopter|other
+  grantNote            String?      @map("grant_note")           // required if reason='other'
+  grantDays            Int?         @map("grant_days")           // snapshot at grant time (for MRR lost calc)
+  grantedAt            DateTime?    @map("granted_at")           // when grant was issued
+
   createdAt            DateTime     @default(now()) @map("created_at")
   updatedAt            DateTime     @updatedAt @map("updated_at")
   lastLoginAt          DateTime?    @map("last_login_at")

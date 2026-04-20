@@ -137,3 +137,74 @@ Day 29 (beta launch):
 - Responsive across devices
 
 Let's ship this! 🚀
+
+---
+
+## 🔒 Security Features to Implement (NEW — added 20 Apr 2026)
+
+Mockup added layered auth yang wajib FE implement. Spec detail di `prompts/13-settings.md` Section 4. API endpoints di `docs/kevin/03-API-CONTRACT.md` (PIN + OTP sections).
+
+### 1. OTP Verification (Owner WhatsApp)
+Before user can set PIN, verify `ownerWa` via 6-digit OTP:
+- Settings → WhatsApp accordion → input nomor owner → "Kirim OTP"
+- Backend sends OTP via Meta WA utility template → user types → verify
+- State fields: `ownerWaVerifiedAt` (ISO truthy when verified), `ownerWaOtpPending` ({ code, expiresAt })
+- API: `POST /otp/owner-wa/send`, `POST /otp/owner-wa/verify`
+
+### 2. PIN Admin (4-digit, OTP-gated)
+Secondary auth for critical actions. Settings accordion "PIN Admin" dengan 4-state render logic:
+- **State A** (hasPin + OTP verified) → show change/remove form
+- **State B** (hasPin + OTP NOT verified) → gate "Re-verify WA untuk edit PIN" (PIN tetap active untuk aksi lain)
+- **State C** (no PIN + OTP NOT verified) → gate "Verify WA dulu untuk setup"
+- **State D** (no PIN + OTP verified) → setup form (2x 4-digit input + confirm)
+
+Weak-PIN warning: `0000`, `1234`, `1111`, dll → show confirm "PIN mudah ditebak, tetap lanjut?" sebelum save.
+
+API: `POST /pin/set`, `PUT /pin/change`, `DELETE /pin`, `POST /pin/verify`
+
+### 3. PIN-gated critical actions (shared `requirePin()` helper)
+
+```ts
+async function requirePin(actionFn: () => void, contextLabel: string): Promise<void> {
+  if (!user.adminPin) {
+    showWarning({ /* close-only modal with CTA to /settings#pin */ })
+    return  // no backdoor — force setup
+  }
+  const entered = await openPinGateModal(contextLabel)
+  if (entered === user.adminPin) actionFn()
+  else shake + error
+}
+```
+
+PIN-gated actions:
+- Toggle master automation ON/OFF
+- Toggle per-kategori automation ON/OFF
+- Ubah jam kirim automation
+- Toggle auto-topup di Billing
+- Delete kategori (inline PIN in delete modal — 1-step UX, separate from `requirePin()`)
+- Delete pelanggan (same inline pattern)
+
+### 4. Custom Modal Dialogs (Promise-based)
+Mockup replaced all native prompt/confirm/alert. FE implement:
+- `showAlert(msg, opts)` → Promise\<true\>
+- `showConfirm(msg, opts)` → Promise\<boolean\>
+- `showPrompt(msg, opts)` → Promise\<string|null\> (with validate callback)
+- `showWarning(msg, opts)` → Promise\<true\> (close-only, optional CTA link)
+
+Styling: lime/amber/red kind variants + custom icons. Z-index 700.
+
+### 5. Notification Bell (Dashboard topbar)
+- Bell icon 🔔 di topbar kanan (sebelah WA chip)
+- Red badge dengan unread count (events since `notifLastSeenAt`)
+- Click → dropdown panel 360px, last 15 events (activity feed migrated dari inline card)
+- Auto mark-as-read on open (save `notifLastSeenAt` to backend)
+- Dismiss: outside click / Escape
+- Mobile responsive (full-width <480px)
+
+### 6. Admin Grant Free Subscription (admin page only — low prio)
+Admin panel feature untuk comp free subscription (beta testers, partnerships, etc.):
+- 7 reason enum: `beta_tester | partnership | churn_recovery | bug_apology | internal_demo | early_adopter | other`
+- Field: `grantedSubEndsAt`, `grantedBy`, `grantReason`, `grantNote`, `grantDays`, `grantedAt`
+- Billing: kalau `grantedSubEndsAt > now()` → treat user as subscriber (enable top-up, show grant countdown)
+
+Okta fokus user-facing dulu — admin page bisa ditunda ke Sprint 3.

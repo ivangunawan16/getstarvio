@@ -79,7 +79,7 @@ Key rules yang tidak boleh dilanggar:
   bizType: "string",           // "salon" | "spa" | "klinik" | "barbershop" | "nail studio" | "lainnya"
   bizSlug: "string",           // digunakan untuk URL QR check-in
   bizLogo: "string | null",    // base64 data URL dari logo upload (max 200KB, resized to 120x120 via canvas saat upload). null = belum upload, fallback ke initial circle. Dipakai di check-in page header + QR print layout. Field opsional, di-set dari Settings page.
-  setupComplete: boolean,      // true setelah 5-step setup checklist di dashboard semua selesai (logo + templates + customers + QR + automation). Set permanent — checklist card tidak muncul lagi setelah true. Kalau ada step yang "turun" (misal automation dimatiin), checklist muncul lagi. Default false saat onboarding.
+  setupComplete: boolean,      // true setelah 7-step setup checklist di dashboard semua selesai (verify WA + PIN + logo + templates + customers + QR + automation). Set permanent — checklist card tidak muncul lagi setelah true. Kalau ada step yang "turun" (misal automation dimatiin), checklist muncul lagi. Default false saat onboarding. Urutan security-first: OTP verify + PIN setup sebelum brand/data/physical/go-live steps.
   templatesReviewedAt: "ISO string | null", // kapan owner pertama kali klik Simpan di category flow card di Automation page — menandai owner sudah aktif review/customize template per kategori (bukan terima default). Set otomatis di saveFlowChanges(). null = belum pernah review. Dipakai untuk step "Pilih template pengingat" di dashboard setup checklist.
   qrPosted: boolean,           // true setelah owner print/share QR atau ada customer yang via=qr. Dipakai untuk step "Pasang QR check-in" di dashboard setup checklist. Set dari Settings page saat owner klik Print QR / Share link.
   avgServiceValue: number,     // rata-rata harga layanan dalam IDR (default 150000). Dipakai di ROI calculation di dashboard. Editable di Settings → Profil Bisnis.
@@ -91,6 +91,18 @@ Key rules yang tidak boleh dilanggar:
   adminPin: "string | null",   // 4-digit admin PIN untuk proteksi aksi kritis. null = belum di-set. Hanya bisa di-set/ubah kalau ownerWaVerifiedAt truthy (OTP-gated). PIN-gated actions: delete kategori/pelanggan, toggle master automation, toggle per-kategori automation, ubah jam kirim, toggle auto-topup billing. Dalam production: HASH + SALT server-side, JANGAN store plain. Untuk mockup: plain string.
   adminPinSetAt: "ISO string | null",  // kapan PIN di-set/diubah terakhir. Audit trail. Null kalau belum di-set.
   notifLastSeenAt: "ISO string | null",  // kapan user terakhir buka notification bell dropdown di dashboard topbar. Dipakai untuk hitung unread badge count (events since last seen). Default null = semua event unread.
+
+  // === ADMIN-GRANTED FREE SUBSCRIPTION (set via admin panel) ===
+  // Set by admin via getstarvio-admin.html → "🎁 Grant Free Subscription" for: beta testers,
+  // partnerships, churn recovery, bug apology. User has full subscriber benefits while grant active
+  // (ignore plan='trial' if grantedSubEndsAt > now). Grant is ADDITIVE to paid subscription
+  // (doesn't replace — paid users with grant just have extra buffer).
+  grantedSubEndsAt: "ISO string | null",  // kapan free access berakhir. Truthy = treat user as subscriber. Cleared on revoke.
+  grantedBy: "string | null",             // admin email yang kasih grant. Audit trail.
+  grantReason: "string | null",           // enum: beta_tester | partnership | churn_recovery | bug_apology | internal_demo | early_adopter | other
+  grantNote: "string | null",             // catatan internal admin (wajib kalau reason='other'). Free-form text.
+  grantDays: "number | null",             // durasi grant dalam hari (snapshot saat grant). Untuk MRR lost calculation.
+  grantedAt: "ISO string | null",         // kapan grant dikasih. Berbeda dari grantedSubEndsAt (start vs end).
   waNum: "string",             // nomor WA yang digunakan untuk kirim reminder
   timezone: "string",
   country: "string",
