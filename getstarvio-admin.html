@@ -422,7 +422,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
   <!-- TAB NAV -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('dashboard',this)">Dashboard</button>
-    <button class="tab-btn" onclick="switchTab('templates',this)">Templates</button>
+    <button class="tab-btn" onclick="switchTab('templates',this)">WA Templates</button>
+    <button class="tab-btn" onclick="switchTab('email-templates',this)">📧 Email Templates</button>
     <button class="tab-btn" onclick="switchTab('biz-types',this)">Tipe Layanan</button>
     <button class="tab-btn" onclick="switchTab('plan-config',this)">Plan Config</button>
     <button class="tab-btn" onclick="switchTab('transactions',this)">Transactions</button>
@@ -737,6 +738,58 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
       </div>
     </div><!-- /tab-transactions -->
 
+    <!-- ══════════ TAB: EMAIL TEMPLATES ══════════ -->
+    <div class="tab-section" id="tab-email-templates">
+      <div class="section-hd">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="3" width="13" height="10" rx="1.5"/><path d="M1.5 4l6.5 5 6.5-5"/></svg>
+        Email Templates
+      </div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:14px;line-height:1.55">
+        Kelola semua transactional + notification email yang dikirim ke user (welcome, subscription, top-up receipt, security alerts, compliance, dll). Backend (Kevin) akan integrate dengan email service (Resend/SendGrid) — template dari sini jadi source of truth.
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <svg class="search-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="4"/><path d="M10.5 10.5l3 3"/></svg>
+          <input class="search-inp" id="email-search" placeholder="Cari nama, trigger..." oninput="renderEmailTemplates()">
+        </div>
+        <select class="filter-sel" id="email-category-filter" onchange="renderEmailTemplates()">
+          <option value="all">Semua Kategori</option>
+          <option value="onboarding">🎯 Onboarding</option>
+          <option value="subscription">💳 Subscription</option>
+          <option value="billing">🧾 Billing / Top-Up</option>
+          <option value="security">🔒 Security</option>
+          <option value="admin">👤 Admin-Initiated</option>
+          <option value="compliance">⚖️ Compliance / Legal</option>
+          <option value="alerts">⚠️ Operational Alerts</option>
+          <option value="engagement">💬 Re-engagement</option>
+        </select>
+        <select class="filter-sel" id="email-priority-filter" onchange="renderEmailTemplates()">
+          <option value="all">Semua Priority</option>
+          <option value="P0">P0 — Beta blocker</option>
+          <option value="P1">P1 — Launch week</option>
+          <option value="P2">P2 — Post-launch</option>
+        </select>
+        <select class="filter-sel" id="email-status-filter" onchange="renderEmailTemplates()">
+          <option value="all">Semua Status</option>
+          <option value="active">✓ Active</option>
+          <option value="draft">✏️ Draft</option>
+          <option value="disabled">⏸ Disabled</option>
+        </select>
+      </div>
+
+      <!-- Summary cards -->
+      <div id="email-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px">
+        <!-- Populated by renderEmailStats() -->
+      </div>
+
+      <!-- Templates list -->
+      <div id="email-tbl-wrap">
+        <!-- Populated by renderEmailTemplates() -->
+      </div>
+    </div><!-- /tab-email-templates -->
+
     <div class="tab-section" id="tab-audit">
       <div class="section-hd">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 2h12v12H2z"/><path d="M5 6h6M5 9h6M5 12h3"/></svg>
@@ -758,6 +811,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           <option value="save_plan_config">⚙️ Save Plan Config</option>
           <option value="save_template">💾 Save Template</option>
           <option value="delete_template">🗑 Hapus Template</option>
+          <option value="save_email_template">📧 Save Email Template</option>
+          <option value="test_send_email">📤 Test Send Email</option>
           <option value="save_biztype">🏷️ Save Biz Type</option>
           <option value="delete_biztype">🗑 Hapus Biz Type</option>
           <option value="save_preset">🏷️ Save Preset</option>
@@ -1091,6 +1146,73 @@ Content-Type: application/json</code>
   </div>
 </div>
 
+<!-- ══════════════════ EMAIL TEMPLATE EDIT MODAL ══════════════════ -->
+<div class="overlay" id="modal-email-tpl" onclick="if(event.target===this)closeModal('modal-email-tpl')">
+  <div class="modal modal-lg" style="max-width:800px">
+    <div class="mhd">
+      <div class="m-title" id="et-modal-title">Edit Email Template</div>
+      <button class="m-close" onclick="closeModal('modal-email-tpl')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="et-id">
+
+      <!-- Meta info (read-only) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;padding:10px 12px;background:var(--bg3);border-radius:var(--r-sm);font-size:11px">
+        <div><span style="color:var(--ink3);font-weight:600">Trigger:</span> <span id="et-trigger" style="color:var(--ink2)">—</span></div>
+        <div><span style="color:var(--ink3);font-weight:600">Priority:</span> <span id="et-priority" style="color:var(--ink2)">—</span></div>
+        <div><span style="color:var(--ink3);font-weight:600">Type:</span> <span id="et-type" style="color:var(--ink2)">—</span></div>
+        <div><span style="color:var(--ink3);font-weight:600">Category:</span> <span id="et-category" style="color:var(--ink2)">—</span></div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-cell">
+          <label class="field-lbl">Subject Line</label>
+          <input class="field-inp" id="et-subject" placeholder="Subject email" style="margin-bottom:0">
+        </div>
+      </div>
+      <div class="field-help">Variabel bisa dipakai di subject juga (e.g., "Hi <code>{{name}}</code>, trial kamu berakhir dalam 3 hari").</div>
+
+      <label class="field-lbl">Body Email (plain text / HTML)</label>
+      <textarea class="field-textarea mono" id="et-body" placeholder="Halo {{name}}, ..." rows="12" style="font-family:'Sora',sans-serif;font-size:13px;line-height:1.7"></textarea>
+      <div class="field-help">Pakai <code>{{variable}}</code> placeholder — auto-replace saat kirim. Lihat daftar variabel di bawah.</div>
+
+      <!-- Variable picker -->
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Variabel tersedia (klik untuk copy)</div>
+        <div id="et-vars" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+      </div>
+
+      <!-- Preview -->
+      <div style="background:var(--bg2);border:1.5px solid var(--lime2);border-radius:var(--r);padding:14px 16px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--lime-dk);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M6 8l2 2 4-4"/></svg>
+          Preview (dengan sample data)
+        </div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px">
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:4px">Subject:</div>
+          <div id="et-preview-subject" style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">—</div>
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:4px">Body:</div>
+          <div id="et-preview-body" style="font-size:13px;color:var(--ink);line-height:1.7;white-space:pre-wrap;max-height:280px;overflow-y:auto">—</div>
+        </div>
+      </div>
+
+      <!-- Status toggle -->
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--bg3);border-radius:var(--r-sm)">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--ink)">
+          <input type="checkbox" id="et-active" style="accent-color:var(--lime-dk);width:16px;height:16px">
+          Template aktif (dikirim saat trigger fire)
+        </label>
+        <div style="margin-left:auto;font-size:10px;color:var(--ink3)" id="et-last-edited">—</div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-email-tpl')">Batal</button>
+      <button class="btn-secondary" onclick="testSendEmailTemplate()">📤 Test Send</button>
+      <button class="btn-primary" onclick="saveEmailTemplate()">Simpan</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-wrap" id="toast-container"></div>
 
 <script>
@@ -1207,6 +1329,8 @@ function auditActionLabel(action) {
     impersonate_end: '🚪 Exit Impersonate',
     delete_template: '🗑 Hapus Template',
     save_template: '💾 Save Template',
+    save_email_template: '📧 Save Email Template',
+    test_send_email: '📤 Test Send Email',
     save_plan_config: '⚙️ Save Plan Config',
     save_biztype: '🏷️ Save Biz Type',
     delete_biztype: '🗑 Hapus Biz Type',
@@ -2349,6 +2473,369 @@ function switchTab(tab, el) {
   if (tab === 'templates') { renderTemplates(); renderMetaInbox(); }
   if (tab === 'biz-types') renderBizTypes();
   if (tab === 'audit') renderAuditLog();
+  if (tab === 'email-templates') { renderEmailStats(); renderEmailTemplates(); }
+}
+
+// ══════════════════════════════════════════════
+// EMAIL TEMPLATES — 28 transactional + notification emails
+// Backend (Kevin) integrate dengan Resend/SendGrid. Template dari sini = source of truth.
+// ══════════════════════════════════════════════
+
+// Shared variables yang tersedia di semua email (dipakai oleh template replace engine)
+var EMAIL_GLOBAL_VARS = {
+  name: 'Nama owner',
+  business_name: 'Nama bisnis',
+  email: 'Email owner',
+  dashboard_url: 'URL ke dashboard',
+  support_email: 'support@getstarvio.com',
+  current_year: new Date().getFullYear().toString()
+}
+
+var EMAIL_TEMPLATES = (function() {
+  // Load from localStorage kalau sudah ada, else pakai defaults
+  try {
+    var raw = localStorage.getItem('getstarvio_admin_emails')
+    if (raw) return JSON.parse(raw)
+  } catch(e) {}
+  // Defaults — 28 templates
+  return [
+    // === P0 BETA BLOCKER (8) ===
+    { id:'subscription_activated', cat:'subscription', name:'Subscription Activated', trigger:'User completes first subscribe payment', type:'transactional', priority:'P0', status:'active',
+      subject:'🎉 Subscription kamu aktif — selamat, {{name}}!',
+      body:'Halo {{name}},\n\nSubscription getstarvio kamu sudah aktif! Berikut detail nya:\n\n• Plan: {{plan_name}}\n• Kredit bulanan: {{monthly_credits}}\n• Harga: Rp {{price}}/bulan\n• Tanggal renewal berikutnya: {{renewal_date}}\n\nSekarang automation reminder WA kamu siap jalan. Cek dashboard buat mulai:\n{{dashboard_url}}\n\nKalau ada pertanyaan, balas email ini aja.\n\nTerima kasih,\nTim getstarvio',
+      vars:['name','plan_name','monthly_credits','price','billing_date','renewal_date','dashboard_url']
+    },
+    { id:'payment_failed', cat:'subscription', name:'Payment Failed', trigger:'Subscription renewal charge fails', type:'transactional', priority:'P0', status:'active',
+      subject:'⚠️ Pembayaran subscription gagal — action required',
+      body:'Halo {{name}},\n\nKami gagal charge subscription kamu sebesar Rp {{amount}}.\n\nAlasan: {{reason}}\n\nKami akan coba lagi otomatis pada {{retry_date}}. Kalau 3x gagal, automation akan di-pause sementara.\n\nUpdate metode pembayaran di sini:\n{{action_url}}\n\nButuh bantuan? Balas email ini.\n\nTim getstarvio',
+      vars:['name','amount','reason','retry_date','action_url']
+    },
+    { id:'trial_expiring_soon', cat:'subscription', name:'Trial Expiring Soon (3 days)', trigger:'Cron: 3 days before trialEndsAt', type:'notification', priority:'P0', status:'active',
+      subject:'⏰ Trial kamu berakhir {{days_left}} hari lagi',
+      body:'Halo {{name}},\n\nTrial getstarvio kamu akan berakhir {{days_left}} hari lagi. Setelah itu, automation reminder akan berhenti sampai kamu subscribe.\n\nWelcome bonus 100 kredit kamu tetap tersimpan — otomatis aktif lagi setelah subscribe.\n\nSubscribe sekarang:\n{{next_step_url}}\n\nTim getstarvio',
+      vars:['name','days_left','next_step_url']
+    },
+    { id:'trial_expired', cat:'subscription', name:'Trial Expired', trigger:'Trial ended, no subscription', type:'notification', priority:'P0', status:'active',
+      subject:'Trial kamu sudah berakhir — subscribe untuk lanjut',
+      body:'Halo {{name}},\n\nTrial getstarvio kamu sudah berakhir hari ini. Automation reminder otomatis berhenti sampai kamu subscribe.\n\nKabar baik: welcome bonus 100 kredit kamu masih tersimpan di akun. Subscribe sekarang — langsung bisa pakai bonus nya.\n\n{{subscribe_url}}\n\nTim getstarvio',
+      vars:['name','subscribe_url','account_status']
+    },
+    { id:'account_suspended', cat:'admin', name:'Account Suspended', trigger:'Admin suspends account di panel', type:'transactional', priority:'P0', status:'active',
+      subject:'Akun getstarvio kamu di-suspend',
+      body:'Halo {{name}},\n\nAkun getstarvio kamu di-suspend oleh tim support.\n\nAlasan: {{reason}}\n\nKalau kamu rasa ini salah, atau mau appeal:\n• Email: {{support_email}}\n• Form appeal: {{appeal_form_url}}\n\nTim getstarvio',
+      vars:['name','reason','support_email','appeal_form_url']
+    },
+    { id:'account_reactivated', cat:'admin', name:'Account Reactivated', trigger:'Admin unsuspends account', type:'transactional', priority:'P0', status:'active',
+      subject:'✅ Akun kamu aktif lagi — welcome back!',
+      body:'Halo {{name}},\n\nAkun getstarvio kamu sudah di-aktifkan lagi per {{reactivation_date}}.\n\nSemua data customer, kategori, dan history kamu utuh. Login sekarang untuk lanjut:\n{{dashboard_url}}\n\nMakasih udah sabar!\n\nTim getstarvio',
+      vars:['name','reactivation_date','dashboard_url']
+    },
+    { id:'data_deletion_initiated', cat:'compliance', name:'Data Deletion Initiated', trigger:'User submits data-deletion.html form', type:'transactional', priority:'P0', status:'active',
+      subject:'Konfirmasi permintaan hapus data — action required',
+      body:'Halo {{name}},\n\nKamu baru aja request untuk hapus akun + data di getstarvio (sesuai UU PDP Indonesia).\n\nSebelum kami proses, kami perlu konfirmasi dari kamu. Klik link di bawah untuk konfirmasi (valid {{expiry_hours}} jam):\n\n{{verification_link}}\n\nSetelah konfirmasi:\n• Akun akan di-flag untuk deletion\n• 30 hari grace period — kamu masih bisa cancel kalau berubah pikiran\n• Setelah 30 hari, semua data dihapus permanent: profil, customer, kategori, reminder history, WA token\n\nKalau request ini BUKAN dari kamu, abaikan email ini. Akun kamu tetap aktif.\n\nTim getstarvio',
+      vars:['name','verification_link','expiry_hours','email']
+    },
+    { id:'data_deletion_completed', cat:'compliance', name:'Data Deletion Completed', trigger:'30 days after verification, auto-delete executed', type:'transactional', priority:'P0', status:'active',
+      subject:'Data kamu sudah dihapus permanent',
+      body:'Halo,\n\nSemua data terkait akun {{email}} di getstarvio sudah dihapus permanent hari ini ({{deletion_date}}).\n\nReference ID: {{reference_id}}\n\nYang sudah dihapus:\n• Profil bisnis + logo\n• Semua customer data\n• Kategori + templates\n• Reminder history\n• Meta WABA token (revoked ke Meta)\n• Metadata analytics\n\nTerima kasih udah pernah pakai getstarvio. Semoga sukses!\n\nTim getstarvio',
+      vars:['email','deletion_date','reference_id']
+    },
+
+    // === P1 LAUNCH WEEK (11) ===
+    { id:'welcome', cat:'onboarding', name:'Welcome Email', trigger:'User completes Google signup', type:'notification', priority:'P1', status:'active',
+      subject:'Selamat datang di getstarvio, {{name}}! 👋',
+      body:'Halo {{name}},\n\nSelamat datang di getstarvio! Senang punya {{business_name}} gabung.\n\nKamu dapat:\n• 100 kredit gratis (permanent — ga hilang)\n• {{trial_days_left}} hari free trial\n• Akses full ke semua fitur\n\nLangkah pertama: lengkapin setup di dashboard.\n{{get_started_url}}\n\nKalau ada pertanyaan, balas email ini aja — tim kami siap bantu.\n\nTim getstarvio',
+      vars:['name','business_name','get_started_url','trial_days_left']
+    },
+    { id:'free_grant_received', cat:'admin', name:'Free Subscription Granted', trigger:'Admin grants free sub via panel', type:'transactional', priority:'P1', status:'active',
+      subject:'🎁 Kamu dapet free subscription getstarvio!',
+      body:'Halo {{name}},\n\nKabar baik — kami kasih kamu free subscription selama {{duration}} (sampai {{expiry_date}}).\n\nBenefit selama free period:\n• {{credits_per_month}} kredit/bulan (auto-reset tiap siklus)\n• Akses full ke semua fitur premium\n• Automation reminder WA jalan normal\n\nSetelah expire, akun kembali ke status sebelum grant.\n\nEnjoy!\n{{dashboard_url}}\n\nTim getstarvio',
+      vars:['name','duration','credits_per_month','expiry_date','dashboard_url']
+    },
+    { id:'free_grant_revoked', cat:'admin', name:'Free Grant Revoked', trigger:'Admin revokes active grant', type:'notification', priority:'P1', status:'active',
+      subject:'Free subscription kamu di-revoke',
+      body:'Halo {{name}},\n\nFree subscription yang sebelumnya kami kasih sudah di-revoke per {{revoke_date}}.\n\nStatus akun sekarang: {{new_status}}\n\nKalau kamu masih mau pakai getstarvio, subscribe dengan plan regular:\n{{next_action_url}}\n\nPertanyaan? Balas email ini.\n\nTim getstarvio',
+      vars:['name','revoke_date','new_status','next_action_url']
+    },
+    { id:'credit_low', cat:'alerts', name:'Credit Low (<30)', trigger:'Credit drops below 30', type:'notification', priority:'P1', status:'active',
+      subject:'⚠️ Kredit getstarvio kamu tinggal {{current_credit}}',
+      body:'Halo {{name}},\n\nKredit reminder kamu tinggal {{current_credit}}. Kira-kira cukup buat {{current_credit}} pengingat lagi.\n\nTop up sekarang biar automation tetap jalan:\n{{top_up_url}}\n\n{{auto_topup_status}}\n\nTim getstarvio',
+      vars:['name','current_credit','top_up_url','auto_topup_status']
+    },
+    { id:'credit_critical', cat:'alerts', name:'Credit Critical (<10)', trigger:'Credit drops below 10', type:'notification', priority:'P1', status:'active',
+      subject:'🚨 Urgent: kredit kamu tinggal {{current_credit}} — automation bisa berhenti',
+      body:'Halo {{name}},\n\nKredit kamu tinggal {{current_credit}}. Automation bisa berhenti kapan aja kalau habis.\n\n{{block_msg}}\n\nTop up sekarang:\n{{top_up_url}}\n\nTim getstarvio',
+      vars:['name','current_credit','top_up_url','block_msg']
+    },
+    { id:'automation_paused', cat:'alerts', name:'Automation Paused (0 credit)', trigger:'Credit reached 0, automation stopped', type:'notification', priority:'P1', status:'active',
+      subject:'⏸ Automation kamu berhenti — kredit habis',
+      body:'Halo {{name}},\n\nAutomation {{automation_name}} sudah berhenti — kredit kamu habis.\n\nReminder terakhir terkirim: {{last_sent}}\n\nTop up sekarang biar automation jalan lagi:\n{{top_up_url}}\n\nTim getstarvio',
+      vars:['name','automation_name','last_sent','top_up_url']
+    },
+    { id:'wa_disconnected', cat:'alerts', name:'WhatsApp Disconnected', trigger:'WA reconnection fails >3 times', type:'notification', priority:'P1', status:'active',
+      subject:'🔌 WhatsApp kamu terputus — reconnect sekarang',
+      body:'Halo {{name}},\n\nKoneksi WhatsApp kamu ke getstarvio terputus sejak {{disconnect_time}}.\n\nSelama terputus, reminder otomatis TIDAK akan terkirim. Reconnect sekarang:\n{{reconnect_url}}\n\nKami masih kirim automation dalam {{grace_period_hours}} jam kalau kamu reconnect sekarang. Setelah itu, antrian reminder akan skip.\n\nTim getstarvio',
+      vars:['name','disconnect_time','reconnect_url','grace_period_hours']
+    },
+    { id:'topup_receipt', cat:'billing', name:'Top-Up Purchase Receipt', trigger:'One-time credit purchase completed', type:'transactional', priority:'P1', status:'active',
+      subject:'✅ Top-up {{credits_purchased}} kredit — receipt',
+      body:'Halo {{name}},\n\nTop-up kamu sukses!\n\n• Kredit dibeli: {{credits_purchased}}\n• Harga: Rp {{price}}\n• Total kredit sekarang: {{total_credit}}\n• Invoice ID: {{purchase_id}}\n\nKredit top-up tidak ada expiry — dipakai setelah kredit subscription bulanan habis.\n\n{{dashboard_url}}\n\nTim getstarvio',
+      vars:['name','credits_purchased','price','total_credit','purchase_id','dashboard_url']
+    },
+    { id:'auto_topup_triggered', cat:'billing', name:'Auto Top-Up Triggered', trigger:'Auto top-up fires at threshold', type:'notification', priority:'P1', status:'active',
+      subject:'🔄 Auto top-up berhasil — Rp {{amount}} charged',
+      body:'Halo {{name}},\n\nAuto Top-Up kamu baru aja trigger:\n• Amount: Rp {{amount}}\n• Kredit ditambahkan: {{credits_added}}\n• Saldo kredit sekarang: {{new_balance}}\n• Next auto-topup kira-kira: {{next_topup_date}}\n\nKalau mau matikan auto-topup, ke Billing → Auto Top-Up → toggle OFF.\n\nTim getstarvio',
+      vars:['name','amount','credits_added','new_balance','next_topup_date']
+    },
+    { id:'pin_changed', cat:'security', name:'PIN Changed (Security Alert)', trigger:'User changes PIN in settings', type:'transactional', priority:'P1', status:'active',
+      subject:'🔒 PIN admin kamu berhasil diubah',
+      body:'Halo {{name}},\n\nPIN admin akun kamu berubah pada {{change_time}}.\n\nKalau ini kamu: abaikan email ini.\n\nKalau BUKAN kamu: akun kamu bisa di-compromise. Segera:\n1. Login ke getstarvio\n2. Reset PIN via "Lupa PIN" di Settings\n3. Verifikasi ulang WA owner (OTP)\n4. Contact support: {{support_email}}\n\nLink undo (valid 24 jam): {{undo_url}}\n\nTim getstarvio',
+      vars:['name','change_time','device_ip','undo_url','support_email']
+    },
+    { id:'otp_reset', cat:'security', name:'OTP Reset (Security Alert)', trigger:'Owner WA verification reset', type:'transactional', priority:'P1', status:'active',
+      subject:'🔓 Verifikasi WhatsApp owner di-reset',
+      body:'Halo {{name}},\n\nVerifikasi nomor WhatsApp owner di akun kamu baru aja di-reset pada {{reset_time}}.\n\nPIN admin tetap aktif sementara, tapi kamu tidak bisa ubah PIN sampai verify WA ulang.\n\nKalau ini bukan kamu, segera contact support: {{support_email}}\n\nTim getstarvio',
+      vars:['name','reset_time','support_email']
+    },
+
+    // === P2 POST-LAUNCH (9) ===
+    { id:'monthly_summary', cat:'engagement', name:'Monthly Usage Summary', trigger:'Cron: 1st of month 8am', type:'notification', priority:'P2', status:'draft',
+      subject:'📊 Rangkuman bulan ini — {{reminders_sent}} pengingat terkirim',
+      body:'Halo {{name}},\n\nBulan ini di {{business_name}}:\n\n📨 {{reminders_sent}} pengingat terkirim\n💬 {{responses}} customer balas (engagement: {{response_rate}}%)\n⭐ Top 3 customer paling sering: {{top_customers}}\n\nLihat detail full di dashboard:\n{{dashboard_url}}\n\nTim getstarvio',
+      vars:['name','business_name','reminders_sent','responses','response_rate','top_customers','dashboard_url']
+    },
+    { id:'user_idle_7', cat:'engagement', name:'User Idle 7 Days', trigger:'No login for 7 days', type:'marketing', priority:'P2', status:'draft',
+      subject:'Kami rindu kamu, {{name}}! 👋',
+      body:'Halo {{name}},\n\nLast login kamu {{last_login}} — seminggu yang lalu. Everything OK?\n\nKalau butuh bantuan pakai getstarvio, kami siap bantu:\n• Video tutorial: {{feature_highlight}}\n• Balas email ini untuk support langsung\n\nLogin lagi:\n{{dashboard_url}}\n\nTim getstarvio',
+      vars:['name','last_login','dashboard_url','feature_highlight']
+    },
+    { id:'user_idle_30_churn', cat:'engagement', name:'User Idle 30 Days (Churn Risk)', trigger:'No activity 30 days', type:'marketing', priority:'P2', status:'draft',
+      subject:'Promo khusus buat kamu — 50% off bulan berikutnya',
+      body:'Halo {{name}},\n\nSudah {{days_idle}} hari gak dengar dari kamu. Semoga {{business_name}} lancar jaya!\n\nKalau kamu masih mau coba getstarvio lagi, kami kasih promo khusus:\n• 50% off bulan berikutnya\n• Extend trial 14 hari gratis\n\nKlaim sekarang: {{special_offer_url}}\n\nAtau ngobrol dulu: {{support_link}}\n\nTim getstarvio',
+      vars:['name','business_name','days_idle','special_offer_url','support_link']
+    },
+    { id:'meta_template_approved', cat:'alerts', name:'Meta Template Approved', trigger:'Meta approval webhook', type:'notification', priority:'P2', status:'draft',
+      subject:'✅ Template "{{template_name}}" di-approve Meta',
+      body:'Halo {{name}},\n\nKabar baik — template "{{template_name}}" sudah di-approve Meta dan aktif mulai {{effective_date}}.\n\nStatus: {{meta_status}}\n\nSekarang kamu bisa mulai kirim reminder otomatis pakai template ini.\n\nTim getstarvio',
+      vars:['name','template_name','meta_status','effective_date']
+    },
+    { id:'meta_template_rejected', cat:'alerts', name:'Meta Template Rejected', trigger:'Meta rejection webhook', type:'notification', priority:'P2', status:'draft',
+      subject:'⚠️ Template "{{template_name}}" ditolak Meta — perlu revisi',
+      body:'Halo {{name}},\n\nTemplate "{{template_name}}" ditolak Meta.\n\nAlasan dari Meta:\n{{rejection_reason}}\n\nRevisi template di sini:\n{{revision_url}}\n\nBiasanya yang kena tolak: kalimat promosi/selling yang terlalu pushy, atau format {{var}} yang salah. Kami akan bantu review kalau butuh.\n\nTim getstarvio',
+      vars:['name','template_name','rejection_reason','revision_url']
+    },
+    { id:'waba_quality_drop', cat:'alerts', name:'WABA Quality Drop', trigger:'WABA quality score drops', type:'notification', priority:'P2', status:'draft',
+      subject:'📉 Quality score WhatsApp kamu turun jadi {{current_quality}}',
+      body:'Halo {{name}},\n\nWhatsApp quality score kamu turun ke {{current_quality}} (threshold: {{threshold}}).\n\nKalau quality terus turun, Meta bisa batasi rate kirim kamu, atau bahkan suspend WABA.\n\nLangkah mitigasi:\n{{mitigation_steps}}\n\nTim getstarvio',
+      vars:['name','current_quality','threshold','mitigation_steps']
+    },
+    { id:'setup_reminder_day3', cat:'onboarding', name:'Setup Reminder (Day 3)', trigger:'Setup checklist incomplete after 3 days', type:'notification', priority:'P2', status:'draft',
+      subject:'Setup getstarvio kamu belum selesai — {{pending_steps}} step tersisa',
+      body:'Halo {{name}},\n\nSetup getstarvio kamu tinggal {{pending_steps}} step lagi. Sayang kalau berhenti di tengah — fitur automation baru jalan kalau setup lengkap.\n\nLanjut di sini:\n{{setup_url}}\n\nKalau stuck di step tertentu, kamu bisa cek guide: {{guide_link}}\n\nTim getstarvio',
+      vars:['name','pending_steps','setup_url','guide_link']
+    },
+    { id:'feature_announcement', cat:'engagement', name:'Feature Announcement', trigger:'Admin publishes feature news', type:'marketing', priority:'P2', status:'disabled',
+      subject:'🆕 Fitur baru di getstarvio: {{feature_name}}',
+      body:'Halo {{name}},\n\nKami baru rilis fitur baru: {{feature_name}} per {{launch_date}}.\n\nLihat demo video:\n{{video_url}}\n\nOr baca docs lengkap:\n{{docs_url}}\n\nTim getstarvio',
+      vars:['name','feature_name','launch_date','docs_url','video_url']
+    },
+    { id:'post_trial_survey', cat:'engagement', name:'Post-Trial Survey Invite', trigger:'Trial expired 7 days ago, no conversion', type:'marketing', priority:'P2', status:'draft',
+      subject:'Boleh minta 2 menit buat feedback? 🙏',
+      body:'Halo {{name}},\n\nTrial kamu udah expired seminggu. Kami mau minta feedback — apa yang kurang? Apa yang bisa kami improve?\n\nSurvey 2 menit (5 pertanyaan):\n{{survey_url}}\n\nSebagai terima kasih: {{feedback_incentive}}\n\nTim getstarvio',
+      vars:['name','survey_url','feedback_incentive']
+    }
+  ]
+})()
+
+/* Save EMAIL_TEMPLATES to localStorage */
+function saveEmailTemplatesStorage() {
+  try { localStorage.setItem('getstarvio_admin_emails', JSON.stringify(EMAIL_TEMPLATES)) } catch(e) {}
+}
+
+/* Render email templates stats (top cards) */
+function renderEmailStats() {
+  var total = EMAIL_TEMPLATES.length
+  var active = EMAIL_TEMPLATES.filter(function(t){ return t.status === 'active' }).length
+  var p0 = EMAIL_TEMPLATES.filter(function(t){ return t.priority === 'P0' }).length
+  var draft = EMAIL_TEMPLATES.filter(function(t){ return t.status === 'draft' }).length
+  var el = document.getElementById('email-stats')
+  if (!el) return
+  el.innerHTML =
+    '<div class="stat-card"><div class="stat-n">' + total + '</div><div class="stat-l">Total Templates</div></div>' +
+    '<div class="stat-card"><div class="stat-n" style="color:var(--lime-dk)">' + active + '</div><div class="stat-l">Active</div></div>' +
+    '<div class="stat-card"><div class="stat-n" style="color:var(--red-dk)">' + p0 + '</div><div class="stat-l">P0 Beta Blockers</div></div>' +
+    '<div class="stat-card"><div class="stat-n" style="color:var(--amber-dk)">' + draft + '</div><div class="stat-l">Drafts</div></div>'
+}
+
+/* Render email template list table */
+function renderEmailTemplates() {
+  var q = ((document.getElementById('email-search') || {}).value || '').toLowerCase()
+  var cat = (document.getElementById('email-category-filter') || {}).value || 'all'
+  var prio = (document.getElementById('email-priority-filter') || {}).value || 'all'
+  var st = (document.getElementById('email-status-filter') || {}).value || 'all'
+  var filtered = EMAIL_TEMPLATES.filter(function(t) {
+    if (q && (t.name + ' ' + t.trigger + ' ' + t.subject).toLowerCase().indexOf(q) === -1) return false
+    if (cat !== 'all' && t.cat !== cat) return false
+    if (prio !== 'all' && t.priority !== prio) return false
+    if (st !== 'all' && t.status !== st) return false
+    return true
+  })
+  var wrap = document.getElementById('email-tbl-wrap')
+  if (!wrap) return
+  if (filtered.length === 0) {
+    wrap.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--ink3);background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r-lg)">Tidak ada template yang cocok dengan filter.</div>'
+    return
+  }
+  var catLabel = { onboarding:'🎯 Onboarding', subscription:'💳 Subscription', billing:'🧾 Billing', security:'🔒 Security', admin:'👤 Admin', compliance:'⚖️ Compliance', alerts:'⚠️ Alerts', engagement:'💬 Engagement' }
+  var prioColor = { P0:'var(--red-dk)', P1:'var(--amber-dk)', P2:'var(--ink3)' }
+  var prioBg = { P0:'var(--red-bg)', P1:'var(--amber-bg)', P2:'var(--bg3)' }
+  var html = '<div class="tbl-wrap"><table class="tbl"><thead><tr>' +
+    '<th>Template</th><th style="width:130px">Category</th><th style="width:90px">Priority</th><th style="width:100px">Status</th><th style="width:90px">Action</th>' +
+    '</tr></thead><tbody>'
+  filtered.forEach(function(t) {
+    var stBadge = t.status === 'active' ? '<span class="badge b-lime">✓ Active</span>' :
+                  t.status === 'draft' ? '<span class="badge b-amber">✏️ Draft</span>' :
+                  '<span class="badge b-gray">⏸ Disabled</span>'
+    html += '<tr>' +
+      '<td><div style="font-weight:600;color:var(--ink);margin-bottom:2px">' + t.name + '</div>' +
+        '<div style="font-size:11px;color:var(--ink3);margin-bottom:2px">' + t.subject + '</div>' +
+        '<div style="font-size:10px;color:var(--ink4);font-style:italic">Trigger: ' + t.trigger + '</div></td>' +
+      '<td><span style="font-size:11px;background:var(--bg3);padding:3px 8px;border-radius:4px;color:var(--ink2)">' + (catLabel[t.cat] || t.cat) + '</span></td>' +
+      '<td><span style="font-size:11px;font-weight:700;background:' + prioBg[t.priority] + ';color:' + prioColor[t.priority] + ';padding:3px 8px;border-radius:4px">' + t.priority + '</span></td>' +
+      '<td>' + stBadge + '</td>' +
+      '<td><button class="btn-secondary" style="padding:5px 10px;font-size:10px" onclick="openEditEmailTemplate(\'' + t.id + '\')">Edit →</button></td>' +
+    '</tr>'
+  })
+  html += '</tbody></table></div>'
+  wrap.innerHTML = html
+}
+
+/* Open edit modal for a specific template */
+function openEditEmailTemplate(id) {
+  var tpl = EMAIL_TEMPLATES.find(function(t){ return t.id === id })
+  if (!tpl) return
+  document.getElementById('et-id').value = id
+  document.getElementById('et-modal-title').textContent = '📧 Edit: ' + tpl.name
+  document.getElementById('et-trigger').textContent = tpl.trigger
+  document.getElementById('et-priority').textContent = tpl.priority
+  document.getElementById('et-type').textContent = tpl.type
+  document.getElementById('et-category').textContent = tpl.cat
+  document.getElementById('et-subject').value = tpl.subject
+  document.getElementById('et-body').value = tpl.body
+  document.getElementById('et-active').checked = (tpl.status === 'active')
+
+  // Variable picker
+  var varsHtml = tpl.vars.map(function(v) {
+    return '<code onclick="insertVariable(\'{{' + v + '}}\')" style="cursor:pointer;font-size:10px;background:var(--bg2);border:1px solid var(--border);padding:3px 7px;border-radius:4px;color:var(--ink2);font-family:\'JetBrains Mono\',monospace" title="Click to copy into body">{{' + v + '}}</code>'
+  }).join('')
+  document.getElementById('et-vars').innerHTML = varsHtml
+
+  // Last edited
+  var dateEl = document.getElementById('et-last-edited')
+  if (dateEl) {
+    if (tpl.lastEditedAt) {
+      var d = new Date(tpl.lastEditedAt)
+      dateEl.textContent = 'Last edited: ' + d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) + ' ' + d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) + ' by ' + (tpl.lastEditedBy || '—')
+    } else {
+      dateEl.textContent = 'Default template (belum pernah di-edit)'
+    }
+  }
+
+  updateEmailPreview()
+  // Live preview sync
+  document.getElementById('et-subject').oninput = updateEmailPreview
+  document.getElementById('et-body').oninput = updateEmailPreview
+
+  openModal('modal-email-tpl')
+}
+
+/* Render preview with sample data */
+function updateEmailPreview() {
+  var id = document.getElementById('et-id').value
+  var tpl = EMAIL_TEMPLATES.find(function(t){ return t.id === id })
+  if (!tpl) return
+  var subject = document.getElementById('et-subject').value
+  var body = document.getElementById('et-body').value
+  // Sample data for preview
+  var sample = {
+    name:'Amelia',business_name:'Salon Wangi',email:'amelia@contoh.com',plan_name:'Subscriber',monthly_credits:'300',price:'249.000',billing_date:'20 April 2026',renewal_date:'20 Mei 2026',
+    amount:'249.000',reason:'Kartu kredit expired',retry_date:'22 April 2026',action_url:'https://getstarvio.com/billing',
+    days_left:'3',next_step_url:'https://getstarvio.com/billing',subscribe_url:'https://getstarvio.com/subscribe',account_status:'Trial expired',
+    support_email:'support@getstarvio.com',appeal_form_url:'https://getstarvio.com/appeal',reactivation_date:'20 April 2026',dashboard_url:'https://getstarvio.com/dashboard',
+    verification_link:'https://getstarvio.com/verify-delete/abc123',expiry_hours:'24',deletion_date:'20 Mei 2026',reference_id:'DEL-2026-0421',
+    get_started_url:'https://getstarvio.com/onboarding',trial_days_left:'14',
+    duration:'3 bulan',credits_per_month:'300',expiry_date:'20 Juli 2026',revoke_date:'20 April 2026',new_status:'Trial expired',next_action_url:'https://getstarvio.com/billing',
+    current_credit:'25',top_up_url:'https://getstarvio.com/billing#topup',auto_topup_status:'Auto Top-Up OFF — aktifkan di Billing?',block_msg:'Automation akan auto-pause saat kredit habis.',
+    automation_name:'Facial Reminder',last_sent:'20 April 2026, 09:00',disconnect_time:'20 April 2026, 14:30',reconnect_url:'https://getstarvio.com/settings#wa',grace_period_hours:'24',
+    credits_purchased:'500',total_credit:'625',purchase_id:'TXN-2026-0421',credits_added:'500',new_balance:'525',next_topup_date:'20 Mei 2026',
+    change_time:'20 April 2026, 15:32',device_ip:'103.xxx.xxx.xxx (Jakarta)',undo_url:'https://getstarvio.com/security/undo/abc',
+    reset_time:'20 April 2026, 15:30',
+    reminders_sent:'87',responses:'24',response_rate:'27',top_customers:'Mia, Budi, Sari',
+    last_login:'13 April 2026',feature_highlight:'https://youtube.com/watch?v=xxx',days_idle:'30',special_offer_url:'https://getstarvio.com/promo-winback',support_link:'https://wa.me/628xxx',
+    template_name:'aftercare_followup_1',meta_status:'APPROVED',effective_date:'20 April 2026',rejection_reason:'Kalimat terlalu promosi di paragraf 2',revision_url:'https://getstarvio.com/templates#tpl1',
+    current_quality:'MEDIUM',threshold:'HIGH',mitigation_steps:'1) Reduce send frequency\n2) Add opt-out link\n3) Improve response rate',
+    pending_steps:'3',setup_url:'https://getstarvio.com/dashboard',guide_link:'https://getstarvio.com/docs',
+    feature_name:'Bulk Customer Import v2',launch_date:'21 April 2026',docs_url:'https://getstarvio.com/docs/bulk-import',video_url:'https://youtube.com/...',
+    survey_url:'https://getstarvio.com/survey-trial',feedback_incentive:'Voucher Rp 50.000 Gopay',current_year:new Date().getFullYear().toString()
+  }
+  var render = function(str) {
+    return String(str || '').replace(/\{\{(\w+)\}\}/g, function(_, key) {
+      return sample[key] !== undefined ? sample[key] : '{{' + key + '}}'
+    })
+  }
+  document.getElementById('et-preview-subject').textContent = render(subject)
+  document.getElementById('et-preview-body').textContent = render(body)
+}
+
+/* Insert variable at cursor position in body textarea */
+function insertVariable(varStr) {
+  var ta = document.getElementById('et-body')
+  if (!ta) return
+  var start = ta.selectionStart || 0
+  var end = ta.selectionEnd || 0
+  ta.value = ta.value.substring(0, start) + varStr + ta.value.substring(end)
+  ta.focus()
+  ta.selectionStart = ta.selectionEnd = start + varStr.length
+  updateEmailPreview()
+  toast('Variabel ditambahkan: ' + varStr, 'success')
+}
+
+/* Save email template changes */
+function saveEmailTemplate() {
+  var id = document.getElementById('et-id').value
+  var tpl = EMAIL_TEMPLATES.find(function(t){ return t.id === id })
+  if (!tpl) return
+  var subject = document.getElementById('et-subject').value.trim()
+  var body = document.getElementById('et-body').value.trim()
+  var active = document.getElementById('et-active').checked
+  if (!subject) { toast('Subject tidak boleh kosong', 'error'); return }
+  if (!body) { toast('Body tidak boleh kosong', 'error'); return }
+
+  // Capture change details for audit
+  var oldStatus = tpl.status
+  var newStatus = active ? 'active' : (tpl.status === 'disabled' ? 'disabled' : 'draft')
+  tpl.subject = subject
+  tpl.body = body
+  tpl.status = newStatus
+  tpl.lastEditedAt = new Date().toISOString()
+  tpl.lastEditedBy = _adminEmail || 'admin@getstarvio.com'
+
+  saveEmailTemplatesStorage()
+  logAdminAction('save_email_template', id, { templateName: tpl.name, statusChange: oldStatus + ' → ' + newStatus })
+  closeModal('modal-email-tpl')
+  renderEmailStats()
+  renderEmailTemplates()
+  toast('Template "' + tpl.name + '" disimpan', 'success')
+}
+
+/* Test send email (mockup — just shows what would be sent) */
+function testSendEmailTemplate() {
+  var id = document.getElementById('et-id').value
+  var tpl = EMAIL_TEMPLATES.find(function(t){ return t.id === id })
+  if (!tpl) return
+  var adminEmail = _adminEmail || 'admin@getstarvio.com'
+  toast('📤 Test email akan dikirim ke ' + adminEmail + ' (mockup — backend belum integrate)', 'success')
+  logAdminAction('test_send_email', id, { templateName: tpl.name, testRecipient: adminEmail })
 }
 
 // ══════════════════════════════════════════════
