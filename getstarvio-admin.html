@@ -2972,47 +2972,62 @@ var AFTERCARE_VAR_LABELS = {
   4: 'Nama bisnis'
 };
 
+/* Default aftercare body starter — ditampilkan saat buat template baru.
+   Include all 4 standardized variables {{1}}-{{4}} biar admin langsung liat 4 example fields. */
+var TPL_DEFAULT_BODY = 'Halo {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nKalau butuh konsultasi lanjutan atau ingin booking sesi berikutnya, balas chat ini aja ya.'
+
+/* Default example values — pre-fill saat new template (admin bisa ubah sebelum submit) */
+var TPL_DEFAULT_EXAMPLE = ['Sarah', 'Hair Smoothing', '15 Maret 2026', 'Salon Wangi']
+
 function openTemplateModal(id) {
   var t = id ? TEMPLATES.find(function(x){ return x.id === id }) : null;
-  document.getElementById('tpl-modal-title').textContent = t ? 'Edit Template' : 'Tambah Template Baru';
+  var isNew = !t;
+  document.getElementById('tpl-modal-title').textContent = isNew ? 'Tambah Template Baru' : 'Edit Template';
   document.getElementById('tpl-edit-id').value = t ? t.id : '';
   document.getElementById('tpl-name').value = t ? t.name : '';
   document.getElementById('tpl-name').readOnly = !!t;  // name immutable after submit
   document.getElementById('tpl-lang').value = t ? t.language : 'id';
   document.getElementById('tpl-category').value = t ? t.category : 'UTILITY';
-  document.getElementById('tpl-body').value = t ? t.body : '';
 
-  // Populate example parameters dari existing template atau kosong untuk template baru
-  var existingExample = (t && t.example && t.example.body_text && t.example.body_text[0]) || [];
-  window.__tplExampleCache = existingExample;  // simpan buat pre-fill saat render
+  // NEW template: pre-fill body dengan aftercare starter + 4 example values
+  // EDIT template: preserve existing body + examples
+  if (isNew) {
+    document.getElementById('tpl-body').value = TPL_DEFAULT_BODY
+    window.__tplExampleCache = TPL_DEFAULT_EXAMPLE.slice()  // clone defaults
+  } else {
+    document.getElementById('tpl-body').value = t.body
+    var existingExample = (t.example && t.example.body_text && t.example.body_text[0]) || []
+    window.__tplExampleCache = existingExample
+  }
 
   document.getElementById('modal-template').classList.add('show');
   onTplBodyChange();  // initial render: fields + preview
 }
 
-/* Detect all {{N}} variables in body and render an input per unique variable.
-   Preserves user input saat variable masih ada, clear saat variable dihapus. */
+/* Aftercare templates = fixed 4 variables standard ({{1}} nama, {{2}} layanan,
+   {{3}} tanggal, {{4}} bisnis). Always render all 4 example fields regardless
+   of body content — admin-friendly (no need to detect/auto-add) + reminds admin
+   untuk pakai semua 4 untuk consistency.
+
+   Variables yang DIPAKAI di body di-highlight dengan border lime; yang TIDAK
+   dipakai tampil di-grey (opsional — admin tau boleh skip). */
 function onTplBodyChange() {
   var body = document.getElementById('tpl-body').value || '';
-  // Find all {{N}} variables, sorted numerically unique
+  // Detect which {{N}} variables actually used in body (untuk highlight)
   var matches = body.match(/\{\{(\d+)\}\}/g) || [];
-  var nums = [];
+  var usedSet = {};
   matches.forEach(function(m) {
     var n = parseInt(m.replace(/[{}]/g, ''));
-    if (!isNaN(n) && nums.indexOf(n) === -1) nums.push(n);
+    if (!isNaN(n)) usedSet[n] = true;
   });
-  nums.sort(function(a,b){ return a-b; });
 
   var wrap = document.getElementById('tpl-example-fields');
   var previewSec = document.getElementById('tpl-preview-sec');
 
-  if (nums.length === 0) {
-    wrap.innerHTML = '<div class="tpl-example-empty">Ketik placeholder <code>{{1}}</code> di body untuk mulai mengisi contoh parameter.</div>';
-    if (previewSec) previewSec.style.display = 'none';
-    return;
-  }
+  // Always render 4 fixed variables {{1}}-{{4}} (aftercare standard)
+  var nums = [1, 2, 3, 4];
 
-  // Render input per variable — preserve existing values kalau ada
+  // Preserve existing user input kalau masih ada
   var existingInputs = {};
   document.querySelectorAll('.tpl-example-input').forEach(function(el) {
     var n = parseInt(el.getAttribute('data-var'));
@@ -3022,14 +3037,19 @@ function onTplBodyChange() {
   var html = '';
   nums.forEach(function(n) {
     var label = AFTERCARE_VAR_LABELS[n] || 'Variabel {{' + n + '}}';
-    // Priority: user's current input > cache dari openTemplateModal > empty
+    var used = !!usedSet[n];
+    // Priority: user's current input > cache dari openTemplateModal > default
     var val = existingInputs[n] !== undefined ? existingInputs[n] :
-              (window.__tplExampleCache && window.__tplExampleCache[n-1]) || '';
+              (window.__tplExampleCache && window.__tplExampleCache[n-1]) ||
+              (TPL_DEFAULT_EXAMPLE[n-1] || '');
     var placeholder = getTplPlaceholder(n);
-    html += '<div class="tpl-example-row">' +
+    var usedBadge = used
+      ? '<span style="font-size:9px;font-weight:700;background:var(--lime-bg);color:var(--lime-dk);border:1px solid #c8f07a;padding:1px 6px;border-radius:99px;margin-left:5px">Dipakai di body</span>'
+      : '<span style="font-size:9px;font-weight:600;color:var(--ink4);background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:99px;margin-left:5px" title="Variabel ini tidak ada di body template — tambahkan {{' + n + '}} kalau mau dipakai">Tidak dipakai</span>'
+    html += '<div class="tpl-example-row"' + (used ? '' : ' style="opacity:.65"') + '>' +
               '<span class="tpl-example-key">{{' + n + '}}</span>' +
-              '<div>' +
-                '<div class="tpl-example-label">' + label + '</div>' +
+              '<div style="flex:1;min-width:0">' +
+                '<div class="tpl-example-label" style="display:flex;align-items:center;flex-wrap:wrap">' + label + usedBadge + '</div>' +
                 '<input type="text" class="tpl-example-input" data-var="' + n + '" ' +
                        'value="' + escapeHtml(val) + '" ' +
                        'placeholder="' + escapeHtml(placeholder) + '" ' +
@@ -3038,6 +3058,8 @@ function onTplBodyChange() {
             '</div>';
   });
   wrap.innerHTML = html;
+  // Always show preview — 4 fixed params always rendered
+  if (previewSec) previewSec.style.display = 'block';
 
   if (previewSec) previewSec.style.display = 'block';
   updateTplPreview();
