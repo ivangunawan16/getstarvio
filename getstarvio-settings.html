@@ -208,10 +208,14 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* accordion */
 .accordion{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
-.acc-header{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;transition:background .15s}
+.acc-header{padding:14px 18px;min-height:48px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;transition:background .15s;-webkit-tap-highlight-color:transparent}
 .acc-header:hover{background:var(--bg3)}
 .acc-title{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
 .acc-title .acc-icon{font-size:15px}
+/* Unsaved changes dot — shown next to title when accordion has dirty state */
+.acc-dirty-dot{display:none;width:7px;height:7px;border-radius:50%;background:var(--amber);margin-left:4px;animation:pulse-dirty 2s ease-in-out infinite}
+.accordion.dirty .acc-dirty-dot{display:inline-block}
+@keyframes pulse-dirty{0%,100%{opacity:1}50%{opacity:.4}}
 .acc-sub{font-size:11px;color:var(--ink3);margin-left:auto;margin-right:12px}
 .acc-chevron{transition:transform .2s;color:var(--ink3);flex-shrink:0}
 .acc-body{display:none;padding:0 18px 18px;border-top:1px solid var(--border)}
@@ -614,7 +618,7 @@ body.imp-active{padding-top:36px}
       <!-- ══ ACCORDION: PROFIL BISNIS ══ -->
       <div class="accordion" id="acc-profil">
         <div class="acc-header" onclick="toggleAcc('acc-profil')">
-          <div class="acc-title"><span class="acc-icon">🏢</span> Profil Bisnis</div>
+          <div class="acc-title"><span class="acc-icon">🏢</span> Profil Bisnis<span class="acc-dirty-dot" title="Ada perubahan belum disimpan"></span></div>
           <span class="acc-sub" id="acc-profil-sub">Belum diisi</span>
           <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
         </div>
@@ -660,7 +664,12 @@ body.imp-active{padding-top:36px}
               <div class="biz-opt" data-biz="Bengkel"><div class="biz-emoji">🔧</div><div class="biz-name">Bengkel</div></div>
               <div class="biz-opt" data-biz="Pet Grooming"><div class="biz-emoji">🐾</div><div class="biz-name">Pet Grooming</div></div>
               <div class="biz-opt" data-biz="Laundry"><div class="biz-emoji">🧺</div><div class="biz-name">Laundry</div></div>
-              <div class="biz-opt" data-biz="Lainnya"><div class="biz-emoji">🏪</div><div class="biz-name">Lainnya</div></div>
+              <div class="biz-opt" data-biz="lainnya"><div class="biz-emoji">🏪</div><div class="biz-name">Lainnya</div></div>
+            </div>
+            <!-- Conditional: text input hanya muncul kalau pilih Lainnya -->
+            <div id="biz-other-wrap" style="display:none;margin-top:10px">
+              <input type="text" class="field-input" id="inp-bizTypeOther" placeholder="Sebutkan jenis bisnis kamu (contoh: Konsultan, Event Organizer, Tailor)" style="font-size:13px" oninput="markAccDirty('acc-profil')">
+              <div style="font-size:10px;color:var(--ink3);margin-top:5px">💡 Tampil di dashboard + pesan pengingat ke pelanggan. Contoh: "...di <strong>Konsultan X</strong>"</div>
             </div>
           </div>
 
@@ -723,7 +732,7 @@ body.imp-active{padding-top:36px}
       <!-- ══ ACCORDION: WHATSAPP ══ -->
       <div class="accordion" id="acc-wa">
         <div class="acc-header" onclick="toggleAcc('acc-wa')">
-          <div class="acc-title"><span class="acc-icon">💬</span> WhatsApp</div>
+          <div class="acc-title"><span class="acc-icon">💬</span> WhatsApp & Notifikasi<span class="acc-dirty-dot" title="Ada perubahan belum disimpan"></span></div>
           <span class="acc-sub" id="acc-wa-sub">Belum terhubung</span>
           <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
         </div>
@@ -837,29 +846,29 @@ body.imp-active{padding-top:36px}
             <label class="notif-check">
               <input type="checkbox" id="nf-lowCredit" checked>
               <div class="notif-txt">
-                <div class="notif-label">Kredit total rendah</div>
-                <div class="notif-desc">Saat kredit total turun di bawah 30</div>
+                <div class="notif-label">Kredit rendah</div>
+                <div class="notif-desc">Saat sisa kredit ≤ 30 (kira-kira 30 pengingat lagi) — waktunya top up</div>
               </div>
             </label>
             <label class="notif-check">
               <input type="checkbox" id="nf-criticalCredit" checked>
               <div class="notif-txt">
-                <div class="notif-label">Kredit total kritis</div>
-                <div class="notif-desc">Saat kredit total turun di bawah 10</div>
+                <div class="notif-label">Kredit kritis</div>
+                <div class="notif-desc">Saat sisa kredit ≤ 10 (kira-kira 10 pengingat lagi) — urgent, automation bisa berhenti</div>
               </div>
             </label>
             <label class="notif-check">
               <input type="checkbox" id="nf-subLow" checked>
               <div class="notif-txt">
-                <div class="notif-label">Kredit subscription hampir habis</div>
-                <div class="notif-desc">Saat kredit bulanan subscription &lt; 50</div>
+                <div class="notif-label">Kuota bulanan hampir habis</div>
+                <div class="notif-desc">Saat kredit bulanan subscription ≤ 50 (dari 300/bulan) — kuota auto-reset tiap siklus billing</div>
               </div>
             </label>
             <label class="notif-check">
               <input type="checkbox" id="nf-renewalReminder" checked>
               <div class="notif-txt">
-                <div class="notif-label">Pengingat perpanjangan langganan</div>
-                <div class="notif-desc">3 hari sebelum subscription otomatis diperpanjang</div>
+                <div class="notif-label">Pengingat perpanjangan</div>
+                <div class="notif-desc">3 hari sebelum subscription auto-renew — biar sempat cancel kalau mau</div>
               </div>
             </label>
           </div>
@@ -899,10 +908,10 @@ body.imp-active{padding-top:36px}
           <!-- ── STATE A: PIN belum diatur ── -->
           <div id="pin-setup-wrap">
             <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:5px;letter-spacing:.04em">PIN Baru (4 digit angka)</label>
-            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-new" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-new')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+            <input type="text" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-new" placeholder="••••" autocomplete="off" oninput="onPinInput(this,'pin-new')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.5em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink);-webkit-text-security:disc;text-security:disc">
 
             <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin:12px 0 5px;letter-spacing:.04em">Konfirmasi PIN</label>
-            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-confirm" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-confirm')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+            <input type="text" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-confirm" placeholder="••••" autocomplete="off" oninput="onPinInput(this,'pin-confirm')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.5em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink);-webkit-text-security:disc;text-security:disc">
 
             <div id="pin-error" style="display:none;font-size:11px;color:var(--red-dk);margin-top:8px;font-weight:600"></div>
 
@@ -928,19 +937,20 @@ body.imp-active{padding-top:36px}
 
             <!-- Change flow: current PIN → new PIN -->
             <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:5px;letter-spacing:.04em">PIN Sekarang</label>
-            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-current" placeholder="0000" autocomplete="current-password" oninput="onPinInput(this,'pin-current')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+            <input type="text" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-current" placeholder="••••" autocomplete="off" oninput="onPinInput(this,'pin-current')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.5em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink);-webkit-text-security:disc;text-security:disc">
 
             <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin:12px 0 5px;letter-spacing:.04em">PIN Baru (4 digit)</label>
-            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-new2" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-new2')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+            <input type="text" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-new2" placeholder="••••" autocomplete="off" oninput="onPinInput(this,'pin-new2')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.5em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink);-webkit-text-security:disc;text-security:disc">
 
             <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin:12px 0 5px;letter-spacing:.04em">Konfirmasi PIN Baru</label>
-            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-confirm2" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-confirm2')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+            <input type="text" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-confirm2" placeholder="••••" autocomplete="off" oninput="onPinInput(this,'pin-confirm2')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.5em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink);-webkit-text-security:disc;text-security:disc">
 
             <div id="pin-error2" style="display:none;font-size:11px;color:var(--red-dk);margin-top:8px;font-weight:600"></div>
 
-            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
               <button class="btn btn-lime" onclick="savePinChange()">Ubah PIN</button>
               <button class="btn btn-ghost btn-sm" onclick="removePin()" style="color:var(--red-dk);border-color:#f5c5c3">Hapus PIN</button>
+              <button onclick="forgotPinFlow()" class="btn btn-ghost btn-sm" style="margin-left:auto;font-size:10px">🔓 Lupa PIN?</button>
             </div>
           </div>
 
@@ -950,7 +960,7 @@ body.imp-active{padding-top:36px}
       <!-- ══ ACCORDION: KATEGORI DEFAULTS — global defaults for new categories ══ -->
       <div class="accordion" id="acc-kat-default">
         <div class="acc-header" onclick="toggleAcc('acc-kat-default')">
-          <div class="acc-title"><span class="acc-icon">⚙️</span> Kategori Defaults</div>
+          <div class="acc-title"><span class="acc-icon">⚙️</span> Kategori Defaults<span class="acc-dirty-dot" title="Ada perubahan belum disimpan"></span></div>
           <span class="acc-sub" id="acc-kat-default-sub">Interval fallback 30 hari</span>
           <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
         </div>
@@ -1378,14 +1388,137 @@ document.getElementById('bizGrid').addEventListener('click', function(e) {
   document.querySelectorAll('.biz-opt').forEach(function(el) { el.classList.remove('selected') })
   opt.classList.add('selected')
   selectedBizType = opt.getAttribute('data-biz')
+  // Show/hide "Lainnya" text input
+  var otherWrap = document.getElementById('biz-other-wrap')
+  if (otherWrap) {
+    otherWrap.style.display = (selectedBizType === 'lainnya') ? 'block' : 'none'
+    if (selectedBizType === 'lainnya') {
+      setTimeout(function() { var el = document.getElementById('inp-bizTypeOther'); if (el) el.focus() }, 100)
+    }
+  }
+  markAccDirty('acc-profil')
 })
 
-/* ── ACCORDION TOGGLE ── */
+/* ── ACCORDION TOGGLE ── multi-open + dirty state warning */
 function toggleAcc(id) {
   var el = document.getElementById(id)
+  if (!el) return
   var wasOpen = el.classList.contains('open')
-  document.querySelectorAll('.accordion').forEach(function(a) { a.classList.remove('open') })
-  if (!wasOpen) el.classList.add('open')
+
+  // Kalau menutup accordion yang punya unsaved changes → warn dulu
+  if (wasOpen && el.classList.contains('dirty')) {
+    showConfirm('Ada perubahan di "' + getAccTitle(el) + '" yang belum disimpan.\n\nTutup tanpa simpan? Perubahan akan hilang.', {
+      title: 'Belum Disimpan',
+      kind: 'warn',
+      icon: '💾',
+      okLabel: 'Buang perubahan',
+      cancelLabel: 'Tetap di sini'
+    }).then(function(ok) {
+      if (!ok) return
+      el.classList.remove('dirty')       // discard dirty state
+      el.classList.remove('open')
+      resetAccordionFields(id)           // revert field values to saved state
+    })
+    return
+  }
+
+  // Normal toggle — multi-open (tidak force close yang lain)
+  el.classList.toggle('open', !wasOpen)
+}
+
+/* Get accordion title for dialog context */
+function getAccTitle(el) {
+  var titleEl = el.querySelector('.acc-title')
+  if (!titleEl) return 'section ini'
+  // Strip icon emoji, return just text
+  var clone = titleEl.cloneNode(true)
+  var iconEl = clone.querySelector('.acc-icon')
+  if (iconEl) iconEl.remove()
+  var dotEl = clone.querySelector('.acc-dirty-dot')
+  if (dotEl) dotEl.remove()
+  return clone.textContent.trim()
+}
+
+/* Mark accordion dirty (has unsaved changes) */
+function markAccDirty(accId) {
+  var el = document.getElementById(accId)
+  if (el) el.classList.add('dirty')
+}
+
+/* Clear dirty state (call after successful save) */
+function clearAccDirty(accId) {
+  var el = document.getElementById(accId)
+  if (el) el.classList.remove('dirty')
+}
+
+/* Reset accordion fields to saved U state (revert discard) */
+function resetAccordionFields(accId) {
+  var u = loadU()
+  if (!u) return
+  if (accId === 'acc-profil') {
+    // Re-populate from saved state
+    var el; var set = function(id, val){ el = document.getElementById(id); if (el) el.value = val || '' }
+    set('inp-bizName', u.bizName)
+    set('inp-adminName', u.adminName)
+    set('inp-country', u.country || 'ID')
+    set('inp-timezone', u.timezone || 'Asia/Jakarta')
+    set('inp-avgServiceValue', fmtIDR(u.avgServiceValue || 150000))
+    // Biz type grid
+    selectedBizType = u.bizType || ''
+    document.querySelectorAll('.biz-opt').forEach(function(el) {
+      el.classList.toggle('selected', el.getAttribute('data-biz') === selectedBizType)
+    })
+  } else if (accId === 'acc-wa') {
+    // Revert owner WA + notif prefs
+    refreshOwnerWaVerifyUI()
+    if (u.ownerWa) {
+      var full = String(u.ownerWa)
+      var ccOptions = ['62','60','65','63','66','84','44','1']
+      var matchedCc = ''
+      for (var i = 0; i < ccOptions.length; i++) {
+        if (full.startsWith(ccOptions[i]) && ccOptions[i].length > matchedCc.length) matchedCc = ccOptions[i]
+      }
+      if (matchedCc) {
+        document.getElementById('ownerCc').value = matchedCc
+        document.getElementById('inp-ownerWa').value = full.slice(matchedCc.length)
+      }
+    }
+    var nf = u.billingNotifs || { lowCredit:true,criticalCredit:true,subLow:true,renewalReminder:true }
+    document.getElementById('nf-lowCredit').checked = nf.lowCredit !== false
+    document.getElementById('nf-criticalCredit').checked = nf.criticalCredit !== false
+    document.getElementById('nf-subLow').checked = nf.subLow !== false
+    document.getElementById('nf-renewalReminder').checked = nf.renewalReminder !== false
+  } else if (accId === 'acc-kat-default') {
+    var el2 = document.getElementById('def-intv-settings')
+    if (el2) el2.value = u.defaultInterval || 30
+  }
+}
+
+/* Wire dirty state tracking untuk inputs dalam accordion */
+function wireAccDirtyTracking() {
+  // Profil Bisnis
+  ['inp-bizName','inp-adminName','inp-country','inp-timezone','inp-avgServiceValue'].forEach(function(id) {
+    var el = document.getElementById(id)
+    if (el) el.addEventListener('input', function(){ markAccDirty('acc-profil') })
+    if (el && el.tagName === 'SELECT') el.addEventListener('change', function(){ markAccDirty('acc-profil') })
+  })
+  // WhatsApp accordion (owner WA + notif prefs)
+  ;['inp-ownerWa','ownerCc'].forEach(function(id) {
+    var el = document.getElementById(id)
+    if (el) {
+      el.addEventListener('input', function(){ markAccDirty('acc-wa') })
+      el.addEventListener('change', function(){ markAccDirty('acc-wa') })
+    }
+  })
+  ;['nf-lowCredit','nf-criticalCredit','nf-subLow','nf-renewalReminder'].forEach(function(id) {
+    var el = document.getElementById(id)
+    if (el) el.addEventListener('change', function(){ markAccDirty('acc-wa') })
+  })
+  // Kategori Defaults
+  var defIntv = document.getElementById('def-intv-settings')
+  if (defIntv) defIntv.addEventListener('input', function(){ markAccDirty('acc-kat-default') })
+  // PIN accordion — dirty-less (save-and-forget, no revert flow)
+  // QR, Danger — no dirty state
 }
 
 /* ══════════════════════════════════════════════
@@ -1435,9 +1568,19 @@ function renderPinAccordion(u) {
     if (gateWrap) gateWrap.style.display = 'block'
     if (gateBody) {
       gateBody.innerHTML =
-        '<div style="font-weight:700;margin-bottom:4px">Verify WhatsApp owner untuk ubah PIN</div>' +
-        '<div style="margin-bottom:10px">PIN kamu <strong>masih aktif & proteksi jalan</strong> — tapi untuk ganti / hapus PIN, kamu harus re-verify WA owner dulu (proof of identity).</div>' +
-        '<a href="#wa" onclick="setTimeout(function(){toggleAcc(\'acc-wa\');var el=document.getElementById(\'inp-ownerWa\');if(el)el.focus()},100)" class="btn btn-lime btn-sm" style="text-decoration:none">Re-verify WhatsApp →</a>'
+        '<div style="font-weight:700;margin-bottom:6px">🛡️ PIN kamu masih aktif dan melindungi:</div>' +
+        '<ul style="margin:4px 0 10px 18px;padding:0;color:#8a5e00;font-size:11px;line-height:1.65">' +
+          '<li>Delete kategori / pelanggan</li>' +
+          '<li>Toggle master automation ON/OFF</li>' +
+          '<li>Toggle per-kategori automation</li>' +
+          '<li>Ubah jam kirim pengingat</li>' +
+          '<li>Aktifkan Auto Top-Up billing</li>' +
+        '</ul>' +
+        '<div style="margin-bottom:10px;padding-top:6px;border-top:1px dashed #f5d28a">Untuk <strong>ganti / hapus PIN</strong>, verify WA owner dulu — identity proof. Kalau lupa PIN, bisa reset via OTP di bawah.</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+          '<a href="#wa" onclick="setTimeout(function(){toggleAcc(\'acc-wa\');var el=document.getElementById(\'inp-ownerWa\');if(el)el.focus()},100)" class="btn btn-lime btn-sm" style="text-decoration:none">Re-verify WhatsApp →</a>' +
+          '<button onclick="forgotPinFlow()" class="btn btn-ghost btn-sm" style="font-size:10px">🔓 Lupa PIN?</button>' +
+        '</div>'
     }
     if (subLabel) subLabel.textContent = 'Terpasang · Verify WA untuk edit'
     return
@@ -1601,6 +1744,39 @@ function removePin() {
 }
 
 /* ══════════════════════════════════════════════
+   FORGOT PIN RECOVERY — reset via OTP re-verification
+   Flow: confirm → force OTP re-verify → PIN auto-cleared → user setup baru
+   ══════════════════════════════════════════════ */
+function forgotPinFlow() {
+  showConfirm('Lupa PIN admin?\n\nUntuk reset PIN, kamu perlu verify ulang nomor WA owner via OTP. Setelah verify, PIN lama akan otomatis dihapus dan kamu bisa setup PIN baru.', {
+    title: '🔓 Reset PIN via OTP',
+    kind: 'warn',
+    icon: '🔐',
+    okLabel: 'Ya, reset PIN',
+    cancelLabel: 'Batal'
+  }).then(function(ok) {
+    if (!ok) return
+    var u = loadU()
+    if (!u) return
+    // Force OTP re-verify + clear PIN
+    u.ownerWaVerifiedAt = null
+    u.ownerWaOtpPending = null
+    delete u.adminPin
+    delete u.adminPinSetAt
+    saveU(u)
+    refreshOwnerWaVerifyUI()
+    renderPinAccordion(u)
+    // Auto-open WA accordion + focus input
+    setTimeout(function() {
+      toggleAcc('acc-wa')
+      var el = document.getElementById('inp-ownerWa')
+      if (el) { el.focus(); el.scrollIntoView({behavior:'smooth', block:'center'}) }
+    }, 200)
+    showToast('PIN dihapus. Verify WA owner untuk setup PIN baru.')
+  })
+}
+
+/* ══════════════════════════════════════════════
    KATEGORI DEFAULTS — moved from Kategori page
    ══════════════════════════════════════════════ */
 function saveDefaultIntervalSettings() {
@@ -1612,6 +1788,7 @@ function saveDefaultIntervalSettings() {
   saveU(u)
   var subLabel = document.getElementById('acc-kat-default-sub')
   if (subLabel) subLabel.textContent = 'Interval fallback ' + v + ' hari'
+  clearAccDirty('acc-kat-default')
   showToast('Default interval disimpan — ' + v + ' hari')
 }
 
@@ -1621,6 +1798,13 @@ function saveProfile() {
   if (!u) return
   u.bizName = document.getElementById('inp-bizName').value.trim()
   u.bizType = selectedBizType || u.bizType
+  // "Lainnya" biz type: capture custom text kalau ada
+  if (selectedBizType === 'lainnya') {
+    var customEl = document.getElementById('inp-bizTypeOther')
+    u.bizTypeOther = customEl ? customEl.value.trim() : ''
+  } else {
+    delete u.bizTypeOther
+  }
   u.adminName = document.getElementById('inp-adminName').value.trim()
   u.country = document.getElementById('inp-country').value
   u.timezone = document.getElementById('inp-timezone').value
@@ -1630,6 +1814,7 @@ function saveProfile() {
   bootSidebar()
   var accProfilSub = document.getElementById('acc-profil-sub')
   if (accProfilSub) accProfilSub.textContent = u.bizName || 'Belum diisi'
+  clearAccDirty('acc-profil')
   showToast('Profil berhasil disimpan!')
 }
 
@@ -1806,6 +1991,7 @@ function saveWa() {
 
   saveU(u)
   refreshOwnerWaVerifyUI()
+  clearAccDirty('acc-wa')
   showToast('Pengaturan WA & notifikasi disimpan!')
 }
 
@@ -2364,6 +2550,13 @@ function boot() {
       if (el.getAttribute('data-biz') === selectedBizType) el.classList.add('selected')
     })
   }
+  // Show "Lainnya" text input kalau user punya bizTypeOther saved
+  if (selectedBizType === 'lainnya') {
+    var otherWrap = document.getElementById('biz-other-wrap')
+    if (otherWrap) otherWrap.style.display = 'block'
+    var otherInput = document.getElementById('inp-bizTypeOther')
+    if (otherInput) otherInput.value = U.bizTypeOther || ''
+  }
 
   // Country
   var countryEl = document.getElementById('inp-country')
@@ -2422,6 +2615,9 @@ window.addEventListener('DOMContentLoaded', function() {
   boot()
   bootSidebar()
   checkTrialLock()
+
+  // Wire dirty state tracking untuk unsaved-changes detection
+  wireAccDirtyTracking()
 
   // Auto-open accordion on load: hash anchor wins, else default QR
   var hash = (location.hash || '').replace('#', '')
