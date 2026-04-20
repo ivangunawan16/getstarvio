@@ -1231,7 +1231,7 @@ function showToast(msg) {
   var t = document.getElementById('toast')
   t.textContent = msg
   t.classList.add('show')
-  setTimeout(function() { t.classList.remove('show') }, 2200)
+  setTimeout(function() { t.classList.remove('show') }, 2400)
 }
 
 /* ══════════════════════════════════════════════
@@ -1280,7 +1280,7 @@ function showDialog(opts) {
 
     var el = document.createElement('div')
     el.id = 'util-dialog'
-    el.style.cssText = 'position:fixed;inset:0;background:rgba(26,25,23,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:600;padding:16px;animation:fadeUp .15s ease'
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(26,25,23,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:700;padding:16px;animation:fadeUp .15s ease'
     el.innerHTML =
       '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);max-width:400px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)">' +
         '<div style="padding:22px 24px 16px;text-align:center">' +
@@ -1484,13 +1484,20 @@ function savePinSetup() {
   // Warn on common weak PINs
   var weakPins = ['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1212']
   var proceedSetup = function() {
-    u.adminPin = pin
-    u.adminPinSetAt = new Date().toISOString()
-    saveU(u)
+    // Defensive: re-check OTP (belt-and-suspenders — catch state changes between outer guard and here)
+    var u2 = loadU()
+    if (!u2 || !u2.ownerWaVerifiedAt) {
+      showToast('Verify WhatsApp owner dulu sebelum setup PIN', 'error')
+      renderPinAccordion(u2 || u)
+      return
+    }
+    u2.adminPin = pin
+    u2.adminPinSetAt = new Date().toISOString()
+    saveU(u2)
     document.getElementById('pin-new').value = ''
     document.getElementById('pin-confirm').value = ''
     err.style.display = 'none'
-    renderPinAccordion(u)
+    renderPinAccordion(u2)
     showToast('🔐 PIN admin berhasil diatur!')
   }
   if (weakPins.indexOf(pin) !== -1) {
@@ -1522,14 +1529,21 @@ function savePinChange() {
   if (newPin === current) { err.textContent = 'PIN baru sama dengan PIN sekarang'; err.style.display = 'block'; return }
   var weakPins = ['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1212']
   var proceedChange = function() {
-    u.adminPin = newPin
-    u.adminPinSetAt = new Date().toISOString()
-    saveU(u)
+    // Defensive: re-check OTP (belt-and-suspenders)
+    var u2 = loadU()
+    if (!u2 || !u2.ownerWaVerifiedAt) {
+      showToast('Verify WhatsApp owner dulu sebelum ubah PIN', 'error')
+      renderPinAccordion(u2 || u)
+      return
+    }
+    u2.adminPin = newPin
+    u2.adminPinSetAt = new Date().toISOString()
+    saveU(u2)
     document.getElementById('pin-current').value = ''
     document.getElementById('pin-new2').value = ''
     document.getElementById('pin-confirm2').value = ''
     err.style.display = 'none'
-    renderPinAccordion(u)
+    renderPinAccordion(u2)
     showToast('🔐 PIN admin berhasil diubah!')
   }
   if (weakPins.indexOf(newPin) !== -1) {

@@ -671,16 +671,42 @@ body.imp-active{padding-top:36px}
   </div>
 </div>
 
-<!-- DELETE CONFIRM MODAL -->
+<!-- DELETE CONFIRM MODAL (with PIN gate — matches Kategori delete pattern) -->
 <div class="overlay" id="m-delete">
-  <div class="modal" style="width:360px">
-    <div style="padding:19px 22px 15px;border-bottom:1px solid var(--border)">
+  <div class="modal" style="width:380px">
+    <div style="padding:19px 22px 15px;border-bottom:1px solid var(--border);text-align:center">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--red-bg);border:1px solid #f5c5c3;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="var(--red-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M3 4h10M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5"/><path d="M4 4l.5 9a1 1 0 001 1h5a1 1 0 001-1L12 4"/></svg>
+      </div>
       <div class="m-title" id="del-title">Hapus pelanggan?</div>
       <div class="m-sub">Data kunjungan dan reminder akan dihapus permanen.</div>
     </div>
+
+    <!-- PIN entry (when PIN set) -->
+    <div id="del-pin-wrap" style="padding:14px 22px 4px;display:none">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--ink2);line-height:1.55;display:flex;align-items:center;gap:8px">
+        <span style="font-size:14px">🔐</span>
+        <span>Aksi kritis — masukkan PIN admin 4 digit</span>
+      </div>
+      <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="del-pin-input" placeholder="••••" oninput="onDelPinInput(this)" onkeydown="if(event.key==='Enter')confirmDelete()" style="width:100%;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.5em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+      <div id="del-pin-error" style="display:none;font-size:11px;color:var(--red-dk);margin-top:6px;font-weight:600">PIN salah — coba lagi</div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:8px;text-align:center">Lupa PIN? <a href="getstarvio-settings.html#pin" style="color:var(--lime-dk);font-weight:600">Reset di Settings →</a></div>
+    </div>
+
+    <!-- No-PIN warning -->
+    <div id="del-no-pin-wrap" style="padding:14px 22px 4px;display:none">
+      <div style="background:#fff8ec;border:1px solid #f5d28a;border-radius:var(--r-sm);padding:10px 12px;font-size:11px;color:var(--amber-dk);line-height:1.55;display:flex;align-items:flex-start;gap:8px">
+        <span style="font-size:14px">⚠️</span>
+        <div>
+          <strong>PIN admin belum diatur.</strong> Untuk proteksi ekstra, setup PIN di
+          <a href="getstarvio-settings.html#pin" style="color:var(--amber-dk);font-weight:700">Settings →</a>
+        </div>
+      </div>
+    </div>
+
     <div class="mftr">
       <button class="btn btn-ghost btn-sm" onclick="closeDeleteModal()">Batal</button>
-      <button class="btn btn-danger btn-sm" onclick="confirmDelete()">Ya, hapus</button>
+      <button class="btn btn-danger btn-sm" id="del-confirm-btn" onclick="confirmDelete()">Ya, Hapus</button>
     </div>
   </div>
 </div>
@@ -1205,12 +1231,50 @@ function saveEditModal() {
   renderCards()
 }
 
-/* ── DELETE ── */
+/* ── DELETE ── PIN-gated kalau PIN sudah diatur */
 function deleteCustomer() {
   var cx = (U.customers || []).find(function(c) { return c.wa === _editWa })
   var name = cx ? cx.name : 'pelanggan ini'
   document.getElementById('del-title').textContent = 'Hapus ' + name + '?'
+
+  // PIN gate state — show PIN input kalau user punya PIN, warning kalau belum
+  var hasPin = !!(U && U.adminPin)
+  var pinWrap = document.getElementById('del-pin-wrap')
+  var noPinWrap = document.getElementById('del-no-pin-wrap')
+  var confirmBtn = document.getElementById('del-confirm-btn')
+  var pinInput = document.getElementById('del-pin-input')
+  var pinErr = document.getElementById('del-pin-error')
+
+  if (hasPin) {
+    pinWrap.style.display = 'block'
+    noPinWrap.style.display = 'none'
+    confirmBtn.disabled = true
+    confirmBtn.style.opacity = '.4'
+    confirmBtn.style.cursor = 'not-allowed'
+    pinInput.value = ''
+    pinErr.style.display = 'none'
+    setTimeout(function() { pinInput.focus() }, 100)
+  } else {
+    pinWrap.style.display = 'none'
+    noPinWrap.style.display = 'block'
+    confirmBtn.disabled = false
+    confirmBtn.style.opacity = ''
+    confirmBtn.style.cursor = ''
+  }
+
   document.getElementById('m-delete').classList.add('show')
+}
+
+function onDelPinInput(el) {
+  var v = el.value.replace(/\D/g, '').slice(0, 4)
+  if (el.value !== v) el.value = v
+  var confirmBtn = document.getElementById('del-confirm-btn')
+  var pinErr = document.getElementById('del-pin-error')
+  pinErr.style.display = 'none'
+  var canConfirm = v.length === 4
+  confirmBtn.disabled = !canConfirm
+  confirmBtn.style.opacity = canConfirm ? '' : '.4'
+  confirmBtn.style.cursor = canConfirm ? '' : 'not-allowed'
 }
 
 function closeDeleteModal() {
@@ -1218,11 +1282,36 @@ function closeDeleteModal() {
 }
 
 function confirmDelete() {
+  // PIN verification kalau PIN diatur
+  if (U && U.adminPin) {
+    var entered = (document.getElementById('del-pin-input').value || '').trim()
+    if (entered.length !== 4) return
+    if (entered !== U.adminPin) {
+      var pinErr = document.getElementById('del-pin-error')
+      pinErr.style.display = 'block'
+      var pinInput = document.getElementById('del-pin-input')
+      pinInput.value = ''
+      pinInput.focus()
+      // Shake animation
+      pinInput.style.transition = 'transform .05s'
+      var i = 0
+      var shake = setInterval(function() {
+        pinInput.style.transform = i % 2 === 0 ? 'translateX(-4px)' : 'translateX(4px)'
+        i++
+        if (i > 5) { clearInterval(shake); pinInput.style.transform = '' }
+      }, 50)
+      return
+    }
+  }
+
+  var cx = (U.customers || []).find(function(c) { return c.wa === _editWa })
+  var delName = cx ? cx.name : 'Pelanggan'
   U.customers = (U.customers || []).filter(function(c) { return c.wa !== _editWa })
   saveU(U)
   closeDeleteModal()
   closeEditModal()
   renderCards()
+  showToast('🗑️ Pelanggan "' + delName + '" dihapus')
 }
 
 /* ── ADD MODAL ── */
@@ -1654,6 +1743,23 @@ function exitImpersonate() {
   window.location.href = 'getstarvio-admin.html';
 }
 
+/* ══ TOAST ══ */
+function showToast(msg, kind) {
+  var wrap = document.getElementById('toast-wrap')
+  if (!wrap) {
+    wrap = document.createElement('div')
+    wrap.id = 'toast-wrap'
+    wrap.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none;align-items:center'
+    document.body.appendChild(wrap)
+  }
+  var t = document.createElement('div')
+  t.style.cssText = 'background:' + (kind === 'error' ? 'var(--red-dk)' : 'var(--ink)') + ';color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,.3);animation:fadeUp .3s ease;white-space:nowrap;transition:opacity .3s'
+  t.textContent = msg
+  wrap.appendChild(t)
+  setTimeout(function() { t.style.opacity = '0' }, 2400)
+  setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t) }, 2700)
+}
+
 /* ══ CUSTOM DIALOG SYSTEM — drop-in replacement for native prompt/confirm/alert ══ */
 function showDialog(opts) {
   opts = opts || {}
@@ -1678,7 +1784,7 @@ function showDialog(opts) {
     var ctaLinkHtml = opts.ctaLink ? '<a href="' + opts.ctaLink.href + '" class="btn btn-lime btn-sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:10px">' + opts.ctaLink.label + ' →</a>' : ''
     var el = document.createElement('div')
     el.id = 'util-dialog'
-    el.style.cssText = 'position:fixed;inset:0;background:rgba(26,25,23,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:600;padding:16px'
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(26,25,23,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:700;padding:16px'
     el.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);max-width:400px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:fadeUp .18s ease"><div style="padding:22px 24px 16px;text-align:center"><div style="width:48px;height:48px;border-radius:12px;background:' + iconBg + ';border:1px solid ' + iconBd + ';display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px">' + iconEmoji + '</div>' + (opts.title ? '<div style="font-size:16px;font-weight:700;color:var(--ink);line-height:1.3">' + opts.title + '</div>' : '') + (opts.message ? '<div style="font-size:13px;color:var(--ink3);margin-top:8px;line-height:1.6;white-space:pre-wrap;text-align:left">' + opts.message + '</div>' : '') + inputHtml + ctaLinkHtml + '</div><div style="padding:12px 24px 16px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border)">' + (showCancel ? '<button id="util-dlg-cancel" class="btn btn-ghost btn-sm">' + cancelLabel + '</button>' : '') + '<button id="util-dlg-ok" class="btn ' + okBtnClass + ' btn-sm">' + okLabel + '</button></div></div>'
     document.body.appendChild(el)
     function cleanup() { document.removeEventListener('keydown', onKey); el.remove() }
