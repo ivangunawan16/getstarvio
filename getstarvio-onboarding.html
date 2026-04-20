@@ -715,7 +715,7 @@ select.fi{cursor:pointer}
       </div>
 
       <div class="fg">
-        <div class="fl-row"><label class="fl">Nomor WhatsApp Owner</label><span class="badge-amber">Untuk notif billing</span></div>
+        <div class="fl-row"><label class="fl">Nomor WhatsApp Owner <span class="fl-req">*</span></label></div>
         <div class="cc-row">
           <select class="cc-sel" id="i-cc">
             <option value="62">🇮🇩 +62</option>
@@ -729,9 +729,8 @@ select.fi{cursor:pointer}
           </select>
           <input class="fi cc-input" id="i-owner-wa" type="tel" inputmode="numeric" placeholder="812 3456 7890" style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px">
         </div>
-        <div class="fi-hint">Format: ketik aja nomor (tanpa +, tanpa spasi, tanpa 0 di depan). Contoh: <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace">81234567890</code>
-        </div>
-        <div class="fi-hint">Notifikasi kredit habis, invoice, dan info penting dikirim ke nomor ini.</div>
+        <div class="fi-hint">💡 <strong>Boleh sama atau beda</strong> dengan nomor WA Business di Step 1. Notifikasi billing (kredit habis, invoice) dikirim ke nomor ini.</div>
+        <div class="fi-hint" style="margin-top:6px">Format: ketik aja nomor (tanpa <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace">+</code>, tanpa spasi, tanpa <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace">0</code> di depan). Contoh: <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace">81234567890</code></div>
         <div class="fi-error" id="wa-error">Minimum 9 digit setelah kode negara.</div>
       </div>
 
@@ -1323,15 +1322,34 @@ function skipTest() {
   if (wp) wp.style.opacity = '.5'
 }
 
-/* ── S2: PROFIL BISNIS ── */
+/* ── S2: PROFIL BISNIS ── validates bizName + ownerWa (both required) */
 function goS2Next() {
+  // Validate Nama Bisnis
   const bizName = document.getElementById('i-bizname').value.trim()
   if (!bizName) {
     document.getElementById('i-bizname').style.borderColor = 'var(--red)'
     document.getElementById('i-bizname').focus()
+    document.getElementById('i-bizname').scrollIntoView({behavior:'smooth', block:'center'})
+    showAlert('Nama bisnis wajib diisi.', { title: 'Field Wajib', kind: 'warn', icon: '🏢' })
     return
   }
   document.getElementById('i-bizname').style.borderColor = ''
+
+  // Validate Nomor WhatsApp Owner (required — notif billing dikirim ke sini)
+  const waInput = document.getElementById('i-owner-wa')
+  const waDigits = (waInput.value || '').replace(/\D/g, '')
+  const waError = document.getElementById('wa-error')
+  if (waDigits.length < 9) {
+    waInput.style.borderColor = 'var(--red)'
+    if (waError) waError.style.display = 'block'
+    waInput.focus()
+    waInput.scrollIntoView({behavior:'smooth', block:'center'})
+    showAlert('Nomor WhatsApp owner wajib diisi (minimum 9 digit). Boleh sama atau beda dengan nomor WA Business di Step 1.', { title: 'Nomor WA Owner Wajib', kind: 'warn', icon: '📱' })
+    return
+  }
+  waInput.style.borderColor = ''
+  if (waError) waError.style.display = 'none'
+
   go(3)
 }
 
