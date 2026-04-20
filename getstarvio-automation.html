@@ -116,10 +116,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .flow-name{font-size:13px;font-weight:700;color:var(--ink)}
 .flow-sub{font-size:11px;color:var(--ink3);margin-top:1px}
 .flow-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.flow-body{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
-.flow-card.open .flow-body{display:block}
-.msg-prev{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;font-size:12px;color:var(--ink2);line-height:1.7}
-.msg-var{color:var(--blue);font-weight:600;background:var(--blue-bg);padding:0 3px;border-radius:3px;font-size:11px}
 
 /* -- SECTION -- */
 .sec-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:7px}
@@ -138,10 +134,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* -- SELECT -- */
 select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9a92' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
-
-/* -- TEMPLATE HELP TEXT -- */
-.tpl-help{font-size:10px;color:var(--ink3);margin-top:5px;line-height:1.5}
-.tpl-help strong{color:var(--ink2);font-weight:600}
 
 /* -- TOAST -- */
 .toast-container{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;pointer-events:none;align-items:center}
@@ -260,6 +252,26 @@ body.imp-active{padding-top:36px}
   <div class="db-content">
     <div class="db-inner">
 
+      <!-- CREDIT STATUS — moved to top (most critical info) -->
+      <div class="credit-card" id="credit-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:16px">💳</span>
+            <span style="font-size:13px;font-weight:700;color:var(--ink)">Kredit Reminder</span>
+          </div>
+          <a href="getstarvio-billing.html" style="font-size:11px;font-weight:700;color:var(--lime-dk);text-decoration:none;background:var(--lime-bg);border:1px solid #c8f07a;padding:4px 10px;border-radius:99px">Top Up Kredit</a>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-top:8px">
+          <span style="font-size:28px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1" id="credit-left">0</span>
+          <span style="font-size:12px;color:var(--ink3)">/ <span id="credit-max">100</span> kredit</span>
+          <span class="badge" id="credit-badge" style="margin-left:auto">Healthy</span>
+        </div>
+        <div class="credit-bar">
+          <div class="credit-fill" id="credit-fill" style="width:0%"></div>
+        </div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.5">Pengingat menggunakan kredit subscription dulu, baru kredit top-up.</div>
+      </div>
+
       <!-- MASTER TOGGLE -->
       <div class="master-card">
         <div class="grid-bg"></div>
@@ -297,26 +309,6 @@ body.imp-active{padding-top:36px}
         </div>
       </div>
 
-      <!-- CREDIT STATUS -->
-      <div class="credit-card" id="credit-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-size:16px">💳</span>
-            <span style="font-size:13px;font-weight:700;color:var(--ink)">Kredit Reminder</span>
-          </div>
-          <a href="getstarvio-billing.html" style="font-size:11px;font-weight:700;color:var(--lime-dk);text-decoration:none;background:var(--lime-bg);border:1px solid #c8f07a;padding:4px 10px;border-radius:99px">Top Up Kredit</a>
-        </div>
-        <div style="display:flex;align-items:baseline;gap:6px;margin-top:8px">
-          <span style="font-size:28px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1" id="credit-left">0</span>
-          <span style="font-size:12px;color:var(--ink3)">/ <span id="credit-max">100</span> kredit</span>
-          <span class="badge" id="credit-badge" style="margin-left:auto">Healthy</span>
-        </div>
-        <div class="credit-bar">
-          <div class="credit-fill" id="credit-fill" style="width:0%"></div>
-        </div>
-        <div style="font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.5">Pengingat menggunakan kredit subscription dulu, baru kredit top-up.</div>
-      </div>
-
       <!-- PER KATEGORI -->
       <div class="sec-title" id="per-category" style="margin-top:6px;scroll-margin-top:80px">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
@@ -324,9 +316,9 @@ body.imp-active{padding-top:36px}
       </div>
       <div id="auto-flows"></div>
 
-      <!-- Hint about default interval — managed in Kategori page, not duplicated here -->
+      <!-- Hint — interval / template editing di Kategori (single source of truth) -->
       <div style="font-size:11px;color:var(--ink3);margin-top:8px;margin-bottom:18px;line-height:1.55;text-align:center;padding:10px 14px;background:var(--bg2);border:1px dashed var(--border2);border-radius:var(--r-sm)">
-        💡 Mau ubah <strong>default interval untuk kategori baru</strong>? Diatur di
+        💡 Mau ubah <strong>interval, template pesan, atau nama kategori</strong>? Diatur di
         <a href="getstarvio-kategori.html" style="color:var(--lime-dk);font-weight:700;text-decoration:none">Kategori →</a>
       </div>
 
@@ -448,23 +440,6 @@ var TEMPLATES = [
   {id:'aftercare_followup_5',label:'Aftercare #5 — tanya hasil', msg:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nKalau ada keluhan atau ingin booking sesi berikutnya, balas langsung di sini.'}
 ]
 
-function fmtDate(iso) {
-  if (!iso) return new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
-  var d = new Date(iso)
-  return d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
-}
-
-/* Render template with real data — replace {{1}}-{{4}} */
-function renderTemplate(msg, opts) {
-  opts = opts || {}
-  var bizName = (loadU()||{}).bizName || 'Bisnis Kamu'
-  return msg
-    .replace(/\{\{1\}\}/g, opts.name || 'Pelanggan')
-    .replace(/\{\{2\}\}/g, opts.service || 'Layanan')
-    .replace(/\{\{3\}\}/g, opts.date || fmtDate())
-    .replace(/\{\{4\}\}/g, opts.bizName || bizName)
-}
-
 /* == SHARED == */
 function loadU() {
   try {
@@ -565,11 +540,17 @@ function closeLogout() { document.getElementById('m-logout').classList.remove('s
 function toggleMaster() {
   var U = loadU()
   if (!U) return
-  var isOn = U.autoOn !== false
-  U.autoOn = !isOn
-  saveU(U)
-  renderMasterToggle(U)
-  renderFlows(U)
+  var wasOn = U.autoOn !== false
+  var willBe = !wasOn
+  requirePin(function() {
+    var u2 = loadU()
+    if (!u2) return
+    u2.autoOn = willBe
+    saveU(u2)
+    renderMasterToggle(u2)
+    renderFlows(u2)
+    showToast(willBe ? '✅ Automation diaktifkan' : '🛑 Automation dimatikan')
+  }, willBe ? 'Aktifkan Automation (kirim reminder WA otomatis)' : 'Matikan Automation (stop semua reminder)')
 }
 
 function renderMasterToggle(U) {
@@ -810,85 +791,26 @@ function toggleCat(catId) {
   var cats = U.cats || []
   var cat = cats.find(function(c){ return c.id === catId })
   if (!cat) return
-  cat.autoOff = !cat.autoOff
-  saveU(U)
-  renderFlows(U)
-}
-
-/* == CHANGE INTERVAL == */
-/* == PREVIEW TEMPLATE ON CHANGE (no save) — render {{1}}-{{4}} dengan data sample == */
-function previewCatTemplate(catId) {
-  var sel = document.getElementById('tpl-' + catId)
-  var tplId = sel.value
-  var tpl = TEMPLATES.find(function(t){ return t.id === tplId })
-  if (!tpl) return
-  var U = loadU()
-  var cat = (U.cats || []).find(function(c){ return c.id === catId })
-  var sampleCx = (U.customers || [])[0]
-  var sampleName = sampleCx ? sampleCx.name.split(' ')[0] : 'Anita'
-  var prev = document.getElementById('prev-' + catId)
-  if (!prev) return
-  var rendered = renderTemplate(tpl.msg, {
-    name: sampleName,
-    service: cat ? cat.name : 'Layanan',
-    date: fmtDate(),
-    bizName: U.bizName || 'Bisnis Kamu'
-  })
-  // Wrap variables yang sudah di-replace dengan span var styling — split by sample values
-  prev.innerHTML = rendered
-    .replace(new RegExp(escapeReg(sampleName), 'g'), '<span class="msg-var">' + sampleName + '</span>')
-    .replace(new RegExp(escapeReg(cat ? cat.name : 'Layanan'), 'g'), '<span class="msg-var">' + (cat ? cat.name : 'Layanan') + '</span>')
-    .replace(new RegExp(escapeReg(U.bizName || 'Bisnis Kamu'), 'g'), '<span class="msg-var">' + (U.bizName || 'Bisnis Kamu') + '</span>')
-    .replace(/\n/g, '<br>')
-}
-
-function escapeReg(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') }
-
-/* == SAVE FLOW CHANGES (interval + template) — PIN-gated == */
-function saveFlowChanges(catId) {
-  var U = loadU()
-  if (!U) return
-  var cat = (U.cats || []).find(function(c){ return c.id === catId })
-  if (!cat) return
-  var input = document.getElementById('interval-' + catId)
-  var newInterval = Math.max(1, Math.min(365, parseInt(input.value) || cat.interval))
-  var sel = document.getElementById('tpl-' + catId)
-  var newTplId = sel.value
-  var hasChange = (newInterval !== cat.interval) || (newTplId !== (cat.templateId || 'aftercare_followup_1'))
-  if (!hasChange) return  // no-op if nothing changed
-
-  // Skip PIN if nothing materially changed (template-review first-save allowed silently)
+  var willBeOff = !cat.autoOff
+  var action = willBeOff ? 'Matikan' : 'Aktifkan'
   requirePin(function() {
     var u2 = loadU()
     if (!u2) return
     var cat2 = (u2.cats || []).find(function(c){ return c.id === catId })
     if (!cat2) return
-    cat2.interval = newInterval
-    var tpl = TEMPLATES.find(function(t){ return t.id === newTplId })
-    if (tpl) {
-      cat2.templateId = newTplId
-      cat2.templateBody = tpl.msg
-    }
-    if (!u2.templatesReviewedAt) u2.templatesReviewedAt = new Date().toISOString()
+    cat2.autoOff = willBeOff
     saveU(u2)
-    var btn = document.getElementById('save-' + catId)
-    if (btn) { btn.textContent = '✓ Tersimpan'; setTimeout(function(){ btn.textContent = 'Simpan'; }, 1500) }
-    showToast('✅ Automation "' + (cat2.name || 'kategori') + '" disimpan')
-  }, 'Simpan perubahan automation: ' + (cat.name || 'kategori'))
+    renderFlows(u2)
+    showToast((willBeOff ? '🛑 ' : '✅ ') + 'Automation "' + (cat2.name || 'kategori') + '" ' + (willBeOff ? 'dimatikan' : 'diaktifkan'))
+  }, action + ' automation: ' + (cat.name || 'kategori'))
 }
 
-/* == EXPAND FLOW == */
-function toggleFlow(catId) {
-  var el = document.getElementById('fc-' + catId)
-  if (el) el.classList.toggle('open')
-}
-
-/* == RENDER FLOWS == */
+/* == RENDER FLOWS — simplified to name + count + per-cat toggle only ==
+   Interval/template/preview editing lives on Kategori page (single source of truth).
+   Automation page = switches only. */
 function renderFlows(U) {
   var cats = U.cats || []
   var cxs = U.customers || []
-  var biz = U.bizName || 'Bisnis Kamu'
-  var sample = cxs.length ? cxs[0].name.split(' ')[0] : 'Anita'
   var masterOn = U.autoOn !== false
   var el = document.getElementById('auto-flows')
 
@@ -910,61 +832,17 @@ function renderFlows(U) {
     var count = cxs.filter(function(c){
       return (c.services || []).some(function(s){ return s.name === cat.name })
     }).length
-    var tplId = cat.templateId || 'aftercare_followup_1'
-    var tplObj = TEMPLATES.find(function(t){ return t.id === tplId }) || TEMPLATES[0]
-    var msg = tplObj.msg
-    var rendered = renderTemplate(msg, {
-      name: sample,
-      service: cat.name || 'Layanan',
-      date: fmtDate(),
-      bizName: biz
-    })
-    var msgHtml = rendered
-      .replace(new RegExp(escapeReg(sample), 'g'), '<span class="msg-var">' + sample + '</span>')
-      .replace(new RegExp(escapeReg(cat.name || 'Layanan'), 'g'), '<span class="msg-var">' + (cat.name || 'Layanan') + '</span>')
-      .replace(new RegExp(escapeReg(biz), 'g'), '<span class="msg-var">' + biz + '</span>')
-      .replace(/\n/g, '<br>')
-
-    var tplOptions = TEMPLATES.map(function(t) {
-      var sel = t.id === tplId ? ' selected' : ''
-      return '<option value="' + t.id + '"' + sel + '>' + t.label + '</option>'
-    }).join('')
 
     return '<div class="flow-card' + (isOn ? ' on' : '') + '" id="fc-' + cat.id + '">' +
       '<div class="flow-head">' +
         '<div class="flow-icon">' + cat.icon + '</div>' +
-        '<div class="flow-info" onclick="toggleFlow(\'' + cat.id + '\')" style="cursor:pointer">' +
+        '<div class="flow-info">' +
           '<div class="flow-name">' + cat.name + '</div>' +
           '<div class="flow-sub">Interval <strong style="font-family:\'JetBrains Mono\',monospace;color:var(--ink2)">' + cat.interval + '</strong> hari · ' + count + ' pelanggan</div>' +
         '</div>' +
         '<div class="flow-actions">' +
           '<span class="badge ' + (isOn ? 'b-lime' : 'b-gray') + '" style="font-size:9px">' + (isOn ? 'Aktif' : 'Nonaktif') + '</span>' +
           '<div class="tog' + (isOn ? ' on' : '') + '" onclick="toggleCat(\'' + cat.id + '\')"></div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="flow-body">' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">' +
-          '<div>' +
-            '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Interval (hari)</div>' +
-            '<input type="number" id="interval-' + cat.id + '" value="' + cat.interval + '" min="1" max="365" class="fi" style="width:90px;font-size:14px;font-weight:700;font-family:\'JetBrains Mono\',monospace;text-align:center" oninput="previewCatTemplate(\'' + cat.id + '\')">' +
-          '</div>' +
-          '<div>' +
-            '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Template Pesan</div>' +
-            '<select id="tpl-' + cat.id + '" class="fi" onchange="previewCatTemplate(\'' + cat.id + '\')">' + tplOptions + '</select>' +
-            '<div class="tpl-help">5 variasi bahasa (formal → casual). Ganti kalau ga cocok dengan tone bisnismu — preview di bawah auto-update.</div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Preview Pesan WA</div>' +
-        '<div class="msg-prev" id="prev-' + cat.id + '">' + msgHtml + '</div>' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:12px">' +
-          '<div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">' +
-            '<span style="font-size:10px;font-weight:600;color:var(--ink3)">Variabel Meta:</span>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Nama customer">{{1}} nama</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Nama layanan">{{2}} layanan</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Tanggal kunjungan">{{3}} tanggal</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Nama bisnis">{{4}} bisnis</code>' +
-          '</div>' +
-          '<button id="save-' + cat.id + '" class="btn btn-lime btn-sm" onclick="saveFlowChanges(\'' + cat.id + '\')">Simpan</button>' +
         '</div>' +
       '</div>' +
     '</div>'

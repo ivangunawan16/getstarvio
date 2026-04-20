@@ -913,13 +913,16 @@ function renderSetupChecklist(U) {
   const qrCxCount = cxs.filter(function(c){ return c.via === 'qr' }).length
   const hasCats = (U.cats || []).length > 0
 
-  // Setup steps — urutan: brand identity (logo) → brand voice (template) → data → physical → security → go-live
+  // Setup steps — security-first: verify identity → PIN → rest
+  // Rationale: PIN-gated aksi di semua page (delete, edit, toggle) — tanpa PIN,
+  // user ga bisa edit apa-apa. Jadi security setup must come first.
   const steps = [
+    { id: 'verify',     done: !!U.ownerWaVerifiedAt,                         label: 'Verify WhatsApp Owner',        sub: 'OTP ke nomor WA owner — proof of identity (wajib sebelum PIN)', subDone: 'WA owner verified ✓' },
+    { id: 'pin',        done: !!U.adminPin,                                  label: 'Setup PIN Admin',              sub: 'Proteksi aksi kritis (hapus data, ubah jam, toggle automation)', subDone: 'PIN aktif ✓' },
     { id: 'logo',       done: !!U.bizLogo,                                   label: 'Upload logo bisnis',           sub: 'Tampil di halaman check-in pelanggan',                subDone: 'Logo siap ✓' },
     { id: 'templates',  done: !!U.templatesReviewedAt,                       label: 'Pilih template pengingat',     sub: 'Tentukan gaya pesan per kategori (formal, casual, dsb.)', subDone: 'Template sudah disesuaikan ✓' },
     { id: 'customers',  done: cxs.length > 0,                                label: 'Tambah pelanggan pertama',     sub: 'Manual atau import CSV — biar sistem punya data',     subDone: cxs.length + ' pelanggan terdaftar ✓' },
     { id: 'qr',         done: !!U.qrPosted || qrCxCount > 0,                 label: 'Pasang QR check-in',           sub: 'Print/share QR — pelanggan bisa daftar sendiri',      subDone: qrCxCount > 0 ? qrCxCount + ' pelanggan via QR ✓' : 'QR sudah dipasang ✓' },
-    { id: 'pin',        done: !!U.adminPin,                                  label: 'Setup PIN Admin',              sub: 'Proteksi aksi kritis (hapus data, ubah jam kirim)',   subDone: 'PIN aktif ✓' },
     { id: 'automation', done: !!U.automationEnabled,                         label: 'Aktifkan automation',          sub: 'Pengingat otomatis ke WhatsApp pelanggan',            subDone: 'Automation aktif ✓' }
   ]
   const TOTAL_STEPS = steps.length
@@ -978,8 +981,16 @@ function renderSetupStep(step, num, U, hasCats) {
       actionHtml = '<a class="setup-action" href="getstarvio-pelanggan.html?action=add">Tambah →</a>'
     } else if (step.id === 'qr') {
       actionHtml = '<a class="setup-action" href="getstarvio-settings.html#qr">Pasang QR →</a>'
+    } else if (step.id === 'verify') {
+      actionHtml = '<a class="setup-action lime" href="getstarvio-settings.html#wa">Verify WA →</a>'
     } else if (step.id === 'pin') {
-      actionHtml = '<a class="setup-action" href="getstarvio-settings.html#pin">Atur PIN →</a>'
+      // PIN locked until WA verified — show different CTA state
+      var waVerified = !!U.ownerWaVerifiedAt
+      if (waVerified) {
+        actionHtml = '<a class="setup-action lime" href="getstarvio-settings.html#pin">Atur PIN →</a>'
+      } else {
+        actionHtml = '<span class="setup-action" style="opacity:.5;cursor:not-allowed" title="Verify WA Owner dulu">🔒 Locked</span>'
+      }
     } else if (step.id === 'automation') {
       actionHtml = '<a class="setup-action" href="getstarvio-automation.html">Aktifkan →</a>'
     }

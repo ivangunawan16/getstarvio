@@ -886,6 +886,18 @@ body.imp-active{padding-top:36px}
             </ul>
           </div>
 
+          <!-- ── GATE: WA owner must be OTP-verified before PIN setup ── -->
+          <div id="pin-gate-wa" style="display:none">
+            <div style="background:#fff8ec;border:1.5px solid #f5d28a;border-radius:var(--r-sm);padding:14px 16px;margin-bottom:10px;font-size:12px;color:#8a5e00;line-height:1.6;display:flex;gap:12px;align-items:flex-start">
+              <div style="font-size:22px;flex-shrink:0">🔒</div>
+              <div>
+                <div style="font-weight:700;margin-bottom:4px">Verify WhatsApp owner dulu</div>
+                <div style="margin-bottom:10px">Nomor WA owner harus diverify via OTP sebelum setup PIN — biar identitas pemilik akun jelas (OTP = proof of phone ownership, PIN = proof of intent).</div>
+                <a href="#wa" onclick="setTimeout(function(){toggleAcc('acc-wa');var el=document.getElementById('inp-ownerWa');if(el)el.focus()},100)" class="btn btn-lime btn-sm" style="text-decoration:none">Verify WhatsApp →</a>
+              </div>
+            </div>
+          </div>
+
           <!-- ── STATE A: PIN belum diatur ── -->
           <div id="pin-setup-wrap">
             <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:5px;letter-spacing:.04em">PIN Baru (4 digit angka)</label>
@@ -1268,19 +1280,36 @@ function onPinInput(el, fieldId) {
 
 function renderPinAccordion(u) {
   var hasPin = !!(u && u.adminPin)
+  var waVerified = !!(u && u.ownerWaVerifiedAt)
   var setupWrap = document.getElementById('pin-setup-wrap')
   var changeWrap = document.getElementById('pin-change-wrap')
+  var gateWrap = document.getElementById('pin-gate-wa')
   var subLabel = document.getElementById('acc-pin-sub')
+
+  // If PIN already set — show change/remove UI regardless of verify state
   if (hasPin) {
     if (setupWrap) setupWrap.style.display = 'none'
     if (changeWrap) changeWrap.style.display = 'block'
+    if (gateWrap) gateWrap.style.display = 'none'
     if (subLabel) subLabel.textContent = 'Terpasang · ••••'
     var dateEl = document.getElementById('pin-set-date')
     if (dateEl && u.adminPinSetAt) {
       var d = new Date(u.adminPinSetAt)
       dateEl.textContent = 'Diatur pada ' + d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})
     }
+    return
+  }
+
+  // PIN not set — gate by OTP verification
+  if (!waVerified) {
+    // Show gate card, hide setup form
+    if (gateWrap) gateWrap.style.display = 'block'
+    if (setupWrap) setupWrap.style.display = 'none'
+    if (changeWrap) changeWrap.style.display = 'none'
+    if (subLabel) subLabel.textContent = 'Verify WA dulu'
   } else {
+    // Verified — show setup form
+    if (gateWrap) gateWrap.style.display = 'none'
     if (setupWrap) setupWrap.style.display = 'block'
     if (changeWrap) changeWrap.style.display = 'none'
     if (subLabel) subLabel.textContent = 'Belum diatur'
@@ -1290,6 +1319,12 @@ function renderPinAccordion(u) {
 function savePinSetup() {
   var u = loadU()
   if (!u) return
+  // Guard: require OTP-verified WA owner first
+  if (!u.ownerWaVerifiedAt) {
+    showToast('Verify WhatsApp owner dulu sebelum setup PIN', 'error')
+    renderPinAccordion(u)
+    return
+  }
   var pin = (document.getElementById('pin-new').value || '').trim()
   var confirm = (document.getElementById('pin-confirm').value || '').trim()
   var err = document.getElementById('pin-error')
@@ -1619,7 +1654,8 @@ function verifyOwnerWaOtp() {
   u.ownerWaOtpPending = null
   saveU(u)
   refreshOwnerWaVerifyUI()
-  showToast('Nomor WA owner terverifikasi!')
+  renderPinAccordion(u)  // Unlock PIN accordion (gate lifted)
+  showToast('Nomor WA owner terverifikasi! PIN Admin sekarang bisa di-setup.')
 }
 
 function resetOwnerWaVerify() {
@@ -1630,6 +1666,7 @@ function resetOwnerWaVerify() {
   u.ownerWaOtpPending = null
   saveU(u)
   refreshOwnerWaVerifyUI()
+  renderPinAccordion(u)  // Re-lock PIN accordion (if PIN not set)
 }
 
 function refreshOwnerWaVerifyUI() {
