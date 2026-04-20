@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>getstarvio — Pelanggan UMKM Balik Lagi, Otomatis via WhatsApp</title>
+<meta name="description" content="getstarvio bantu UMKM Indonesia kirim pengingat WhatsApp otomatis ke pelanggan. Pelanggan check-in sendiri pakai QR, sistem yang ingatkan mereka balik. Coba gratis, garansi 30 hari uang kembali.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+--border:#e2e1d9;--border2:#cccbc2;
+--ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;
+--lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+--amber:#f5a623;--red:#e8453c;
+--r:12px;--r-sm:8px;--r-lg:16px;
+}
+html{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-text-size-adjust:100%}
+body{font-family:'Sora',sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;overflow-x:hidden}
+.mono{font-family:'JetBrains Mono',monospace}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+
+/* Container */
+.container{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* ── Navbar ── */
+.navbar{position:sticky;top:0;z-index:100;background:rgba(247,246,242,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px}
+.navbar-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.15rem}
+.logo svg{width:28px;height:28px}
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none}
+.nav-links a{font-size:.9rem;font-weight:500;color:var(--ink2);transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 22px;border-radius:var(--r-sm);font-weight:600;font-size:.9rem;border:none;cursor:pointer;transition:background .2s,transform .1s}
+.btn:active{transform:scale(.97)}
+.btn-lime{background:var(--lime);color:var(--lime-dk)}
+.btn-lime:hover{background:var(--lime2)}
+.btn-outline{background:transparent;border:1.5px solid var(--border2);color:var(--ink)}
+.btn-outline:hover{border-color:var(--ink3)}
+.btn-lg{padding:14px 32px;font-size:1rem;border-radius:var(--r)}
+
+/* Hamburger */
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;transition:transform .3s,opacity .3s}
+.mobile-menu{display:none;position:fixed;inset:0;top:64px;background:var(--bg2);z-index:99;flex-direction:column;align-items:center;padding:48px 24px;gap:24px}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:1.1rem;font-weight:500;color:var(--ink2)}
+.mobile-menu .btn{width:100%;max-width:320px;text-align:center}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+}
+
+/* ── Hero ── */
+.hero{padding:80px 24px 64px;text-align:center;background:linear-gradient(180deg,var(--bg) 0%,var(--lime-bg) 100%)}
+.hero h1{font-size:clamp(2rem,5vw,3.25rem);font-weight:700;line-height:1.2;max-width:720px;margin:0 auto 20px}
+.hero p{font-size:clamp(1rem,2.5vw,1.2rem);color:var(--ink2);max-width:560px;margin:0 auto 32px;line-height:1.7}
+.hero .sub-cta{margin-top:12px;font-size:.85rem;color:var(--ink3)}
+
+/* ── Section base ── */
+.section{padding:80px 24px}
+.section-alt{background:var(--bg2)}
+.section-title{font-size:clamp(1.5rem,3.5vw,2.25rem);font-weight:700;text-align:center;margin-bottom:16px}
+.section-sub{text-align:center;color:var(--ink2);max-width:560px;margin:0 auto 48px;font-size:1rem}
+
+/* ── Pain Points ── */
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:960px;margin:0 auto}
+.pain-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:32px 28px;text-align:center}
+.pain-card .icon{font-size:2.5rem;margin-bottom:16px}
+.pain-card h3{font-size:1.05rem;font-weight:600;margin-bottom:8px}
+.pain-card p{font-size:.9rem;color:var(--ink2);line-height:1.6}
+@media(max-width:768px){.pain-grid{grid-template-columns:1fr}}
+
+/* ── Steps ── */
+.steps{display:flex;gap:32px;max-width:960px;margin:0 auto}
+.step{flex:1;text-align:center;position:relative}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:var(--lime);color:var(--lime-dk);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.4rem;margin-bottom:20px}
+.step h3{font-size:1.05rem;font-weight:600;margin-bottom:8px}
+.step p{font-size:.9rem;color:var(--ink2);line-height:1.6}
+.step-connector{display:none}
+@media(min-width:769px){
+  .step-connector{display:block;position:absolute;top:28px;left:calc(50% + 36px);width:calc(100% - 72px);height:2px;background:var(--border2)}
+  .step:last-child .step-connector{display:none}
+}
+@media(max-width:768px){.steps{flex-direction:column;gap:40px}}
+
+/* ── Features ── */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1040px;margin:0 auto}
+.feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:28px 24px}
+.feature-card .icon{font-size:2rem;margin-bottom:12px}
+.feature-card h3{font-size:1rem;font-weight:600;margin-bottom:6px}
+.feature-card p{font-size:.88rem;color:var(--ink2);line-height:1.6}
+@media(max-width:768px){.features-grid{grid-template-columns:1fr}}
+
+/* ── Pricing ── */
+.pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:720px;margin:0 auto}
+.price-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:36px 32px;display:flex;flex-direction:column}
+.price-card.highlight{border:2px solid var(--lime);position:relative}
+.price-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--lime);color:var(--lime-dk);font-size:.75rem;font-weight:700;padding:4px 16px;border-radius:20px;white-space:nowrap}
+.price-card h3{font-size:1.15rem;font-weight:700;margin-bottom:4px}
+.price-card .price{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;margin:12px 0 4px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.price-card .price-old{font-size:1.1rem;color:var(--ink3);text-decoration:line-through;font-weight:500}
+.price-card .price-sub{font-size:.85rem;color:var(--ink3);margin-bottom:20px}
+.price-card .price-hook{display:inline-block;background:var(--lime-bg);border:1.5px solid var(--lime2);color:var(--lime-dk);font-size:.95rem;font-weight:700;padding:8px 14px;border-radius:var(--r-sm);margin:0 0 20px;line-height:1.4}
+.price-card .price-hook .ic{margin-right:6px}
+.discount-tag{display:inline-block;background:var(--red);color:#fff;font-family:'Sora',sans-serif;font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.3px;vertical-align:middle;margin-left:4px}
+.guarantee-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 24px;max-width:840px;margin:32px auto 0;padding:18px 20px;background:var(--lime-bg);border:1px solid var(--lime2);border-radius:var(--r);text-align:center}
+.guarantee-strip .g-item{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--lime-dk);font-weight:600}
+.guarantee-strip .g-item span.ic{font-size:1.1rem}
+.price-card ul{list-style:none;margin-bottom:auto;padding-bottom:24px}
+.price-card li{font-size:.9rem;color:var(--ink2);padding:6px 0;padding-left:24px;position:relative}
+.price-card li::before{content:"✓";position:absolute;left:0;color:var(--lime2);font-weight:700}
+.price-card .btn{margin-top:auto;width:100%;text-align:center}
+.pricing-note{text-align:center;color:var(--ink3);font-size:.9rem;margin-top:24px}
+@media(max-width:600px){.pricing-grid{grid-template-columns:1fr}}
+
+/* ── Audience ── */
+.audience-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:640px;margin:0 auto 24px}
+.audience-tag{background:var(--lime-bg);color:var(--lime-dk);padding:8px 20px;border-radius:24px;font-size:.9rem;font-weight:500}
+.audience-sub{text-align:center;color:var(--ink2);font-size:.95rem;max-width:480px;margin:0 auto}
+
+/* ── Final CTA ── */
+.final-cta{padding:80px 24px;text-align:center;background:linear-gradient(180deg,var(--bg) 0%,var(--lime-bg) 100%)}
+.final-cta h2{font-size:clamp(1.5rem,3.5vw,2.25rem);font-weight:700;margin-bottom:12px}
+.final-cta p{color:var(--ink2);margin-bottom:32px;font-size:1rem}
+
+/* ── Hero Visual ── */
+.hero-inner{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;text-align:left;max-width:1120px;margin:0 auto;padding:0 24px}
+.hero-content{max-width:540px}
+.hero-content h1{margin:0 0 20px;text-align:left}
+.hero-content p{margin:0 0 28px;text-align:left}
+.hero-cta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hero-cta-row .btn{margin:0}
+.hero-demo-link{font-size:.92rem;color:var(--ink2);font-weight:500;text-decoration:underline;text-decoration-color:var(--ink3);text-underline-offset:3px}
+.hero-demo-link:hover{color:var(--ink)}
+.hero-content .sub-cta{text-align:left;margin-top:14px}
+.hero-visual{position:relative;display:flex;justify-content:center;align-items:center;min-height:420px}
+.phone-mock{width:280px;background:#1a1917;border-radius:36px;padding:14px;box-shadow:0 24px 60px rgba(0,0,0,.18),0 8px 20px rgba(0,0,0,.12);position:relative;flex-shrink:0}
+.phone-mock::before{content:'';position:absolute;top:18px;left:50%;transform:translateX(-50%);width:90px;height:18px;background:#000;border-radius:0 0 14px 14px;z-index:2}
+.phone-screen{background:#e5ddd5;border-radius:24px;padding:0 0 16px;min-height:440px;display:flex;flex-direction:column;overflow:hidden}
+.wa-header{background:#075e54;padding:32px 14px 12px;display:flex;align-items:center;gap:10px;color:#fff}
+.wa-avatar{width:34px;height:34px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--lime-dk);flex-shrink:0}
+.wa-name{font-size:13px;font-weight:600;line-height:1.2}
+.wa-online{font-size:10px;opacity:.75}
+.wa-body{padding:14px 12px;display:flex;flex-direction:column;gap:8px;flex:1}
+.wa-bubble{background:#fff;border-radius:9px;padding:9px 11px 6px;max-width:88%;align-self:flex-start;box-shadow:0 1px 1px rgba(0,0,0,.07);font-size:11.5px;line-height:1.55;color:#1a1917}
+.wa-bubble.out{background:#dcf8c6;align-self:flex-end}
+.wa-bubble .wa-time{font-size:9px;color:#999;text-align:right;margin-top:3px;display:flex;align-items:center;justify-content:flex-end;gap:3px}
+.wa-bubble strong{font-weight:600}
+.hero-mockup-tag{position:absolute;background:var(--lime);color:var(--lime-dk);font-size:.72rem;font-weight:700;padding:7px 13px;border-radius:99px;box-shadow:0 6px 16px rgba(0,0,0,.12);transform:rotate(-4deg);white-space:nowrap}
+.hero-mockup-tag.t1{top:36px;left:-22px}
+.hero-mockup-tag.t2{bottom:80px;right:-26px;background:#fff;color:var(--ink);border:1.5px solid var(--lime2);transform:rotate(3deg)}
+@media(max-width:860px){
+  .hero-inner{grid-template-columns:1fr;text-align:center;gap:36px}
+  .hero-content{margin:0 auto}
+  .hero-content h1,.hero-content p,.hero-content .sub-cta{text-align:center}
+  .hero-cta-row{justify-content:center}
+  .hero-visual{min-height:auto;overflow:visible}
+  .phone-mock{width:240px}
+  /* Tags sekarang OVERLAP MASUK ke phone edge (positive offset), bukan keluar.
+     Ini biar ga pernah ke-clip sama body overflow-x:hidden di narrow viewport. */
+  .hero-mockup-tag.t1{top:50px;left:12px;transform:rotate(-5deg)}
+  .hero-mockup-tag.t2{bottom:60px;right:12px;transform:rotate(4deg)}
+}
+@media(max-width:480px){
+  .hero-mockup-tag{font-size:.66rem;padding:6px 10px}
+  .hero-mockup-tag.t1{top:40px;left:8px}
+  .hero-mockup-tag.t2{bottom:50px;right:8px}
+}
+
+/* ── Social Proof / Testimonials ── */
+.proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:980px;margin:0 auto}
+.proof-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px 22px;display:flex;flex-direction:column;gap:14px}
+.proof-quote{font-size:.95rem;color:var(--ink);line-height:1.6;flex:1}
+.proof-quote::before{content:'"';font-family:Georgia,serif;font-size:2.5rem;line-height:0;color:var(--lime2);vertical-align:-0.35em;margin-right:4px}
+.proof-author{display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--border)}
+.proof-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0}
+.proof-name{font-size:.88rem;font-weight:700;color:var(--ink);line-height:1.3}
+.proof-biz{font-size:.78rem;color:var(--ink3)}
+@media(max-width:768px){.proof-grid{grid-template-columns:1fr}}
+
+/* ── Pricing enhancements ── */
+.price-card.highlight{transform:scale(1.03);box-shadow:0 12px 32px rgba(184,240,74,.18),0 4px 12px rgba(0,0,0,.06)}
+.price-card.highlight h3{color:var(--lime-dk)}
+.price-roi{background:var(--lime-bg);border:1px solid var(--lime2);border-radius:var(--r-sm);padding:10px 14px;font-size:.85rem;color:var(--lime-dk);line-height:1.55;margin:0 0 16px;font-weight:500}
+.price-roi strong{font-weight:700}
+@media(max-width:600px){.price-card.highlight{transform:none}}
+
+/* ── Pain → Solution bridge ── */
+.pain-bridge{text-align:center;font-size:1.05rem;color:var(--ink2);max-width:560px;margin:36px auto 0;font-weight:500;line-height:1.6}
+.pain-bridge strong{color:var(--ink);font-weight:700}
+
+/* ── Scroll to Top button ── */
+.scroll-top{
+  position:fixed;right:20px;bottom:20px;z-index:90;
+  width:44px;height:44px;border-radius:50%;
+  background:var(--lime);color:var(--lime-dk);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 20px rgba(0,0,0,.18),0 2px 6px rgba(0,0,0,.1);
+  opacity:0;pointer-events:none;transform:translateY(8px);
+  transition:opacity .25s,transform .25s,background .15s;
+}
+.scroll-top.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+.scroll-top:hover{background:var(--lime2)}
+.scroll-top:active{transform:scale(.92)}
+.scroll-top svg{width:20px;height:20px}
+@media(max-width:600px){
+  .scroll-top{right:14px;bottom:14px;width:42px;height:42px}
+}
+
+/* ── Footer ── */
+.footer{background:var(--ink);color:#cccbc2;padding:48px 24px}
+.footer-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.footer .logo{color:#fff;margin-bottom:16px}
+.footer .logo svg .star-fill{fill:#b8f04a}
+.footer-info p{font-size:.88rem;line-height:1.8;color:#9b9a92}
+.footer-links{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.footer-links a{font-size:.88rem;color:#9b9a92;transition:color .2s}
+.footer-links a:hover{color:#fff}
+.footer-bottom{max-width:1120px;margin:24px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:.8rem;color:#5c5b55;text-align:center}
+@media(max-width:600px){
+  .footer-inner{grid-template-columns:1fr}
+  .footer-links{align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="star-fill" d="M14 2l3.09 6.26L24 9.27l-5 4.87 1.18 6.88L14 17.77l-6.18 3.25L9 14.14l-5-4.87 6.91-1.01L14 2z" fill="#b8f04a" stroke="#2d4a00" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+      getstarvio
+    </a>
+    <ul class="nav-links">
+      <li><a href="#cara-kerja">Cara Kerja</a></li>
+      <li><a href="#fitur">Fitur</a></li>
+      <li><a href="#harga">Harga</a></li>
+      <li><a href="#kontak">Kontak</a></li>
+      <li><a href="#daftar" class="btn btn-lime">Coba Gratis 14 Hari</a></li>
+    </ul>
+    <button class="hamburger" aria-label="Menu" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#cara-kerja" onclick="closeMenu()">Cara Kerja</a>
+  <a href="#fitur" onclick="closeMenu()">Fitur</a>
+  <a href="#harga" onclick="closeMenu()">Harga</a>
+  <a href="#kontak" onclick="closeMenu()">Kontak</a>
+  <a href="#daftar" class="btn btn-lime" onclick="closeMenu()">Coba Gratis 14 Hari</a>
+</div>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <h1>Pelanggan Jarang Balik?<br>Mereka Cuma Lupa Kapan Waktunya.</h1>
+      <p>getstarvio ingetin setiap pelanggan via WhatsApp — facial tiap 4 minggu, smoothing tiap 3 bulan, potong rambut tiap 6 minggu. Semua otomatis tanpa kamu perlu chat satu per satu.</p>
+      <div class="hero-cta-row">
+        <a href="getstarvio-login.html" class="btn btn-lime btn-lg">Coba Gratis 14 Hari</a>
+        <a href="getstarvio-seed-data.html?auto=1&next=dashboard" class="hero-demo-link">Lihat dashboard demo →</a>
+      </div>
+      <p class="sub-cta">🎁 100 kredit gratis · 💳 Tanpa kartu kredit · 🛡️ Garansi 30 hari</p>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-mockup-tag t1">📲 Otomatis terkirim</div>
+      <div class="phone-mock">
+        <div class="phone-screen">
+          <div class="wa-header">
+            <div class="wa-avatar">SW</div>
+            <div>
+              <div class="wa-name">Salon Wangi</div>
+              <div class="wa-online">online</div>
+            </div>
+          </div>
+          <div class="wa-body">
+            <div class="wa-bubble">
+              Halo <strong>Mia</strong>,<br><br>
+              Gimana hasil <strong>Facial</strong> kamu tanggal <strong>1 April</strong> di Salon Wangi? Semoga cocok ya!<br><br>
+              Untuk menjaga hasilnya, sekarang pas waktunya untuk perawatan lanjutan.<br><br>
+              Kalau ada keluhan atau pertanyaan, balas aja langsung di sini.
+              <div class="wa-time">09:00 ✓✓</div>
+            </div>
+            <div class="wa-bubble out">
+              Hasilnya bagus banget kak! Mau booking lagi dong minggu depan 🙏
+              <div class="wa-time">09:14 ✓✓</div>
+            </div>
+            <div class="wa-bubble">
+              Senang dengernya! Slot Sabtu jam 11.00 masih ada — booking ya?
+              <div class="wa-time">09:15 ✓✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-mockup-tag t2">+1 pelanggan balik 🎉</div>
+    </div>
+  </div>
+</section>
+
+<!-- Pain Points -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">Kenapa Pelanggan Tidak Balik Lagi?</h2>
+    <p class="section-sub">3 masalah yang setiap hari bikin UMKM kehilangan pelanggan — dan semuanya bisa diselesaikan otomatis.</p>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="icon">😵</div>
+        <h3>Staff lupa follow-up pelanggan</h3>
+        <p>Kerjaan numpuk, akhirnya pelanggan tidak pernah di-chat. Mereka pelan-pelan lupa, lalu pindah ke tempat lain.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">⏰</div>
+        <h3>Chat manual buang banyak waktu</h3>
+        <p>100 pelanggan = 100 chat copy-paste. Sering salah nama, salah nomor, atau malah kirim ke pelanggan yang baru saja datang kemarin.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">💸</div>
+        <h3>Pelanggan hilang = uang hilang</h3>
+        <p>Cukup diingatkan sekali, banyak yang mau balik. Tapi kalau tidak ada yang ingatkan, pendapatan ikut hilang diam-diam.</p>
+      </div>
+    </div>
+    <p class="pain-bridge">Kabar baik: <strong>semua ini bisa di-solve dalam 5 menit setup.</strong> Berikut cara kerjanya ↓</p>
+  </div>
+</section>
+
+<!-- Cara Kerja -->
+<section class="section" id="cara-kerja">
+  <div class="container">
+    <h2 class="section-title">Simpel. Pelanggan Check-in Sendiri.</h2>
+    <p class="section-sub">Tanpa setup rumit. Pelanggan scan QR pas datang, sistem yang kerja sisanya.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-connector"></div>
+        <div class="step-num">1</div>
+        <h3>Pelanggan Scan QR Sendiri</h3>
+        <p>Pelanggan scan QR pas datang — kunjungan otomatis tercatat tanpa input manual. Staff bisa catat manual juga kalau perlu.</p>
+      </div>
+      <div class="step">
+        <div class="step-connector"></div>
+        <div class="step-num">2</div>
+        <h3>Sistem Hitung Otomatis</h3>
+        <p>getstarvio pantau interval tiap layanan. Facial 30 hari, potong rambut 21 hari, servis motor 60 hari, dst.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Pengingat WhatsApp Terkirim</h3>
+        <p>Pas waktunya tiba, pengingat WhatsApp otomatis dikirim. Pelanggan tinggal balas, langsung booking lagi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Social Proof / Early Tester Voices -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">Apa Kata Owner yang Sudah Pakai</h2>
+    <p class="section-sub">Beta tester awal dari berbagai bisnis jasa di Indonesia.</p>
+    <div class="proof-grid">
+      <div class="proof-card">
+        <div class="proof-quote">Setup-nya 5 menit, langsung jalan. Pelanggan yang udah lama ga datang mulai balik tanpa kita kontak satu-satu. Hemat banget waktu.</div>
+        <div class="proof-author">
+          <div class="proof-avatar" style="background:linear-gradient(135deg,#fde8e7,#f5c5c3);color:#7a1a16">SR</div>
+          <div>
+            <div class="proof-name">Sarah Rahmadani</div>
+            <div class="proof-biz">Owner · Salon Wangi, Jakarta</div>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-quote">Bulan pertama udah 12 pelanggan balik karena pengingat. Subscription Rp 249rb kebayar dari 1 customer aja. Worth banget.</div>
+        <div class="proof-author">
+          <div class="proof-avatar" style="background:linear-gradient(135deg,#edfac8,#c8f07a);color:#2d4a00">AP</div>
+          <div>
+            <div class="proof-name">Andi Pratama</div>
+            <div class="proof-biz">Owner · Barbershop Raka, Bandung</div>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-quote">QR di kasir + pengingat WA = pelanggan jadi self-service. Saya ga perlu pantau lagi siapa yang udah lama ga datang.</div>
+        <div class="proof-author">
+          <div class="proof-avatar" style="background:linear-gradient(135deg,#eff4ff,#bfcff8);color:#1e3a8a">MK</div>
+          <div>
+            <div class="proof-name">Maya Kartika</div>
+            <div class="proof-biz">Owner · Klinik Lavender, Surabaya</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Fitur -->
+<section class="section section-alt" id="fitur">
+  <div class="container">
+    <h2 class="section-title">Semua yang UMKM Anda Butuhkan</h2>
+    <p class="section-sub">Fitur lengkap untuk bawa pelanggan balik tanpa repot.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">📱</div>
+        <h3>QR Check-in Mandiri</h3>
+        <p>Pelanggan scan QR saat datang, kunjungan langsung tercatat. Staff tidak terganggu.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">💬</div>
+        <h3>Pengingat WhatsApp Otomatis</h3>
+        <p>Pesan pengingat terkirim sendiri di waktu yang tepat. Tidak ada lagi chat manual.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">✂️</div>
+        <h3>Multi-Layanan</h3>
+        <p>Setel interval berbeda per layanan — potong rambut 21 hari, facial 30 hari, dst.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📊</div>
+        <h3>Dashboard Pelanggan</h3>
+        <p>Lihat siapa yang aktif, mendekati jadwal, atau sudah lama tidak berkunjung.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">⚡</div>
+        <h3>Catat Manual (Opsional)</h3>
+        <p>Kalau pelanggan tidak scan QR, staff bisa catat manual dalam 10 detik.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📈</div>
+        <h3>Laporan &amp; Insight</h3>
+        <p>Tahu berapa pelanggan yang balik karena pengingat. Ukur dampak ke pendapatan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Harga -->
+<section class="section" id="harga">
+  <div class="container">
+    <h2 class="section-title">Coba Dulu Gratis. Suka? Hemat 50% Early Access.</h2>
+    <p class="section-sub">100 kredit gratis tanpa kartu kredit. Kalau cocok, upgrade dengan harga Early Access (terbatas untuk 100 bisnis pertama).</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Free Trial</h3>
+        <div class="price mono">Rp 0</div>
+        <div class="price-hook"><span class="ic">🎁</span>100 KREDIT GRATIS — coba 14 hari</div>
+        <ul>
+          <li><strong>14 hari</strong> ATAU <strong>100 kredit</strong> (mana duluan)</li>
+          <li>1 kredit = 1 pengingat WhatsApp terkirim</li>
+          <li>Semua fitur tersedia (tidak ada yang dikunci)</li>
+          <li>Tidak perlu kartu kredit</li>
+          <li>Welcome bonus tetap tersimpan setelah subscribe</li>
+        </ul>
+        <a href="#daftar" class="btn btn-outline">Coba Gratis 14 Hari</a>
+      </div>
+      <div class="price-card highlight">
+        <div class="price-badge">⭐ Paling Banyak Dipilih</div>
+        <h3>Berlangganan</h3>
+        <div class="price mono"><span class="price-old">Rp 499.000</span> Rp 249.000<span class="discount-tag">-50%</span></div>
+        <div class="price-sub">per bulan — sudah termasuk 300 kredit</div>
+        <div class="price-roi">💡 ≈ <strong>Rp 8.300/hari.</strong><br>1 pelanggan balik karena pengingat = <strong>subscription 1 bulan kebayar.</strong></div>
+        <ul>
+          <li><strong>300 kredit setiap bulan</strong> (kirim 300 pengingat)</li>
+          <li>Garansi 30 hari uang kembali — coba tanpa risiko</li>
+          <li>Priority WhatsApp support</li>
+          <li>Top-up kapan saja kalau kredit habis</li>
+        </ul>
+        <a href="#daftar" class="btn btn-lime">Subscribe — 300 Kredit/Bulan</a>
+      </div>
+    </div>
+    <div class="guarantee-strip">
+      <div class="g-item"><span class="ic">🎁</span> 100 kredit gratis</div>
+      <div class="g-item"><span class="ic">⏱️</span> Trial 14 hari</div>
+      <div class="g-item"><span class="ic">💳</span> Tanpa kartu kredit</div>
+      <div class="g-item"><span class="ic">🛡️</span> Garansi 30 hari uang kembali</div>
+      <div class="g-item"><span class="ic">🔓</span> Bisa berhenti kapan saja</div>
+    </div>
+  </div>
+</section>
+
+<!-- Cocok Untuk -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">Dibuat untuk Bisnis Jasa Indonesia</h2>
+    <div style="height:32px"></div>
+    <div class="audience-tags">
+      <span class="audience-tag">💇 Salon</span>
+      <span class="audience-tag">💆 Spa</span>
+      <span class="audience-tag">💈 Barbershop</span>
+      <span class="audience-tag">✨ Klinik Kecantikan</span>
+      <span class="audience-tag">💅 Nail Studio</span>
+      <span class="audience-tag">🔧 Bengkel</span>
+      <span class="audience-tag">🐾 Pet Grooming</span>
+      <span class="audience-tag">👔 Laundry</span>
+    </div>
+    <p class="audience-sub">Bisnis apapun yang punya pelanggan berulang dan butuh mereka balik tepat waktu.</p>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final-cta" id="daftar">
+  <h2>Biar Sistem yang Inget — Bukan Kamu.</h2>
+  <p>14 hari gratis, 100 kredit langsung di akun. Setup 5 menit, tanpa kartu kredit.<br>Suka? Lanjut dengan harga Early Access 50% off — garansi uang kembali 30 hari.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center">
+    <a href="getstarvio-login.html" class="btn btn-lime btn-lg">Coba Gratis 14 Hari</a>
+    <a href="getstarvio-seed-data.html?auto=1&next=dashboard" class="hero-demo-link">Lihat dashboard demo →</a>
+  </div>
+  <p class="sub-cta" style="margin-top:16px;font-size:.85rem;color:var(--ink3)">🛡️ 30 hari uang kembali · 🎁 100 kredit gratis · 💳 Tanpa kartu kredit</p>
+</section>
+
+<!-- Footer -->
+<footer class="footer" id="kontak">
+  <div class="footer-inner">
+    <div>
+      <div class="logo">
+        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="star-fill" d="M14 2l3.09 6.26L24 9.27l-5 4.87 1.18 6.88L14 17.77l-6.18 3.25L9 14.14l-5-4.87 6.91-1.01L14 2z" fill="#b8f04a" stroke="#2d4a00" stroke-width="1.2" stroke-linejoin="round"/>
+        </svg>
+        getstarvio
+      </div>
+      <div class="footer-info">
+        <p><strong>getstarvio</strong></p>
+        <p style="font-size:.78rem;color:#7a7972;margin-bottom:4px">Layanan dari PT Cakra Digital Indonesia</p>
+        <p>Jl. Raya Kelapa Puan Blok AD14 No. 16 & 17<br>Kel. Pakulonan Barat, Kec. Kelapa Dua<br>Kab. Tangerang, Banten 15810, Indonesia</p>
+        <p>Email: hello@getstarvio.com</p>
+        <p>WhatsApp: 0823-1011-0199</p>
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Service</a>
+      <a href="/data-deletion.html">Data Deletion</a>
+      <a href="mailto:hello@getstarvio.com">hello@getstarvio.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2026 getstarvio. All rights reserved.
+  </div>
+</footer>
+
+<!-- Scroll to Top button -->
+<button class="scroll-top" id="scrollTop" onclick="scrollToTop()" aria-label="Kembali ke atas" title="Kembali ke atas">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg>
+</button>
+
+<script>
+function scrollToTop(){
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+window.addEventListener('scroll', function(){
+  var btn = document.getElementById('scrollTop')
+  if (!btn) return
+  if (window.pageYOffset > 400) btn.classList.add('show')
+  else btn.classList.remove('show')
+}, { passive: true })
+
+function toggleMenu(){
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMenu(){
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+/* Anchor scroll handler — explicit fallback karena beberapa embed/preview context
+   ga handle native :target scroll consistently. Offset 80px biar section title
+   ga ketutup sticky navbar. */
+document.addEventListener('click', function(e) {
+  var a = e.target.closest('a[href^="#"]')
+  if (!a) return
+  var href = a.getAttribute('href')
+  if (href === '#' || href.length < 2) return
+  var target = document.querySelector(href)
+  if (!target) return
+  e.preventDefault()
+  var navH = document.querySelector('.navbar')
+  var offset = (navH ? navH.offsetHeight : 64) + 16
+  var top = target.getBoundingClientRect().top + window.pageYOffset - offset
+  window.scrollTo({ top: top, behavior: 'smooth' })
+  // Update URL hash tanpa trigger default scroll jump
+  history.pushState(null, '', href)
+})
+</script>
+</body>
+</html>

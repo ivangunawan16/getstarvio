@@ -97,9 +97,46 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .filter-tab.active{background:var(--lime-bg);border-color:var(--lime2);color:var(--lime-dk)}
 .filter-tab .ft-count{font-size:10px;font-weight:800;background:rgba(0,0,0,.06);padding:1px 6px;border-radius:99px;min-width:18px;text-align:center}
 .filter-tab.active .ft-count{background:rgba(45,74,0,.1)}
-.date-chip{padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);transition:all .15s;user-select:none}
+.date-chip{padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);transition:all .15s;user-select:none;display:inline-flex;align-items:center;gap:5px}
 .date-chip:hover{background:var(--bg3)}
 .date-chip.active{background:var(--ink);border-color:var(--ink);color:#fff}
+/* Custom date range picker popover */
+.date-custom-wrap{position:relative;display:inline-block}
+.date-pop{position:absolute;top:calc(100% + 6px);right:0;z-index:20;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.12);display:none;min-width:240px;animation:fadeUp .15s ease}
+.date-pop.open{display:block}
+.date-pop-row{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.date-pop-row label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
+.date-pop-row input[type=date]{padding:7px 10px;border:1.5px solid var(--border2);border-radius:var(--r-sm);font-family:inherit;font-size:12px;color:var(--ink);outline:none;background:#fff}
+.date-pop-row input[type=date]:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.12)}
+.date-pop-foot{display:flex;gap:6px;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+.date-pop-err{font-size:10px;color:var(--red-dk);margin-top:4px;display:none}
+.date-pop-err.show{display:block}
+.search-input{
+  width:200px;padding:7px 12px;border-radius:var(--r-sm);
+  background:var(--bg2);border:1.5px solid var(--border2);
+  color:var(--ink);font-size:12px;font-family:inherit;outline:none;transition:all .15s;
+}
+.search-input:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.12)}
+.search-input::placeholder{color:var(--ink4)}
+.bulk-retry-bar{
+  display:none;align-items:center;justify-content:space-between;gap:10px;
+  background:#fff7f6;border:1px solid #f5c5c3;border-radius:var(--r-sm);
+  padding:10px 14px;margin-bottom:12px;flex-wrap:wrap;
+}
+.bulk-retry-bar .br-text{font-size:12px;color:var(--red-dk);font-weight:600}
+.bulk-retry-bar .br-btn{
+  padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:700;
+  background:var(--bg2);color:var(--red-dk);border:1.5px solid var(--red-dk);
+  cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.bulk-retry-bar .br-btn:hover{background:var(--red-bg)}
+.toast-container{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;pointer-events:none;align-items:center}
+.toast{
+  background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;
+  font-size:13px;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,.3);
+  animation:fadeUp .3s ease;white-space:nowrap;transition:opacity .3s;
+}
+.toast-err{background:var(--red-dk)}
 
 /* ── TABLE ── */
 .table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
@@ -141,11 +178,32 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
 .sidebar-overlay.open{display:block}
 
+/* ── TRIAL SOFT LOCK ── */
+.trial-soft-banner{
+  background:var(--red-dk);color:#fff;padding:11px 16px;text-align:center;
+  font-size:13px;font-weight:600;border-radius:var(--r-sm);margin-bottom:14px;line-height:1.55;
+}
+.trial-soft-banner a{color:var(--lime);text-decoration:underline;font-weight:700}
+body.trial-soft-locked .db-content .retry-btn,
+body.trial-soft-locked .db-content .br-btn,
+body.trial-soft-locked .db-content .bulk-retry-bar{
+  opacity:.4;pointer-events:none;cursor:not-allowed;
+}
+
 /* ── LOG CARD (mobile) ── */
 .log-card{display:none}
 
 /* ── MOBILE ── */
+@media(max-width:520px){
+  .tb-export-log-label{display:none}
+  .tb-export-log{padding:6px 10px}
+}
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -154,6 +212,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   .filter-bar{gap:6px}
   .filter-bar{flex-direction:column;align-items:stretch}
   .filter-bar > div:last-child{margin-left:0;justify-content:flex-start}
+  .search-input{width:100%}
 
   /* Hide table, show cards on mobile */
   .table-wrap .tbl{display:none}
@@ -185,9 +244,31 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   .s-reset::after{content:'↺';font-size:14px}
 }
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ── IMPERSONATION BANNER (admin logged in as user) ── */
+.imp-banner{position:fixed;top:0;left:0;right:0;z-index:300;background:repeating-linear-gradient(45deg,#e8453c,#e8453c 12px,#c43e37 12px,#c43e37 24px);color:#fff;padding:8px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(232,69,60,.3)}
+.imp-banner.show{display:flex}
+.imp-banner-info{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.imp-banner-info strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp-banner-exit{padding:5px 14px;background:#fff;color:#7a1a16;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;font-size:11px;white-space:nowrap}
+.imp-banner-exit:hover{background:#fdf1f0}
+body.imp-active{padding-top:36px}
+@media(max-width:600px){
+  .imp-banner{font-size:11px;padding:7px 12px}
+  .imp-banner-info strong{font-size:11px}
+  body.imp-active{padding-top:44px}
+}
 </style>
 </head>
 <body>
+<!-- Impersonation banner (admin mode) -->
+<div class="imp-banner" id="impBanner">
+  <div class="imp-banner-info">
+    <span>🎭</span>
+    <span>Impersonating: <strong id="impBizName">—</strong></span>
+  </div>
+  <button class="imp-banner-exit" onclick="exitImpersonate()">Exit Impersonate &rarr;</button>
+</div>
 <div class="shell">
 
 <!-- SIDEBAR OVERLAY (mobile) -->
@@ -205,7 +286,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
     <a id="nav-catat"      href="getstarvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
     <a id="nav-pelanggan"  href="getstarvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
     <a id="nav-automation" href="getstarvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item active"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item active"><span class="nav-icon">📜</span><span>Log Pengingat</span></a>
     <a id="nav-kategori"   href="getstarvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
     <a id="nav-billing"    href="getstarvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
     <a id="nav-settings"   href="getstarvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
@@ -234,12 +315,12 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
       <button class="hamburger-btn" onclick="openSidebar()">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
       </button>
-      <span class="tb-title">Log Reminder</span>
+      <span class="tb-title">Log Pengingat</span>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
-      <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+      <button class="btn btn-ghost btn-sm tb-export-log" onclick="exportCSV()" data-always title="Export CSV">
         <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 10v3h10v-3"/><path d="M8 2v8M5 7l3 3 3-3"/></svg>
-        Export CSV
+        <span class="tb-export-log-label">Export CSV</span>
       </button>
     </div>
   </div>
@@ -273,11 +354,39 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
         <div class="filter-tab" data-filter="gagal" onclick="setStatusFilter(this,'gagal')">Gagal <span class="ft-count" id="fc-fail">0</span></div>
         <div class="filter-tab" data-filter="pending" onclick="setStatusFilter(this,'pending')">Pending <span class="ft-count" id="fc-pending">0</span></div>
 
-        <div style="margin-left:auto;display:flex;gap:6px">
-          <div class="date-chip active" onclick="setDateRange(this,'week')">Minggu Ini</div>
-          <div class="date-chip" onclick="setDateRange(this,'month')">Bulan Ini</div>
-          <div class="date-chip" onclick="setDateRange(this,'all')">Semua</div>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <div class="date-chip active" data-range="week" onclick="setDateRange(this,'week')">Minggu Ini</div>
+          <div class="date-chip" data-range="month" onclick="setDateRange(this,'month')">Bulan Ini</div>
+          <div class="date-chip" data-range="all" onclick="setDateRange(this,'all')">Semua</div>
+          <div class="date-custom-wrap">
+            <div class="date-chip" id="date-chip-custom" data-range="custom" onclick="toggleDatePop(event)">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6h12M6 1.5v2M10 1.5v2"/></svg>
+              <span id="date-custom-label">Custom</span>
+            </div>
+            <div class="date-pop" id="date-pop">
+              <div class="date-pop-row">
+                <label>Dari</label>
+                <input type="date" id="date-from">
+              </div>
+              <div class="date-pop-row">
+                <label>Sampai</label>
+                <input type="date" id="date-to">
+              </div>
+              <div class="date-pop-err" id="date-pop-err">Tanggal "Dari" harus sebelum "Sampai"</div>
+              <div class="date-pop-foot">
+                <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:10px" onclick="clearDatePop()">Reset</button>
+                <button class="btn btn-lime btn-sm" style="padding:5px 12px;font-size:10px" onclick="applyDatePop()">Terapkan</button>
+              </div>
+            </div>
+          </div>
+          <input type="text" id="search-input" class="search-input" placeholder="Cari nama atau WA..." oninput="onSearchInput()">
         </div>
+      </div>
+
+      <!-- BULK RETRY BAR -->
+      <div class="bulk-retry-bar" id="bulk-retry-bar">
+        <div class="br-text">⚠ Ada <span id="bulk-fail-count">0</span> pengingat gagal di filter ini</div>
+        <button class="br-btn" onclick="openBulkRetry()">Kirim ulang semua yang gagal</button>
       </div>
 
       <!-- TABLE -->
@@ -307,7 +416,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
       <div class="empty-state" id="empty-state" style="display:none">
         <div style="font-size:36px;margin-bottom:12px">&#128220;</div>
         <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Belum ada log reminder</div>
-        <div style="font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:16px">Log akan muncul setelah reminder pertama dikirim.<br>Aktifkan automation untuk mulai kirim reminder otomatis.</div>
+        <div style="font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:16px">Log akan muncul setelah pengingat pertama dikirim.<br>Aktifkan automation untuk mulai kirim pengingat otomatis.</div>
         <a href="getstarvio-automation.html" class="btn btn-lime" style="text-decoration:none">Atur Automation</a>
       </div>
 
@@ -315,6 +424,27 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   </div>
 </div>
 </div>
+
+<!-- BULK RETRY CONFIRM MODAL -->
+<div class="overlay" id="m-bulk">
+  <div class="modal">
+    <div class="mhd">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--amber-bg);border:1px solid #fcd88a;display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="var(--amber-dk)" stroke-width="1.8" stroke-linecap="round"><path d="M8 1l7 13H1L8 1z"/><path d="M8 6v3M8 11.5v.5"/></svg>
+      </div>
+      <div class="m-title">Kirim ulang <span id="bulk-count">0</span> pengingat gagal?</div>
+      <div class="m-sub" style="margin-top:8px">Kredit dibutuhkan: <strong id="bulk-cred">0</strong> · Kredit tersisa: <strong id="bulk-rem">0</strong></div>
+      <div id="bulk-warn" style="display:none;margin-top:10px;font-size:11px;color:var(--red-dk);background:var(--red-bg);border:1px solid #f5c5c3;border-radius:6px;padding:8px 10px;line-height:1.5">Kredit tidak cukup untuk semua pengingat. Top up atau kurangi filter.</div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeBulkRetry()">Batal</button>
+      <button class="btn btn-lime btn-sm" id="bulk-confirm-btn" onclick="confirmBulkRetry()">Kirim Ulang</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
 
 <!-- LOGOUT MODAL -->
 <div class="overlay" id="m-logout">
@@ -344,13 +474,42 @@ function loadU() {
     const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        const td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      const endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else { u.trialDaysLeft = null; u.trialExpired = false }
     return u
   } catch(e) { return null }
 }
 
+/* Log Pengingat SOFT lock — banner atas + disable retry/bulk-retry buttons. Export tetap aktif via data-always. */
+function checkTrialLock() {
+  const u = loadU()
+  if (!u || !u.trialExpired) return
+  document.body.classList.add('trial-soft-locked')
+  const banner = document.createElement('div')
+  banner.className = 'trial-soft-banner'
+  banner.innerHTML = '\u26A0 Trial selesai \u00B7 <a href="getstarvio-billing.html">Subscribe untuk lanjut \u2192</a>'
+  const content = document.querySelector('.db-inner')
+  if (content) content.prepend(banner)
+}
+
 function saveU(u) {
+  delete u.remLeft; delete u.trialDaysLeft; delete u.trialExpired
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
 }
 
@@ -396,7 +555,10 @@ function closeSidebar() { document.getElementById('sidebar').classList.remove('o
 
 /* ── STATE ── */
 let statusFilter = 'semua'
-let dateRange = 'week'
+let dateRange = 'week'  // 'week' | 'month' | 'all' | 'custom'
+let customFrom = null   // Date object, inclusive start of day
+let customTo = null     // Date object, inclusive end of day
+let searchQuery = ''
 let currentPage = 1
 const PER_PAGE = 10
 
@@ -432,25 +594,50 @@ function getMonthStart() {
 }
 
 /* ── FILTER / RENDER ── */
+function getDateBounds() {
+  // Returns { start: Date|null, end: Date|null } — null means unbounded
+  if (dateRange === 'week') return { start: getWeekStart(), end: null }
+  if (dateRange === 'month') return { start: getMonthStart(), end: null }
+  if (dateRange === 'custom' && customFrom && customTo) {
+    return { start: customFrom, end: customTo }
+  }
+  return { start: null, end: null }
+}
+
 function getFilteredReminders(u) {
   const rems = u.reminders || []
+  const cxs = u.customers || []
 
   // date range filter
-  let rangeStart = null
-  if (dateRange === 'week') rangeStart = getWeekStart()
-  else if (dateRange === 'month') rangeStart = getMonthStart()
+  const { start: rangeStart, end: rangeEnd } = getDateBounds()
 
   let filtered = rems
-  if (rangeStart) {
+  if (rangeStart || rangeEnd) {
     filtered = filtered.filter(r => {
       const d = new Date(r.scheduledAt || r.sentAt)
-      return d >= rangeStart
+      if (rangeStart && d < rangeStart) return false
+      if (rangeEnd && d > rangeEnd) return false
+      return true
     })
   }
 
   // status filter
   if (statusFilter !== 'semua') {
     filtered = filtered.filter(r => r.status === statusFilter)
+  }
+
+  // search filter — name or WA digits
+  const q = (searchQuery || '').toLowerCase().trim()
+  if (q) {
+    const qDigits = q.replace(/\D/g, '')
+    filtered = filtered.filter(r => {
+      if ((r.cxName || '').toLowerCase().includes(q)) return true
+      if (qDigits) {
+        const cx = cxs.find(c => c.id === r.cxId)
+        if (cx && (cx.wa || '').includes(qDigits)) return true
+      }
+      return false
+    })
   }
 
   // sort by date desc
@@ -465,15 +652,15 @@ function getFilteredReminders(u) {
 
 function countByStatus(u) {
   const rems = u.reminders || []
-  let rangeStart = null
-  if (dateRange === 'week') rangeStart = getWeekStart()
-  else if (dateRange === 'month') rangeStart = getMonthStart()
+  const { start: rangeStart, end: rangeEnd } = getDateBounds()
 
   let filtered = rems
-  if (rangeStart) {
+  if (rangeStart || rangeEnd) {
     filtered = filtered.filter(r => {
       const d = new Date(r.scheduledAt || r.sentAt)
-      return d >= rangeStart
+      if (rangeStart && d < rangeStart) return false
+      if (rangeEnd && d > rangeEnd) return false
+      return true
     })
   }
 
@@ -533,9 +720,22 @@ function renderTable() {
 
   const mobileWrap = document.getElementById('log-cards-mobile')
 
+  // Bulk retry visibility
+  const failedCount = filtered.filter(r => r.status === 'gagal').length
+  const bulkBar = document.getElementById('bulk-retry-bar')
+  if (bulkBar) {
+    if (failedCount > 0 && !u.trialExpired) {
+      bulkBar.style.display = 'flex'
+      document.getElementById('bulk-fail-count').textContent = failedCount
+    } else {
+      bulkBar.style.display = 'none'
+    }
+  }
+
   if (pageRows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada log ditemukan untuk filter ini.</td></tr>'
-    mobileWrap.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada log ditemukan untuk filter ini.</div>'
+    const emptyMsg = '<div style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada pengingat yang cocok dengan filter ini.<br><button class="btn btn-ghost btn-sm" style="margin-top:14px" onclick="resetFilter()">Reset Filter</button></div>'
+    tbody.innerHTML = '<tr><td colspan="6" style="padding:0">' + emptyMsg + '</td></tr>'
+    mobileWrap.innerHTML = emptyMsg
     document.getElementById('pag-info').textContent = ''
     document.getElementById('pag-btns').innerHTML = ''
     return
@@ -552,11 +752,21 @@ function renderTable() {
     let chipHtml = ''
     if (r.status === 'terkirim') chipHtml = '<span class="badge b-lime">Terkirim</span>'
     else if (r.status === 'gagal') chipHtml = '<span class="badge b-red">Gagal</span>'
-    else if (r.status === 'pending') chipHtml = '<span class="badge b-amber">Pending</span>'
+    else if (r.status === 'pending') {
+      const sched = new Date(r.scheduledAt)
+      const isPast = sched < new Date()
+      const tStr = String(sched.getHours()).padStart(2,'0') + ':' + String(sched.getMinutes()).padStart(2,'0')
+      const lbl = isPast ? 'Pending \u00B7 segera' : 'Pending \u00B7 ' + tStr
+      chipHtml = '<span class="badge b-amber">' + lbl + '</span>'
+    }
 
     let actionHtml = ''
     if (r.status === 'gagal') {
-      actionHtml = '<button class="retry-btn" onclick="retryReminder(\'' + r.id + '\',this)">Coba Kirim Ulang</button>'
+      if (u.trialExpired) {
+        actionHtml = '<button class="retry-btn" disabled title="Subscribe untuk kirim ulang">Kirim Ulang</button>'
+      } else {
+        actionHtml = '<button class="retry-btn" onclick="retryReminder(\'' + r.id + '\',this)">Coba Kirim Ulang</button>'
+      }
     }
 
     let failInfoHtml = ''
@@ -601,13 +811,25 @@ function renderTable() {
   tbody.innerHTML = tableHtml
   mobileWrap.innerHTML = cardHtml
 
-  // Pagination
+  // Pagination — smart window (first, prev, window around current, next, last)
   document.getElementById('pag-info').textContent = 'Menampilkan ' + (start+1) + '\u2013' + Math.min(start+PER_PAGE, total) + ' dari ' + total + ' log'
   const btns = document.getElementById('pag-btns')
   let html = '<button class="page-btn" onclick="changePage(' + (currentPage-1) + ')" ' + (currentPage <= 1 ? 'disabled' : '') + '>\u2190 Prev</button>'
-  const maxPgs = Math.min(totalPages, 5)
-  for (let i = 1; i <= maxPgs; i++) {
+
+  // Determine which page buttons to show: first, last, and window around current
+  const windowSize = 2  // pages on each side of current
+  const pagesToShow = new Set([1, totalPages])
+  for (let i = Math.max(1, currentPage - windowSize); i <= Math.min(totalPages, currentPage + windowSize); i++) {
+    pagesToShow.add(i)
+  }
+  const sorted = Array.from(pagesToShow).sort((a, b) => a - b)
+  let lastShown = 0
+  for (const i of sorted) {
+    if (i - lastShown > 1) {
+      html += '<span class="page-btn" style="border:none;background:transparent;cursor:default;padding:5px 4px">…</span>'
+    }
     html += '<button class="page-btn' + (i === currentPage ? ' active' : '') + '" onclick="changePage(' + i + ')">' + i + '</button>'
+    lastShown = i
   }
   html += '<button class="page-btn" onclick="changePage(' + (currentPage+1) + ')" ' + (currentPage >= totalPages ? 'disabled' : '') + '>Next \u2192</button>'
   btns.innerHTML = html
@@ -621,11 +843,96 @@ function setStatusFilter(el, val) {
   renderTable()
 }
 
+let searchDebounce = null
+function onSearchInput() {
+  const v = document.getElementById('search-input').value
+  if (searchDebounce) clearTimeout(searchDebounce)
+  searchDebounce = setTimeout(() => {
+    searchQuery = v
+    currentPage = 1
+    renderTable()
+  }, 180)
+}
+
 function setDateRange(el, val) {
   dateRange = val
   currentPage = 1
+  if (val !== 'custom') {
+    customFrom = null
+    customTo = null
+    const lbl = document.getElementById('date-custom-label')
+    if (lbl) lbl.textContent = 'Custom'
+    closeDatePop()
+  }
   document.querySelectorAll('.date-chip').forEach(t => t.classList.remove('active'))
   el.classList.add('active')
+  const u = loadU()
+  if (u) renderBadgeCounts(u)
+  renderTable()
+}
+
+/* ── CUSTOM DATE RANGE POPOVER ── */
+function toggleDatePop(ev) {
+  if (ev) ev.stopPropagation()
+  const pop = document.getElementById('date-pop')
+  if (!pop) return
+  if (pop.classList.contains('open')) {
+    closeDatePop()
+  } else {
+    // Pre-fill inputs if we have existing custom range
+    const from = document.getElementById('date-from')
+    const to = document.getElementById('date-to')
+    if (customFrom && from) from.value = customFrom.toISOString().slice(0,10)
+    if (customTo && to) to.value = customTo.toISOString().slice(0,10)
+    pop.classList.add('open')
+    // Dismiss on outside click
+    setTimeout(() => document.addEventListener('click', outsideDatePopHandler), 0)
+  }
+}
+function closeDatePop() {
+  const pop = document.getElementById('date-pop')
+  if (pop) pop.classList.remove('open')
+  document.removeEventListener('click', outsideDatePopHandler)
+  const err = document.getElementById('date-pop-err')
+  if (err) err.classList.remove('show')
+}
+function outsideDatePopHandler(e) {
+  const wrap = e.target.closest('.date-custom-wrap')
+  if (!wrap) closeDatePop()
+}
+function clearDatePop() {
+  const from = document.getElementById('date-from')
+  const to = document.getElementById('date-to')
+  if (from) from.value = ''
+  if (to) to.value = ''
+  const err = document.getElementById('date-pop-err')
+  if (err) err.classList.remove('show')
+}
+function applyDatePop() {
+  const fromStr = document.getElementById('date-from').value
+  const toStr = document.getElementById('date-to').value
+  const err = document.getElementById('date-pop-err')
+  if (!fromStr || !toStr) {
+    if (err) { err.textContent = 'Isi kedua tanggal dulu ya'; err.classList.add('show') }
+    return
+  }
+  const fromD = new Date(fromStr + 'T00:00:00')
+  const toD = new Date(toStr + 'T23:59:59')
+  if (fromD > toD) {
+    if (err) { err.textContent = 'Tanggal "Dari" harus sebelum "Sampai"'; err.classList.add('show') }
+    return
+  }
+  customFrom = fromD
+  customTo = toD
+  dateRange = 'custom'
+  currentPage = 1
+  // Update chip label + active state
+  const lbl = document.getElementById('date-custom-label')
+  const opts = { day: 'numeric', month: 'short' }
+  if (lbl) lbl.textContent = fromD.toLocaleDateString('id-ID', opts) + ' – ' + toD.toLocaleDateString('id-ID', opts)
+  document.querySelectorAll('.date-chip').forEach(t => t.classList.remove('active'))
+  document.getElementById('date-chip-custom').classList.add('active')
+  closeDatePop()
   const u = loadU()
   if (u) renderBadgeCounts(u)
   renderTable()
@@ -641,12 +948,23 @@ function changePage(p) {
   renderTable()
 }
 
+/* ── CREDIT DEDUCT — global rule: subscription first, then top-up ── */
+function deductCredit(u) {
+  if ((u.subCreditsLeft || 0) > 0) { u.subCreditsLeft = (u.subCreditsLeft || 0) - 1; return true }
+  if ((u.topupCreditsLeft || 0) > 0) { u.topupCreditsLeft = (u.topupCreditsLeft || 0) - 1; return true }
+  return false
+}
+
 /* ── RETRY ── */
 function retryReminder(remId, btnEl) {
   const u = loadU()
   if (!u) return
+  if (u.trialExpired) {
+    showToast('Subscribe untuk kirim ulang', 'error')
+    return
+  }
   if ((u.remLeft || 0) <= 0) {
-    alert('Kredit habis! Silakan top up dulu.')
+    showToast('Kredit habis — top up atau subscribe dulu', 'error')
     return
   }
 
@@ -660,10 +978,9 @@ function retryReminder(remId, btnEl) {
     const rem = (u2.reminders || []).find(r => r.id === remId)
     if (!rem) return
 
+    if (!deductCredit(u2)) return
     rem.status = 'terkirim'
     rem.sentAt = new Date().toISOString()
-    u2.topupCreditsLeft = Math.max(0, (u2.topupCreditsLeft || 0) - 1)
-    u2.remLeft = (u2.subCreditsLeft || 0) + (u2.topupCreditsLeft || 0)
     saveU(u2)
 
     // Refresh everything
@@ -672,6 +989,103 @@ function retryReminder(remId, btnEl) {
     renderBadgeCounts(u2)
     renderTable()
   }, 1500)
+}
+
+/* ── BULK RETRY ── */
+function getFailedVisible() {
+  const u = loadU()
+  if (!u) return []
+  return getFilteredReminders(u).filter(r => r.status === 'gagal')
+}
+
+function openBulkRetry() {
+  const u = loadU()
+  if (!u) return
+  if (u.trialExpired) { showToast('Subscribe untuk kirim ulang', 'error'); return }
+  const failed = getFailedVisible()
+  if (failed.length === 0) return
+  const total = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+  document.getElementById('bulk-count').textContent = failed.length
+  document.getElementById('bulk-cred').textContent = failed.length
+  document.getElementById('bulk-rem').textContent = total
+  const btn = document.getElementById('bulk-confirm-btn')
+  if (total < failed.length) {
+    btn.disabled = true
+    btn.style.opacity = '.5'
+    document.getElementById('bulk-warn').style.display = 'block'
+  } else {
+    btn.disabled = false
+    btn.style.opacity = ''
+    document.getElementById('bulk-warn').style.display = 'none'
+  }
+  document.getElementById('m-bulk').classList.add('show')
+}
+
+function closeBulkRetry() { document.getElementById('m-bulk').classList.remove('show') }
+
+function confirmBulkRetry() {
+  const failed = getFailedVisible()
+  if (failed.length === 0) { closeBulkRetry(); return }
+  const u = loadU()
+  if (!u) return
+  const total = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+  if (total < failed.length) { closeBulkRetry(); showToast('Kredit tidak cukup', 'error'); return }
+
+  closeBulkRetry()
+  // Mark all as pending immediately
+  failed.forEach(rem => {
+    const r = (u.reminders || []).find(x => x.id === rem.id)
+    if (r) r.status = 'pending'
+  })
+  saveU(u)
+  renderTable(); renderBadgeCounts(u); renderMetrics(u)
+
+  // Staggered "send"
+  failed.forEach((rem, i) => {
+    setTimeout(() => {
+      const u2 = loadU()
+      if (!u2) return
+      const r = (u2.reminders || []).find(x => x.id === rem.id)
+      if (!r) return
+      if (deductCredit(u2)) {
+        r.status = 'terkirim'
+        r.sentAt = new Date().toISOString()
+      } else {
+        r.status = 'gagal'
+      }
+      saveU(u2)
+      if (i === failed.length - 1) {
+        bootSidebar(); renderMetrics(u2); renderBadgeCounts(u2); renderTable()
+        showToast(failed.length + ' pengingat berhasil dikirim ulang')
+      }
+    }, 1500 + (i * 300))
+  })
+}
+
+/* ── TOAST ── */
+function showToast(msg, type) {
+  const c = document.getElementById('toastContainer')
+  if (!c) return
+  const el = document.createElement('div')
+  el.className = 'toast' + (type === 'error' ? ' toast-err' : '')
+  el.textContent = msg
+  c.appendChild(el)
+  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300) }, 2600)
+}
+
+/* ── RESET FILTER ── */
+function resetFilter() {
+  statusFilter = 'semua'
+  dateRange = 'all'
+  searchQuery = ''
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === 'semua'))
+  document.querySelectorAll('.date-chip').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('.date-chip').forEach(t => { if (t.textContent.trim() === 'Semua') t.classList.add('active') })
+  const si = document.getElementById('search-input')
+  if (si) si.value = ''
+  currentPage = 1
+  const u = loadU()
+  if (u) { renderBadgeCounts(u); renderTable() }
 }
 
 /* ── EXPORT CSV ── */
@@ -697,12 +1111,35 @@ function boot() {
   if (!u) { location.href = 'getstarvio-login.html'; return }
 
   bootSidebar()
+  checkTrialLock()
   renderMetrics(u)
   renderBadgeCounts(u)
   renderTable()
 }
 
 window.addEventListener('DOMContentLoaded', boot)
+
+/* ── IMPERSONATION CHECK (admin logged in as user) ── */
+(function() {
+  try {
+    var raw = localStorage.getItem('getstarvio_impersonation');
+    if (!raw) return;
+    var imp = JSON.parse(raw);
+    if (!imp || !imp.targetBizId) return;
+    document.addEventListener('DOMContentLoaded', function() {
+      var banner = document.getElementById('impBanner');
+      var bizEl = document.getElementById('impBizName');
+      if (banner) banner.classList.add('show');
+      if (bizEl) bizEl.textContent = imp.targetBizName || imp.targetBizId;
+      document.body.classList.add('imp-active');
+    });
+  } catch(e) {}
+})();
+function exitImpersonate() {
+  try { localStorage.removeItem('getstarvio_impersonation') } catch(e) {}
+  window.location.href = 'getstarvio-admin.html';
+}
 </script>
+
 </body>
 </html>

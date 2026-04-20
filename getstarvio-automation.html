@@ -139,12 +139,26 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 /* -- SELECT -- */
 select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9a92' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
 
+/* -- TEMPLATE HELP TEXT -- */
+.tpl-help{font-size:10px;color:var(--ink3);margin-top:5px;line-height:1.5}
+.tpl-help strong{color:var(--ink2);font-weight:600}
+
+/* -- TOAST -- */
+.toast-container{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;pointer-events:none;align-items:center}
+.toast{background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,.3);animation:fadeUp .3s ease;white-space:nowrap;transition:opacity .3s}
+.toast-err{background:var(--red-dk)}
+
 /* -- SIDEBAR OVERLAY (mobile) -- */
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
 .sidebar-overlay.open{display:block}
 
 /* -- MOBILE -- */
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -164,9 +178,31 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
   .s-reset::after{content:'↺';font-size:14px}
 }
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ── IMPERSONATION BANNER (admin logged in as user) ── */
+.imp-banner{position:fixed;top:0;left:0;right:0;z-index:300;background:repeating-linear-gradient(45deg,#e8453c,#e8453c 12px,#c43e37 12px,#c43e37 24px);color:#fff;padding:8px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(232,69,60,.3)}
+.imp-banner.show{display:flex}
+.imp-banner-info{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.imp-banner-info strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp-banner-exit{padding:5px 14px;background:#fff;color:#7a1a16;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;font-size:11px;white-space:nowrap}
+.imp-banner-exit:hover{background:#fdf1f0}
+body.imp-active{padding-top:36px}
+@media(max-width:600px){
+  .imp-banner{font-size:11px;padding:7px 12px}
+  .imp-banner-info strong{font-size:11px}
+  body.imp-active{padding-top:44px}
+}
 </style>
 </head>
 <body>
+<!-- Impersonation banner (admin mode) -->
+<div class="imp-banner" id="impBanner">
+  <div class="imp-banner-info">
+    <span>🎭</span>
+    <span>Impersonating: <strong id="impBizName">—</strong></span>
+  </div>
+  <button class="imp-banner-exit" onclick="exitImpersonate()">Exit Impersonate &rarr;</button>
+</div>
 <div class="shell">
 
 <!-- SIDEBAR OVERLAY (mobile) -->
@@ -184,7 +220,7 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
     <a id="nav-catat" href="getstarvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
     <a id="nav-pelanggan" href="getstarvio-pelanggan.html" class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
     <a id="nav-automation" href="getstarvio-automation.html" class="nav-item active"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log" href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-log" href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Pengingat</span></a>
     <a id="nav-kategori" href="getstarvio-kategori.html" class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
     <a id="nav-billing" href="getstarvio-billing.html" class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
     <a id="nav-settings" href="getstarvio-settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
@@ -238,8 +274,14 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
           <div style="display:flex;align-items:center;gap:14px">
             <div style="text-align:right">
               <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em">Kirim pukul</div>
-              <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;line-height:1;margin-top:3px" id="send-time">09:00</div>
-              <div style="font-size:10px;color:var(--ink4);margin-top:2px" id="send-tz">WIB</div>
+              <div style="display:flex;align-items:baseline;gap:4px;margin-top:3px;justify-content:flex-end">
+                <span id="send-time-display" style="font-size:18px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;line-height:1">09:00</span>
+                <span style="font-size:10px;color:var(--ink4)" id="send-tz">WIB</span>
+              </div>
+              <button onclick="openSendTimeModal()" style="margin-top:5px;padding:4px 10px;background:var(--bg2);border:1px solid var(--border2);border-radius:99px;font-family:inherit;font-size:10px;font-weight:700;color:var(--ink2);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .12s" onmouseover="this.style.borderColor='var(--lime2)';this.style.background='var(--lime-bg)';this.style.color='var(--lime-dk)'" onmouseout="this.style.borderColor='var(--border2)';this.style.background='var(--bg2)';this.style.color='var(--ink2)'">
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.333 2.667a1.886 1.886 0 112.667 2.666L5.333 14H2.667v-2.667l8.666-8.666z"/></svg>
+                Ubah Jam
+              </button>
             </div>
             <div class="master-toggle on" id="master-toggle" onclick="toggleMaster()"></div>
           </div>
@@ -272,39 +314,21 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
         <div class="credit-bar">
           <div class="credit-fill" id="credit-fill" style="width:0%"></div>
         </div>
-      </div>
-
-      <!-- DEFAULT SETTINGS -->
-      <div class="sec-title" style="margin-top:6px">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>
-        Pengaturan Default
-      </div>
-      <div class="card" style="margin-bottom:18px">
-        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-          <div style="flex:1;min-width:160px">
-            <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Waktu Kirim</div>
-            <div style="display:flex;align-items:center;gap:6px">
-              <input type="time" id="default-send-time" value="09:00" class="fi" style="width:110px;font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace" onchange="saveSendTime()">
-              <span style="font-size:11px;color:var(--ink3)" id="default-tz">WIB</span>
-            </div>
-          </div>
-          <div style="flex:1;min-width:160px">
-            <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Default Interval</div>
-            <div style="display:flex;align-items:center;gap:6px">
-              <input type="number" id="default-interval" value="30" min="1" max="365" class="fi" style="width:80px;font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:center" onchange="saveDefaultInterval()">
-              <span style="font-size:11px;color:var(--ink3)">hari</span>
-            </div>
-          </div>
-          <div id="default-saved" style="display:none;font-size:11px;font-weight:600;color:var(--lime-dk)">Tersimpan</div>
-        </div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.5">Pengingat menggunakan kredit subscription dulu, baru kredit top-up.</div>
       </div>
 
       <!-- PER KATEGORI -->
-      <div class="sec-title">
+      <div class="sec-title" id="per-category" style="margin-top:6px;scroll-margin-top:80px">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.6"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
         Automation per Kategori
       </div>
       <div id="auto-flows"></div>
+
+      <!-- Hint about default interval — managed in Kategori page, not duplicated here -->
+      <div style="font-size:11px;color:var(--ink3);margin-top:8px;margin-bottom:18px;line-height:1.55;text-align:center;padding:10px 14px;background:var(--bg2);border:1px dashed var(--border2);border-radius:var(--r-sm)">
+        💡 Mau ubah <strong>default interval untuk kategori baru</strong>? Diatur di
+        <a href="getstarvio-kategori.html" style="color:var(--lime-dk);font-weight:700;text-decoration:none">Kategori →</a>
+      </div>
 
     </div>
   </div>
@@ -324,6 +348,61 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
     <div class="mftr">
       <button class="btn btn-ghost btn-sm" onclick="closeLogout()">Batal</button>
       <button class="btn btn-danger btn-sm" onclick="doLogout()">Ya, Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ UBAH JAM KIRIM MODAL — PIN-gated ══════════ -->
+<div class="overlay" id="m-send-time">
+  <div class="modal" style="max-width:420px">
+    <div class="mhd">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--amber-bg);border:1px solid #fcd88a;display:flex;align-items:center;justify-content:center;margin:0 auto 11px;font-size:20px">⏰</div>
+      <div class="m-title">Ubah Jam Kirim Pengingat</div>
+      <div class="m-sub">Setting kritis — semua reminder otomatis pakai jam ini</div>
+    </div>
+    <div style="padding:20px 22px">
+
+      <!-- Warning banner -->
+      <div style="background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:10px 12px;margin-bottom:14px;font-size:11px;color:var(--amber-dk);line-height:1.55">
+        <strong>⚠️ Hati-hati:</strong> Jam salah = customer terganggu. Pastiin ini jam kerja kamu, bukan tengah malam.
+      </div>
+
+      <!-- Current vs new -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div style="padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);text-align:center">
+          <div style="font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Sekarang</div>
+          <div id="st-current" style="font-size:20px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace">09:00</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);text-align:center">
+          <div style="font-size:9px;font-weight:700;color:var(--lime-dk);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Baru</div>
+          <input type="time" id="st-new" value="09:00" style="font-size:20px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;background:transparent;border:none;outline:none;text-align:center;width:100%;padding:0">
+        </div>
+      </div>
+
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeSendTimeModal()">Batal</button>
+      <button class="btn btn-lime btn-sm" id="st-save-btn" onclick="confirmSendTimeChange()" disabled style="opacity:.4;cursor:not-allowed">Lanjut</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SHARED PIN GATE MODAL ══════════ -->
+<div class="overlay" id="m-pin-gate">
+  <div class="modal" style="max-width:380px">
+    <div class="mhd" style="text-align:center">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--lime-bg);border:1px solid #c8f07a;display:flex;align-items:center;justify-content:center;margin:0 auto 11px;font-size:20px">🔐</div>
+      <div class="m-title">Masukkan PIN Admin</div>
+      <div class="m-sub" id="pin-gate-sub">Konfirmasi untuk lanjut</div>
+    </div>
+    <div style="padding:18px 22px 4px">
+      <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-gate-input" placeholder="••••" onkeydown="if(event.key==='Enter')verifyPinGate()" oninput="onPinGateInput(this)" style="width:100%;padding:14px;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:.6em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+      <div id="pin-gate-error" style="display:none;font-size:11px;color:var(--red-dk);margin-top:8px;font-weight:600;text-align:center">PIN salah — coba lagi</div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:10px;text-align:center">Lupa PIN? <a href="getstarvio-settings.html#pin" style="color:var(--lime-dk);font-weight:600">Reset di Settings →</a></div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closePinGate()">Batal</button>
+      <button class="btn btn-lime btn-sm" id="pin-gate-ok" onclick="verifyPinGate()" disabled style="opacity:.4;cursor:not-allowed">Konfirmasi</button>
     </div>
   </div>
 </div>
@@ -352,14 +431,39 @@ select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:ima
 </div>
 
 <script>
-/* == TEMPLATES == */
+/* == TEMPLATES (Meta Cloud API placeholder format {{1}}-{{4}}, semua UTILITY-compliant) ==
+   {{1}} = Nama customer        (customer.name)
+   {{2}} = Nama layanan         (service.name — facial / potong rambut / cuci mobil / dll)
+   {{3}} = Tanggal kunjungan    (service.date, "DD MMMM YYYY")
+   {{4}} = Nama bisnis          (bizName)
+
+   Catatan: TIDAK ada {{5}} timing — pesan dikirim TEPAT WAKTU sesuai cats[].interval,
+   jadi pelanggan ga perlu disebut durasi spesifik di teks. Lebih fleksibel buat semua
+   cadence (3 hari, 7 hari, 3 bulan, dst). */
 var TEMPLATES = [
-  {id:'reminder_return',label:'Reminder balik',msg:'Halo {customer_name}! Sudah {days} hari sejak {service} di {business_name}. Saatnya kembali ✨'},
-  {id:'soft_invite',label:'Ajakan santai',msg:'Hai {customer_name} 👋 {business_name} kangen! Sudah {days} hari sejak {service}. Yuk balik!'},
-  {id:'promo_nudge',label:'Reminder + penawaran',msg:'Helo {customer_name}! Sudah {days} hari sejak {service} di {business_name}. Ada slot kosong 😊'},
-  {id:'care_checkin',label:'Check-in personal',msg:'{customer_name}, sudah {days} hari sejak {service} di {business_name}. Gimana kondisi kamu?'},
-  {id:'urgency_light',label:'Gentle urgency',msg:'Hai {customer_name}! Sudah {days} hari sejak {service} di {business_name} 🗓 Jangan lewatkan!'}
+  {id:'aftercare_followup_1',label:'Aftercare #1 — formal',  msg:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nKalau kamu butuh konsultasi lanjutan atau ingin booking sesi berikutnya, langsung balas chat ini ya.'},
+  {id:'aftercare_followup_2',label:'Aftercare #2 — terima kasih', msg:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nKalau ada pertanyaan atau ingin booking sesi lanjutan, balas chat ini aja ya.'},
+  {id:'aftercare_followup_3',label:'Aftercare #3 — casual',  msg:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nKalau mau tanya-tanya atau booking sesi lanjutan, balas aja ya!'},
+  {id:'aftercare_followup_4',label:'Aftercare #4 — semoga puas', msg:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nKalau perlu info perawatan lanjutan atau ada pertanyaan, langsung balas chat ini aja.'},
+  {id:'aftercare_followup_5',label:'Aftercare #5 — tanya hasil', msg:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nKalau ada keluhan atau ingin booking sesi berikutnya, balas langsung di sini.'}
 ]
+
+function fmtDate(iso) {
+  if (!iso) return new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
+  var d = new Date(iso)
+  return d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
+}
+
+/* Render template with real data — replace {{1}}-{{4}} */
+function renderTemplate(msg, opts) {
+  opts = opts || {}
+  var bizName = (loadU()||{}).bizName || 'Bisnis Kamu'
+  return msg
+    .replace(/\{\{1\}\}/g, opts.name || 'Pelanggan')
+    .replace(/\{\{2\}\}/g, opts.service || 'Layanan')
+    .replace(/\{\{3\}\}/g, opts.date || fmtDate())
+    .replace(/\{\{4\}\}/g, opts.bizName || bizName)
+}
 
 /* == SHARED == */
 function loadU() {
@@ -367,14 +471,43 @@ function loadU() {
     var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     var u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    // Migration v4 → v5
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        var td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      var endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else {
+      u.trialDaysLeft = null; u.trialExpired = false
+    }
     return u
   } catch(e) { return null }
 }
 
 function saveU(u) {
+  delete u.remLeft; delete u.trialDaysLeft; delete u.trialExpired
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
+}
+
+/* Trial Hard Lock helpers */
+function showTrialLockOverlay() { var el = document.getElementById('trialLockOverlay'); if (el) el.style.display = 'flex' }
+function checkTrialLock() {
+  var u = loadU()
+  if (!u || !u.trialExpired) return
+  if (location.pathname.includes('billing')) return
+  showTrialLockOverlay()
 }
 
 function bootSidebar() {
@@ -531,30 +664,143 @@ function simulateWaConnect() {
   bootSidebar()
 }
 
-/* == SEND TIME & INTERVAL == */
-function saveSendTime() {
+/* ══════════════════════════════════════════════
+   SHARED PIN GATE — reusable verification pattern
+   requirePin(actionFn, contextLabel) — runs actionFn if PIN correct
+   ══════════════════════════════════════════════ */
+var _pinGatePending = null  // { fn, label }
+
+function requirePin(actionFn, contextLabel) {
   var U = loadU()
   if (!U) return
-  var val = document.getElementById('default-send-time').value
-  U.sendTime = val
-  saveU(U)
-  document.getElementById('send-time').textContent = val || '09:00'
-  flashSaved()
+  // If no PIN set — show warning, still execute (backwards compat)
+  if (!U.adminPin) {
+    if (!window.confirm('⚠️ PIN admin belum diatur.\n\nAksi ini seharusnya pakai PIN untuk proteksi. Lanjut tanpa PIN?\n\n(Setup PIN di Settings → PIN Admin untuk proteksi ekstra)')) return
+    actionFn()
+    return
+  }
+  // PIN set — open gate
+  _pinGatePending = { fn: actionFn, label: contextLabel || 'Konfirmasi aksi' }
+  document.getElementById('pin-gate-sub').textContent = _pinGatePending.label
+  document.getElementById('pin-gate-input').value = ''
+  document.getElementById('pin-gate-error').style.display = 'none'
+  var okBtn = document.getElementById('pin-gate-ok')
+  okBtn.disabled = true
+  okBtn.style.opacity = '.4'
+  okBtn.style.cursor = 'not-allowed'
+  document.getElementById('m-pin-gate').classList.add('show')
+  setTimeout(function() { document.getElementById('pin-gate-input').focus() }, 100)
 }
 
-function saveDefaultInterval() {
+function onPinGateInput(el) {
+  var v = el.value.replace(/\D/g, '').slice(0, 4)
+  if (el.value !== v) el.value = v
+  document.getElementById('pin-gate-error').style.display = 'none'
+  var okBtn = document.getElementById('pin-gate-ok')
+  var ready = v.length === 4
+  okBtn.disabled = !ready
+  okBtn.style.opacity = ready ? '' : '.4'
+  okBtn.style.cursor = ready ? '' : 'not-allowed'
+}
+
+function closePinGate() {
+  document.getElementById('m-pin-gate').classList.remove('show')
+  _pinGatePending = null
+}
+
+function verifyPinGate() {
+  var U = loadU()
+  if (!U || !_pinGatePending) return
+  var entered = (document.getElementById('pin-gate-input').value || '').trim()
+  if (entered.length !== 4) return
+  if (entered !== U.adminPin) {
+    var errEl = document.getElementById('pin-gate-error')
+    errEl.style.display = 'block'
+    var inp = document.getElementById('pin-gate-input')
+    inp.value = ''
+    inp.focus()
+    // Shake
+    inp.style.transition = 'transform .05s'
+    var i = 0
+    var shake = setInterval(function() {
+      inp.style.transform = i % 2 === 0 ? 'translateX(-4px)' : 'translateX(4px)'
+      i++
+      if (i > 5) { clearInterval(shake); inp.style.transform = '' }
+    }, 50)
+    return
+  }
+  // Correct — run pending action
+  var pending = _pinGatePending
+  _pinGatePending = null
+  document.getElementById('m-pin-gate').classList.remove('show')
+  pending.fn()
+}
+
+/* == SEND TIME MODAL — PIN-gated confirm == */
+function openSendTimeModal() {
   var U = loadU()
   if (!U) return
-  var val = parseInt(document.getElementById('default-interval').value) || 30
-  U.defaultInterval = val
-  saveU(U)
-  flashSaved()
+  var current = U.sendTime || '09:00'
+  document.getElementById('st-current').textContent = current
+  document.getElementById('st-new').value = current
+  updateSendTimeConfirm()
+  document.getElementById('m-send-time').classList.add('show')
 }
 
-function flashSaved() {
-  var el = document.getElementById('default-saved')
-  el.style.display = 'inline'
-  setTimeout(function(){ el.style.display = 'none' }, 1500)
+function closeSendTimeModal() {
+  document.getElementById('m-send-time').classList.remove('show')
+}
+
+function updateSendTimeConfirm() {
+  var btn = document.getElementById('st-save-btn')
+  var newVal = document.getElementById('st-new').value
+  var currentVal = document.getElementById('st-current').textContent
+  var isDifferent = newVal && newVal !== currentVal
+  btn.disabled = !isDifferent
+  btn.style.opacity = isDifferent ? '' : '.4'
+  btn.style.cursor = isDifferent ? 'pointer' : 'not-allowed'
+}
+
+function confirmSendTimeChange() {
+  var U = loadU()
+  if (!U) return
+  var newVal = document.getElementById('st-new').value
+  var oldVal = U.sendTime || '09:00'
+  if (!newVal || newVal === oldVal) return
+
+  // Close current modal, then PIN-gate the actual save
+  closeSendTimeModal()
+  requirePin(function() {
+    var u2 = loadU()
+    if (!u2) return
+    u2.sendTime = newVal
+    saveU(u2)
+    document.getElementById('send-time-display').textContent = newVal
+    showToast('✅ Jam kirim diubah dari ' + oldVal + ' → ' + newVal)
+  }, 'Ubah jam kirim: ' + oldVal + ' → ' + newVal)
+}
+
+// Wire input listener once modal is in DOM
+document.addEventListener('DOMContentLoaded', function() {
+  var stNew = document.getElementById('st-new')
+  if (stNew) stNew.addEventListener('input', updateSendTimeConfirm)
+})
+
+/* == TOAST == */
+function showToast(msg, kind) {
+  var wrap = document.getElementById('toast-wrap')
+  if (!wrap) {
+    wrap = document.createElement('div')
+    wrap.id = 'toast-wrap'
+    wrap.className = 'toast-container'
+    document.body.appendChild(wrap)
+  }
+  var t = document.createElement('div')
+  t.className = 'toast' + (kind === 'error' ? ' toast-err' : '')
+  t.textContent = msg
+  wrap.appendChild(t)
+  setTimeout(function() { t.style.opacity = '0' }, 2400)
+  setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t) }, 2900)
 }
 
 /* == CATEGORY TOGGLE == */
@@ -570,7 +816,7 @@ function toggleCat(catId) {
 }
 
 /* == CHANGE INTERVAL == */
-/* == PREVIEW TEMPLATE ON CHANGE (no save) == */
+/* == PREVIEW TEMPLATE ON CHANGE (no save) — render {{1}}-{{4}} dengan data sample == */
 function previewCatTemplate(catId) {
   var sel = document.getElementById('tpl-' + catId)
   var tplId = sel.value
@@ -578,39 +824,57 @@ function previewCatTemplate(catId) {
   if (!tpl) return
   var U = loadU()
   var cat = (U.cats || []).find(function(c){ return c.id === catId })
-  var days = document.getElementById('interval-' + catId).value || '30'
+  var sampleCx = (U.customers || [])[0]
+  var sampleName = sampleCx ? sampleCx.name.split(' ')[0] : 'Anita'
   var prev = document.getElementById('prev-' + catId)
-  if (prev) {
-    prev.innerHTML = tpl.msg
-      .replace(/\{customer_name\}/g, '<span class="msg-var">{customer_name}</span>')
-      .replace(/\{business_name\}/g, '<span class="msg-var">{business_name}</span>')
-      .replace(/\{days\}/g, '<span class="msg-var">' + days + '</span>')
-      .replace(/\{service\}/g, '<span class="msg-var">' + (cat ? cat.name : 'layanan') + '</span>')
-  }
+  if (!prev) return
+  var rendered = renderTemplate(tpl.msg, {
+    name: sampleName,
+    service: cat ? cat.name : 'Layanan',
+    date: fmtDate(),
+    bizName: U.bizName || 'Bisnis Kamu'
+  })
+  // Wrap variables yang sudah di-replace dengan span var styling — split by sample values
+  prev.innerHTML = rendered
+    .replace(new RegExp(escapeReg(sampleName), 'g'), '<span class="msg-var">' + sampleName + '</span>')
+    .replace(new RegExp(escapeReg(cat ? cat.name : 'Layanan'), 'g'), '<span class="msg-var">' + (cat ? cat.name : 'Layanan') + '</span>')
+    .replace(new RegExp(escapeReg(U.bizName || 'Bisnis Kamu'), 'g'), '<span class="msg-var">' + (U.bizName || 'Bisnis Kamu') + '</span>')
+    .replace(/\n/g, '<br>')
 }
 
-/* == SAVE FLOW CHANGES (interval + template) == */
+function escapeReg(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') }
+
+/* == SAVE FLOW CHANGES (interval + template) — PIN-gated == */
 function saveFlowChanges(catId) {
   var U = loadU()
   if (!U) return
   var cat = (U.cats || []).find(function(c){ return c.id === catId })
   if (!cat) return
-  // Save interval
   var input = document.getElementById('interval-' + catId)
-  var val = parseInt(input.value) || cat.interval
-  cat.interval = Math.max(1, Math.min(365, val))
-  // Save template
+  var newInterval = Math.max(1, Math.min(365, parseInt(input.value) || cat.interval))
   var sel = document.getElementById('tpl-' + catId)
-  var tplId = sel.value
-  var tpl = TEMPLATES.find(function(t){ return t.id === tplId })
-  if (tpl) {
-    cat.templateId = tplId
-    cat.templateBody = tpl.msg
-  }
-  saveU(U)
-  // Flash button
-  var btn = document.getElementById('save-' + catId)
-  if (btn) { btn.textContent = '✓ Tersimpan'; setTimeout(function(){ btn.textContent = 'Simpan'; }, 1500) }
+  var newTplId = sel.value
+  var hasChange = (newInterval !== cat.interval) || (newTplId !== (cat.templateId || 'aftercare_followup_1'))
+  if (!hasChange) return  // no-op if nothing changed
+
+  // Skip PIN if nothing materially changed (template-review first-save allowed silently)
+  requirePin(function() {
+    var u2 = loadU()
+    if (!u2) return
+    var cat2 = (u2.cats || []).find(function(c){ return c.id === catId })
+    if (!cat2) return
+    cat2.interval = newInterval
+    var tpl = TEMPLATES.find(function(t){ return t.id === newTplId })
+    if (tpl) {
+      cat2.templateId = newTplId
+      cat2.templateBody = tpl.msg
+    }
+    if (!u2.templatesReviewedAt) u2.templatesReviewedAt = new Date().toISOString()
+    saveU(u2)
+    var btn = document.getElementById('save-' + catId)
+    if (btn) { btn.textContent = '✓ Tersimpan'; setTimeout(function(){ btn.textContent = 'Simpan'; }, 1500) }
+    showToast('✅ Automation "' + (cat2.name || 'kategori') + '" disimpan')
+  }, 'Simpan perubahan automation: ' + (cat.name || 'kategori'))
 }
 
 /* == EXPAND FLOW == */
@@ -629,7 +893,15 @@ function renderFlows(U) {
   var el = document.getElementById('auto-flows')
 
   if (cats.length === 0) {
-    el.innerHTML = '<div class="empty">Belum ada kategori layanan. Buat di halaman <a href="getstarvio-kategori.html" style="color:var(--ink2);font-weight:600">Kategori</a>.</div>'
+    el.innerHTML =
+      '<div style="background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r-lg);padding:48px 24px;text-align:center">' +
+        '<div style="font-size:48px;margin-bottom:14px;opacity:.85">\uD83C\uDFF7\uFE0F</div>' +
+        '<div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Belum ada kategori layanan</div>' +
+        '<div style="font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:18px;max-width:340px;margin-left:auto;margin-right:auto">Tambah kategori dulu untuk mulai atur pengingat otomatis ke pelanggan.</div>' +
+        '<a href="getstarvio-kategori.html" class="btn btn-lime btn-sm" style="text-decoration:none">' +
+          'Buka Kategori \u2192' +
+        '</a>' +
+      '</div>'
     return
   }
 
@@ -638,13 +910,20 @@ function renderFlows(U) {
     var count = cxs.filter(function(c){
       return (c.services || []).some(function(s){ return s.name === cat.name })
     }).length
-    var tplId = cat.templateId || 'reminder_return'
-    var msg = cat.msg || TEMPLATES[0].msg
-    var msgHtml = msg
-      .replace(/{customer_name}/g, '<span class="msg-var">' + sample + '</span>')
-      .replace(/{business_name}/g, '<span class="msg-var">' + biz + '</span>')
-      .replace(/{days}/g, '<span class="msg-var">' + cat.interval + '</span>')
-      .replace(/{service}/g, '<span class="msg-var">' + (cat.name || 'layanan') + '</span>')
+    var tplId = cat.templateId || 'aftercare_followup_1'
+    var tplObj = TEMPLATES.find(function(t){ return t.id === tplId }) || TEMPLATES[0]
+    var msg = tplObj.msg
+    var rendered = renderTemplate(msg, {
+      name: sample,
+      service: cat.name || 'Layanan',
+      date: fmtDate(),
+      bizName: biz
+    })
+    var msgHtml = rendered
+      .replace(new RegExp(escapeReg(sample), 'g'), '<span class="msg-var">' + sample + '</span>')
+      .replace(new RegExp(escapeReg(cat.name || 'Layanan'), 'g'), '<span class="msg-var">' + (cat.name || 'Layanan') + '</span>')
+      .replace(new RegExp(escapeReg(biz), 'g'), '<span class="msg-var">' + biz + '</span>')
+      .replace(/\n/g, '<br>')
 
     var tplOptions = TEMPLATES.map(function(t) {
       var sel = t.id === tplId ? ' selected' : ''
@@ -672,17 +951,18 @@ function renderFlows(U) {
           '<div>' +
             '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Template Pesan</div>' +
             '<select id="tpl-' + cat.id + '" class="fi" onchange="previewCatTemplate(\'' + cat.id + '\')">' + tplOptions + '</select>' +
+            '<div class="tpl-help">5 variasi bahasa (formal → casual). Ganti kalau ga cocok dengan tone bisnismu — preview di bawah auto-update.</div>' +
           '</div>' +
         '</div>' +
         '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Preview Pesan WA</div>' +
         '<div class="msg-prev" id="prev-' + cat.id + '">' + msgHtml + '</div>' +
         '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:12px">' +
-          '<div style="display:flex;flex-wrap:wrap;gap:5px">' +
-            '<span style="font-size:10px;font-weight:600;color:var(--ink3)">Variabel:</span>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)">{customer_name}</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)">{business_name}</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)">{days}</code>' +
-            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)">{service}</code>' +
+          '<div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">' +
+            '<span style="font-size:10px;font-weight:600;color:var(--ink3)">Variabel Meta:</span>' +
+            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Nama customer">{{1}} nama</code>' +
+            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Nama layanan">{{2}} layanan</code>' +
+            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Tanggal kunjungan">{{3}} tanggal</code>' +
+            '<code style="font-size:10px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--ink2)" title="Nama bisnis">{{4}} bisnis</code>' +
           '</div>' +
           '<button id="save-' + cat.id + '" class="btn btn-lime btn-sm" onclick="saveFlowChanges(\'' + cat.id + '\')">Simpan</button>' +
         '</div>' +
@@ -700,16 +980,13 @@ function boot() {
   var tzCity = (U.timezone || 'Asia/Jakarta').split('/')[1] || 'Jakarta'
   var tzMap = {Jakarta:'WIB',Makassar:'WITA',Jayapura:'WIT'}
   var tzLabel = tzMap[tzCity] || tzCity
-  document.getElementById('send-tz').textContent = tzLabel
-  document.getElementById('default-tz').textContent = tzLabel
+  var tzEl = document.getElementById('send-tz')
+  if (tzEl) tzEl.textContent = tzLabel
 
-  // Send time
+  // Send time — display only (edit via modal)
   var sendTime = U.sendTime || '09:00'
-  document.getElementById('send-time').textContent = sendTime
-  document.getElementById('default-send-time').value = sendTime
-
-  // Default interval
-  document.getElementById('default-interval').value = U.defaultInterval || 30
+  var display = document.getElementById('send-time-display')
+  if (display) display.textContent = sendTime
 
   // Render sections
   renderMasterToggle(U)
@@ -722,7 +999,46 @@ function boot() {
 window.addEventListener('DOMContentLoaded', function() {
   boot()
   bootSidebar()
+  checkTrialLock()
 })
+
+/* ── IMPERSONATION CHECK (admin logged in as user) ── */
+(function() {
+  try {
+    var raw = localStorage.getItem('getstarvio_impersonation');
+    if (!raw) return;
+    var imp = JSON.parse(raw);
+    if (!imp || !imp.targetBizId) return;
+    document.addEventListener('DOMContentLoaded', function() {
+      var banner = document.getElementById('impBanner');
+      var bizEl = document.getElementById('impBizName');
+      if (banner) banner.classList.add('show');
+      if (bizEl) bizEl.textContent = imp.targetBizName || imp.targetBizId;
+      document.body.classList.add('imp-active');
+    });
+  } catch(e) {}
+})();
+function exitImpersonate() {
+  try { localStorage.removeItem('getstarvio_impersonation') } catch(e) {}
+  window.location.href = 'getstarvio-admin.html';
+}
 </script>
+
+<!-- Trial Hard Lock Overlay (self-styled, no CSS class deps) -->
+<div id="trialLockOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;font-family:'Sora',sans-serif">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)">
+    <div style="font-size:48px;margin-bottom:14px">🔒</div>
+    <div style="font-size:22px;font-weight:700;color:#1a1917;margin-bottom:8px">Trial selesai</div>
+    <div style="font-size:13px;color:#5c5b55;line-height:1.6;margin-bottom:20px">Subscribe untuk lanjut menggunakan getstarvio. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali setelah subscribe.</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:#edfac8;border:1px solid #c8f07a;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#2d4a00">
+      <span style="text-decoration:line-through;opacity:.5">Rp 499.000</span>
+      <strong style="font-size:18px;font-weight:700">Rp 249.000/bulan</strong>
+      <span style="font-size:10px;font-weight:700;background:#b8f04a;color:#2d4a00;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em">Early Access 50% off</span>
+    </div>
+    <a href="getstarvio-billing.html" style="display:block;width:100%;padding:14px;background:#b8f04a;color:#2d4a00;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;box-shadow:0 4px 16px rgba(184,240,74,.3);box-sizing:border-box">Subscribe Sekarang →</a>
+    <a href="getstarvio-billing.html" style="display:inline-block;font-size:11px;color:#9b9a92;text-decoration:underline">Lihat detail di Billing</a>
+  </div>
+</div>
+
 </body>
 </html>

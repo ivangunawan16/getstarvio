@@ -206,6 +206,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* ── MOBILE ── */
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -227,9 +232,31 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   .s-reset::after{content:'\21BA';font-size:14px}
 }
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ── IMPERSONATION BANNER (admin logged in as user) ── */
+.imp-banner{position:fixed;top:0;left:0;right:0;z-index:300;background:repeating-linear-gradient(45deg,#e8453c,#e8453c 12px,#c43e37 12px,#c43e37 24px);color:#fff;padding:8px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(232,69,60,.3)}
+.imp-banner.show{display:flex}
+.imp-banner-info{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.imp-banner-info strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp-banner-exit{padding:5px 14px;background:#fff;color:#7a1a16;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;font-size:11px;white-space:nowrap}
+.imp-banner-exit:hover{background:#fdf1f0}
+body.imp-active{padding-top:36px}
+@media(max-width:600px){
+  .imp-banner{font-size:11px;padding:7px 12px}
+  .imp-banner-info strong{font-size:11px}
+  body.imp-active{padding-top:44px}
+}
 </style>
 </head>
 <body>
+<!-- Impersonation banner (admin mode) -->
+<div class="imp-banner" id="impBanner">
+  <div class="imp-banner-info">
+    <span>🎭</span>
+    <span>Impersonating: <strong id="impBizName">—</strong></span>
+  </div>
+  <button class="imp-banner-exit" onclick="exitImpersonate()">Exit Impersonate &rarr;</button>
+</div>
 <div class="shell">
 
 <!-- SIDEBAR OVERLAY (mobile) -->
@@ -247,7 +274,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
     <a id="nav-catat"      href="getstarvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
     <a id="nav-pelanggan"  href="getstarvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
     <a id="nav-automation" href="getstarvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Pengingat</span></a>
     <a id="nav-kategori"   href="getstarvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
     <a id="nav-billing"    href="getstarvio-billing.html"      class="nav-item active"><span class="nav-icon">💳</span><span>Billing</span></a>
     <a id="nav-settings"   href="getstarvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
@@ -381,17 +408,39 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   <div class="modal" style="width:420px">
     <div class="mhd" id="sub-header">
       <div class="m-title" id="sub-title">Konfirmasi Subscribe</div>
-      <div class="m-sub">Subscriber — Rp 250.000/bulan (Early Access +50%)</div>
+      <div class="m-sub">Subscriber Bulanan — Early Access 50% off</div>
     </div>
     <div id="sub-content">
       <div class="m-body" id="sub-confirm">
         <div class="pay-summary">
-          <div class="pay-row"><span class="pay-row-k">Paket</span><span class="pay-row-v">Subscriber Bulanan</span></div>
-          <div class="pay-row"><span class="pay-row-k">Kredit per bulan</span><span class="pay-row-v">250 kredit</span></div>
-          <div class="pay-row"><span class="pay-row-k">Harga per kredit</span><span class="pay-row-v">Rp 1.000</span></div>
-          <div class="pay-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"><span class="pay-row-k" style="font-weight:700;color:var(--ink)">Total/bulan</span><span class="pay-row-v" style="font-size:14px;color:var(--lime-dk)">Rp 250.000</span></div>
+          <div class="pay-row"><span class="pay-row-k">Subscription Bulanan</span><span class="pay-row-v">300 kredit</span></div>
+          <div class="pay-row"><span class="pay-row-k">Harga normal</span><span class="pay-row-v" style="text-decoration:line-through;color:var(--ink3)">Rp 499.000</span></div>
+          <div class="pay-row"><span class="pay-row-k">Diskon Early Access</span><span class="pay-row-v" style="color:var(--lime-dk)">&minus;50%</span></div>
+          <div class="pay-row"><span class="pay-row-k" style="font-weight:700;color:var(--ink)">Subscription</span><span class="pay-row-v" style="font-weight:700;color:var(--ink)">Rp 249.000</span></div>
         </div>
-        <div style="font-size:11px;color:var(--ink3);line-height:1.5">Pembayaran via transfer bank / QRIS. 250 kredit langsung tersedia setelah aktivasi.</div>
+
+        <!-- BUNDLE: subscribe + topup (auto-checked, conversion-focus) -->
+        <div id="sub-bundle" style="margin-top:14px;padding:12px 14px;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm)">
+          <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer">
+            <input type="checkbox" id="bundle-checkbox" checked onchange="updateBundleUI()" style="margin-top:3px;flex-shrink:0;width:16px;height:16px;accent-color:var(--lime-dk)">
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:700;color:var(--lime-dk);margin-bottom:2px">🎁 Bundle Hemat — Tambah Kredit Cadangan</div>
+              <div style="font-size:11px;color:var(--lime-dk);line-height:1.5;opacity:.85">Kredit permanent (tidak ada expiry). Hemat per kredit dibanding beli terpisah.</div>
+            </div>
+          </label>
+          <select id="bundle-tier" onchange="updateBundleUI()" style="width:100%;margin-top:10px;padding:10px 36px 10px 12px;background:#fff;border:1px solid var(--lime-bd);border-radius:var(--r-sm);font-size:12px;font-weight:600;color:var(--ink);font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%232d4a00' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center;text-overflow:ellipsis;overflow:hidden;white-space:nowrap">
+            <option value="0">200 kredit — Rp 399.000 (Rp 1.995/kredit)</option>
+            <option value="1" selected>500 kredit — Rp 749.000 (Rp 1.498/kredit) ⭐ Terlaris</option>
+            <option value="2">1.000 kredit — Rp 1.299.000 (Rp 1.299/kredit) · Hemat 35%</option>
+          </select>
+        </div>
+
+        <div class="pay-summary" style="margin-top:14px;background:var(--ink);color:#fff">
+          <div class="pay-row" style="border-bottom:none"><span class="pay-row-k" style="color:rgba(255,255,255,.6);font-weight:700">Total Pembayaran</span><span class="pay-row-v" id="bundle-total" style="font-size:18px;color:var(--lime);font-weight:700">Rp 998.000</span></div>
+          <div id="bundle-breakdown" style="font-size:11px;color:rgba(255,255,255,.5);padding:0 13px 11px;line-height:1.5">Subscription Rp 249.000 + Bundle 500 kredit Rp 749.000</div>
+        </div>
+
+        <div style="font-size:11px;color:var(--ink3);line-height:1.5;margin-top:12px">Pembayaran via transfer bank / QRIS. Kredit subscription hangus tiap bulan, kredit top-up permanent. Garansi 30 hari uang kembali.</div>
       </div>
       <div class="m-body" id="sub-processing" style="display:none">
         <div style="text-align:center;padding:20px">
@@ -404,13 +453,33 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
         <div style="text-align:center;padding:20px">
           <div class="pay-check">&#10003;</div>
           <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px">Langganan Aktif!</div>
-          <div style="font-size:12px;color:var(--ink3)">250 kredit subscription sudah ditambahkan ke akun kamu.</div>
+          <div style="font-size:12px;color:var(--ink3)">300 kredit subscription sudah ditambahkan ke akun kamu.</div>
         </div>
       </div>
     </div>
     <div class="mftr" id="sub-footer">
       <button class="btn btn-ghost btn-sm" onclick="closeSubscribe()">Batal</button>
       <button class="btn btn-lime btn-sm" id="sub-btn" onclick="processSubscribe()">Subscribe Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SHARED PIN GATE MODAL ══════════ -->
+<div class="overlay" id="m-pin-gate">
+  <div class="modal" style="max-width:380px">
+    <div class="mhd" style="text-align:center">
+      <div style="width:42px;height:42px;border-radius:11px;background:var(--lime-bg);border:1px solid #c8f07a;display:flex;align-items:center;justify-content:center;margin:0 auto 11px;font-size:20px">🔐</div>
+      <div class="m-title">Masukkan PIN Admin</div>
+      <div class="m-sub" id="pin-gate-sub">Konfirmasi untuk lanjut</div>
+    </div>
+    <div style="padding:18px 22px 4px">
+      <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-gate-input" placeholder="••••" onkeydown="if(event.key==='Enter')verifyPinGate()" oninput="onPinGateInput(this)" style="width:100%;padding:14px;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:.6em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+      <div id="pin-gate-error" style="display:none;font-size:11px;color:var(--red-dk);margin-top:8px;font-weight:600;text-align:center">PIN salah — coba lagi</div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:10px;text-align:center">Lupa PIN? <a href="getstarvio-settings.html#pin" style="color:var(--lime-dk);font-weight:600">Reset di Settings →</a></div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closePinGate()">Batal</button>
+      <button class="btn btn-lime btn-sm" id="pin-gate-ok" onclick="verifyPinGate()" disabled style="opacity:.4;cursor:not-allowed">Konfirmasi</button>
     </div>
   </div>
 </div>
@@ -425,14 +494,38 @@ function loadU() {
     var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     var u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
-    // Compute remLeft from new billing fields
+    // Migration v4 → v5
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        var td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
+    // Compute remLeft + trial states
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      var endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else {
+      u.trialDaysLeft = null
+      u.trialExpired = false
+    }
     return u
   } catch(e) { return null }
 }
 
 function saveU(u) {
+  // Strip computed fields
+  delete u.remLeft
+  delete u.trialDaysLeft
+  delete u.trialExpired
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
 }
 
@@ -505,32 +598,33 @@ function calcUsageRate(U) {
    ══════════════════════════════════════════════ */
 
 var _pc = (function(){ try { var u=JSON.parse(localStorage.getItem('getstarvio_user')); return u && u.planConfig ? u.planConfig : {} } catch(e){ return {} } })()
-var SUB_PRICE = _pc.subPrice || 250000
-var SUB_CREDITS = _pc.subCredits || 250
+var SUB_PRICE = _pc.subPrice || 249000              // Early Access 50% off (normal Rp 499.000)
+var SUB_PRICE_NORMAL = 499000
+var SUB_CREDITS = _pc.subCredits || 300
 
-/* Default packages — overridden by admin planConfig if present */
+/* Default top-up packages — flat tier pricing, lebih banyak = lebih murah/kredit */
 var DEF_PACKAGES = [
-  { id: 'p1', amt: 300,  price: 250000,  popular: false, popLabel: '', save: '' },
-  { id: 'p2', amt: 625,  price: 500000,  popular: true,  popLabel: 'Terlaris', save: '' },
-  { id: 'p3', amt: 1500, price: 1000000, popular: false, popLabel: '', save: 'Best Value' }
+  { id: 'p1', amt: 200,  price: 399000,   popular: false, popLabel: '',         save: '' },
+  { id: 'p2', amt: 500,  price: 749000,   popular: true,  popLabel: 'Terlaris', save: 'Hemat 25%' },
+  { id: 'p3', amt: 1000, price: 1299000,  popular: false, popLabel: '',         save: 'Hemat 35%' }
 ]
 
 function buildPackages() {
   var u = loadU()
   var pc = u && u.planConfig ? u.planConfig : null
-  var basePrice = pc && pc.topupPrice ? pc.topupPrice : 1000
   var tiers = pc && pc.tiers && pc.tiers.length === 3 ? pc.tiers : null
 
-  var defs = DEF_PACKAGES
   var pkgs = []
   for (var i = 0; i < 3; i++) {
-    var d = defs[i]
+    var d = DEF_PACKAGES[i]
     var tierPrice = tiers ? tiers[i].price : d.price
     var tierCredits = tiers ? tiers[i].credits : d.amt
-    var baseCredits = Math.floor(tierPrice / basePrice)
-    var bonusCredits = tierCredits - baseCredits
-    var bonusPct = baseCredits > 0 ? Math.round(bonusCredits / baseCredits * 100) : 0
     var perCredit = tierCredits > 0 ? Math.round(tierPrice / tierCredits) : 0
+    // Estimasi durasi pakai (asumsi 4 kredit/hari untuk UMKM mid-range)
+    var daysEst = Math.round(tierCredits / 4)
+    var durationStr = daysEst < 30 ? '~' + daysEst + ' hari pakai'
+                    : daysEst < 60 ? '~' + Math.round(daysEst / 7) + ' minggu pakai'
+                    :                 '~' + Math.round(daysEst / 30) + ' bulan pakai'
     pkgs.push({
       id: d.id,
       amt: tierCredits,
@@ -538,10 +632,10 @@ function buildPackages() {
       label: tierCredits.toLocaleString('id-ID'),
       priceStr: 'Rp ' + tierPrice.toLocaleString('id-ID'),
       per: 'Rp ' + perCredit.toLocaleString('id-ID') + '/kredit',
+      duration: durationStr,
       popular: d.popular,
       popLabel: d.popLabel,
-      save: d.save,
-      bonus: bonusCredits > 0 ? '+' + bonusCredits + ' bonus (' + bonusPct + '%)' : ''
+      save: d.save
     })
   }
   return pkgs
@@ -551,7 +645,7 @@ var PACKAGES = buildPackages()
 
 /* ── Ensure billing fields exist ── */
 function ensureBillingFields(U) {
-  if (typeof U.plan === 'undefined') U.plan = 'free'
+  if (typeof U.plan === 'undefined') U.plan = 'trial'
   if (typeof U.subCreditsLeft === 'undefined') U.subCreditsLeft = 0
   if (typeof U.subCreditsMax === 'undefined') U.subCreditsMax = SUB_CREDITS
   if (typeof U.topupCreditsLeft === 'undefined') {
@@ -559,6 +653,11 @@ function ensureBillingFields(U) {
     U.topupCreditsLeft = U.remLeft || 0
   }
   if (typeof U.subRenewsAt === 'undefined') U.subRenewsAt = null
+  // Trial — set trialStartedAt for new free users (or migration from existing).
+  // Subscribers don't have trial concept (set null untuk skip).
+  if (typeof U.trialStartedAt === 'undefined') {
+    U.trialStartedAt = U.plan === 'subscriber' ? null : new Date().toISOString()
+  }
   if (typeof U.billingHistory === 'undefined') {
     U.billingHistory = generateDummyHistory(U)
   }
@@ -573,6 +672,21 @@ function ensureBillingFields(U) {
   return U
 }
 
+/* ── TRIAL HELPERS (computed di loadU, ini wrapper backward-compat) ── */
+function isTrialExpired(U) { return !!(U && U.trialExpired) }
+function trialDaysLeft(U) { return U ? U.trialDaysLeft : null }
+
+/* ── BILLING STATE ROUTER ──
+   A: trial active (plan='trial' + !trialExpired)
+   B: trial expired (plan='trial' + trialExpired)
+   C: subscriber normal (plan='subscriber' + remLeft >= 10)
+   D: subscriber low (plan='subscriber' + remLeft < 10) */
+function getBillingState(U) {
+  if (!U) return 'A'
+  if (U.plan === 'subscriber') return (U.remLeft < 10) ? 'D' : 'C'
+  return U.trialExpired ? 'B' : 'A'
+}
+
 function generateDummyHistory(U) {
   var h = []
   var bal = (U.subCreditsLeft || 0) + (U.topupCreditsLeft || 0)
@@ -581,17 +695,17 @@ function generateDummyHistory(U) {
   h.push({ date: '2026-03-01', type: 'welcome', label: 'Welcome Bonus', delta: 100, balAfter: bal + 5, note: 'Bonus kredit pendaftaran' })
 
   if (U.plan === 'subscriber') {
-    h.push({ date: '2026-03-01', type: 'subscription', label: 'Subscription', delta: 250, balAfter: bal + 8, note: 'Kredit bulanan subscriber (250 kredit/bulan)' })
+    h.push({ date: '2026-03-01', type: 'subscription', label: 'Subscription', delta: 300, balAfter: bal + 8, note: 'Kredit bulanan subscriber (300 kredit/bulan, Early Access 50% off)' })
   }
 
   // Some usage entries
-  h.push({ date: '2026-03-25', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal, note: 'Reminder — Patricia Sutanto' })
-  h.push({ date: '2026-03-24', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 1, note: 'Reminder — Quincy Lesmana' })
-  h.push({ date: '2026-03-23', type: 'topup', label: 'Top Up', delta: 300, balAfter: bal + 2 + 300, note: 'Paket 300 kredit — Rp 250.000 (incl. +50 bonus 20%)' })
-  h.push({ date: '2026-03-22', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 2, note: 'Reminder — Valeria Chandra' })
-  h.push({ date: '2026-03-21', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 3, note: 'Reminder — Tabitha Dharmawan' })
-  h.push({ date: '2026-03-20', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 4, note: 'Reminder — Rachel Tandiono' })
-  h.push({ date: '2026-03-19', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 5, note: 'Reminder — Xenia Rachman' })
+  h.push({ date: '2026-03-25', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal, note: 'Pengingat — Patricia Sutanto' })
+  h.push({ date: '2026-03-24', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 1, note: 'Pengingat — Quincy Lesmana' })
+  h.push({ date: '2026-03-23', type: 'topup', label: 'Top Up', delta: 200, balAfter: bal + 2 + 200, note: 'Paket 200 kredit — Rp 399.000' })
+  h.push({ date: '2026-03-22', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 2, note: 'Pengingat — Valeria Chandra' })
+  h.push({ date: '2026-03-21', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 3, note: 'Pengingat — Tabitha Dharmawan' })
+  h.push({ date: '2026-03-20', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 4, note: 'Pengingat — Rachel Tandiono' })
+  h.push({ date: '2026-03-19', type: 'usage', label: 'Pemakaian', delta: -1, balAfter: bal + 5, note: 'Pengingat — Xenia Rachman' })
 
   return h
 }
@@ -679,6 +793,29 @@ function closePayment() {
 
 var subBusy = false
 
+function updateBundleUI() {
+  var checked = document.getElementById('bundle-checkbox').checked
+  var tier = parseInt(document.getElementById('bundle-tier').value) || 1
+  var pkg = PACKAGES[tier] || PACKAGES[1]
+  var totalEl = document.getElementById('bundle-total')
+  var brkEl = document.getElementById('bundle-breakdown')
+  var btn = document.getElementById('sub-btn')
+  if (checked) {
+    var total = SUB_PRICE + pkg.price
+    if (totalEl) totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID')
+    if (brkEl) brkEl.textContent = 'Subscription Rp ' + SUB_PRICE.toLocaleString('id-ID') + ' + Bundle ' + pkg.label + ' kredit Rp ' + pkg.price.toLocaleString('id-ID')
+    if (btn) btn.textContent = 'Bayar — Subscribe + ' + pkg.label + ' Kredit'
+    document.getElementById('bundle-tier').disabled = false
+    document.getElementById('bundle-tier').style.opacity = '1'
+  } else {
+    if (totalEl) totalEl.textContent = 'Rp ' + SUB_PRICE.toLocaleString('id-ID')
+    if (brkEl) brkEl.textContent = 'Subscription Rp ' + SUB_PRICE.toLocaleString('id-ID') + ' (tanpa bundle)'
+    if (btn) btn.textContent = 'Bayar — Subscribe Saja'
+    document.getElementById('bundle-tier').disabled = true
+    document.getElementById('bundle-tier').style.opacity = '.5'
+  }
+}
+
 function openSubscribe() {
   document.getElementById('sub-confirm').style.display = 'block'
   document.getElementById('sub-processing').style.display = 'none'
@@ -686,7 +823,11 @@ function openSubscribe() {
   document.getElementById('sub-title').textContent = 'Konfirmasi Subscribe'
   document.getElementById('sub-footer').innerHTML =
     '<button class="btn btn-ghost btn-sm" onclick="closeSubscribe()">Batal</button>' +
-    '<button class="btn btn-lime btn-sm" id="sub-btn" onclick="processSubscribe()">Subscribe Sekarang</button>'
+    '<button class="btn btn-lime btn-sm" id="sub-btn" onclick="processSubscribe()">Bayar — Subscribe + 500 Kredit</button>'
+  // Reset bundle defaults
+  document.getElementById('bundle-checkbox').checked = true
+  document.getElementById('bundle-tier').value = '1'  // 500 kredit default
+  updateBundleUI()
   subBusy = false
   document.getElementById('m-subscribe').classList.add('show')
 }
@@ -694,6 +835,12 @@ function openSubscribe() {
 function processSubscribe() {
   if (subBusy) return
   subBusy = true
+
+  // Read bundle state BEFORE hiding form
+  var bundleChecked = document.getElementById('bundle-checkbox').checked
+  var bundleTier = parseInt(document.getElementById('bundle-tier').value) || 1
+  var bundlePkg = bundleChecked ? PACKAGES[bundleTier] : null
+
   document.getElementById('sub-confirm').style.display = 'none'
   document.getElementById('sub-processing').style.display = 'block'
   var btn = document.getElementById('sub-btn')
@@ -704,30 +851,62 @@ function processSubscribe() {
     if (!U) return
     U = ensureBillingFields(U)
     U.plan = 'subscriber'
+    U.trialUsed = true
     U.subCreditsLeft = SUB_CREDITS
     U.subCreditsMax = SUB_CREDITS
+    U.remMax = SUB_CREDITS
     var renew = new Date()
     renew.setMonth(renew.getMonth() + 1)
     U.subRenewsAt = renew.toISOString()
+
+    // Bundle topup (jika checked)
+    if (bundlePkg) {
+      U.topupCreditsLeft = (U.topupCreditsLeft || 0) + bundlePkg.amt
+    }
+
     U.remLeft = U.subCreditsLeft + (U.topupCreditsLeft || 0)
 
-    // Add to history
+    // Add subscription transaction
     U.billingHistory = U.billingHistory || []
+    var dateStr = new Date().toISOString().slice(0,10)
     U.billingHistory.unshift({
-      date: new Date().toISOString().slice(0,10),
-      type: 'subscription',
-      label: 'Subscription',
-      delta: SUB_CREDITS,
-      balAfter: U.remLeft,
-      note: 'Aktivasi subscriber — Rp 250.000/bulan (250 kredit/bulan)'
+      date: dateStr, type: 'subscription', label: 'Subscription',
+      delta: SUB_CREDITS, balAfter: U.remLeft,
+      note: 'Aktivasi subscriber — Rp 249.000/bulan (300 kredit/bulan, Early Access 50% off)'
     })
+    // Add bundle topup transaction
+    if (bundlePkg) {
+      U.billingHistory.unshift({
+        date: dateStr, type: 'topup', label: 'Top Up (Bundle)',
+        delta: bundlePkg.amt, balAfter: U.remLeft,
+        note: 'Bundle paket ' + bundlePkg.amt + ' kredit — ' + bundlePkg.priceStr
+      })
+    }
     saveU(U)
 
     document.getElementById('sub-processing').style.display = 'none'
     document.getElementById('sub-done').style.display = 'block'
-    document.getElementById('sub-title').textContent = 'Langganan Aktif!'
-    document.getElementById('sub-footer').innerHTML = '<button class="btn btn-lime btn-sm" onclick="closeSubscribe();render()">Tutup</button>'
+    document.getElementById('sub-title').textContent = 'Selamat datang, subscriber getstarvio!'
+    var doneSub = bundlePkg
+      ? '300 kredit bulanan + ' + bundlePkg.amt + ' kredit cadangan sudah aktif. Selamat datang!'
+      : '300 kredit bulanan sudah aktif. Selamat datang!'
+    var subEl = document.querySelector('#sub-done div[style*="font-size:12px"]')
+    if (subEl) subEl.textContent = doneSub
+    document.getElementById('sub-footer').innerHTML =
+      '<div id="sub-countdown" style="font-size:11px;color:var(--ink3);margin-right:auto;align-self:center">Masuk dashboard dalam <strong id="sub-cdn">3</strong> detik...</div>' +
+      '<a class="btn btn-lime btn-sm" href="getstarvio-dashboard.html" style="text-decoration:none">Masuk ke Dashboard \u2192</a>'
     subBusy = false
+    // Countdown + auto-redirect
+    var cdEl = document.getElementById('sub-cdn')
+    var n = 3
+    var cdTimer = setInterval(function() {
+      n--
+      if (cdEl) cdEl.textContent = n
+      if (n <= 0) {
+        clearInterval(cdTimer)
+        location.href = 'getstarvio-dashboard.html'
+      }
+    }, 1000)
   }, 2000)
 }
 
@@ -749,7 +928,7 @@ function confirmCancelSub() {
   var U = loadU()
   if (!U) return
   U = ensureBillingFields(U)
-  U.plan = 'free'
+  U.plan = 'trial'
   U.subCreditsLeft = 0
   U.subRenewsAt = null
   U.remLeft = (U.subCreditsLeft || 0) + (U.topupCreditsLeft || 0)
@@ -759,12 +938,95 @@ function confirmCancelSub() {
 }
 
 /* ══════════════════════════════════════════════
-   AUTO TOP-UP
+   SHARED PIN GATE — verification pattern
+   ══════════════════════════════════════════════ */
+var _pinGatePending = null
+
+function requirePin(actionFn, contextLabel) {
+  var U = loadU()
+  if (!U) return
+  if (!U.adminPin) {
+    if (!window.confirm('⚠️ PIN admin belum diatur.\n\nAksi ini seharusnya pakai PIN untuk proteksi. Lanjut tanpa PIN?\n\n(Setup PIN di Settings → PIN Admin untuk proteksi ekstra)')) return
+    actionFn()
+    return
+  }
+  _pinGatePending = { fn: actionFn, label: contextLabel || 'Konfirmasi aksi' }
+  document.getElementById('pin-gate-sub').textContent = _pinGatePending.label
+  document.getElementById('pin-gate-input').value = ''
+  document.getElementById('pin-gate-error').style.display = 'none'
+  var okBtn = document.getElementById('pin-gate-ok')
+  okBtn.disabled = true
+  okBtn.style.opacity = '.4'
+  okBtn.style.cursor = 'not-allowed'
+  document.getElementById('m-pin-gate').classList.add('show')
+  setTimeout(function() { document.getElementById('pin-gate-input').focus() }, 100)
+}
+
+function onPinGateInput(el) {
+  var v = el.value.replace(/\D/g, '').slice(0, 4)
+  if (el.value !== v) el.value = v
+  document.getElementById('pin-gate-error').style.display = 'none'
+  var okBtn = document.getElementById('pin-gate-ok')
+  var ready = v.length === 4
+  okBtn.disabled = !ready
+  okBtn.style.opacity = ready ? '' : '.4'
+  okBtn.style.cursor = ready ? '' : 'not-allowed'
+}
+
+function closePinGate() {
+  document.getElementById('m-pin-gate').classList.remove('show')
+  _pinGatePending = null
+}
+
+function verifyPinGate() {
+  var U = loadU()
+  if (!U || !_pinGatePending) return
+  var entered = (document.getElementById('pin-gate-input').value || '').trim()
+  if (entered.length !== 4) return
+  if (entered !== U.adminPin) {
+    var errEl = document.getElementById('pin-gate-error')
+    errEl.style.display = 'block'
+    var inp = document.getElementById('pin-gate-input')
+    inp.value = ''
+    inp.focus()
+    inp.style.transition = 'transform .05s'
+    var i = 0
+    var shake = setInterval(function() {
+      inp.style.transform = i % 2 === 0 ? 'translateX(-4px)' : 'translateX(4px)'
+      i++
+      if (i > 5) { clearInterval(shake); inp.style.transform = '' }
+    }, 50)
+    return
+  }
+  var pending = _pinGatePending
+  _pinGatePending = null
+  document.getElementById('m-pin-gate').classList.remove('show')
+  pending.fn()
+}
+
+/* ══════════════════════════════════════════════
+   AUTO TOP-UP — PIN-gated toggle (automatic charges = critical)
    ══════════════════════════════════════════════ */
 
 function toggleAutoTopup(val) {
-  var details = document.getElementById('autoDetails')
-  if (details) details.style.display = val ? 'block' : 'none'
+  // Event fired AFTER visual change. Revert temporarily, PIN-gate the actual state change.
+  var toggle = document.getElementById('autoToggle')
+  if (!toggle) return
+  var prevState = !val  // what it was before clicking
+  // Revert visual immediately pending PIN
+  toggle.checked = prevState
+
+  requirePin(function() {
+    var U = loadU()
+    if (!U) return
+    U = ensureBillingFields(U)
+    U.autoTopup = val
+    saveU(U)
+    toggle.checked = val
+    var details = document.getElementById('autoDetails')
+    if (details) details.style.display = val ? 'block' : 'none'
+    toast(val ? '✅ Auto Top-Up diaktifkan' : '🛑 Auto Top-Up dimatikan', 'success')
+  }, val ? 'Aktifkan Auto Top-Up (charge otomatis)' : 'Matikan Auto Top-Up')
 }
 
 function saveAutoTopup() {
@@ -786,16 +1048,61 @@ function saveAutoTopup() {
 }
 
 /* ══════════════════════════════════════════════
-   NOTIFICATION SETTINGS
+   EXPORT TRANSACTION HISTORY — Excel-compatible CSV (UTF-8 BOM)
+   ══════════════════════════════════════════════ */
+
+function exportTxHistoryCSV() {
+  var U = loadU()
+  if (!U) return
+  var history = U.billingHistory || []
+  if (!history.length) { toast('Belum ada transaksi untuk di-export', 'error'); return }
+
+  var esc = function(s) { s = String(s == null ? '' : s); return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s }
+  var typeLbl = { welcome: 'Welcome Bonus', subscription: 'Subscription', topup: 'Top Up', usage: 'Penggunaan' }
+  var BOM = '\uFEFF'
+  var rows = ['Tanggal,Tipe,Jumlah,Saldo Setelah,Keterangan']
+  history.forEach(function(tx) {
+    var sign = tx.delta > 0 ? '+' : ''
+    rows.push([
+      tx.date,
+      esc(typeLbl[tx.type] || tx.type),
+      sign + tx.delta,
+      tx.balAfter,
+      esc(tx.note || '')
+    ].join(','))
+  })
+  var csv = BOM + rows.join('\n')
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  var url = URL.createObjectURL(blob)
+  var a = document.createElement('a')
+  a.href = url
+  var slug = (U.bizSlug || U.bizName || 'getstarvio').replace(/[^a-z0-9]+/gi, '-').toLowerCase()
+  a.download = 'riwayat-transaksi-' + slug + '-' + new Date().toISOString().slice(0,10) + '.csv'
+  a.click()
+  URL.revokeObjectURL(url)
+  toast('Riwayat transaksi di-export (' + history.length + ' entri)', 'success')
+}
+
+function toast(msg, type) {
+  // Lightweight toast fallback kalau belum ada — billing page ga punya toast helper sendiri
+  var el = document.createElement('div')
+  el.textContent = msg
+  el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:' + (type === 'error' ? 'var(--red-dk)' : 'var(--ink)') + ';color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:500;z-index:400;box-shadow:0 6px 24px rgba(0,0,0,.3);transition:opacity .3s'
+  document.body.appendChild(el)
+  setTimeout(function() { el.style.opacity = '0'; setTimeout(function() { el.remove() }, 300) }, 2400)
+}
+
+/* ══════════════════════════════════════════════
+   NOTIFICATION SETTINGS — DEPRECATED HERE
+   ══════════════════════════════════════════════
+   Moved to getstarvio-settings.html → Section WhatsApp.
+   `toggleNotif()` kept as no-op so any stale onclick handler
+   doesn't break, but nothing here renders notif UI anymore.
    ══════════════════════════════════════════════ */
 
 function toggleNotif(key, val) {
-  var U = loadU()
-  if (!U) return
-  U = ensureBillingFields(U)
-  U.billingNotifs = U.billingNotifs || {}
-  U.billingNotifs[key] = val
-  saveU(U)
+  /* No-op. Manage notifications di Settings page. */
+  console.warn('[billing] toggleNotif deprecated — manage notifications di Settings page.')
 }
 
 /* ══════════════════════════════════════════════
@@ -808,7 +1115,7 @@ function render() {
   U = ensureBillingFields(U)
   saveU(U) // persist any migrated fields
 
-  var plan = U.plan || 'free'
+  var plan = U.plan || 'trial'
   var subLeft = U.subCreditsLeft || 0
   var topLeft = U.topupCreditsLeft || 0
   var remLeft = subLeft + topLeft
@@ -841,6 +1148,21 @@ function render() {
   else { navLost.style.display = 'none' }
 
   var html = ''
+  var trialExpired = isTrialExpired(U)
+  var daysLeft = trialDaysLeft(U)
+  var planNow = U.plan || 'trial'
+
+  /* TRIAL EXPIRED BANNER — kasih cue jelas kalau trial habis & top-up locked */
+  if (trialExpired && planNow !== 'subscriber') {
+    html += '<div style="background:var(--red-dk);color:#fff;padding:14px 18px;border-radius:var(--r);margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">' +
+      '<div style="font-size:24px;flex-shrink:0">\u26A0</div>' +
+      '<div style="flex:1;min-width:200px">' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:3px">Trial selesai — platform locked</div>' +
+        '<div style="font-size:12px;opacity:.85;line-height:1.55">Subscribe untuk lanjut kirim pengingat. Top-up packages baru bisa diakses setelah subscribe.</div>' +
+      '</div>' +
+      '<button class="btn btn-lime" onclick="openSubscribe()" style="flex-shrink:0">Subscribe Sekarang \u2192</button>' +
+    '</div>'
+  }
 
   /* ─────────────────────────────────────────
      SECTION 1: STATUS PLAN
@@ -853,20 +1175,40 @@ function render() {
     if (U.subRenewsAt) {
       html += '<span class="plan-credit">Perpanjangan: <b>' + fmtDate(U.subRenewsAt) + '</b></span>'
     }
+  } else if (trialExpired) {
+    html += '<span class="plan-badge-free" style="background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3">&#9888; Trial Habis</span>'
+    html += '<span class="plan-credit" style="color:var(--red-dk)">Subscribe untuk lanjut. <b>' + fmt(remLeft) + '</b> kredit kamu masih tersimpan.</span>'
   } else {
-    html += '<span class="plan-badge-free">Paket Gratis</span>'
-    html += '<span class="plan-credit">Sisa kredit: <b>' + fmt(remLeft) + '</b></span>'
+    html += '<span class="plan-badge-free" style="background:var(--lime-bg);color:var(--lime-dk);border:1px solid var(--lime-bd)">&#127881; Free Trial</span>'
+    if (typeof daysLeft === 'number' && daysLeft >= 0) {
+      html += '<span class="plan-credit"><b>' + daysLeft + ' hari tersisa</b> &middot; <b>' + fmt(remLeft) + '</b> kredit (mana duluan)</span>'
+    } else {
+      html += '<span class="plan-credit">Sisa kredit: <b>' + fmt(remLeft) + '</b></span>'
+    }
   }
   html += '</div>'
-  html += '<div>'
+  html += '<div class="plan-cta">'
   if (plan === 'subscriber') {
     html += '<button class="cancel-link" onclick="openCancelModal()">Batalkan Langganan</button>'
   } else {
-    html += '<button class="btn btn-lime" onclick="openSubscribe()">Subscribe — Rp 250.000/bulan (250 kredit)</button>'
+    html += '<button class="btn btn-lime plan-sub-btn" onclick="openSubscribe()">' +
+      '<span class="sub-btn-main">Subscribe Rp 249.000/bulan</span>' +
+      '<span class="sub-btn-sub">300 kredit &middot; <span style="text-decoration:line-through;opacity:.55">Rp 499.000</span> hemat 50%</span>' +
+    '</button>'
   }
   html += '</div>'
   html += '</div>'
   html += '</div>'
+
+  // Trial expired banner — paksa subscribe
+  if (trialExpired) {
+    html += '<div class="reco-banner crit" style="margin-top:8px">'
+    html += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#9888;</div>'
+    html += '<div class="reco-text">'
+    html += '<div class="reco-title">Free trial sudah habis — automation berhenti</div>'
+    html += '<div class="reco-sub">Pengingat otomatis tidak bisa dikirim sampai kamu subscribe. Welcome bonus kamu (' + fmt(remLeft) + ' kredit) akan otomatis aktif kembali setelah subscribe — tidak hilang.</div>'
+    html += '</div></div>'
+  }
 
   /* ─────────────────────────────────────────
      SECTION 2: RINGKASAN KREDIT
@@ -894,12 +1236,8 @@ function render() {
   html += totalWarnHtml
   html += '</div>'
 
-  // Collapsible detail breakdown
-  html += '<div style="border-top:1px solid var(--border);margin-top:4px;padding-top:0">'
-  html += '<button onclick="var d=document.getElementById(\'credit-detail\');var a=this.querySelector(\'.chevron\');if(d.style.display===\'none\'){d.style.display=\'block\';a.style.transform=\'rotate(180deg)\'}else{d.style.display=\'none\';a.style.transform=\'rotate(0deg)\'}" style="display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;cursor:pointer;padding:10px 0;font-family:inherit;font-size:12px;font-weight:600;color:var(--ink3)">'
-  html += '<svg class="chevron" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s"><path d="M4 6l4 4 4-4"/></svg>'
-  html += 'Detail kredit</button>'
-  html += '<div id="credit-detail" style="display:none;padding-bottom:8px">'
+  // Detail breakdown — ALWAYS VISIBLE (no collapsible toggle)
+  html += '<div style="border-top:1px solid var(--border);margin-top:4px;padding:14px 0 8px">'
 
   // Subscription credits row (only for subscribers)
   if (plan === 'subscriber') {
@@ -923,15 +1261,29 @@ function render() {
     html += '</div>'
   }
 
-  // Top-Up credits row
-  html += '<div class="credit-row">'
+  // Top-Up credits row (with progress bar)
+  // Calculate total purchased top-up (welcome + topup transactions with positive delta)
+  var topPurchased = 0
+  ;(U.billingHistory || []).forEach(function(tx) {
+    if ((tx.type === 'topup' || tx.type === 'welcome') && tx.delta > 0) topPurchased += tx.delta
+  })
+  var topUsed = Math.max(0, topPurchased - topLeft)
+  var topPct = topPurchased > 0 ? Math.round(topLeft / topPurchased * 100) : 0
+  var topBarColor = topLeft < 10 && topLeft > 0 ? 'var(--amber)' : 'var(--lime)'
+
+  html += '<div class="credit-row" style="margin-top:10px">'
   html += '<div style="flex:1">'
   html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'
   html += '<span class="credit-label">Kredit Top-Up</span>'
   html += '<span class="badge b-lime" style="font-size:9px">Tidak ada expiry &#10003;</span>'
   html += '</div>'
-  if (topLeft > 0) {
+  if (topPurchased > 0) {
+    html += '<div style="display:flex;align-items:center;gap:12px">'
     html += '<span class="credit-val">' + fmt(topLeft) + '</span>'
+    html += '<span style="font-size:11px;color:var(--ink3)">sisa dari ' + fmt(topPurchased) + ' total dibeli</span>'
+    html += '</div>'
+    html += '<div class="progress-bar"><div class="progress-fill" style="width:' + topPct + '%;background:' + topBarColor + '"></div></div>'
+    html += '<div style="font-size:11px;color:var(--ink3);margin-top:4px">Terpakai ' + fmt(topUsed) + ' &middot; Sisa ' + fmt(topLeft) + '</div>'
   } else {
     html += '<span class="credit-val" style="color:var(--ink3)">&ndash;</span>'
     html += '<span style="font-size:11px;color:var(--ink3);margin-left:8px">Belum punya kredit top-up. <a href="#topup" style="color:var(--lime-dk);font-weight:700;text-decoration:underline" onclick="document.getElementById(\'topup-section\').scrollIntoView({behavior:\'smooth\'});return false">Top up sekarang</a></span>'
@@ -939,47 +1291,92 @@ function render() {
   html += '</div>'
   html += '</div>'
 
-  html += '</div>' // end #credit-detail
-  html += '</div>' // end collapsible wrapper
+  html += '</div>' // end detail breakdown (always visible)
 
   html += '</div>'
 
   /* ─────────────────────────────────────────
-     SECTION 3: TOP UP KREDIT EXTRA
+     SECTION 2.5: RECOMMENDATION ENGINE
+     (moved here from Section 5 — user wants it near credit summary,
+      not buried after Top-Up & Auto Top-Up)
      ───────────────────────────────────────── */
-  html += '<div class="sec-header" id="topup-section"><div class="sec-title">Top Up Kredit Extra</div><div class="sec-sub">Harga normal Rp 1.000/kredit — <b style="color:var(--lime-dk)">Early Access +50% bonus!</b></div></div>'
-  html += '<div class="pkg-grid">'
+  var recoHtml = ''
+  if (remLeft <= 0) {
+    recoHtml += '<div class="reco-banner crit">'
+    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#9940;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit habis &mdash; automation berhenti</div>'
+    recoHtml += '<div class="reco-sub">Reminder otomatis tidak bisa dikirim. Top up sekarang supaya pelanggan kamu tidak lupa balik.</div></div>'
+    recoHtml += '</div>'
+  } else if (remLeft < 10) {
+    recoHtml += '<div class="reco-banner crit">'
+    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#128680;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit hampir habis!</div>'
+    recoHtml += '<div class="reco-sub">Tinggal ' + remLeft + ' kredit. Dengan rata-rata pemakaian saat ini, kredit bisa habis dalam hitungan hari. Top up sekarang biar automation tetap jalan.</div></div>'
+    recoHtml += '</div>'
+  } else if (remLeft < 30) {
+    recoHtml += '<div class="reco-banner warn">'
+    recoHtml += '<div class="reco-icon" style="background:var(--amber-bg);border:1px solid #fcd88a">&#9888;&#65039;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit mulai menipis</div>'
+    recoHtml += '<div class="reco-sub">Sisa ' + remLeft + ' kredit. Pertimbangkan top up supaya pengingat tetap jalan tanpa gangguan. 1 kredit = 1 pengingat = potensi pelanggan balik.</div></div>'
+    recoHtml += '</div>'
+  } else if (plan === 'trial') {
+    recoHtml += '<div class="reco-banner">'
+    recoHtml += '<div class="reco-icon" style="background:var(--lime-bg);border:1px solid var(--lime-bd)">&#128161;</div>'
+    recoHtml += '<div class="reco-text"><div class="reco-title">Upgrade ke Subscriber? Hemat 50% Early Access!</div>'
+    recoHtml += '<div class="reco-sub">Dapatkan <b>300 kredit/bulan</b> — <span style="text-decoration:line-through;color:var(--ink3)">Rp 499.000</span> hanya <b style="color:var(--lime-dk)">Rp 249.000/bulan</b> (Rp 830/kredit). Setiap pengingat punya potensi bawa pelanggan balik.</div></div>'
+    recoHtml += '</div>'
+  }
+  html += recoHtml
+
+  /* ─────────────────────────────────────────
+     SECTION 3: TOP UP KREDIT EXTRA (Subscriber-only)
+     ───────────────────────────────────────── */
+  var canTopup = (plan === 'subscriber')
+  var topupSubMsg = canTopup
+    ? 'Beli paket sekali, kredit <b style="color:var(--lime-dk)">tidak ada expiry</b> — semakin besar paket, semakin murah per kreditnya.'
+    : '<span style="color:var(--amber-dk)">&#128274; Hanya subscriber yang bisa top-up.</span> Subscribe dulu untuk akses paket top-up.'
+  html += '<div class="sec-header" id="topup-section"><div class="sec-title">Top Up Kredit Extra</div><div class="sec-sub">' + topupSubMsg + '</div></div>'
+  html += '<div class="pkg-grid"' + (canTopup ? '' : ' style="opacity:.55;pointer-events:none"') + '>'
   PACKAGES.forEach(function(pkg) {
     var isSel = pkg.id === selectedPkg
-    html += '<div class="pkg-card' + (isSel ? ' sel' : '') + '" data-pkg="' + pkg.id + '" onclick="selectPkg(\'' + pkg.id + '\')">'
+    html += '<div class="pkg-card' + (isSel ? ' sel' : '') + '" data-pkg="' + pkg.id + '"' + (canTopup ? ' onclick="selectPkg(\'' + pkg.id + '\')"' : '') + '>'
     if (pkg.popular) html += '<div class="pkg-pop">' + pkg.popLabel + '</div>'
     if (pkg.save) html += '<div class="pkg-pop" style="background:var(--amber);color:#fff">' + pkg.save + '</div>'
     html += '<div class="pkg-amt">' + pkg.label + '</div>'
-    html += '<div class="pkg-unit">kredit</div>'
-    if (pkg.bonus) html += '<div style="font-size:10px;font-weight:700;color:var(--lime-dk);background:var(--lime-bg);border:1px solid #c8f07a;border-radius:99px;padding:2px 8px;margin:4px 0;display:inline-block">' + pkg.bonus + '</div>'
+    html += '<div class="pkg-unit">kredit · ' + pkg.duration + '</div>'
     html += '<div class="pkg-price">' + pkg.priceStr + '</div>'
     html += '<div class="pkg-per">' + pkg.per + '</div>'
     html += '</div>'
   })
   html += '</div>'
   html += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">'
-  html += '<button class="btn btn-lime" onclick="openPayModal()">Top Up Sekarang</button>'
-  html += '<span style="font-size:11px;color:var(--ink3)">Pembayaran via transfer bank / QRIS</span>'
+  if (canTopup) {
+    html += '<button class="btn btn-lime" onclick="openPayModal()">Top Up Sekarang</button>'
+    html += '<span style="font-size:11px;color:var(--ink3)">Pembayaran via transfer bank / QRIS</span>'
+  } else {
+    html += '<button class="btn btn-lime" onclick="openSubscribe()">Subscribe untuk Top Up &rarr;</button>'
+    html += '<span style="font-size:11px;color:var(--ink3)">Subscribe dulu, baru bisa beli paket top-up</span>'
+  }
   html += '</div>'
 
   /* ─────────────────────────────────────────
-     SECTION 4: AUTO TOP UP
+     SECTION 4: AUTO TOP UP — subscriber-only
      ───────────────────────────────────────── */
   var autoOn = U.autoTopup || false
   var autoThreshold = U.autoTopupThreshold || 10
   var autoPkgId = U.autoTopupPackage || 'p1'
+  var canAutoTopup = (plan === 'subscriber')
 
-  html += '<div class="auto-topup">'
+  html += '<div class="auto-topup"' + (canAutoTopup ? '' : ' style="opacity:.75"') + '>'
   html += '<div class="toggle-row">'
-  html += '<div><div class="toggle-label">Auto Top-Up</div><div class="toggle-sub">Otomatis top up kredit top-up saat di bawah batas tertentu</div></div>'
-  html += '<label class="toggle-switch"><input type="checkbox" id="autoToggle" ' + (autoOn ? 'checked' : '') + ' onchange="toggleAutoTopup(this.checked)"><span class="toggle-track"></span><span class="toggle-knob"></span></label>'
+  var lockBadge = canAutoTopup ? '' : ' <span style="display:inline-flex;align-items:center;gap:4px;background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;white-space:nowrap">\uD83D\uDD12 Subscriber only</span>'
+  html += '<div style="flex:1;min-width:0"><div class="toggle-label">Auto Top-Up' + lockBadge + '</div><div class="toggle-sub">Otomatis top up kredit top-up saat di bawah batas tertentu</div></div>'
+  html += '<label class="toggle-switch"' + (canAutoTopup ? '' : ' style="pointer-events:none"') + '><input type="checkbox" id="autoToggle" ' + (autoOn && canAutoTopup ? 'checked' : '') + (canAutoTopup ? '' : ' disabled') + ' onchange="toggleAutoTopup(this.checked)"><span class="toggle-track"></span><span class="toggle-knob"></span></label>'
   html += '</div>'
-  html += '<div id="autoDetails" style="' + (autoOn ? '' : 'display:none') + '">'
+  if (!canAutoTopup) {
+    html += '<div style="margin-top:14px;padding:10px 14px;background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);font-size:12px;color:var(--lime-dk);line-height:1.55">Auto top-up hanya tersedia untuk <strong>subscriber</strong>. Subscribe dulu untuk akses fitur ini. <a href="#" onclick="openSubscribe();return false" style="color:var(--lime-dk);font-weight:700;text-decoration:underline">Subscribe Sekarang \u2192</a></div>'
+  }
+  html += '<div id="autoDetails" style="' + (autoOn && canAutoTopup ? '' : 'display:none') + '">'
   html += '<div class="threshold-row">'
   html += '<span style="font-size:12px;color:var(--ink3)">Top up jika kredit top-up &lt;</span>'
   html += '<input type="number" class="threshold-input" value="' + autoThreshold + '" min="1" max="500">'
@@ -1000,62 +1397,13 @@ function render() {
 
   /* ─────────────────────────────────────────
      SECTION 5: RECOMMENDATION ENGINE
+     (MOVED to Section 2.5 — right after credit summary, before Top-Up.
+      This position helps owner see recommended action immediately after
+      seeing their credit balance.)
      ───────────────────────────────────────── */
-  var recoHtml = ''
-  if (remLeft <= 0) {
-    recoHtml += '<div class="reco-banner crit">'
-    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#9940;</div>'
-    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit habis &mdash; automation berhenti</div>'
-    recoHtml += '<div class="reco-sub">Reminder otomatis tidak bisa dikirim. Top up sekarang supaya pelanggan kamu tidak lupa balik.</div></div>'
-    recoHtml += '</div>'
-  } else if (remLeft < 10) {
-    recoHtml += '<div class="reco-banner crit">'
-    recoHtml += '<div class="reco-icon" style="background:var(--red-bg);border:1px solid #f5c5c3">&#128680;</div>'
-    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit hampir habis!</div>'
-    recoHtml += '<div class="reco-sub">Tinggal ' + remLeft + ' kredit. Dengan rata-rata pemakaian saat ini, kredit bisa habis dalam hitungan hari. Top up sekarang biar automation tetap jalan.</div></div>'
-    recoHtml += '</div>'
-  } else if (remLeft < 30) {
-    recoHtml += '<div class="reco-banner warn">'
-    recoHtml += '<div class="reco-icon" style="background:var(--amber-bg);border:1px solid #fcd88a">&#9888;&#65039;</div>'
-    recoHtml += '<div class="reco-text"><div class="reco-title">Kredit mulai menipis</div>'
-    recoHtml += '<div class="reco-sub">Sisa ' + remLeft + ' kredit. Pertimbangkan top up supaya reminder tetap jalan tanpa gangguan. 1 kredit = 1 reminder = potensi pelanggan balik.</div></div>'
-    recoHtml += '</div>'
-  } else if (plan === 'free') {
-    recoHtml += '<div class="reco-banner">'
-    recoHtml += '<div class="reco-icon" style="background:var(--lime-bg);border:1px solid #c8f07a">&#128161;</div>'
-    recoHtml += '<div class="reco-text"><div class="reco-title">Upgrade ke Subscriber?</div>'
-    recoHtml += '<div class="reco-sub">Dapatkan 250 kredit/bulan hanya Rp 250.000 (Rp 1.000/kredit). Setiap reminder punya potensi bawa pelanggan balik.</div></div>'
-    recoHtml += '</div>'
-  }
-  html += recoHtml
 
-  /* ─────────────────────────────────────────
-     SECTION 6: PREDICTION ENGINE
-     ───────────────────────────────────────── */
-  if (remLeft > 0 && usageRate > 0) {
-    // Predict subscription credits
-    if (plan === 'subscriber' && subLeft > 0) {
-      var subDaysLeft = Math.floor(subLeft / usageRate)
-      html += '<div class="pred-card">'
-      html += '<div class="pred-icon">&#9200;</div>'
-      html += '<div class="pred-text">Kredit <b>subscription</b> akan habis dalam <b>~' + subDaysLeft + ' hari</b> (pemakaian ~' + usageRate.toFixed(1) + ' kredit/hari)</div>'
-      html += '</div>'
-    }
-    // Predict top-up credits
-    if (topLeft > 0) {
-      var topDaysLeft = Math.floor(topLeft / usageRate)
-      html += '<div class="pred-card">'
-      html += '<div class="pred-icon">&#9200;</div>'
-      html += '<div class="pred-text">Kredit <b>top-up</b> akan habis dalam <b>~' + topDaysLeft + ' hari</b> (pemakaian ~' + usageRate.toFixed(1) + ' kredit/hari)</div>'
-      html += '</div>'
-    }
-    // Overall
-    var totalDays = Math.floor(remLeft / usageRate)
-    html += '<div class="pred-card">'
-    html += '<div class="pred-icon">&#128202;</div>'
-    html += '<div class="pred-text">Total kredit tersedia cukup untuk <b>~' + totalDays + ' hari</b> ke depan</div>'
-    html += '</div>'
-  } else if (remLeft <= 0) {
+  // Empty state kalau kredit habis — minimum signal tanpa clutter
+  if (remLeft <= 0) {
     html += '<div class="pred-card" style="border-color:#f5c5c3">'
     html += '<div class="pred-icon">&#9940;</div>'
     html += '<div class="pred-text" style="color:var(--red-dk)"><b>Kredit habis</b> &mdash; reminder otomatis tidak bisa dikirim</div>'
@@ -1066,7 +1414,9 @@ function render() {
      SECTION 7: RIWAYAT TRANSAKSI
      ───────────────────────────────────────── */
   var history = U.billingHistory || []
-  html += '<div class="sec-header"><div class="sec-title">Riwayat Transaksi</div></div>'
+  html += '<div class="sec-header" style="display:flex;align-items:center;justify-content:space-between"><div class="sec-title">Riwayat Transaksi</div>'
+  if (history.length > 0) html += '<button class="btn btn-ghost btn-sm" onclick="exportTxHistoryCSV()" title="Export ke Excel / CSV"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 12V3M5 6l3-3 3 3"/><path d="M3 13h10"/></svg> Export CSV</button>'
+  html += '</div>'
   html += '<div class="card" style="padding:0;overflow-x:auto">'
   html += '<table class="tx-table"><thead><tr><th>Tanggal</th><th>Tipe</th><th style="text-align:right">Jumlah</th><th style="text-align:right">Saldo Setelah</th><th>Keterangan</th></tr></thead><tbody>'
 
@@ -1097,39 +1447,12 @@ function render() {
   /* ─────────────────────────────────────────
      SECTION 8: PENGATURAN NOTIFIKASI
      ───────────────────────────────────────── */
-  var ownerWa = U.ownerWa || U.waNum || '\u2014'
-  var nf = U.billingNotifs || {}
-
-  html += '<div class="sec-header"><div class="sec-title">Pengaturan Notifikasi</div></div>'
-  html += '<div class="notif-card">'
-
-  // WA number display (read-only)
-  html += '<div class="notif-row">'
-  html += '<span class="notif-label">Notifikasi dikirim ke WhatsApp owner</span>'
-  html += '<span class="notif-value">' + ownerWa + '</span>'
-  html += '</div>'
-
-  // Checkbox: kredit rendah (<30)
-  html += '<div class="notif-row">'
-  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.lowCredit !== false ? 'checked' : '') + ' onchange="toggleNotif(\'lowCredit\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit rendah (&lt; 30)</span></label>'
-  html += '</div>'
-
-  // Checkbox: kredit kritis (<10)
-  html += '<div class="notif-row">'
-  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.criticalCredit !== false ? 'checked' : '') + ' onchange="toggleNotif(\'criticalCredit\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit kritis (&lt; 10)</span></label>'
-  html += '</div>'
-
-  // Checkbox: sub hampir habis (<50/300)
-  html += '<div class="notif-row">'
-  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.subLow !== false ? 'checked' : '') + ' onchange="toggleNotif(\'subLow\',this.checked)"><span class="notif-label" style="cursor:pointer">Notif saat kredit subscription hampir habis (&lt; 50/250)</span></label>'
-  html += '</div>'
-
-  // Checkbox: 3 hari sebelum renewal
-  html += '<div class="notif-row">'
-  html += '<label class="checkbox-row" style="flex:1"><input type="checkbox" ' + (nf.renewalReminder !== false ? 'checked' : '') + ' onchange="toggleNotif(\'renewalReminder\',this.checked)"><span class="notif-label" style="cursor:pointer">Pengingat 3 hari sebelum perpanjangan langganan</span></label>'
-  html += '</div>'
-
-  html += '</div>'
+  /* MIGRATED to Settings → WhatsApp section (2026-04-18).
+     Notif preferences are now saved from settings.html under
+     u.billingNotifs via saveWa(). Keep the data field in loadU
+     migration (line ~644) for backward compat.
+     Old UI block removed from this page; no "Pengaturan Notifikasi"
+     rendered in billing page. Link users to settings if they ask. */
 
   document.getElementById('billing-content').innerHTML = html
 }
@@ -1144,21 +1467,30 @@ function devSetBilling(preset) {
   if (!raw) { alert('Inject data dulu.'); return }
   var u = JSON.parse(raw)
   var renewDate = new Date(); renewDate.setMonth(renewDate.getMonth() + 1); renewDate.setDate(15)
+  // Helper: trial state factory
+  var DAY = 86400000
+  function trialPreset(daysAgo, topupLeft) {
+    var s = new Date(Date.now() - daysAgo * DAY)
+    var e = new Date(s.getTime() + 14 * DAY)
+    return { plan:'trial', subCreditsLeft:0, topupCreditsLeft:topupLeft, subRenewsAt:null, trialStartedAt:s.toISOString(), trialEndsAt:e.toISOString(), trialUsed:false, remMax:100 }
+  }
   var states = {
-    'free-full':     { plan:'free', subCreditsLeft:0, topupCreditsLeft:100, subRenewsAt:null, remMax:100 },
-    'free-low':      { plan:'free', subCreditsLeft:0, topupCreditsLeft:22,  subRenewsAt:null, remMax:100 },
-    'free-critical': { plan:'free', subCreditsLeft:0, topupCreditsLeft:5,   subRenewsAt:null, remMax:100 },
-    'free-empty':    { plan:'free', subCreditsLeft:0, topupCreditsLeft:0,   subRenewsAt:null, remMax:100 },
-    'sub-healthy':   { plan:'subscriber', subCreditsLeft:187, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-low':       { plan:'subscriber', subCreditsLeft:18,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), remMax:250 },
-    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), remMax:250 }
+    'free-full':     trialPreset(0, 100),
+    'free-low':      trialPreset(9, 22),
+    'free-critical': trialPreset(11, 5),
+    'free-empty':    trialPreset(3, 0),
+    'sub-healthy':   { plan:'subscriber', subCreditsLeft:225, topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), trialStartedAt:'2026-03-01T00:00:00.000Z', trialEndsAt:'2026-03-15T00:00:00.000Z', trialUsed:true, remMax:300 },
+    'sub-low':       { plan:'subscriber', subCreditsLeft:22,  topupCreditsLeft:50, subRenewsAt:renewDate.toISOString(), trialStartedAt:'2026-03-01T00:00:00.000Z', trialEndsAt:'2026-03-15T00:00:00.000Z', trialUsed:true, remMax:300 },
+    'sub-depleted':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:30, subRenewsAt:renewDate.toISOString(), trialStartedAt:'2026-03-01T00:00:00.000Z', trialEndsAt:'2026-03-15T00:00:00.000Z', trialUsed:true, remMax:300 },
+    'sub-critical':  { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:7,  subRenewsAt:renewDate.toISOString(), trialStartedAt:'2026-03-01T00:00:00.000Z', trialEndsAt:'2026-03-15T00:00:00.000Z', trialUsed:true, remMax:300 },
+    'sub-empty':     { plan:'subscriber', subCreditsLeft:0,   topupCreditsLeft:0,  subRenewsAt:renewDate.toISOString(), trialStartedAt:'2026-03-01T00:00:00.000Z', trialEndsAt:'2026-03-15T00:00:00.000Z', trialUsed:true, remMax:300 }
   }
   var s = states[preset]
   if (!s) return
-  u.plan = s.plan; u.subCreditsLeft = s.subCreditsLeft; u.subCreditsMax = 250
-  u.topupCreditsLeft = s.topupCreditsLeft; u.subRenewsAt = s.subRenewsAt; u.remMax = s.remMax
+  u.plan = s.plan; u.subCreditsLeft = s.subCreditsLeft; u.subCreditsMax = 300
+  u.topupCreditsLeft = s.topupCreditsLeft; u.subRenewsAt = s.subRenewsAt
+  u.trialStartedAt = s.trialStartedAt; u.trialEndsAt = s.trialEndsAt; u.trialUsed = s.trialUsed
+  u.remMax = s.remMax
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
   var t = document.getElementById('dev-billing-toast')
   t.textContent = '✓ Switched to ' + preset + ' (' + (s.subCreditsLeft + s.topupCreditsLeft) + ' total)'
@@ -1181,6 +1513,27 @@ function boot() {
 }
 
 boot()
+
+/* ── IMPERSONATION CHECK (admin logged in as user) ── */
+(function() {
+  try {
+    var raw = localStorage.getItem('getstarvio_impersonation');
+    if (!raw) return;
+    var imp = JSON.parse(raw);
+    if (!imp || !imp.targetBizId) return;
+    document.addEventListener('DOMContentLoaded', function() {
+      var banner = document.getElementById('impBanner');
+      var bizEl = document.getElementById('impBizName');
+      if (banner) banner.classList.add('show');
+      if (bizEl) bizEl.textContent = imp.targetBizName || imp.targetBizId;
+      document.body.classList.add('imp-active');
+    });
+  } catch(e) {}
+})();
+function exitImpersonate() {
+  try { localStorage.removeItem('getstarvio_impersonation') } catch(e) {}
+  window.location.href = 'getstarvio-admin.html';
+}
 </script>
 </body>
 </html>

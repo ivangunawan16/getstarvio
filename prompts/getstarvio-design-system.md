@@ -157,8 +157,9 @@ Nav section structure:
   <a href="getstarvio-log-reminder.html"   class="nav-item"><span class="nav-icon">📜</span>Log Reminder</a>
   <a href="getstarvio-kategori.html"       class="nav-item"><span class="nav-icon">🏷️</span>Kategori</a>
   <a href="getstarvio-billing.html"        class="nav-item"><span class="nav-icon">💳</span>Billing</a>
-  <a href="getstarvio-command-center.html" class="nav-item"><span class="nav-icon">⚡</span>Command Center</a>
+  <a href="getstarvio-settings.html"       class="nav-item"><span class="nav-icon">⚙️</span>Pengaturan</a>
 </nav>
+<!-- NOTE: getstarvio-admin.html (Command Center) adalah internal tool — TIDAK pernah dilink dari nav user -->
 ```
 
 **Sidebar footer:**
@@ -490,8 +491,9 @@ All pages link to each other via their sidebar (or topbar on pages without full 
 | `getstarvio-log-reminder.html` | Log Reminder | Log Reminder |
 | `getstarvio-kategori.html` | Kategori Layanan | Kategori |
 | `getstarvio-billing.html` | Billing & Kredit | Billing |
-| `getstarvio-command-center.html` | Command Center | Command Center |
-| `getstarvio-checkin.html` | QR Check-in | (accessed via catat kunjungan) |
+| `getstarvio-settings.html` | Pengaturan | Pengaturan |
+| `getstarvio-checkin.html` | QR Check-in | (accessed via QR link, not nav) |
+| `getstarvio-admin.html` | Command Center | **Internal only — tidak ada di nav user** |
 
 ---
 

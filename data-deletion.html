@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penghapusan Data — getstarvio</title>
+<meta name="description" content="Instruksi penghapusan data pengguna getstarvio. Cara meminta penghapusan akun dan data pribadi Anda. / User data deletion instructions for getstarvio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#f7f6f2;--bg2:#fff;--bg3:#f0efe9;--bg4:#e8e7e0;
+--border:#e2e1d9;--border2:#cccbc2;
+--ink:#1a1917;--ink2:#5c5b55;--ink3:#9b9a92;
+--lime:#b8f04a;--lime2:#9fd93a;--lime-dk:#2d4a00;--lime-bg:#edfac8;
+--r:12px;--r-sm:8px;--r-lg:16px;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Sora',sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;overflow-x:hidden}
+a{color:var(--lime-dk);text-decoration:underline;text-underline-offset:2px}
+a:hover{color:var(--ink)}
+
+/* Navbar */
+.navbar{position:sticky;top:0;z-index:100;background:rgba(247,246,242,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px}
+.navbar-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.15rem;color:var(--ink);text-decoration:none}
+.logo svg{width:28px;height:28px}
+.nav-links{display:flex;align-items:center;gap:24px;list-style:none}
+.nav-links a{font-size:.9rem;font-weight:500;color:var(--ink2);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.btn-lime{display:inline-flex;align-items:center;justify-content:center;padding:10px 22px;border-radius:var(--r-sm);font-weight:600;font-size:.9rem;border:none;cursor:pointer;background:var(--lime);color:var(--lime-dk);text-decoration:none;transition:background .2s}
+.btn-lime:hover{background:var(--lime2)}
+
+/* Content */
+.page-header{padding:48px 24px 32px;text-align:center;border-bottom:1px solid var(--border)}
+.page-header h1{font-size:clamp(1.5rem,3.5vw,2.25rem);font-weight:700;margin-bottom:6px}
+.page-header .subtitle{font-size:clamp(.95rem,1.6vw,1.05rem);color:var(--ink2);font-weight:500;margin-bottom:10px}
+.page-header .updated{font-size:.88rem;color:var(--ink3)}
+.prose{max-width:720px;margin:0 auto;padding:48px 24px 24px}
+.prose h2{font-size:1.25rem;font-weight:700;margin:40px 0 12px;padding-top:16px}
+.prose h2:first-child{margin-top:0}
+.prose p{margin-bottom:16px;color:var(--ink2);line-height:1.8;font-size:.95rem}
+.prose ul{margin:0 0 16px 20px;color:var(--ink2);font-size:.95rem;line-height:1.8}
+.prose li{margin-bottom:4px}
+.prose a{color:var(--lime-dk)}
+.prose .en{color:var(--ink3);font-size:.9rem;font-style:italic;border-left:2px solid var(--border);padding-left:12px;margin:-8px 0 16px}
+
+/* Email CTA */
+.email-cta{max-width:720px;margin:8px auto 0;padding:0 24px 80px}
+.email-card{background:var(--ink);color:#fff;border-radius:var(--r-lg);padding:28px;position:relative;overflow:hidden}
+.email-card::before{content:'';position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(184,240,74,.12) 0%,transparent 65%);top:-100px;right:-100px;pointer-events:none;border-radius:50%}
+.email-card .eyebrow{display:inline-flex;align-items:center;gap:6px;background:rgba(184,240,74,.15);border:1px solid rgba(184,240,74,.25);border-radius:100px;padding:4px 11px;font-size:.7rem;font-weight:700;color:var(--lime);letter-spacing:.08em;margin-bottom:12px;position:relative;z-index:1}
+.email-card h3{font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:6px;position:relative;z-index:1}
+.email-card p{font-size:.88rem;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:18px;position:relative;z-index:1}
+.email-btn{display:inline-flex;align-items:center;gap:10px;background:var(--lime);color:var(--lime-dk);padding:12px 18px;border-radius:var(--r-sm);font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;text-decoration:none;transition:all .15s;position:relative;z-index:1;box-shadow:0 2px 8px rgba(184,240,74,.25)}
+.email-btn:hover{background:var(--lime2);color:var(--lime-dk);box-shadow:0 4px 16px rgba(184,240,74,.35);transform:translateY(-1px)}
+
+/* Footer */
+.footer{background:var(--ink);color:#cccbc2;padding:48px 24px}
+.footer-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.footer .logo{color:#fff;margin-bottom:16px}
+.footer .logo svg .star-fill{fill:#b8f04a}
+.footer-info p{font-size:.88rem;line-height:1.8;color:#9b9a92}
+.footer-links{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.footer-links a{font-size:.88rem;color:#9b9a92;text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:#fff}
+.footer-bottom{max-width:1120px;margin:24px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:.8rem;color:#5c5b55;text-align:center}
+@media(max-width:600px){
+  .footer-inner{grid-template-columns:1fr}
+  .footer-links{align-items:flex-start}
+  .email-btn{font-size:.8rem;word-break:break-all}
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="star-fill" d="M14 2l3.09 6.26L24 9.27l-5 4.87 1.18 6.88L14 17.77l-6.18 3.25L9 14.14l-5-4.87 6.91-1.01L14 2z" fill="#b8f04a" stroke="#2d4a00" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+      getstarvio
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/privacy.html">Privacy Policy</a></li>
+      <li><a href="/terms.html">Terms of Service</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Header -->
+<div class="page-header">
+  <h1>Penghapusan Data Pengguna</h1>
+  <p class="subtitle">User Data Deletion Instructions</p>
+  <p class="updated">Terakhir diperbarui: 19 April 2026 · Last updated: 19 April 2026</p>
+</div>
+
+<!-- Content -->
+<div class="prose">
+
+  <h2>1. Pendahuluan</h2>
+  <p>Halaman ini menjelaskan cara Anda meminta penghapusan akun dan data pribadi Anda dari layanan getstarvio, yang dikelola oleh <strong>PT Cakra Digital Indonesia</strong>. Sebagai pengguna, Anda memiliki hak penuh untuk meminta penghapusan data pribadi Anda kapan saja.</p>
+  <p class="en">This page explains how you can request the deletion of your account and personal data from getstarvio, operated by PT Cakra Digital Indonesia. As a user, you have the full right to request deletion of your personal data at any time.</p>
+
+  <h2>2. Data yang Akan Dihapus</h2>
+  <p>Saat Anda mengajukan permintaan penghapusan, data berikut akan dihapus secara permanen dari sistem kami:</p>
+  <ul>
+    <li><strong>Data akun:</strong> nama, email, nomor WhatsApp, informasi bisnis, dan kredensial login</li>
+    <li><strong>Data pelanggan bisnis:</strong> daftar pelanggan, nomor WhatsApp pelanggan, kategori, dan catatan yang Anda input</li>
+    <li><strong>Log kunjungan (Catat Kunjungan):</strong> seluruh riwayat kunjungan pelanggan yang Anda catat</li>
+    <li><strong>Log pengingat:</strong> riwayat pesan pengingat WhatsApp yang dikirim melalui akun Anda</li>
+    <li><strong>Meta Platform Data:</strong> seluruh data yang kami terima dari Meta terkait akun Anda akan dihapus dan access token direvoke ke Meta:
+      <ul>
+        <li>WhatsApp Business Account ID (<code>waba_id</code>)</li>
+        <li>Phone Number ID (<code>phone_number_id</code>)</li>
+        <li>Business Portfolio ID (<code>business_id</code>)</li>
+        <li>Access token (direvoke via <code>DELETE /{app-id}/permissions</code>)</li>
+        <li>Profil Facebook publik (nama, email) jika Anda login via FB OAuth</li>
+        <li>Webhook subscriptions untuk WABA Anda</li>
+      </ul>
+    </li>
+  </ul>
+  <p class="en">When you submit a deletion request, the following data will be permanently deleted: your account profile, customer records, visit logs, reminder logs, and all Meta Platform Data (waba_id, phone_number_id, business_id, access tokens, and any FB profile data). Meta access tokens are revoked via Graph API immediately upon request receipt.</p>
+
+  <h2>3. Cara Meminta Penghapusan</h2>
+  <p>Untuk meminta penghapusan akun dan data Anda, kirimkan email dengan ketentuan berikut:</p>
+  <ul>
+    <li><strong>Kirim ke:</strong> <a href="mailto:support@getstarvio.com">support@getstarvio.com</a></li>
+    <li><strong>Subject:</strong> <code>Data Deletion Request</code></li>
+    <li><strong>Dari email:</strong> gunakan alamat email yang terdaftar di akun getstarvio Anda</li>
+    <li><strong>Sertakan:</strong> nomor WhatsApp terdaftar (format <code>+628xxxxxxxxxx</code>) untuk verifikasi akun</li>
+  </ul>
+  <p class="en">To request deletion, send an email to <a href="mailto:support@getstarvio.com">support@getstarvio.com</a> with the subject line "<strong>Data Deletion Request</strong>", from the email address registered to your getstarvio account, and include your registered WhatsApp number (format +628xxxxxxxxxx) for verification.</p>
+
+  <h2>4. Proses & Jangka Waktu</h2>
+  <p>Setelah permintaan Anda diterima dan diverifikasi, kami akan memproses penghapusan dengan timeline berikut:</p>
+  <ul>
+    <li><strong>Dalam 3 hari kerja:</strong> kami akan mengirimkan email konfirmasi bahwa permintaan Anda telah diterima</li>
+    <li><strong>Dalam 30 hari kalender:</strong> seluruh data pribadi Anda akan dihapus secara permanen dari server getstarvio</li>
+    <li><strong>Setelah penghapusan:</strong> Anda akan menerima email konfirmasi final bahwa data telah dihapus</li>
+  </ul>
+  <p class="en">After your request is received and verified, we will send an acknowledgement email within 3 business days, complete the deletion within 30 calendar days, and send a final confirmation once the data has been removed.</p>
+
+  <h2>5. Data yang Disimpan untuk Kepatuhan Hukum</h2>
+  <p>Beberapa jenis data dapat kami simpan dalam jumlah minimum untuk memenuhi kewajiban hukum dan keuangan:</p>
+  <ul>
+    <li><strong>Catatan invoice dan pembayaran:</strong> disimpan hingga <strong>10 tahun</strong>, sesuai ketentuan UU Ketentuan Umum Perpajakan (KUP)</li>
+    <li><strong>Log keamanan yang telah dianonimkan:</strong> tidak mengandung informasi yang dapat mengidentifikasi individu, digunakan untuk audit keamanan</li>
+  </ul>
+  <p class="en">A minimal set of data may be retained for legal and accounting compliance: invoice records (up to 10 years per Indonesian tax law UU KUP), and anonymized security logs with no personally identifiable information.</p>
+
+  <h2>6. Catatan Penting</h2>
+  <p><strong>Penghapusan bersifat permanen dan tidak dapat dibatalkan.</strong> Jika Anda hanya ingin menjeda akun, berhenti berlangganan pengingat, atau menonaktifkan notifikasi, silakan email kami tanpa perlu menghapus akun — kami dapat membantu menyesuaikan pengaturan akun Anda.</p>
+  <p class="en">Deletion is permanent and cannot be undone. If you only want to pause your account, unsubscribe from reminders, or disable notifications, please email us without requesting deletion — we can help adjust your account settings.</p>
+
+  <h2>7. Kontak</h2>
+  <p>Untuk pertanyaan terkait penghapusan data atau hak privasi lainnya, silakan hubungi kami:</p>
+  <ul>
+    <li><strong>Email penghapusan:</strong> <a href="mailto:support@getstarvio.com">support@getstarvio.com</a></li>
+    <li><strong>Email umum:</strong> <a href="mailto:hello@getstarvio.com">hello@getstarvio.com</a></li>
+    <li><strong>WhatsApp:</strong> 0823-1011-0199</li>
+  </ul>
+
+</div>
+
+<!-- Email CTA -->
+<div class="email-cta">
+  <div class="email-card">
+    <span class="eyebrow">KIRIM PERMINTAAN · SEND REQUEST</span>
+    <h3>Siap mengajukan penghapusan?</h3>
+    <p>Klik tombol di bawah untuk membuka email client dengan subject yang sudah terisi.<br>Click below to open your email client with a pre-filled subject line.</p>
+    <a href="mailto:support@getstarvio.com?subject=Data%20Deletion%20Request" class="email-btn">
+      support@getstarvio.com →
+    </a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <a href="/" class="logo">
+        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="star-fill" d="M14 2l3.09 6.26L24 9.27l-5 4.87 1.18 6.88L14 17.77l-6.18 3.25L9 14.14l-5-4.87 6.91-1.01L14 2z" fill="#b8f04a" stroke="#2d4a00" stroke-width="1.2" stroke-linejoin="round"/>
+        </svg>
+        getstarvio
+      </a>
+      <div class="footer-info">
+        <p><strong>getstarvio</strong></p>
+        <p style="font-size:.78rem;color:#7a7972;margin-bottom:4px">Layanan dari PT Cakra Digital Indonesia</p>
+        <p>Jl. Raya Kelapa Puan Blok AD14 No. 16 & 17<br>Kel. Pakulonan Barat, Kec. Kelapa Dua<br>Kab. Tangerang, Banten 15810, Indonesia</p>
+        <p>Email: hello@getstarvio.com</p>
+        <p>WhatsApp: 0823-1011-0199</p>
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Service</a>
+      <a href="/data-deletion.html">Data Deletion</a>
+      <a href="mailto:hello@getstarvio.com">hello@getstarvio.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2026 getstarvio. All rights reserved.
+  </div>
+</footer>
+
+</body>
+</html>

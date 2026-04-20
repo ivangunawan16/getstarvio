@@ -28,31 +28,9 @@ html,body{
   -webkit-font-smoothing:antialiased;
 }
 
-/* ---- TOPBAR ---- */
-.topbar{
-  background:var(--bg2);
-  border-bottom:1px solid var(--border);
-  padding:14px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-}
-.topbar-logo{
-  width:30px;height:30px;
-  background:var(--ink);
-  border-radius:7px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
-}
-.topbar-logo svg{display:block;}
-.topbar-name{
-  font-size:16px;font-weight:700;letter-spacing:-.3px;color:var(--ink);
-}
-
 /* ---- PAGE WRAP ---- */
 .page-wrap{
-  min-height:calc(100vh - 59px);
+  min-height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -62,28 +40,51 @@ html,body{
   width:100%;
   max-width:480px;
   margin:0 auto;
-  padding:28px 16px 24px;
+  padding:32px 20px 24px;
   flex:1;
   display:flex;
   flex-direction:column;
 }
 
-/* ---- BIZ HEADER ---- */
+/* ---- BIZ HEADER (logo/initial circle + bizName) ---- */
+.biz-header{
+  text-align:center;
+  margin-bottom:24px;
+}
+.biz-logo{
+  width:80px;height:80px;
+  border-radius:50%;
+  margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--lime);
+  color:var(--lime-dk);
+  font-size:32px;font-weight:700;
+  overflow:hidden;
+  border:2px solid var(--lime2);
+  box-shadow:0 4px 14px rgba(184,240,74,.3);
+}
+.biz-logo img{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+}
 .biz-name{
-  text-align:center;
-  font-size:13px;font-weight:600;
-  color:var(--ink2);
-  margin-bottom:4px;
-  letter-spacing:0.3px;
-  text-transform:uppercase;
+  font-size:22px;font-weight:700;
+  color:var(--ink);
+  letter-spacing:-.3px;
+  line-height:1.25;
 }
-.tagline{
-  text-align:center;
-  font-size:13px;
+
+/* ---- WA CONSENT (di atas tombol check-in) ---- */
+.wa-consent{
+  font-size:12px;
   color:var(--ink3);
-  margin-bottom:28px;
+  text-align:center;
+  margin:12px 0;
   line-height:1.5;
+  padding:0 4px;
 }
+.wa-consent strong{color:var(--ink2);font-weight:600}
 
 /* ---- STATE WRAPPER ---- */
 .state{
@@ -148,7 +149,20 @@ html,body{
 
 .phone-hint{
   font-size:12px;color:var(--ink3);margin-top:-8px;
+  line-height:1.5;
 }
+.phone-hint strong{color:var(--ink2);font-weight:600}
+.phone-err{
+  font-size:12px;color:var(--red-dk);margin-top:-8px;
+  line-height:1.5;display:none;align-items:center;gap:6px;
+}
+.phone-err.show{display:flex}
+.phone-err::before{
+  content:'';width:4px;height:4px;border-radius:50%;
+  background:var(--red);flex-shrink:0;
+}
+.phone-input.error{border-color:#f5c5c3;background:#fff7f6}
+.phone-input.error:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(232,69,60,.15)}
 
 /* ---- BUTTONS ---- */
 .btn{
@@ -201,32 +215,32 @@ html,body{
 .svc-list{display:flex;flex-direction:column;gap:8px;}
 .svc-row{
   display:flex;align-items:center;gap:12px;
-  padding:14px 14px;
+  padding:16px 16px;
   background:var(--bg2);
   border:1.5px solid var(--border);
   border-radius:var(--r);
   cursor:pointer;
   transition:border-color 150ms,background 150ms;
-  min-height:60px;
+  min-height:68px;
   -webkit-tap-highlight-color:transparent;
   user-select:none;
 }
 .svc-row:hover{border-color:var(--border2);background:var(--bg3);}
 .svc-row.checked{border-color:var(--lime2);background:var(--lime-bg);}
-.svc-row .svc-icon{font-size:22px;flex-shrink:0;line-height:1;}
+.svc-row .svc-icon{font-size:24px;flex-shrink:0;line-height:1;}
 .svc-row .svc-info{flex:1;min-width:0;}
-.svc-row .svc-name{font-size:14px;font-weight:600;color:var(--ink);}
+.svc-row .svc-name{font-size:15px;font-weight:600;color:var(--ink);}
 .svc-row .svc-badge{
   display:inline-flex;align-items:center;
   font-family:'JetBrains Mono',monospace;
   font-size:11px;font-weight:600;
   background:var(--bg3);color:var(--ink3);
   border-radius:999px;
-  padding:2px 8px;margin-top:3px;
+  padding:3px 9px;margin-top:4px;
 }
 .svc-row.checked .svc-badge{background:rgba(184,240,74,.3);color:var(--lime-dk);}
 .svc-row .svc-check{
-  width:22px;height:22px;flex-shrink:0;
+  width:28px;height:28px;flex-shrink:0;
   border-radius:50%;
   border:2px solid var(--border2);
   display:flex;align-items:center;justify-content:center;
@@ -380,25 +394,19 @@ html,body{
 </head>
 <body>
 
-<!-- TOPBAR: logo + biz name -->
-<div class="topbar">
-  <div class="topbar-logo">
-    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-      <path d="M10 2L12.4 7.6H18.5L13.6 11.3L15.5 17L10 13.5L4.5 17L6.4 11.3L1.5 7.6H7.6L10 2Z" fill="#b8f04a"/>
-    </svg>
-  </div>
-  <div class="topbar-name" id="topbarBizName">getstarvio</div>
-</div>
-
 <div class="page-wrap">
   <div class="card">
 
-    <div class="tagline">Check-in & dapatkan reminder otomatis via WhatsApp 📲</div>
+    <!-- BIZ HEADER: logo/initial circle + nama bisnis (rebrand: bizName prominent, getstarvio cuma footer) -->
+    <div class="biz-header">
+      <div class="biz-logo" id="bizLogoEl">B</div>
+      <div class="biz-name" id="bizNameEl">Bisnis Kamu</div>
+    </div>
 
-    <!-- ERROR STATE (no cats) -->
+    <!-- ERROR STATE (no cats / no setup) -->
     <div id="stateError" class="error-wrap" style="display:none;">
       <div class="error-emoji">😕</div>
-      <div class="error-msg">Bisnis ini belum setup layanan. Silakan hubungi staff.</div>
+      <div class="error-msg" id="errorMsg">Halaman ini belum siap. Silakan hubungi staff untuk bantuan.</div>
     </div>
 
     <!-- STATE 1: PHONE INPUT -->
@@ -420,13 +428,15 @@ html,body{
           id="phoneInput"
           type="tel"
           inputmode="numeric"
-          placeholder="81234567890"
+          placeholder="812 3456 7890"
           autocomplete="tel"
           aria-label="Nomor WhatsApp"
-          maxlength="15"
+          maxlength="19"
         >
       </div>
-      <div class="phone-hint">Awalan 0 akan dihapus otomatis</div>
+      <div class="phone-hint" id="phoneHint">Ketik aja nomor WA kamu — boleh pakai <strong>0</strong> atau <strong>+62</strong>, otomatis rapih sendiri.</div>
+      <div class="phone-err" id="phoneErr">Nomor kurang panjang — minimal 8 angka setelah kode negara.</div>
+      <button id="phoneNextBtn" onclick="doSearch()" disabled style="margin-top:16px;width:100%;padding:14px;background:var(--lime);color:var(--lime-dk);border:none;border-radius:var(--r);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s,background .15s;box-shadow:0 4px 14px rgba(184,240,74,.3)">Lanjut &rarr;</button>
       <div id="spinnerWrap" class="spinner-wrap" style="display:none;">
         <div class="spinner"></div>
       </div>
@@ -448,17 +458,15 @@ html,body{
         <div class="pick-label" style="margin-top:12px">Pilih layanan hari ini:</div>
       </div>
       <div class="svc-list" id="foundSvcList"></div>
+      <div class="wa-consent" id="foundConsent">Dengan check-in, kamu setuju menerima pengingat perawatan via WhatsApp dari <strong id="foundConsentBiz">bisnis ini</strong>.</div>
       <button class="btn btn-lime" id="foundCheckinBtn" onclick="doFoundCheckin()" disabled>Check-in Sekarang</button>
       <button class="link-btn" onclick="goToState1()">Bukan saya</button>
     </div>
 
     <!-- STATE 3: NEW -->
     <div id="state3" class="state">
-      <div class="not-found-pill">
-        <span>🔍</span>
-        <span>Nomor ini belum terdaftar</span>
-      </div>
-      <div class="state-sub" style="margin-top:0;">Isi data kamu untuk daftar & dapatkan reminder otomatis</div>
+      <div class="state-heading">Hai! Isi data kamu untuk daftar</div>
+      <div class="state-sub" style="margin-top:0;">Pertama kali di <strong id="newWelcomeBiz">bisnis ini</strong>? Selamat datang!</div>
       <input
         class="text-input"
         id="newNameInput"
@@ -474,11 +482,12 @@ html,body{
       </div>
       <div class="section-label" style="margin-top:12px">Layanan apa hari ini?</div>
       <div class="svc-list" id="newSvcList"></div>
+      <div class="wa-consent" id="newConsent">Dengan check-in, kamu setuju menerima pengingat perawatan via WhatsApp dari <strong id="newConsentBiz">bisnis ini</strong>.</div>
       <button class="btn btn-lime" id="newCheckinBtn" onclick="doNewCheckin()" disabled>Daftar & Check-in</button>
       <button class="link-btn" onclick="goToState1()">Coba nomor lain</button>
     </div>
 
-    <!-- STATE 4: SUCCESS -->
+    <!-- STATE 4: SUCCESS (no "Scan lagi" — final state) -->
     <div id="state4" class="state">
       <div class="success-wrap">
         <div class="check-circle" id="checkCircle">
@@ -494,14 +503,15 @@ html,body{
           </svg>
         </div>
         <div class="success-heading" id="successHeading">Terima kasih!</div>
-        <div class="success-sub">Kami akan kirim reminder ke WA kamu saat waktunya kembali.</div>
+        <div class="success-sub" id="successSub">Kamu akan dapat pengingat via WhatsApp dari <strong id="successBiz">bisnis ini</strong> saat waktunya perawatan berikutnya.</div>
+        <button id="checkinAgainBtn" onclick="resetCheckin()" style="margin-top:22px;width:100%;padding:14px;background:var(--lime);color:var(--lime-dk);border:none;border-radius:var(--r-sm);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(184,240,74,.3)">Daftar pelanggan berikutnya →</button>
+        <div style="font-size:11px;color:var(--ink3);margin-top:14px;text-align:center;line-height:1.55">Otomatis kembali dalam <strong id="checkinCountdown">10</strong> detik · atau boleh tutup halaman ini.</div>
       </div>
-      <button class="btn btn-outline" onclick="resetAll()" style="margin-top:12px;">Scan lagi</button>
     </div>
 
   </div>
 
-  <div class="page-footer">Powered by <span>getstarvio</span></div>
+  <div class="page-footer" style="font-size:11px;color:var(--ink3);text-align:center;margin-top:32px;padding-bottom:20px">Powered by <a href="https://getstarvio.com" target="_blank" rel="noopener" style="color:var(--ink2);text-decoration:none;font-weight:600">getstarvio</a></div>
 </div>
 
 <script>
@@ -511,7 +521,19 @@ function loadU() {
     const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    // Migration v4 → v5
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        const td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
     return u
   } catch(e) { return null }
@@ -630,14 +652,31 @@ function resetAll() {
 
 // ---- INIT ----
 function init() {
-  // Topbar biz name
-  var topEl = document.getElementById('topbarBizName')
-  if (U && U.bizName) {
-    topEl.textContent = U.bizName
+  // Render biz header (logo + name) — fallback ke initial circle kalau bizLogo null
+  var bizName = (U && U.bizName) || 'Bisnis Kamu'
+  var bizLogoEl = document.getElementById('bizLogoEl')
+  var bizNameEl = document.getElementById('bizNameEl')
+  bizNameEl.textContent = bizName
+  if (U && U.bizLogo) {
+    bizLogoEl.innerHTML = '<img src="' + U.bizLogo + '" alt="' + esc(bizName) + '">'
+  } else {
+    bizLogoEl.textContent = bizName.trim().charAt(0).toUpperCase() || 'B'
   }
 
-  // Check cats
+  // Render WA consent + welcome biz mentions (sebut bizName, bukan "kami")
+  var foundConsentBiz = document.getElementById('foundConsentBiz'); if (foundConsentBiz) foundConsentBiz.textContent = bizName
+  var newConsentBiz = document.getElementById('newConsentBiz'); if (newConsentBiz) newConsentBiz.textContent = bizName
+  var newWelcomeBiz = document.getElementById('newWelcomeBiz'); if (newWelcomeBiz) newWelcomeBiz.textContent = bizName
+  var successBiz = document.getElementById('successBiz'); if (successBiz) successBiz.textContent = bizName
+
+  // Error state — friendly wording dengan bizName (kalau ada)
   if (!U || !U.cats || U.cats.length === 0) {
+    var errorMsg = document.getElementById('errorMsg')
+    if (errorMsg) {
+      errorMsg.textContent = U && U.bizName
+        ? 'Halaman ini belum siap. Silakan hubungi staff ' + bizName + ' untuk bantuan.'
+        : 'Halaman ini belum siap. Silakan hubungi staff untuk bantuan.'
+    }
     document.getElementById('stateError').style.display = 'flex'
     return
   }
@@ -648,32 +687,84 @@ function init() {
 
   showState('state1')
 
-  // Phone input: strip leading 0 real-time + auto-search
+  // Phone input: auto-format + strip country codes + inline validation
   var phoneInput = document.getElementById('phoneInput')
-  var searchTimeout = null
+  var phoneErr = document.getElementById('phoneErr')
+  var phoneHint = document.getElementById('phoneHint')
+  var countrySel = document.getElementById('countryCode')
+  var nextBtn = document.getElementById('phoneNextBtn')
+
+  function normalizeAndFormat(raw) {
+    var digits = raw.replace(/\D/g, '')
+    // Strip country code if user typed it (match current countrySel)
+    var cc = (countrySel && countrySel.value) || '62'
+    if (digits.startsWith(cc)) digits = digits.slice(cc.length)
+    // Strip leading 0 (Indonesian style)
+    if (digits.startsWith('0')) digits = digits.slice(1)
+    // Format as 3-4-4 (xxx xxxx xxxx) — max 13 digits total
+    digits = digits.slice(0, 13)
+    var formatted = ''
+    if (digits.length <= 3) formatted = digits
+    else if (digits.length <= 7) formatted = digits.slice(0,3) + ' ' + digits.slice(3)
+    else formatted = digits.slice(0,3) + ' ' + digits.slice(3,7) + ' ' + digits.slice(7)
+    return { digits: digits, formatted: formatted }
+  }
+
+  function updateNextBtn() {
+    var digits = phoneInput.value.replace(/\D/g,'')
+    var valid = digits.length >= 8
+    if (nextBtn) {
+      nextBtn.disabled = !valid
+      nextBtn.style.opacity = valid ? '1' : '.45'
+      nextBtn.style.cursor = valid ? 'pointer' : 'not-allowed'
+    }
+  }
+
+  function hideErr() {
+    phoneErr.classList.remove('show')
+    phoneInput.classList.remove('error')
+    phoneHint.style.display = 'block'
+  }
+  function showErr(msg) {
+    if (msg) phoneErr.textContent = msg
+    phoneErr.classList.add('show')
+    phoneInput.classList.add('error')
+    phoneHint.style.display = 'none'
+  }
 
   phoneInput.addEventListener('input', function() {
-    // Strip leading 0 real-time
-    var val = phoneInput.value.replace(/\D/g, '')
-    if (val.startsWith('0')) {
-      val = val.slice(1)
-      phoneInput.value = val
-    }
+    var r = normalizeAndFormat(phoneInput.value)
+    phoneInput.value = r.formatted
+    hideErr()
+    updateNextBtn()
+  })
 
-    // Clear pending search
-    if (searchTimeout) clearTimeout(searchTimeout)
-
-    // Auto-search when >= 10 digits
-    if (val.length >= 10) {
-      searchTimeout = setTimeout(function() {
-        doSearch()
-      }, 300)
+  phoneInput.addEventListener('blur', function() {
+    var digits = phoneInput.value.replace(/\D/g,'')
+    if (digits.length > 0 && digits.length < 8) {
+      showErr('Nomor kurang panjang — minimal 8 angka setelah kode negara.')
     }
   })
 
   phoneInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') doSearch()
+    if (e.key === 'Enter') {
+      var digits = phoneInput.value.replace(/\D/g,'')
+      if (digits.length >= 8) doSearch()
+      else showErr('Nomor kurang panjang — minimal 8 angka setelah kode negara.')
+    }
   })
+
+  // When user changes country code, re-format (strip new CC if present)
+  if (countrySel) {
+    countrySel.addEventListener('change', function() {
+      var r = normalizeAndFormat(phoneInput.value)
+      phoneInput.value = r.formatted
+      hideErr()
+      updateNextBtn()
+    })
+  }
+
+  updateNextBtn()
 
   // Date change listeners
   document.getElementById('foundDateInput').addEventListener('change', function() {
@@ -687,12 +778,16 @@ function init() {
 // ---- SEARCH ----
 function doSearch() {
   var raw = document.getElementById('phoneInput').value
+  var cc = document.getElementById('countryCode').value
   var norm = raw.replace(/\D/g, '')
+  // Strip country code if user typed it
+  if (norm.startsWith(cc)) norm = norm.slice(cc.length)
+  // Strip leading 0
   if (norm.startsWith('0')) norm = norm.slice(1)
   if (norm.length < 7) return
 
   currentPhone = norm
-  currentCountryCode = document.getElementById('countryCode').value
+  currentCountryCode = cc
 
   // Show spinner
   document.getElementById('spinnerWrap').style.display = 'flex'
@@ -889,6 +984,9 @@ function doNewCheckin() {
 }
 
 // ---- SUCCESS STATE (State 4) ----
+var _checkinResetTimer = null
+var _checkinCountdownTimer = null
+
 function showSuccessState(name) {
   document.getElementById('successHeading').textContent = 'Terima kasih, ' + (name || 'Kamu') + '!'
 
@@ -899,6 +997,33 @@ function showSuccessState(name) {
   clone.id = 'checkCircle'
 
   showState('state4')
+
+  // Auto-reset countdown — biar QR scanner ga stuck di success buat next pelanggan
+  if (_checkinCountdownTimer) clearInterval(_checkinCountdownTimer)
+  if (_checkinResetTimer) clearTimeout(_checkinResetTimer)
+  var n = 10
+  var cdEl = document.getElementById('checkinCountdown')
+  if (cdEl) cdEl.textContent = n
+  _checkinCountdownTimer = setInterval(function() {
+    n--
+    if (cdEl) cdEl.textContent = Math.max(0, n)
+    if (n <= 0) clearInterval(_checkinCountdownTimer)
+  }, 1000)
+  _checkinResetTimer = setTimeout(resetCheckin, 10000)
+}
+
+function resetCheckin() {
+  if (_checkinResetTimer) { clearTimeout(_checkinResetTimer); _checkinResetTimer = null }
+  if (_checkinCountdownTimer) { clearInterval(_checkinCountdownTimer); _checkinCountdownTimer = null }
+  // Reset form data
+  var phone = document.getElementById('phoneInput')
+  if (phone) phone.value = ''
+  currentCustomer = null
+  checkedInServices = []
+  checkedInDate = null
+  showState('state1')
+  // Focus phone input setelah transition
+  setTimeout(function() { if (phone) phone.focus() }, 350)
 }
 
 // ---- START ----

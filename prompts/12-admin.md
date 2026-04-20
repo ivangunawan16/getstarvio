@@ -32,13 +32,14 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 ### Summary Cards (atas, 4 kartu)
 - Total bisnis aktif — variant lime
 - Total kredit terjual bulan ini — variant blue
-- Total reminder terkirim bulan ini — variant neutral
+- Total pengingat terkirim bulan ini — variant neutral
 - Bisnis churn bulan ini — variant red (jika ada)
 
 ### Tabel Subscriber (main section)
 - List semua bisnis dari `ADMIN_DATA[]` (bukan dari `getstarvio_user`)
-- Kolom: Nama Bisnis | Jenis | Tgl Daftar | Status | Kredit Tersisa | Reminder (bln ini) | WA Status
-- Status badge per baris: `Aktif` (lime) / `Trial` (blue) / `Suspended` (amber) / `Churned` (red)
+- Kolom: Nama Bisnis | Jenis | Tgl Daftar | Status | Kredit Tersisa | Pengingat (bln ini) | WA Status
+- Status badge per baris (5 varian): `Aktif` (lime) / `Trial Aktif` (blue) / `Trial Expired` (amber) / `Suspended` (red) / `Churned` (grey)
+- **Status derivation (admin-side):** Admin data stores status langsung (bukan computed dari plan+trialEndsAt) karena admin perlu status operational seperti `suspended` dan `churned` yang tidak ada di user schema. Enum value match user-facing badge label: `aktif | trial-aktif | trial-expired | suspended | churned`.
 - WA status chip: `Connected` (lime pulse) / `Disconnected` (red)
 - Tombol "Lihat Detail" per baris → buka modal detail
 
@@ -46,7 +47,7 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 - Nama bisnis, jenis, bizSlug, tanggal daftar
 - Nama + email admin
 - Kredit: `remLeft` dari `remMax` — progress bar
-- Total reminder all time + bulan ini
+- Total pengingat all time + bulan ini
 - Tanggal top up terakhir
 - Nomor WA + status koneksi + last connected timestamp
 - **Aksi:**
@@ -62,31 +63,47 @@ Dashboard internal untuk **tim getstarvio** (developer/founder) untuk monitor da
 
 ---
 
-### Tab: Plan Config — Top-Up Pricing (editable)
+### Tab: Plan Config — Subscription & Top-Up Pricing (editable)
 
-Top-Up Pricing card memiliki field yang bisa diedit:
-- **Harga per kredit** — input number, default 1000 IDR
-- **3 Paket Tiers** — masing-masing punya:
+**Trial card** (editable):
+- Welcome bonus credits — input number, default 100
+- Trial duration — input number (days), default 14
+- Note: Trial = `trialDays` hari ATAU welcome bonus habis (mana duluan)
+
+**Subscription card** (editable):
+- Harga normal (Rp) — input number, default 499.000
+- Harga Early Access (Rp) — input number, default 249.000
+- Kredit per bulan — input number, default 300
+- Auto-show: diskon % (auto-calculated dari normal vs early access)
+- Note: Subscription **WAJIB** untuk akses platform & top-up
+
+**Top-Up Pricing card** (editable):
+- **3 Paket Tiers** — flat pricing, masing-masing punya:
   - Harga (Rp) — input number
   - Jumlah kredit — input number
-  - Bonus % — auto-calculated badge (recalc saat input berubah)
-- Default tiers: Rp 250.000 → 300 kredit (+20%), Rp 500.000 → 625 kredit (+25%), Rp 1.000.000 → 1.500 kredit (+50%)
+  - Per-kredit (Rp) — auto-calculated display (price ÷ credits)
+- Default tiers (no bonus calculation):
+  - Tier 1: Rp 399.000 → 200 kredit (Rp 1.995/kredit)
+  - Tier 2: Rp 749.000 → 500 kredit (Rp 1.498/kredit) — label "Terlaris"
+  - Tier 3: Rp 1.299.000 → 1.000 kredit (Rp 1.299/kredit) — label "Hemat 35%"
 
 **Simpan Konfigurasi button:**
-- Menyimpan semua plan config (freeBonus, subCredits, subPrice, topupPrice, tiers) ke `getstarvio_user.planConfig` di localStorage
+- Menyimpan plan config (freeBonus, subCredits, subPrice, subPriceNormal, tiers) ke `getstarvio_user.planConfig` di localStorage
 - Billing page membaca `planConfig` secara dinamis — perubahan di admin langsung tercermin di billing
+- Removed `topupPrice` (basePrice concept) — tier pricing sudah flat
 
 **planConfig schema yang disimpan:**
 ```js
 {
-  freeBonus: 100,        // welcome bonus credits
-  subCredits: 250,       // subscription credits per month
-  subPrice: 250000,      // subscription price per month
-  topupPrice: 1000,      // base price per credit
+  freeBonus: 100,           // welcome bonus credits (langsung masuk topupCreditsLeft)
+  trialDays: 14,            // trial period dalam hari
+  subCredits: 300,          // subscription credits per month
+  subPrice: 249000,         // subscription price per month (Early Access)
+  subPriceNormal: 499000,   // subscription price normal (untuk display coret)
   tiers: [
-    { price: 250000, credits: 300 },
-    { price: 500000, credits: 625 },
-    { price: 1000000, credits: 1500 }
+    { price: 399000,  credits: 200 },
+    { price: 749000,  credits: 500,  label: "Terlaris" },
+    { price: 1299000, credits: 1000, label: "Hemat 35%" }
   ]
 }
 ```
@@ -108,17 +125,28 @@ Contoh entry:
   bizSlug: "salon-kecantikan-indah",
   adminName: "Siti Rahayu",
   adminEmail: "siti@gmail.com",
-  status: "aktif",           // "aktif" | "trial" | "suspended" | "churned"
-  remLeft: 42,
-  remMax: 100,
-  reminderThisMonth: 18,
-  reminderAllTime: 134,
+  plan: "subscriber",        // "trial" | "subscriber" — match user schema v5
+  status: "aktif",           // admin-side operational status — "aktif" | "trial-aktif" | "trial-expired" | "suspended" | "churned"
+  trialEndsAt: null,         // ISO string; null untuk subscriber. Dipakai untuk kalkulasi "hari trial tersisa" di modal detail.
+  subCreditsLeft: 237,       // sisa kredit bulanan
+  subCreditsMax: 300,        // cap bulanan (untuk progress bar)
+  topupCreditsLeft: 50,      // kredit top-up permanent
+  remLeft: 287,              // mirror dari subCreditsLeft + topupCreditsLeft (pre-computed untuk tabel performance)
+  reminderThisMonth: 18,     // count of pengingat sent this month
+  reminderAllTime: 134,      // count of pengingat all-time
   waStatus: "connected",     // "connected" | "disconnected"
   lastConnected: "2026-03-25T10:30:00",
   lastTopUp: "2026-03-10",
   joinedAt: "2025-11-15"
 }
 ```
+
+**Status ↔ plan mapping (internally consistent):**
+- `aktif` → `plan: "subscriber"` (paying customer)
+- `trial-aktif` → `plan: "trial"` + `trialEndsAt > now` + `topupCreditsLeft > 0`
+- `trial-expired` → `plan: "trial"` + (`trialEndsAt < now` OR `topupCreditsLeft === 0`)
+- `suspended` → admin manually suspended (ignore plan/trial state)
+- `churned` → cancel subscription setelah pernah subscriber (plan stored as "churned" at ADMIN_DATA level only)
 
 ---
 
@@ -139,3 +167,11 @@ Contoh entry:
 | 2026-03-26 | File dibuat. Command Center adalah internal tool — bukan di sidebar user |
 | 2026-03-26 | Tambah Reference section — acuan v2.0 command-center, renamed jadi getstarvio-admin.html |
 | 2026-03-27 | Top-Up Pricing tiers now editable (price + credits inputs). Bonus % auto-recalculates. savePlanConfig() persists to getstarvio_user.planConfig in localStorage. loadPlanConfig() populates fields on boot. Billing page reads planConfig dynamically. |
+| 2026-04-18 | **MAJOR PRICING UPDATE.** New tiers: Rp 399k/200, Rp 749k/500 ("Terlaris"), Rp 1.299k/1000 ("Hemat 35%"). FLAT pricing — removed bonus % calculation (no more `topupPrice`/basePrice concept). Subscription card now editable: subPrice (249k Early Access), subPriceNormal (499k coret), subCredits (300). Auto-show diskon % from normal vs early access. Plan config schema adds `subPriceNormal`. UI copy "reminder" → "pengingat". |
+| 2026-04-18 | **TRIAL & SUBSCRIPTION WAJIB.** Plan Config tab gets new **Trial card** (welcome bonus credits + trial duration in days, default 14). planConfig schema adds `trialDays`. Subscriber table status badges include `Trial Aktif` and `Trial Expired`. |
+| 2026-04-18 | **TEMPLATES TAB ADDED.** Library WhatsApp templates (CRUD), Meta inbox notifications (category change, rejected, flagged, approved), 5 aftercare follow-up templates (UTILITY-compliant, 4 variables: nama/treatment/tanggal/bisnis). Status badges: APPROVED/PENDING/REJECTED/PAUSED/FLAGGED. Category chips: UTILITY/MARKETING/AUTHENTICATION. |
+| 2026-04-18 | **TIPE LAYANAN TAB ADDED.** Manage business types (Salon/Spa/Klinik/etc.) + preset categories per type. Click card to expand & edit presets. Per preset: nama, icon, default interval, default template. CRUD + auto-sync ke onboarding "Jenis Bisnis" + "Kategori Layanan". |
+| 2026-04-18 | **DATA_VERSION 5 IMPACT.** Subscriber table status badges include `Trial Aktif` (blue) + `Trial Expired` (amber). ADMIN_DATA dummies should reflect new plan values (`trial` instead of `free`). Plan Config trial card editable: welcome bonus credits + trial duration days. planConfig schema dilengkapi `trialDays` field. |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH.** Removed duplicate/stale status badge line (old 4-value enum). Canonical status enum: `aktif \| trial-aktif \| trial-expired \| suspended \| churned` (5 values). ADMIN_DATA example entry expanded with `plan`, `trialEndsAt`, `subCreditsLeft`, `subCreditsMax`, `topupCreditsLeft` — match user v5 schema. Added explicit status↔plan mapping table to prevent drift. |
+| 2026-04-19 | **META APP REVIEW READINESS — Templates + Customer Detail.** (1) Templates tab: setiap template rendered dengan inline example parameters preview (e.g. `{{1}}=Sarah · {{2}}=Hair Smoothing...`) dari `t.example.body_text`. (2) New "View Meta API Payload" button per template — buka modal showing exact JSON payload yang akan di-submit ke `POST /{WABA_ID}/message_templates` + expected response + webhook format. Payload contains: name, category, language, components (BODY dengan example.body_text array). Copy-to-clipboard supported. (3) 5 aftercare templates pre-populated dengan unique example values per bizType (Salon/Klinik/Nail/Barbershop/Spa) untuk demonstrate multi-industry support ke Meta reviewer. (4) Business detail modal: tambah **Meta WhatsApp Business Connection section** menampilkan display_phone_number + verified_name + business portfolio name + quality rating badge (color-coded GREEN/YELLOW/RED) + messaging tier + Coexistence sync status + 4 Technical IDs (WABA/Phone/Business/Platform) masked dengan copy buttons. Support function `buildMetaConnectionSection(b)` + `generateMockMetaForBiz(b)` untuk deterministic mock data dari bizId seed. |
+| 2026-04-19 | **EDIT TEMPLATE MODAL SIMPLIFIED + EXAMPLE PARAMETERS INLINE.** Modal Edit Template dirombak untuk reduce confusion: (1) HEADER field dihapus dari UI — aftercare UTILITY ga butuh, optional di Meta API. (2) FOOTER field dihapus dari UI — Meta auto-generate brand footer. (3) BUTTONS field dihapus dari UI — ambigu untuk UMKM (URL/PHONE butuh field tambahan yang kompleks); kalau nanti dibutuhkan tambah sebagai feature terpisah dengan 3-way type selector. (4) Tambah **Contoh Parameter section** — auto-detect `{{N}}` di body, render input per variable dengan label (Nama pelanggan / Jenis layanan / Tanggal kunjungan / Nama bisnis untuk 1-4; generic untuk lainnya), pre-fill dari `t.example.body_text[0]`, save ke format Meta API `{ body_text: [[val1, val2, ...]] }`. (5) Tambah **Preview Pesan section** — WhatsApp-style bubble dengan body text, variable values highlighted dengan lime background + bold. Live update saat body/example berubah. (6) Validation: body ada `{{N}}` tapi example belum lengkap → blokir submit dengan toast "Lengkapi semua contoh parameter dulu". (7) Backward compat: legacy templates yang punya header/footer/buttons tetap preserved (tidak di-overwrite saat edit karena field ga di-expose di UI). Helper functions: `AFTERCARE_VAR_LABELS` map, `onTplBodyChange()`, `getTplPlaceholder()`, `updateTplPreview()`, `escapeHtml()`. |

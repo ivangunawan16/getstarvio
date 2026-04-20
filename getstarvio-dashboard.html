@@ -100,6 +100,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* ── QUICK LINKS ── */
 .ql-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px}
+/* Quick Links redundant di desktop (sidebar sudah kasih akses) — hanya tampil di mobile untuk shortcut */
+@media (min-width: 768px){ .ql-grid{display:none} }
 .ql-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:18px 16px;cursor:pointer;transition:all .15s;text-decoration:none;display:block}
 .ql-card:hover{border-color:var(--lime2);background:var(--lime-bg)}
 .ql-icon{font-size:24px;margin-bottom:8px}
@@ -111,10 +113,95 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .credit-alert{display:none;background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:10px 16px;margin-bottom:14px;font-size:12px;color:var(--amber-dk);align-items:center;gap:8px}
 .credit-alert.critical{background:var(--red-bg);border-color:#f5c5c3;color:var(--red-dk)}
 
+/* ── SETUP CHECKLIST ── */
+.setup-card{background:var(--bg2);border:1.5px solid var(--lime2);border-radius:var(--r);padding:18px 20px;margin-bottom:14px;box-shadow:0 4px 14px rgba(184,240,74,.12)}
+.setup-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.setup-title{font-size:14px;font-weight:700;color:var(--ink)}
+.setup-progress-wrap{height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:14px}
+.setup-progress-fill{height:100%;background:var(--lime);border-radius:99px;transition:width .3s ease}
+.setup-step{display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--bg3);border-radius:var(--r-sm);margin-bottom:7px;transition:all .15s}
+.setup-step:last-child{margin-bottom:0}
+.setup-step.done{background:var(--lime-bg);border:1px solid var(--lime-bd)}
+.setup-num{width:28px;height:28px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--border2);color:var(--ink3);font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.setup-step.done .setup-num{background:var(--lime);border-color:var(--lime);color:var(--lime-dk)}
+.setup-info{flex:1;min-width:0}
+.setup-label{font-size:13px;font-weight:600;color:var(--ink)}
+.setup-step.done .setup-label{color:var(--lime-dk)}
+.setup-sub{font-size:11px;color:var(--ink3);margin-top:1px}
+.setup-step.done .setup-sub{color:var(--lime-dk);opacity:.75}
+.setup-action{font-size:11px;font-weight:600;padding:6px 12px;background:var(--ink);color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;font-family:inherit;flex-shrink:0;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.setup-action:hover{opacity:.88}
+.setup-action.lime{background:var(--lime);color:var(--lime-dk)}
+.setup-logo-preview{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid var(--lime2)}
+.setup-success{text-align:center;padding:18px 8px}
+.setup-success-ic{font-size:32px;margin-bottom:8px}
+.setup-success-title{font-size:14px;font-weight:700;color:var(--lime-dk);margin-bottom:4px}
+.setup-success-sub{font-size:12px;color:var(--ink2);line-height:1.5}
+.setup-dismiss{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:11px;text-decoration:underline;padding:4px;margin-top:8px;font-family:inherit}
+
+/* ── ROI CARD ── */
+.roi-card{background:linear-gradient(135deg,rgba(184,240,74,.08),rgba(184,240,74,.02));border:1.5px solid var(--lime2);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.roi-eyebrow{font-size:10px;font-weight:700;color:var(--lime-dk);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.roi-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.roi-stat{text-align:center}
+.roi-stat-n{font-size:28px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace;line-height:1}
+.roi-stat.lime .roi-stat-n{color:var(--lime-dk)}
+.roi-stat-l{font-size:11px;color:var(--ink3);margin-top:5px;font-weight:500;line-height:1.3}
+.roi-box{background:var(--bg2);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:13px 16px;margin-bottom:12px}
+.roi-line{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0}
+.roi-line.primary{font-size:13px;font-weight:700;color:var(--lime-dk)}
+.roi-line.cost{color:var(--ink3);font-size:11px}
+.roi-multiplier{display:inline-block;background:var(--lime);color:var(--lime-dk);padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700;margin-left:6px}
+.roi-quote{font-size:13px;color:var(--ink3);font-style:italic;text-align:center;line-height:1.55;padding:0 8px}
+
+/* Projection Card (alt — when no reminder data yet) */
+.proj-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.proj-eyebrow{font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.proj-intro{font-size:13px;color:var(--ink2);line-height:1.55;margin-bottom:16px}
+.proj-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 16px;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);margin-bottom:14px}
+.proj-stat{text-align:center}
+.proj-stat-n{font-size:24px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;line-height:1.1}
+.proj-stat-l{font-size:11px;color:var(--lime-dk);opacity:.8;margin-top:4px;line-height:1.3}
+.proj-foot{font-size:11px;color:var(--ink3);line-height:1.55;text-align:center}
+
+/* ── TIPS SECTION ── */
+.tips-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:16px}
+.tips-title{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:11px}
+.tip-row{display:flex;align-items:flex-start;gap:11px;padding:9px 0;font-size:12px;color:var(--ink2);line-height:1.55;border-bottom:1px solid var(--border)}
+.tip-row:last-child{border-bottom:none}
+.tip-ic{font-size:14px;flex-shrink:0;line-height:1.4}
+.tip-text{flex:1}
+.tip-link{color:var(--lime-dk);font-weight:600;text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;font-size:12px}
+
+/* Trial Soft Lock — banner ATAS dashboard (instead of overlay) */
+.trial-soft-lock{display:none;background:var(--red-bg);border:1.5px solid #f5c5c3;border-radius:var(--r);padding:14px 18px;margin-bottom:14px;color:var(--red-dk)}
+.trial-soft-lock.show{display:flex;align-items:flex-start;gap:13px;flex-wrap:wrap}
+.tsl-ic{font-size:24px;flex-shrink:0;line-height:1}
+.tsl-info{flex:1;min-width:200px}
+.tsl-title{font-size:13px;font-weight:700;color:var(--red-dk);margin-bottom:3px}
+.tsl-sub{font-size:12px;color:var(--red-dk);line-height:1.5;opacity:.85}
+.tsl-cta{font-size:12px;font-weight:700;background:var(--red-dk);color:#fff;padding:10px 18px;border-radius:var(--r-sm);text-decoration:none;flex-shrink:0;transition:opacity .15s}
+.tsl-cta:hover{opacity:.88}
+
+/* Disabled Quick Link state */
+.ql-card.disabled{opacity:.45;pointer-events:none;cursor:not-allowed}
+.ql-card.disabled:hover{border-color:var(--border);background:var(--bg2)}
+
 /* ── MODAL ── */
 .overlay{position:fixed;inset:0;background:rgba(26,25,23,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px)}
 .overlay.show{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .18s ease;width:360px}
+/* Trial Hard Lock Overlay */
+.tlo-card{background:var(--bg2);border-radius:var(--r-lg);padding:36px 32px;text-align:center;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.tlo-icon{font-size:48px;margin-bottom:14px}
+.tlo-title{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.tlo-sub{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:20px}
+.tlo-pricing{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:12px 16px;margin-bottom:20px;font-size:14px;color:var(--lime-dk)}
+.tlo-pricing strong{font-size:18px;font-weight:700}
+.tlo-tag{font-size:10px;font-weight:700;background:var(--lime);color:var(--lime-dk);padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em}
+.tlo-cta{display:block;width:100%;padding:14px;background:var(--lime);color:var(--lime-dk);border-radius:var(--r-sm);font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;transition:all .15s;box-shadow:0 4px 16px rgba(184,240,74,.3)}
+.tlo-cta:hover{background:var(--lime2);box-shadow:0 6px 20px rgba(184,240,74,.4)}
+.tlo-skip{display:inline-block;font-size:11px;color:var(--ink3);text-decoration:underline}
 .mhd{padding:19px 22px 15px;border-bottom:1px solid var(--border);text-align:center}
 .mftr{padding:13px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
 .m-title{font-size:15px;font-weight:700;color:var(--ink)}
@@ -126,6 +213,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* ── MOBILE ── */
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -163,9 +255,31 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .feed-empty{padding:24px 16px;text-align:center;font-size:12px;color:var(--ink3)}
 
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ── IMPERSONATION BANNER (admin logged in as user) ── */
+.imp-banner{position:fixed;top:0;left:0;right:0;z-index:300;background:repeating-linear-gradient(45deg,#e8453c,#e8453c 12px,#c43e37 12px,#c43e37 24px);color:#fff;padding:8px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(232,69,60,.3)}
+.imp-banner.show{display:flex}
+.imp-banner-info{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.imp-banner-info strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp-banner-exit{padding:5px 14px;background:#fff;color:#7a1a16;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;font-size:11px;white-space:nowrap}
+.imp-banner-exit:hover{background:#fdf1f0}
+body.imp-active{padding-top:36px}
+@media(max-width:600px){
+  .imp-banner{font-size:11px;padding:7px 12px}
+  .imp-banner-info strong{font-size:11px}
+  body.imp-active{padding-top:44px}
+}
 </style>
 </head>
 <body>
+<!-- Impersonation banner (admin mode) -->
+<div class="imp-banner" id="impBanner">
+  <div class="imp-banner-info">
+    <span>🎭</span>
+    <span>Impersonating: <strong id="impBizName">—</strong></span>
+  </div>
+  <button class="imp-banner-exit" onclick="exitImpersonate()">Exit Impersonate &rarr;</button>
+</div>
 <div class="shell">
 
 <!-- SIDEBAR OVERLAY (mobile) -->
@@ -183,7 +297,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
     <a id="nav-catat"      href="getstarvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
     <a id="nav-pelanggan"  href="getstarvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
     <a id="nav-automation" href="getstarvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Pengingat</span></a>
     <a id="nav-kategori"   href="getstarvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
     <a id="nav-billing"    href="getstarvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
     <a id="nav-settings"   href="getstarvio-settings.html"     class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
@@ -223,6 +337,34 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   <div class="db-content">
     <div class="db-inner">
 
+      <!-- TRIAL SOFT LOCK BANNER (replaces hard overlay — dashboard tetap accessible read-only) -->
+      <div class="trial-soft-lock" id="trialSoftLock">
+        <div class="tsl-ic">🔒</div>
+        <div class="tsl-info">
+          <div class="tsl-title">Trial selesai — automation berhenti</div>
+          <div class="tsl-sub">Subscribe untuk lanjut kirim pengingat. Welcome bonus kredit kamu masih tersimpan dan otomatis aktif kembali.</div>
+        </div>
+        <a href="getstarvio-billing.html" class="tsl-cta">Subscribe →</a>
+      </div>
+
+      <!-- CREDIT ALERT (existing — Trial countdown jika trial aktif tapi mau habis) -->
+      <div class="credit-alert" id="credit-alert">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><path d="M8 2l6 11H2L8 2z"/><path d="M8 7v3M8 11.5v.5"/></svg>
+        <span id="credit-alert-text"></span>
+        <a href="getstarvio-billing.html" style="font-weight:700;color:inherit;margin-left:auto;white-space:nowrap">Top up →</a>
+      </div>
+
+      <!-- SETUP CHECKLIST (top, conditional, auto-dismiss saat semua selesai) -->
+      <div class="setup-card" id="setupCard" style="display:none">
+        <div class="setup-hd">
+          <div class="setup-title" id="setupTitle">Selesaikan setup — 0 dari 3 selesai</div>
+        </div>
+        <div class="setup-progress-wrap">
+          <div class="setup-progress-fill" id="setupProgressFill" style="width:0%"></div>
+        </div>
+        <div id="setupSteps"></div>
+      </div>
+
       <!-- ⓪ LIVE ACTIVITY FEED -->
       <div class="feed-card" id="feed-card">
         <div class="feed-header">
@@ -232,13 +374,23 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
         <div id="feed-body"></div>
       </div>
 
+      <!-- Hidden file input for Setup Step 1 logo upload (inline, no modal) -->
+      <input type="file" id="setupLogoFile" accept=".png,.jpg,.jpeg,image/png,image/jpeg" style="display:none" onchange="handleSetupLogoUpload(event)">
+
       <!-- ① GREETING CARD -->
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;margin-bottom:14px;position:relative;overflow:hidden">
         <div style="position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
-          <div>
+          <div style="flex:1;min-width:220px">
             <div style="font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.3px" id="h-greeting">Selamat pagi 👋</div>
             <div style="font-size:12px;color:var(--ink3);margin-top:4px" id="h-date"></div>
             <a href="getstarvio-automation.html" id="h-auto-badge" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;text-decoration:none;cursor:pointer;transition:opacity .15s" title="Klik untuk buka pengaturan Automation"></a>
+            <!-- Primary daily CTA — most frequent action for UMKM owner -->
+            <div style="margin-top:14px">
+              <a href="getstarvio-catat-kunjungan.html" id="h-primary-cta" data-always="1" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;background:var(--lime);color:var(--lime-dk);border-radius:var(--r-sm);font-size:13px;font-weight:700;text-decoration:none;transition:all .15s;box-shadow:0 2px 8px rgba(184,240,74,.3)">
+                <span style="font-size:15px">📋</span> Catat Kunjungan Hari Ini
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 8h8M9 5l3 3-3 3"/></svg>
+              </a>
+            </div>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;text-align:center;min-width:80px">
@@ -249,59 +401,32 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
               <div style="font-size:22px;font-weight:700;color:var(--lime-dk);font-family:'JetBrains Mono',monospace;line-height:1" id="h-credit">0</div>
               <div style="font-size:10px;color:var(--lime-dk);opacity:.6;margin-top:3px">Kredit Tersisa</div>
             </div>
-            <div style="background:var(--red-bg);border:1px solid rgba(232,69,60,.2);border-radius:var(--r-sm);padding:10px 14px;text-align:center;min-width:80px" id="h-lost-tile">
-              <div style="font-size:22px;font-weight:700;color:var(--red-dk);font-family:'JetBrains Mono',monospace;line-height:1" id="h-lost-n">0</div>
-              <div style="font-size:10px;color:var(--red-dk);opacity:.6;margin-top:3px">Pelanggan Hilang</div>
-            </div>
           </div>
         </div>
       </div>
 
-      <!-- ⑤ QUICK LINKS (action cards) -->
-      <div class="ql-grid" style="margin-bottom:14px">
-        <a href="getstarvio-catat-kunjungan.html" class="ql-card">
-          <div class="ql-icon">📋</div>
-          <div class="ql-title">Catat Kunjungan</div>
-          <div class="ql-sub">Catat pelanggan yang datang hari ini</div>
-        </a>
-        <a href="getstarvio-pelanggan.html?action=add" class="ql-card">
-          <div class="ql-icon">👥</div>
-          <div class="ql-title">Tambah Pelanggan</div>
-          <div class="ql-sub">Daftarkan pelanggan baru manual</div>
-        </a>
-        <a href="getstarvio-automation.html" class="ql-card">
-          <div class="ql-icon">🤖</div>
-          <div class="ql-title">Atur Automation</div>
-          <div class="ql-sub">Konfigurasi reminder otomatis</div>
-        </a>
-      </div>
+      <!-- ROI / PROJECTION CARD (mutually exclusive: ROI kalau ada reminder data, Projection kalau belum) -->
+      <div id="roi-card-wrap"></div>
 
-      <!-- CREDIT ALERT -->
-      <div class="credit-alert" id="credit-alert">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><path d="M8 2l6 11H2L8 2z"/><path d="M8 7v3M8 11.5v.5"/></svg>
-        <span id="credit-alert-text"></span>
-        <a href="getstarvio-billing.html" style="font-weight:700;color:inherit;margin-left:auto;white-space:nowrap">Top up →</a>
-      </div>
-
-      <!-- ② METRICS GRID -->
+      <!-- ② METRICS GRID (reframed: Total / Kembali via Pengingat / Pengingat Terkirim / Belum Balik) -->
       <div class="met-grid">
         <div class="met">
           <div class="met-lbl">Total Pelanggan</div>
           <div class="met-val" id="m-total">0</div>
           <div class="met-sub">terdaftar di sistem</div>
         </div>
-        <div class="met blue">
-          <div class="met-lbl">Kunjungan Bulan Ini</div>
-          <div class="met-val" id="m-visits">0</div>
-          <div class="met-sub">kunjungan tercatat</div>
-        </div>
         <div class="met lime">
-          <div class="met-lbl">Reminder Terkirim</div>
+          <div class="met-lbl">Kembali via Pengingat</div>
+          <div class="met-val" id="m-returned">0</div>
+          <div class="met-sub" id="m-returned-sub">bulan ini</div>
+        </div>
+        <div class="met blue">
+          <div class="met-lbl">Pengingat Terkirim</div>
           <div class="met-val" id="m-sent">0</div>
           <div class="met-sub">bulan ini</div>
         </div>
         <div class="met" id="m-lost-card">
-          <div class="met-lbl">Pelanggan Hilang</div>
+          <div class="met-lbl">Belum Balik</div>
           <div class="met-val" id="m-lost">0</div>
           <div class="met-sub">lewat interval</div>
         </div>
@@ -319,13 +444,45 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
         <div id="attn-list" style="display:flex;flex-direction:column;gap:7px"></div>
       </div>
 
-      <!-- ④ JADWAL REMINDER HARI INI -->
+      <!-- ④ JADWAL PENGINGAT HARI INI -->
       <div id="reminder-section" style="display:none;margin-bottom:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div style="font-size:13px;font-weight:700;color:var(--ink)">Jadwal Reminder Hari Ini</div>
+          <div style="font-size:13px;font-weight:700;color:var(--ink)">Jadwal Pengingat Hari Ini</div>
           <a href="getstarvio-log-reminder.html" style="font-size:11px;font-weight:600;color:var(--ink3);text-decoration:underline">Lihat log →</a>
         </div>
         <div id="reminder-list" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden"></div>
+      </div>
+
+      <!-- ⑤ QUICK LINKS (moved to bottom — ROI Card jadi star) -->
+      <div class="ql-grid" id="quickLinksGrid" style="margin-bottom:14px">
+        <a href="getstarvio-catat-kunjungan.html" class="ql-card" id="ql-catat">
+          <div class="ql-icon">📋</div>
+          <div class="ql-title">Catat Kunjungan</div>
+          <div class="ql-sub">Catat pelanggan yang datang hari ini</div>
+        </a>
+        <a href="getstarvio-pelanggan.html?action=add" class="ql-card" id="ql-pelanggan">
+          <div class="ql-icon">👥</div>
+          <div class="ql-title">Tambah Pelanggan</div>
+          <div class="ql-sub">Daftarkan pelanggan baru manual</div>
+        </a>
+        <a href="getstarvio-automation.html" class="ql-card" id="ql-automation">
+          <div class="ql-icon">🤖</div>
+          <div class="ql-title">Atur Automation</div>
+          <div class="ql-sub">Konfigurasi pengingat otomatis</div>
+        </a>
+      </div>
+
+      <!-- ⑥ TIPS SECTION (compact, bawah halaman, always visible) -->
+      <div class="tips-card">
+        <div class="tips-title">💡 Tips</div>
+        <div class="tip-row">
+          <span class="tip-ic">📋</span>
+          <div class="tip-text">Tempel QR di kasir — pelanggan scan, otomatis masuk sistem. <a href="getstarvio-settings.html" class="tip-link" style="text-decoration:underline">Print QR →</a></div>
+        </div>
+        <div class="tip-row">
+          <span class="tip-ic">📱</span>
+          <div class="tip-text">Bagikan link check-in ke pelanggan lama via WhatsApp. <button class="tip-link" onclick="copyCheckinLink()">Salin Link →</button></div>
+        </div>
       </div>
 
       <!-- EMPTY STATE -->
@@ -365,11 +522,56 @@ function loadU() {
     const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    // Migration v4 → v5
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        const td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      const endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else {
+      u.trialDaysLeft = null
+      u.trialExpired = false
+    }
     return u
   } catch(e) { return null }
 }
+
+function saveU(u) {
+  delete u.remLeft; delete u.trialDaysLeft; delete u.trialExpired
+  localStorage.setItem('getstarvio_user', JSON.stringify(u))
+}
+
+/* ── TRIAL HELPERS (computed di loadU, ini wrapper) ── */
+function isTrialExpired(U) { return !!(U && U.trialExpired) }
+function trialDaysLeft(U) { return U ? U.trialDaysLeft : null }
+
+/* ── TRIAL SOFT LOCK (Dashboard only — hybrid model per spec)
+   Dashboard tetap accessible read-only, banner merah + disable Quick Links 2/3.
+   Catat Kunjungan + Billing tetap aktif. Sidebar pages lain (pelanggan/kategori/
+   automation/log-reminder/settings) tetap pakai HARD LOCK overlay. ── */
+function applySoftLock(U) {
+  if (!U || !U.trialExpired) return
+  document.getElementById('trialSoftLock').classList.add('show')
+  // Disable Quick Links 2 & 3 (Tambah Pelanggan + Atur Automation)
+  // Catat Kunjungan tetap aktif (data preservation philosophy)
+  document.getElementById('ql-pelanggan').classList.add('disabled')
+  document.getElementById('ql-automation').classList.add('disabled')
+}
+// Stub backward-compat — dashboard tidak pakai overlay, tapi pattern tetap callable
+function showTrialLockOverlay() {}
+function checkTrialLock() {}
 
 function bootSidebar() {
   const page = location.pathname.split('/').pop()
@@ -454,10 +656,10 @@ function renderFeed(U) {
   // Reminder events
   rems.forEach(function(r) {
     if (r.status === 'terkirim' && r.sentAt) {
-      events.push({ type: 'reminder_sent', icon: '\uD83D\uDCE9', text: 'Reminder terkirim ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: r.sentAt, link: 'getstarvio-log-reminder.html', gagal: false })
+      events.push({ type: 'reminder_sent', icon: '\uD83D\uDCE9', text: 'Pengingat terkirim ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: r.sentAt, link: 'getstarvio-log-reminder.html', gagal: false })
     } else if (r.status === 'gagal') {
       var d = r.sentAt || r.scheduledAt
-      events.push({ type: 'reminder_gagal', icon: '\u274C', text: 'Reminder gagal ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: d, link: 'getstarvio-log-reminder.html', gagal: true })
+      events.push({ type: 'reminder_gagal', icon: '\u274C', text: 'Pengingat gagal ke <strong>' + (r.cxName || '—') + '</strong> untuk ' + (r.svc || '—'), date: d, link: 'getstarvio-log-reminder.html', gagal: true })
     }
   })
 
@@ -572,45 +774,76 @@ function boot() {
   const nearCxs = cxs.filter(cx => worstStatus(cx) === 'mendekati')
   const attnCxs = [...lostCxs, ...nearCxs]
 
-  document.getElementById('h-lost-n').textContent = lostCxs.length
-  if (lostCxs.length === 0) {
-    document.getElementById('h-lost-tile').style.background = 'rgba(255,255,255,.06)'
-    document.getElementById('h-lost-tile').style.border = '1px solid rgba(255,255,255,.1)'
+  // h-lost-n + h-lost-tile removed from Greeting (dedup — "Belum Balik" tetap ada di Metrics + Perlu Perhatian)
+  // Null-safe in case old DOM masih ada dari cache
+  var hLostN = document.getElementById('h-lost-n')
+  if (hLostN) hLostN.textContent = lostCxs.length
+  var hLostTile = document.getElementById('h-lost-tile')
+  if (hLostTile && lostCxs.length === 0) {
+    hLostTile.style.background = 'rgba(255,255,255,.06)'
+    hLostTile.style.border = '1px solid rgba(255,255,255,.1)'
   }
 
   // Lost badge in sidebar
   const navLost = document.getElementById('nav-lost-n')
   if (lostCxs.length > 0) { navLost.textContent = lostCxs.length; navLost.style.display = 'inline-flex' }
 
-  // Credit alert
+  // Trial / credit alert (priority: trial expired > credit critical > credit low > trial countdown)
   const alertEl = document.getElementById('credit-alert')
   const alertTxt = document.getElementById('credit-alert-text')
-  if (U.remLeft < 10 && U.remLeft > 0) {
+  const trialExp = isTrialExpired(U)
+  const daysLeft = trialDaysLeft(U)
+  if (trialExp) {
     alertEl.style.display = 'flex'
-    alertTxt.textContent = 'Kredit hampir habis — ' + U.remLeft + ' kredit tersisa.'
+    alertEl.classList.add('critical')
+    alertTxt.innerHTML = '<strong>Trial habis</strong> — automation berhenti. Subscribe untuk lanjut. Welcome bonus ' + U.remLeft + ' kredit kamu masih tersimpan.'
+    // Hard lock overlay handled by checkTrialLock() in boot()
   } else if (U.remLeft <= 0) {
     alertEl.style.display = 'flex'
     alertEl.classList.add('critical')
-    alertTxt.textContent = 'Kredit habis! Reminder tidak bisa dikirim.'
+    alertTxt.textContent = 'Kredit habis! Pengingat tidak bisa dikirim.'
+  } else if (U.remLeft < 10) {
+    alertEl.style.display = 'flex'
+    alertTxt.textContent = 'Kredit hampir habis — ' + U.remLeft + ' kredit tersisa.'
+  } else if (daysLeft !== null && daysLeft <= 3) {
+    alertEl.style.display = 'flex'
+    alertTxt.innerHTML = '<strong>Free trial</strong>: ' + daysLeft + ' hari tersisa. Subscribe biar ga kena gangguan.'
   }
 
-  // Metrics
+  // Auto-disable automation kalau trial expired
+  if (trialExp && U.automationEnabled) {
+    U.automationEnabled = false
+    saveU(U)
+  }
+
+  // Metrics — reframed: Total / Kembali via Pengingat / Pengingat Terkirim / Belum Balik
   document.getElementById('m-total').textContent = cxs.length
 
-  // Visits this month
   const thisMonth = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0')
-  let visitCount = 0
-  cxs.forEach(cx => cx.services.forEach(s => { if (s.date && s.date.startsWith(thisMonth)) visitCount++ }))
-  document.getElementById('m-visits').textContent = visitCount
+  const sentThisMonth = rems.filter(r => r.status === 'terkirim' && r.sentAt && r.sentAt.startsWith(thisMonth))
+  document.getElementById('m-sent').textContent = sentThisMonth.length
 
-  // Reminders sent this month
-  const sentThisMonth = rems.filter(r => r.status === 'terkirim' && r.sentAt && r.sentAt.startsWith(thisMonth)).length
-  document.getElementById('m-sent').textContent = sentThisMonth
+  // Kembali via Pengingat = customer yang visit dalam 7 hari setelah reminder bulan ini
+  const returnedCount = countReturnedFromReminders(U, sentThisMonth)
+  const returnedEl = document.getElementById('m-returned')
+  const returnedSubEl = document.getElementById('m-returned-sub')
+  if (sentThisMonth.length === 0) {
+    returnedEl.textContent = '—'
+    returnedSubEl.textContent = 'Aktifkan automation untuk mulai'
+  } else {
+    returnedEl.textContent = returnedCount
+    returnedSubEl.textContent = 'bulan ini'
+  }
 
   // Lost metric card
   document.getElementById('m-lost').textContent = lostCxs.length
   const lostCard = document.getElementById('m-lost-card')
   if (lostCxs.length > 0) { lostCard.classList.add('red') }
+
+  // Render Setup Checklist + ROI/Projection (di sini supaya akses U + lostCxs context)
+  renderSetupChecklist(U)
+  renderRoiOrProjection(U, sentThisMonth, returnedCount)
+  applySoftLock(U)
 
   // Empty state
   if (cxs.length === 0) {
@@ -667,11 +900,268 @@ function boot() {
   }
 }
 
+/* ══════════════════════════════════════════════
+   SETUP CHECKLIST — 3 step (logo, pelanggan, automation)
+   Auto-detect completion + auto-dismiss permanent saat semua selesai
+   ══════════════════════════════════════════════ */
+function renderSetupChecklist(U) {
+  if (!U) {
+    document.getElementById('setupCard').style.display = 'none'
+    return
+  }
+  const cxs = U.customers || []
+  const qrCxCount = cxs.filter(function(c){ return c.via === 'qr' }).length
+  const hasCats = (U.cats || []).length > 0
+
+  // Setup steps — urutan: brand identity (logo) → brand voice (template) → data → physical → security → go-live
+  const steps = [
+    { id: 'logo',       done: !!U.bizLogo,                                   label: 'Upload logo bisnis',           sub: 'Tampil di halaman check-in pelanggan',                subDone: 'Logo siap ✓' },
+    { id: 'templates',  done: !!U.templatesReviewedAt,                       label: 'Pilih template pengingat',     sub: 'Tentukan gaya pesan per kategori (formal, casual, dsb.)', subDone: 'Template sudah disesuaikan ✓' },
+    { id: 'customers',  done: cxs.length > 0,                                label: 'Tambah pelanggan pertama',     sub: 'Manual atau import CSV — biar sistem punya data',     subDone: cxs.length + ' pelanggan terdaftar ✓' },
+    { id: 'qr',         done: !!U.qrPosted || qrCxCount > 0,                 label: 'Pasang QR check-in',           sub: 'Print/share QR — pelanggan bisa daftar sendiri',      subDone: qrCxCount > 0 ? qrCxCount + ' pelanggan via QR ✓' : 'QR sudah dipasang ✓' },
+    { id: 'pin',        done: !!U.adminPin,                                  label: 'Setup PIN Admin',              sub: 'Proteksi aksi kritis (hapus data, ubah jam kirim)',   subDone: 'PIN aktif ✓' },
+    { id: 'automation', done: !!U.automationEnabled,                         label: 'Aktifkan automation',          sub: 'Pengingat otomatis ke WhatsApp pelanggan',            subDone: 'Automation aktif ✓' }
+  ]
+  const TOTAL_STEPS = steps.length
+  const doneCount = steps.filter(s => s.done).length
+  const card = document.getElementById('setupCard')
+
+  // Sembunyikan HANYA kalau semua step beneran masih done DAN owner sudah dismiss success card sebelumnya.
+  // Kalau ada step yang turun (misal automation di-matiin lagi), checklist muncul lagi.
+  if (doneCount === TOTAL_STEPS && U.setupComplete) {
+    card.style.display = 'none'
+    return
+  }
+  card.style.display = ''
+
+  // All done — show success state, set setupComplete (dismissed flag)
+  if (doneCount === TOTAL_STEPS) {
+    card.innerHTML =
+      '<div class="setup-success">' +
+        '<div class="setup-success-ic">🎉</div>' +
+        '<div class="setup-success-title">Setup selesai!</div>' +
+        '<div class="setup-success-sub">getstarvio siap kirim pengingat otomatis ke pelangganmu.</div>' +
+        '<button class="setup-dismiss" onclick="dismissSetupCard()">Tutup</button>' +
+      '</div>'
+    U.setupComplete = true
+    saveU(U)
+    setTimeout(function() { card.style.display = 'none' }, 5000)
+    return
+  }
+
+  // Render checklist
+  const titleText = 'Selesaikan setup — ' + doneCount + ' dari ' + TOTAL_STEPS + ' selesai'
+  const progressPct = Math.round(doneCount / TOTAL_STEPS * 100)
+  card.innerHTML =
+    '<div class="setup-hd"><div class="setup-title" id="setupTitle">' + titleText + '</div></div>' +
+    '<div class="setup-progress-wrap"><div class="setup-progress-fill" style="width:' + progressPct + '%"></div></div>' +
+    '<div id="setupSteps">' + steps.map((s, i) => renderSetupStep(s, i + 1, U, hasCats)).join('') + '</div>'
+}
+
+function renderSetupStep(step, num, U, hasCats) {
+  const numHtml = step.done
+    ? '<div class="setup-num">✓</div>'
+    : '<div class="setup-num">' + num + '</div>'
+
+  let actionHtml = ''
+  if (!step.done) {
+    if (step.id === 'logo') {
+      actionHtml = '<button class="setup-action lime" onclick="document.getElementById(\'setupLogoFile\').click()">📤 Upload</button>'
+    } else if (step.id === 'templates') {
+      // Edge case: kalau belum ada kategori, arahkan ke Kategori dulu
+      if (!hasCats) {
+        actionHtml = '<a class="setup-action" href="getstarvio-kategori.html" title="Tambah kategori dulu">Tambah kategori →</a>'
+      } else {
+        actionHtml = '<a class="setup-action" href="getstarvio-automation.html#per-category">Pilih template →</a>'
+      }
+    } else if (step.id === 'customers') {
+      actionHtml = '<a class="setup-action" href="getstarvio-pelanggan.html?action=add">Tambah →</a>'
+    } else if (step.id === 'qr') {
+      actionHtml = '<a class="setup-action" href="getstarvio-settings.html#qr">Pasang QR →</a>'
+    } else if (step.id === 'pin') {
+      actionHtml = '<a class="setup-action" href="getstarvio-settings.html#pin">Atur PIN →</a>'
+    } else if (step.id === 'automation') {
+      actionHtml = '<a class="setup-action" href="getstarvio-automation.html">Aktifkan →</a>'
+    }
+  } else if (step.id === 'logo' && U.bizLogo) {
+    actionHtml = '<img class="setup-logo-preview" src="' + U.bizLogo + '" alt="Logo">'
+  }
+
+  return '<div class="setup-step' + (step.done ? ' done' : '') + '">' +
+    numHtml +
+    '<div class="setup-info">' +
+      '<div class="setup-label">' + step.label + '</div>' +
+      '<div class="setup-sub">' + (step.done ? step.subDone : step.sub) + '</div>' +
+    '</div>' +
+    actionHtml +
+  '</div>'
+}
+
+function dismissSetupCard() {
+  document.getElementById('setupCard').style.display = 'none'
+}
+
+/* Inline logo upload from Setup Checklist (shared logic with Settings) */
+function handleSetupLogoUpload(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  if (!/^image\/(png|jpeg|jpg)$/i.test(file.type)) { alert('Format harus PNG atau JPG.'); return }
+  if (file.size > 200 * 1024) { alert('Ukuran file maks 200KB.'); return }
+
+  const reader = new FileReader()
+  reader.onload = function(e) {
+    const img = new Image()
+    img.onload = function() {
+      const scale = Math.min(120 / img.naturalWidth, 120 / img.naturalHeight, 1)
+      const newW = Math.round(img.naturalWidth * scale)
+      const newH = Math.round(img.naturalHeight * scale)
+      const canvas = document.createElement('canvas')
+      canvas.width = newW; canvas.height = newH
+      canvas.getContext('2d').drawImage(img, 0, 0, newW, newH)
+      const dataUrl = canvas.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', 0.85)
+      const u = loadU()
+      if (!u) return
+      u.bizLogo = dataUrl
+      saveU(u)
+      // Re-render setup checklist (will mark step 1 done)
+      renderSetupChecklist(loadU())
+    }
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
+  event.target.value = ''
+}
+
+/* ══════════════════════════════════════════════
+   ROI CARD / PROJECTION CARD (mutually exclusive)
+   ══════════════════════════════════════════════ */
+function countReturnedFromReminders(U, reminders) {
+  // Unique customers who visited within 7 days after their reminder was sent
+  const returned = {}
+  reminders.forEach(rem => {
+    if (returned[rem.cxId]) return
+    const cx = (U.customers || []).find(c => c.id === rem.cxId)
+    if (!cx) return
+    cx.services.forEach(svc => {
+      if (!svc.date) return
+      const visitMs = new Date(svc.date).getTime()
+      const sentMs = new Date(rem.sentAt).getTime()
+      const diffDays = (visitMs - sentMs) / 86400000
+      if (diffDays > 0 && diffDays <= 7) returned[rem.cxId] = true
+    })
+  })
+  return Object.keys(returned).length
+}
+
+function renderRoiOrProjection(U, sentThisMonth, returnedCount) {
+  const wrap = document.getElementById('roi-card-wrap')
+  const totalCxs = (U.customers || []).length
+  const avgValue = U.avgServiceValue || 150000
+  const fmt = n => 'Rp ' + Math.round(n).toLocaleString('id-ID')
+
+  // ROI Card if has reminder data this month
+  if (sentThisMonth.length > 0) {
+    const sentCount = sentThisMonth.length
+    const responseRate = sentCount > 0 ? Math.round(returnedCount / sentCount * 100) : 0
+    const estRevenue = returnedCount * avgValue
+    // costPerCredit computed dari U.planConfig (subPrice / subCredits) — ikutin kalau admin ubah
+    const pcD = (U.planConfig) || {}
+    const costPerCredit = pcD.subCredits > 0 ? Math.round((pcD.subPrice || 249000) / pcD.subCredits) : 830
+    const totalCost = sentCount * costPerCredit
+    const roi = totalCost > 0 ? Math.round(estRevenue / totalCost) : 0
+
+    let quote
+    if (returnedCount === 0) {
+      quote = 'Pengingat sedang bekerja — pelanggan yang diingatkan biasanya kembali dalam beberapa hari.'
+    } else {
+      quote = 'Tanpa pengingat, ' + returnedCount + ' pelanggan ini mungkin lupa balik ke bisnis kamu.'
+    }
+
+    wrap.innerHTML =
+      '<div class="roi-card">' +
+        '<div class="roi-eyebrow">📈 Dampak Pengingat Bulan Ini</div>' +
+        '<div class="roi-stats">' +
+          '<div class="roi-stat lime"><div class="roi-stat-n">' + returnedCount + '</div><div class="roi-stat-l">pelanggan kembali</div></div>' +
+          '<div class="roi-stat"><div class="roi-stat-n">' + sentCount + '</div><div class="roi-stat-l">pengingat terkirim</div></div>' +
+          '<div class="roi-stat"><div class="roi-stat-n">' + responseRate + '%</div><div class="roi-stat-l">response rate</div></div>' +
+        '</div>' +
+        (returnedCount > 0 ? (
+          '<div class="roi-box">' +
+            '<div class="roi-line primary"><span>Estimasi pendapatan kembali</span><span>~' + fmt(estRevenue) + '</span></div>' +
+            '<div class="roi-line cost"><span>Biaya pengingat</span><span>~' + fmt(totalCost) + ' (' + sentCount + ' × Rp 830)</span></div>' +
+            '<div class="roi-line"><span style="color:var(--ink2);font-weight:600">ROI</span><span class="roi-multiplier">' + roi + 'x lipat</span></div>' +
+          '</div>'
+        ) : '') +
+        '<div class="roi-quote">' + quote + '</div>' +
+      '</div>'
+    return
+  }
+
+  // Projection Card — kalau belum ada reminder data tapi ada customers
+  if (totalCxs > 0) {
+    const estReminders = Math.max(1, Math.round(totalCxs * 0.3))
+    const estReturned = Math.round(estReminders * 0.25)
+    const estRevenue = estReturned * avgValue
+    wrap.innerHTML =
+      '<div class="proj-card">' +
+        '<div class="proj-eyebrow">💡 Potensi Pengingat Kamu</div>' +
+        '<div class="proj-intro">Dengan <b>' + totalCxs + ' pelanggan aktif</b>, estimasi dampak pengingat otomatis setiap bulan:</div>' +
+        '<div class="proj-stats">' +
+          '<div class="proj-stat"><div class="proj-stat-n">~' + estReminders + '</div><div class="proj-stat-l">pengingat / bulan</div></div>' +
+          '<div class="proj-stat"><div class="proj-stat-n">~' + fmt(estRevenue) + '</div><div class="proj-stat-l">potensi pendapatan kembali</div></div>' +
+        '</div>' +
+        '<div class="proj-foot">Rata-rata <b>25%</b> pelanggan yang diingatkan akan kembali. Setiap pengingat = <b>Rp 830</b>. Setiap kunjungan = <b>~' + fmt(avgValue) + '</b>.</div>' +
+      '</div>'
+    return
+  }
+
+  // No customers — clear wrap (Setup Checklist Step 2 handles this)
+  wrap.innerHTML = ''
+}
+
+/* Tip: Salin link check-in */
+function copyCheckinLink() {
+  const u = loadU()
+  if (!u) return
+  const slug = u.bizSlug || 'bisnis-kamu'
+  const link = 'https://getstarvio.com/checkin/' + slug
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(function() {
+      alert('Link disalin!\n' + link)
+    }).catch(function() { window.prompt('Salin link:', link) })
+  } else {
+    window.prompt('Salin link:', link)
+  }
+}
+
 /* ── INIT ── */
 window.addEventListener('DOMContentLoaded', function() {
   boot()
   bootSidebar()
+  // Note: NO checkTrialLock — dashboard pakai SOFT lock (banner + disable Quick Links 2/3)
+  // applied di applySoftLock() yang dipanggil dari render()
 })
+
+/* ── IMPERSONATION CHECK (admin logged in as user) ── */
+(function() {
+  try {
+    var raw = localStorage.getItem('getstarvio_impersonation');
+    if (!raw) return;
+    var imp = JSON.parse(raw);
+    if (!imp || !imp.targetBizId) return;
+    document.addEventListener('DOMContentLoaded', function() {
+      var banner = document.getElementById('impBanner');
+      var bizEl = document.getElementById('impBizName');
+      if (banner) banner.classList.add('show');
+      if (bizEl) bizEl.textContent = imp.targetBizName || imp.targetBizId;
+      document.body.classList.add('imp-active');
+    });
+  } catch(e) {}
+})();
+function exitImpersonate() {
+  try { localStorage.removeItem('getstarvio_impersonation') } catch(e) {}
+  window.location.href = 'getstarvio-admin.html';
+}
 </script>
 </body>
 </html>

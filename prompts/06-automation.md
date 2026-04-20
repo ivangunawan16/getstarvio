@@ -6,7 +6,7 @@
 
 ## Tujuan Halaman
 
-Konfigurasi pengiriman reminder otomatis via WhatsApp — kapan dikirim, pakai template apa, per kategori layanan.
+Konfigurasi pengiriman pengingat otomatis via WhatsApp — kapan dikirim, pakai template apa, per kategori layanan.
 
 ---
 
@@ -15,7 +15,7 @@ Konfigurasi pengiriman reminder otomatis via WhatsApp — kapan dikirim, pakai t
 ### Master Toggle Card (atas konten — LIGHT theme)
 - Card background = `var(--bg2)` (putih) — **bukan** dark `var(--ink)`
 - Label: "Automation" + badge ON/OFF
-- Toggle switch on/off global. Jika off, tidak ada reminder yang dijadwalkan.
+- Toggle switch on/off global. Jika off, tidak ada pengingat yang dijadwalkan.
 - Simpan state ke localStorage (`getstarvio_user.automationEnabled`)
 - Tampilkan "Kirim pukul" waktu + timezone di sebelah toggle
 - **WA Connection Status** ada DI DALAM master card (border-top separator):
@@ -31,20 +31,27 @@ Konfigurasi pengiriman reminder otomatis via WhatsApp — kapan dikirim, pakai t
 ### Section: Pengaturan per Kategori (Flow Cards)
 - List semua `cats[]` — setiap kategori = 1 flow card
 - Per card: ikon, nama, interval (bisa diedit langsung), template selector, toggle on/off per kategori
-- Jika kategori di-toggle off, reminder untuk layanan ini tidak dikirim
+- Jika kategori di-toggle off, pengingat untuk layanan ini tidak dikirim
 - **Explicit "Simpan" button per card** — tidak auto-save saat template atau interval berubah
 - Preview template updates live saat dropdown berubah, tapi save ke localStorage hanya saat klik "Simpan"
 
 ### WA Template Selector (per kategori)
 - Dropdown pilihan template pre-made
-- Template PRE-MADE — admin hanya bisa SELECT, tidak bisa edit konten
-- Preview template tampilkan body pesan dengan placeholder: `{customer_name}`, `{service}`, `{business_name}`, `{days}`
-- Template yang tersedia (pre-made, read-only, sama dengan di Kategori):
-  1. **Reminder balik** (`reminder_return`) — gentle reminder untuk kembali
-  2. **Ajakan santai** (`soft_invite`) — tone casual/friendly
-  3. **Reminder + penawaran** (`promo_nudge`) — sebut penawaran
-  4. **Check-in personal** (`care_checkin`) — gimana kondisi kamu?
-  5. **Gentle urgency** (`urgency_light`) — soft urgency reminder
+- Template PRE-MADE — admin hanya bisa SELECT, tidak bisa edit konten (edit template di admin panel `getstarvio-admin.html`)
+- Template harus di-approve Meta sebelum bisa dipakai di Cloud API (status approval shown via webhook)
+- **Placeholder format Meta Cloud API:** `{{1}}`, `{{2}}`, `{{3}}`, `{{4}}` (positional, bukan named)
+- **Variable mapping (semua 5 template aftercare pakai mapping yang sama, urutan sama):**
+  - `{{1}}` = Nama customer (`customer.name`)
+  - `{{2}}` = Jenis treatment (`service.name` dari `cats[]`)
+  - `{{3}}` = Tanggal kunjungan terakhir (`service.date`, format: DD MMMM YYYY — contoh: "15 Maret 2026")
+  - `{{4}}` = Nama bisnis (`bizName`)
+- Preview di flow card harus render `{{1}}`-`{{4}}` dengan data sungguhan, bukan tampilkan raw placeholder
+- Template yang tersedia (utility-compliant, semua APPROVED, sama dengan di Kategori):
+  1. **`aftercare_followup_1`** — formal opener "sudah berjalan dengan baik"
+  2. **`aftercare_followup_2`** — terima kasih + perawatan lanjutan
+  3. **`aftercare_followup_3`** — follow-up casual
+  4. **`aftercare_followup_4`** — semoga puas + jadwal lanjutan
+  5. **`aftercare_followup_5`** — tanya hasil + opsi keluhan
 
 ### Card: Status Kredit
 - Saldo saat ini `remLeft` dengan warna state (lime/amber/red/dark)
@@ -73,3 +80,7 @@ Konfigurasi pengiriman reminder otomatis via WhatsApp — kapan dikirim, pakai t
 | 2026-03-26 | Tambah Reference section — acuan v2.0, template read-only |
 | 2026-03-26 | Sync: Master toggle card = LIGHT theme (not dark). WA reconnect + QR modal IN master card (not Settings). Settings no longer has WA reconnect. |
 | 2026-03-26 | Sync: per-category flow cards have explicit "Simpan" button (no auto-save on template/interval change). Preview updates live but save is manual. |
+| 2026-04-18 | UI copy "reminder" → "pengingat". Template names: "Reminder balik" → "Pengingat balik", "Reminder + penawaran" → "Pengingat + penawaran". Added template approval (Meta Cloud API) note. |
+| 2026-04-18 | **TEMPLATE OVERHAUL.** Replaced 5 old templates with 5 utility-compliant aftercare templates (`aftercare_followup_1` through `_5`). Placeholder format: `{{1}}`-`{{4}}` (nama/treatment/tanggal/bisnis). Preview di flow card render dengan data sungguhan, bukan raw placeholder. |
+| 2026-04-18 | **SPEC CONSISTENCY PATCH.** Field `automationEnabled` (master toggle boolean) sekarang canonical di 00-global.md DATA SCHEMA. No change to this page's flow. |
+| 2026-04-19 | **REMOVE {{5}} TIMING.** Template variables reduced to 4 (`{{1}}`-`{{4}}`). Removed `{{5}}` waktu perawatan lanjutan + `cats[].timing` field. Aligned with actual template body text yang hanya pakai 4 variables. |

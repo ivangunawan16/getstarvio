@@ -129,6 +129,69 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .wa-num{font-size:14px;font-weight:700;color:var(--ink);font-family:'JetBrains Mono',monospace}
 .wa-label{font-size:11px;color:var(--ink3)}
 
+/* Meta connection persistent display */
+.meta-conn{margin:10px 0 16px;padding:12px 14px;background:var(--bg2);border:1.5px solid var(--lime-bd);border-radius:var(--r-sm)}
+.meta-conn-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.meta-conn-title{font-size:12px;font-weight:700;color:var(--ink)}
+.meta-conn-btn{padding:4px 10px;background:none;border:1px solid var(--border2);border-radius:var(--r-sm);font-family:inherit;font-size:10px;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .15s}
+.meta-conn-btn:hover{border-color:var(--lime2);background:var(--lime-bg);color:var(--lime-dk)}
+.meta-conn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+.meta-conn-item{display:flex;flex-direction:column;gap:2px}
+.meta-conn-k{font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.meta-conn-v{font-size:12px;color:var(--ink);font-weight:600}
+.mc-quality-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:var(--lime-bg);color:var(--lime-dk);border:1px solid var(--lime-bd)}
+.mc-quality-badge.yellow{background:#fff8ec;color:#8a5e00;border-color:#f5d28a}
+.mc-quality-badge.red{background:var(--red-bg);color:var(--red-dk);border-color:#f5c5c3}
+.mc-quality-badge::before{content:'●';font-size:7px}
+@media (max-width:600px){ .meta-conn-grid{grid-template-columns:1fr} }
+
+/* Meta detail modal rows */
+.md-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.md-row:last-of-type{border-bottom:none}
+.md-k{color:var(--ink3);font-weight:600;font-size:11px}
+.md-v{color:var(--ink);font-weight:700;text-align:right}
+.md-tech-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:5px 0;font-size:11px}
+.md-tech-k{color:var(--ink3);font-weight:600;min-width:95px;font-size:10px}
+.md-tech-v{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink);background:var(--bg3);padding:4px 8px;border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.md-copy-btn{padding:3px 7px;background:none;border:1px solid var(--border);border-radius:3px;font-family:inherit;font-size:9px;font-weight:700;color:var(--ink2);cursor:pointer;text-transform:uppercase;letter-spacing:.04em;transition:all .15s}
+.md-copy-btn:hover{border-color:var(--lime2);background:var(--lime-bg);color:var(--lime-dk)}
+
+/* OTP verify block */
+.otp-wrap{margin:10px 0 16px}
+.otp-state{padding:12px 14px;border-radius:var(--r-sm);border:1.5px solid}
+.otp-unverified{background:#fff8ec;border-color:#f5d28a}
+.otp-pending{background:var(--bg2);border-color:var(--lime2)}
+.otp-verified{background:var(--lime-bg);border-color:var(--lime2)}
+.otp-row{display:flex;align-items:flex-start;gap:10px}
+.otp-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.otp-msg{flex:1;min-width:0}
+.otp-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.otp-unverified .otp-title{color:#8a5e00}
+.otp-verified .otp-title{color:var(--lime-dk)}
+.otp-sub{font-size:11px;color:var(--ink3);line-height:1.4}
+.otp-form{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.otp-input{flex:1;min-width:100px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:18px;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:.15em;color:var(--ink);background:var(--bg2);outline:none;text-align:center}
+.otp-input:focus{border-color:var(--lime2)}
+.otp-err{margin-top:8px;font-size:11px;color:var(--red-dk);font-weight:600}
+@media (max-width:480px){
+  .otp-row{flex-wrap:wrap}
+  .otp-row .btn{margin-left:0;margin-top:8px;width:100%}
+}
+
+/* notification preferences in WA section */
+.notif-divider{margin:18px -17px 16px;border-top:1px dashed var(--border)}
+.notif-title-row{margin-bottom:10px}
+.notif-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.notif-sub{font-size:11px;color:var(--ink3);line-height:1.4}
+.notif-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.notif-check{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);cursor:pointer;background:var(--bg2);transition:all .15s}
+.notif-check:hover{border-color:var(--lime2);background:var(--lime-bg)}
+.notif-check:has(input:checked){border-color:var(--lime2);background:var(--lime-bg)}
+.notif-check input[type=checkbox]{margin-top:2px;accent-color:var(--lime2);cursor:pointer;flex-shrink:0}
+.notif-txt{flex:1;min-width:0}
+.notif-check .notif-label{font-size:12px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:2px}
+.notif-check .notif-desc{font-size:11px;color:var(--ink3);line-height:1.4}
+
 /* danger zone */
 .danger-section{border:1.5px solid #f5c5c3;border-radius:var(--r);overflow:hidden;margin-bottom:13px}
 .danger-header{display:flex;align-items:center;justify-content:space-between;padding:14px 17px;cursor:pointer;background:var(--bg2);user-select:none;transition:background .15s}
@@ -179,11 +242,34 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 .step-title{font-size:13px;font-weight:600;color:var(--ink)}
 .step-sub{font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.5}
 
-/* ── COPY TEXT BLOCK ── */
-.copy-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--ink2);line-height:1.75;position:relative;padding-right:60px}
-.copy-btn{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;padding:3px 8px;cursor:pointer;font-family:inherit;color:var(--ink3);transition:all .15s;white-space:nowrap}
-.copy-btn:hover{background:var(--lime-bg);color:var(--lime-dk);border-color:var(--lime2)}
-.copy-btn.copied{background:var(--lime-bg);color:var(--lime-dk);border-color:var(--lime2)}
+/* ── TEKS SIAP PAKAI — color-coded editable templates ── */
+.tpl-block{border-radius:var(--r-sm);overflow:hidden;margin-bottom:10px;border:1px solid;transition:border-color .15s}
+.tpl-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(0,0,0,.06)}
+.tpl-head-label{display:flex;align-items:center;gap:6px}
+.tpl-text{
+  width:100%;border:none;outline:none;padding:12px 14px;
+  font-family:'Sora',sans-serif;font-size:12.5px;line-height:1.7;
+  color:var(--ink);background:rgba(255,255,255,.55);resize:vertical;min-height:74px;display:block;
+}
+.tpl-text:focus{background:rgba(255,255,255,.85)}
+.tpl-actions{display:flex;gap:6px;padding:8px 14px;align-items:center;background:rgba(255,255,255,.4)}
+.tpl-edited{margin-right:auto;font-size:10px;font-weight:600;color:var(--ink3);font-style:italic;display:none}
+.tpl-block.is-edited .tpl-edited{display:inline}
+.tpl-btn{
+  font-size:10px;font-weight:700;padding:5px 11px;border-radius:5px;
+  border:1px solid var(--border2);background:#fff;cursor:pointer;font-family:inherit;
+  color:var(--ink3);transition:all .12s;white-space:nowrap;
+}
+.tpl-btn:hover{color:var(--ink);border-color:var(--ink3)}
+.tpl-btn.is-flash{background:var(--lime-bg);border-color:var(--lime2);color:var(--lime-dk)}
+.tpl-btn-reset{margin-left:0}
+/* Per-color schemes */
+.tpl-kasir{background:var(--lime-bg);border-color:#c8f07a}
+.tpl-kasir .tpl-head{color:var(--lime-dk);background:rgba(184,240,74,.25)}
+.tpl-blast{background:var(--blue-bg);border-color:#bfcff8}
+.tpl-blast .tpl-head{color:var(--blue-dk);background:rgba(37,99,235,.08)}
+.tpl-reply{background:var(--amber-bg);border-color:#fcd88a}
+.tpl-reply .tpl-head{color:var(--amber-dk);background:rgba(245,166,35,.12)}
 
 /* ── METRICS ── */
 .met-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:13px}
@@ -205,6 +291,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
 
 /* ── MOBILE ── */
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -225,9 +316,31 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   .s-reset::after{content:'\21BA';font-size:14px}
 }
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ── IMPERSONATION BANNER (admin logged in as user) ── */
+.imp-banner{position:fixed;top:0;left:0;right:0;z-index:300;background:repeating-linear-gradient(45deg,#e8453c,#e8453c 12px,#c43e37 12px,#c43e37 24px);color:#fff;padding:8px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(232,69,60,.3)}
+.imp-banner.show{display:flex}
+.imp-banner-info{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.imp-banner-info strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp-banner-exit{padding:5px 14px;background:#fff;color:#7a1a16;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;font-size:11px;white-space:nowrap}
+.imp-banner-exit:hover{background:#fdf1f0}
+body.imp-active{padding-top:36px}
+@media(max-width:600px){
+  .imp-banner{font-size:11px;padding:7px 12px}
+  .imp-banner-info strong{font-size:11px}
+  body.imp-active{padding-top:44px}
+}
 </style>
 </head>
 <body>
+<!-- Impersonation banner (admin mode) -->
+<div class="imp-banner" id="impBanner">
+  <div class="imp-banner-info">
+    <span>🎭</span>
+    <span>Impersonating: <strong id="impBizName">—</strong></span>
+  </div>
+  <button class="imp-banner-exit" onclick="exitImpersonate()">Exit Impersonate &rarr;</button>
+</div>
 <div class="shell">
 
 <!-- SIDEBAR OVERLAY (mobile) -->
@@ -245,7 +358,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
     <a id="nav-catat"      href="getstarvio-catat-kunjungan.html" class="nav-item"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
     <a id="nav-pelanggan"  href="getstarvio-pelanggan.html"    class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
     <a id="nav-automation" href="getstarvio-automation.html"   class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-log"        href="getstarvio-log-reminder.html" class="nav-item"><span class="nav-icon">📜</span><span>Log Pengingat</span></a>
     <a id="nav-kategori"   href="getstarvio-kategori.html"     class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
     <a id="nav-billing"    href="getstarvio-billing.html"      class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
     <a id="nav-settings"   href="getstarvio-settings.html"     class="nav-item active"><span class="nav-icon">⚙️</span><span>Settings</span></a>
@@ -282,10 +395,10 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
     <div class="db-inner">
 
       <!-- ══ ACCORDION: QR CHECK-IN ══ -->
-      <div class="accordion open" id="acc-qr">
+      <div class="accordion" id="acc-qr">
         <div class="acc-header" onclick="toggleAcc('acc-qr')">
           <div class="acc-title"><span class="acc-icon">📱</span> QR Check-in</div>
-          <span class="acc-sub">Print QR & share link</span>
+          <span class="acc-sub" id="acc-qr-sub">Print QR & share link</span>
           <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="acc-body">
@@ -415,38 +528,38 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
           <!-- TEKS SIAP PAKAI -->
           <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
             <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px">Teks siap pakai</div>
-            <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Copy dan tempel langsung — tidak perlu tulis ulang</div>
+            <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Copy &amp; tempel — atau edit dulu sesuai gaya bisnis kamu. Otomatis tersimpan.</div>
+
             <!-- Kasir -->
-            <div style="margin-bottom:12px">
-              <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
-                🧾 Untuk print di kasir / dipajang
-              </div>
-              <div class="copy-block" id="text-kasir">
-                📱 Scan QR ini &amp; daftarkan nomor WA kamu<br>
-                Kami akan ingatkan kamu sebelum jadwal kunjungan berikutnya ✨
-                <button class="copy-btn" id="btn-kasir" onclick="copyText('text-kasir','btn-kasir')">Salin</button>
+            <div class="tpl-block tpl-kasir" data-key="kasir">
+              <div class="tpl-head"><span class="tpl-head-label">🧾 Untuk print di kasir / dipajang</span></div>
+              <textarea class="tpl-text" id="tpl-kasir" oninput="onTplEdit('kasir')" spellcheck="false"></textarea>
+              <div class="tpl-actions">
+                <span class="tpl-edited">✏️ disesuaikan</span>
+                <button class="tpl-btn tpl-btn-reset" onclick="resetTpl('kasir')" title="Kembalikan ke teks default">↺ Reset</button>
+                <button class="tpl-btn" id="btn-kasir" onclick="copyTpl('kasir','btn-kasir')">Salin</button>
               </div>
             </div>
+
             <!-- WA Blast -->
-            <div style="margin-bottom:12px">
-              <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
-                📲 Untuk WA blast ke pelanggan lama
-              </div>
-              <div class="copy-block" id="text-blast">
-                Halo! Daftarkan dirimu untuk dapat reminder kunjungan otomatis dari kami 😊<br>
-                → <span id="blast-link">getstarvio.com/checkin/—</span>
-                <button class="copy-btn" id="btn-blast" onclick="copyText('text-blast','btn-blast')">Salin</button>
+            <div class="tpl-block tpl-blast" data-key="blast">
+              <div class="tpl-head"><span class="tpl-head-label">📲 Untuk WA blast ke pelanggan lama</span></div>
+              <textarea class="tpl-text" id="tpl-blast" oninput="onTplEdit('blast')" spellcheck="false"></textarea>
+              <div class="tpl-actions">
+                <span class="tpl-edited">✏️ disesuaikan</span>
+                <button class="tpl-btn tpl-btn-reset" onclick="resetTpl('blast')" title="Kembalikan ke teks default">↺ Reset</button>
+                <button class="tpl-btn" id="btn-blast" onclick="copyTpl('blast','btn-blast')">Salin</button>
               </div>
             </div>
+
             <!-- Balasan -->
-            <div>
-              <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
-                💬 Balasan ke pelanggan yang baru daftar
-              </div>
-              <div class="copy-block" id="text-reply">
-                Terima kasih sudah daftar! 🌟<br>
-                Kami akan ingatkan kamu sebelum waktu kunjungan berikutnya via WhatsApp ini.
-                <button class="copy-btn" id="btn-reply" onclick="copyText('text-reply','btn-reply')">Salin</button>
+            <div class="tpl-block tpl-reply" data-key="reply">
+              <div class="tpl-head"><span class="tpl-head-label">💬 Balasan ke pelanggan yang baru daftar</span></div>
+              <textarea class="tpl-text" id="tpl-reply" oninput="onTplEdit('reply')" spellcheck="false"></textarea>
+              <div class="tpl-actions">
+                <span class="tpl-edited">✏️ disesuaikan</span>
+                <button class="tpl-btn tpl-btn-reset" onclick="resetTpl('reply')" title="Kembalikan ke teks default">↺ Reset</button>
+                <button class="tpl-btn" id="btn-reply" onclick="copyTpl('reply','btn-reply')">Salin</button>
               </div>
             </div>
           </div>
@@ -502,12 +615,36 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
       <div class="accordion" id="acc-profil">
         <div class="acc-header" onclick="toggleAcc('acc-profil')">
           <div class="acc-title"><span class="acc-icon">🏢</span> Profil Bisnis</div>
-          <span class="acc-sub" id="acc-profil-sub">—</span>
+          <span class="acc-sub" id="acc-profil-sub">Belum diisi</span>
           <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="acc-body">
 
+          <!-- LOGO BISNIS UPLOAD (opsional) — di atas Nama Bisnis -->
           <div class="field" style="margin-top:14px">
+            <label class="field-label">Logo Bisnis <span style="font-size:10px;font-weight:500;color:var(--ink3);text-transform:none;letter-spacing:0;margin-left:4px">(opsional)</span></label>
+            <div style="font-size:11px;color:var(--ink3);margin-top:-4px;margin-bottom:8px;line-height:1.5">Tampil di halaman check-in pelanggan dan QR print. PNG/JPG, max 200KB.</div>
+            <div id="logoUploadArea" style="display:flex;align-items:center;gap:14px">
+              <!-- Preview / placeholder -->
+              <div id="logoPreview" style="width:120px;height:120px;border:2px dashed var(--border2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;background:var(--bg3);overflow:hidden;flex-shrink:0;cursor:pointer;transition:border-color .15s" onclick="document.getElementById('logoFileInput').click()">
+                <div id="logoPlaceholder" style="text-align:center;color:var(--ink3);font-size:11px;line-height:1.4">
+                  <div style="font-size:22px;margin-bottom:4px">📷</div>
+                  Upload logo
+                </div>
+                <img id="logoImg" style="display:none;width:100%;height:100%;object-fit:contain" alt="Logo bisnis">
+              </div>
+              <!-- Buttons -->
+              <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+                <button type="button" class="btn btn-ghost btn-sm" id="btnLogoChange" onclick="document.getElementById('logoFileInput').click()" style="justify-content:center">📤 Upload</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="btnLogoRemove" onclick="confirmRemoveLogo()" style="display:none;justify-content:center;color:var(--red-dk);border-color:#f5c5c3">🗑️ Hapus</button>
+                <div id="logoError" style="display:none;font-size:11px;color:var(--red-dk);background:var(--red-bg);border:1px solid #f5c5c3;border-radius:var(--r-sm);padding:6px 10px;line-height:1.4"></div>
+                <div id="logoWarning" style="display:none;font-size:11px;color:var(--amber-dk);background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:6px 10px;line-height:1.4"></div>
+              </div>
+              <input type="file" id="logoFileInput" accept=".png,.jpg,.jpeg,image/png,image/jpeg" style="display:none" onchange="handleLogoUpload(event)">
+            </div>
+          </div>
+
+          <div class="field">
             <label class="field-label">Nama Bisnis</label>
             <input type="text" class="field-input" id="inp-bizName" placeholder="Nama bisnis kamu">
           </div>
@@ -517,11 +654,12 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
             <div class="biz-grid" id="bizGrid">
               <div class="biz-opt" data-biz="Salon"><div class="biz-emoji">💇</div><div class="biz-name">Salon</div></div>
               <div class="biz-opt" data-biz="Spa"><div class="biz-emoji">🧖</div><div class="biz-name">Spa</div></div>
-              <div class="biz-opt" data-biz="Klinik/Dokter"><div class="biz-emoji">🩺</div><div class="biz-name">Klinik/Dokter</div></div>
+              <div class="biz-opt" data-biz="Klinik"><div class="biz-emoji">🩺</div><div class="biz-name">Klinik</div></div>
               <div class="biz-opt" data-biz="Barbershop"><div class="biz-emoji">💈</div><div class="biz-name">Barbershop</div></div>
               <div class="biz-opt" data-biz="Nail Studio"><div class="biz-emoji">💅</div><div class="biz-name">Nail Studio</div></div>
               <div class="biz-opt" data-biz="Bengkel"><div class="biz-emoji">🔧</div><div class="biz-name">Bengkel</div></div>
-              <div class="biz-opt" data-biz="Skincare/Estetik"><div class="biz-emoji">✨</div><div class="biz-name">Skincare/Estetik</div></div>
+              <div class="biz-opt" data-biz="Pet Grooming"><div class="biz-emoji">🐾</div><div class="biz-name">Pet Grooming</div></div>
+              <div class="biz-opt" data-biz="Laundry"><div class="biz-emoji">🧺</div><div class="biz-name">Laundry</div></div>
               <div class="biz-opt" data-biz="Lainnya"><div class="biz-emoji">🏪</div><div class="biz-name">Lainnya</div></div>
             </div>
           </div>
@@ -529,6 +667,15 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
           <div class="field">
             <label class="field-label">Nama Admin</label>
             <input type="text" class="field-input" id="inp-adminName" placeholder="Nama kamu">
+          </div>
+
+          <div class="field">
+            <label class="field-label">Rata-rata Harga Layanan <span style="font-size:10px;font-weight:500;color:var(--ink3);text-transform:none;letter-spacing:0;margin-left:4px">(untuk ROI calculation di dashboard)</span></label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:14px;font-weight:600;color:var(--ink2);font-family:'JetBrains Mono',monospace">Rp</span>
+              <input type="text" inputmode="numeric" class="field-input" id="inp-avgServiceValue" placeholder="150.000" oninput="formatIDRInput(this)" style="font-family:'JetBrains Mono',monospace;font-weight:600">
+            </div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:5px;line-height:1.5">Dipakai untuk estimasi pendapatan dari pengingat (Estimasi Revenue = pelanggan kembali × harga rata-rata).</div>
           </div>
 
           <div class="field">
@@ -568,7 +715,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
             </div>
           </div>
 
-          <button class="btn btn-lime" onclick="saveProfile()">Simpan Profil</button>
+          <button class="btn btn-lime" onclick="saveProfile()">Simpan</button>
 
         </div>
       </div>
@@ -585,15 +732,41 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
           <!-- WA Status -->
           <div class="wa-status" id="waStatus" style="margin-top:14px">
             <div class="wa-dot" id="waDot"></div>
-            <div>
+            <div style="flex:1;min-width:0">
               <div class="wa-num" id="waNumDisplay">—</div>
               <div class="wa-label" id="waLabel">Belum terhubung</div>
             </div>
-            <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="openQrModal()">Hubungkan ulang</button>
+            <button class="btn btn-ghost btn-sm" onclick="openQrModal()">Hubungkan ulang</button>
+          </div>
+
+          <!-- Meta Connection Details (persistent, post-onboarding) -->
+          <div class="meta-conn" id="metaConn" style="display:none">
+            <div class="meta-conn-header">
+              <div class="meta-conn-title">Detail Koneksi WhatsApp Business</div>
+              <button class="meta-conn-btn" onclick="openMetaDetailModal()">Lihat teknis →</button>
+            </div>
+            <div class="meta-conn-grid">
+              <div class="meta-conn-item">
+                <div class="meta-conn-k">Nama Bisnis</div>
+                <div class="meta-conn-v" id="mc-verified-name">—</div>
+              </div>
+              <div class="meta-conn-item">
+                <div class="meta-conn-k">Business Portfolio</div>
+                <div class="meta-conn-v" id="mc-portfolio">—</div>
+              </div>
+              <div class="meta-conn-item">
+                <div class="meta-conn-k">Quality</div>
+                <div class="meta-conn-v"><span class="mc-quality-badge" id="mc-quality">—</span></div>
+              </div>
+              <div class="meta-conn-item">
+                <div class="meta-conn-k">Messaging Tier</div>
+                <div class="meta-conn-v" id="mc-tier">—</div>
+              </div>
+            </div>
           </div>
 
           <div class="field">
-            <label class="field-label">Nomor WA Owner (untuk notifikasi)</label>
+            <label class="field-label">Nomor WA Owner (untuk notifikasi billing)</label>
             <div class="phone-wrap">
               <select class="phone-cc" id="ownerCc">
                 <option value="62">+62</option>
@@ -605,13 +778,187 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
                 <option value="44">+44</option>
                 <option value="1">+1</option>
               </select>
-              <input type="tel" class="phone-num" id="inp-ownerWa" placeholder="81234567890">
+              <input type="tel" class="phone-num" id="inp-ownerWa" placeholder="81234567890" oninput="onOwnerWaInput()">
             </div>
-            <div class="field-hint">Awalan 0 akan dihapus otomatis</div>
+            <div class="field-hint">Awalan 0 akan dihapus otomatis. Nomor ini dipakai untuk menerima notifikasi billing via WhatsApp.</div>
           </div>
 
-          <button class="btn btn-lime" onclick="saveWa()">Simpan WhatsApp</button>
+          <!-- ── OTP VERIFY BLOCK ── -->
+          <div class="otp-wrap" id="otpWrap" style="display:none">
+            <!-- state: unverified (amber) -->
+            <div class="otp-state otp-unverified" id="otpUnverified" style="display:none">
+              <div class="otp-row">
+                <span class="otp-ico">⚠️</span>
+                <div class="otp-msg">
+                  <div class="otp-title">Nomor belum diverifikasi</div>
+                  <div class="otp-sub">Verifikasi via OTP agar notifikasi billing (kredit rendah, renewal) bisa terkirim.</div>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="sendOwnerWaOtp()" id="btn-send-otp">Kirim OTP</button>
+              </div>
+            </div>
 
+            <!-- state: OTP sent, waiting input -->
+            <div class="otp-state otp-pending" id="otpPending" style="display:none">
+              <div class="otp-row">
+                <span class="otp-ico">📲</span>
+                <div class="otp-msg">
+                  <div class="otp-title">Masukkan kode 6-digit</div>
+                  <div class="otp-sub">Kode sudah dikirim ke nomor kamu (simulasi). <span id="otp-dev-hint" style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--lime-dk)"></span></div>
+                </div>
+              </div>
+              <div class="otp-form">
+                <input type="text" class="otp-input" id="otpInput" maxlength="6" inputmode="numeric" placeholder="123456">
+                <button class="btn btn-lime btn-sm" onclick="verifyOwnerWaOtp()">Verifikasi</button>
+                <button class="btn btn-ghost btn-sm" onclick="sendOwnerWaOtp()">Kirim ulang</button>
+              </div>
+              <div class="otp-err" id="otpErr" style="display:none"></div>
+            </div>
+
+            <!-- state: verified (lime) -->
+            <div class="otp-state otp-verified" id="otpVerified" style="display:none">
+              <div class="otp-row">
+                <span class="otp-ico">✅</span>
+                <div class="otp-msg">
+                  <div class="otp-title">Nomor terverifikasi</div>
+                  <div class="otp-sub" id="otpVerifiedDate">Terverifikasi <span id="otpVerifiedWhen"></span></div>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="resetOwnerWaVerify()">Verifikasi ulang</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── NOTIFICATION PREFERENCES (migrated from billing) ── -->
+          <div class="notif-divider"></div>
+          <div class="notif-title-row">
+            <div class="notif-title">Pengaturan Notifikasi</div>
+            <div class="notif-sub">Pilih notifikasi yang ingin diterima di WhatsApp owner.</div>
+          </div>
+          <div class="notif-list">
+            <label class="notif-check">
+              <input type="checkbox" id="nf-lowCredit" checked>
+              <div class="notif-txt">
+                <div class="notif-label">Kredit total rendah</div>
+                <div class="notif-desc">Saat kredit total turun di bawah 30</div>
+              </div>
+            </label>
+            <label class="notif-check">
+              <input type="checkbox" id="nf-criticalCredit" checked>
+              <div class="notif-txt">
+                <div class="notif-label">Kredit total kritis</div>
+                <div class="notif-desc">Saat kredit total turun di bawah 10</div>
+              </div>
+            </label>
+            <label class="notif-check">
+              <input type="checkbox" id="nf-subLow" checked>
+              <div class="notif-txt">
+                <div class="notif-label">Kredit subscription hampir habis</div>
+                <div class="notif-desc">Saat kredit bulanan subscription &lt; 50</div>
+              </div>
+            </label>
+            <label class="notif-check">
+              <input type="checkbox" id="nf-renewalReminder" checked>
+              <div class="notif-txt">
+                <div class="notif-label">Pengingat perpanjangan langganan</div>
+                <div class="notif-desc">3 hari sebelum subscription otomatis diperpanjang</div>
+              </div>
+            </label>
+          </div>
+
+          <button class="btn btn-lime" onclick="saveWa()">Simpan</button>
+
+        </div>
+      </div>
+
+      <!-- ══ ACCORDION: PIN ADMIN — secondary auth untuk aksi kritis ══ -->
+      <div class="accordion" id="acc-pin">
+        <div class="acc-header" onclick="toggleAcc('acc-pin')">
+          <div class="acc-title"><span class="acc-icon">🔐</span> PIN Admin</div>
+          <span class="acc-sub" id="acc-pin-sub">Belum diatur</span>
+          <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+        <div class="acc-body">
+          <div style="background:var(--bg3);border:1px dashed var(--border2);border-radius:var(--r-sm);padding:12px 14px;margin-top:14px;margin-bottom:14px;font-size:12px;color:var(--ink2);line-height:1.6">
+            Karena login pakai Google (tanpa password), PIN ini jadi lapisan kedua untuk aksi kritis seperti:
+            <ul style="margin:6px 0 0 18px;padding:0;color:var(--ink3);font-size:11px">
+              <li>Hapus kategori / pelanggan</li>
+              <li>Ubah jam kirim automation</li>
+              <li>Reset semua data</li>
+            </ul>
+          </div>
+
+          <!-- ── STATE A: PIN belum diatur ── -->
+          <div id="pin-setup-wrap">
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:5px;letter-spacing:.04em">PIN Baru (4 digit angka)</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-new" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-new')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin:12px 0 5px;letter-spacing:.04em">Konfirmasi PIN</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-confirm" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-confirm')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <div id="pin-error" style="display:none;font-size:11px;color:var(--red-dk);margin-top:8px;font-weight:600"></div>
+
+            <div style="margin-top:14px">
+              <button class="btn btn-lime" onclick="savePinSetup()">Simpan PIN</button>
+            </div>
+
+            <div style="margin-top:12px;font-size:10px;color:var(--ink3);line-height:1.55">
+              💡 <strong>Tips:</strong> Jangan pakai PIN yang mudah ditebak (0000, 1234, tahun lahir). Jangan share ke orang lain.
+            </div>
+          </div>
+
+          <!-- ── STATE B: PIN sudah diatur ── -->
+          <div id="pin-change-wrap" style="display:none">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);margin-bottom:14px">
+              <div style="font-size:22px">✅</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:700;color:var(--lime-dk)">PIN Terpasang</div>
+                <div style="font-size:11px;color:var(--lime-dk);opacity:.75;margin-top:1px" id="pin-set-date">Diatur baru saja</div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--lime-dk);letter-spacing:.25em">••••</div>
+            </div>
+
+            <!-- Change flow: current PIN → new PIN -->
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:5px;letter-spacing:.04em">PIN Sekarang</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-current" placeholder="0000" autocomplete="current-password" oninput="onPinInput(this,'pin-current')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin:12px 0 5px;letter-spacing:.04em">PIN Baru (4 digit)</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-new2" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-new2')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--ink2);margin:12px 0 5px;letter-spacing:.04em">Konfirmasi PIN Baru</label>
+            <input type="password" inputmode="numeric" pattern="\d{4}" maxlength="4" id="pin-confirm2" placeholder="0000" autocomplete="new-password" oninput="onPinInput(this,'pin-confirm2')" style="width:140px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;letter-spacing:.35em;text-align:center;border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink)">
+
+            <div id="pin-error2" style="display:none;font-size:11px;color:var(--red-dk);margin-top:8px;font-weight:600"></div>
+
+            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-lime" onclick="savePinChange()">Ubah PIN</button>
+              <button class="btn btn-ghost btn-sm" onclick="removePin()" style="color:var(--red-dk);border-color:#f5c5c3">Hapus PIN</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══ ACCORDION: KATEGORI DEFAULTS — global defaults for new categories ══ -->
+      <div class="accordion" id="acc-kat-default">
+        <div class="acc-header" onclick="toggleAcc('acc-kat-default')">
+          <div class="acc-title"><span class="acc-icon">⚙️</span> Kategori Defaults</div>
+          <span class="acc-sub" id="acc-kat-default-sub">Interval fallback 30 hari</span>
+          <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+        <div class="acc-body">
+          <div style="background:var(--bg3);border:1px dashed var(--border2);border-radius:var(--r-sm);padding:12px 14px;margin-top:14px;margin-bottom:14px;font-size:12px;color:var(--ink2);line-height:1.6">
+            Setting default untuk kategori baru. Tiap kategori bisa override ini di
+            <a href="getstarvio-kategori.html" style="color:var(--lime-dk);font-weight:700;text-decoration:none">page Kategori →</a>.
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0">
+            <div style="flex:1;min-width:200px">
+              <div style="font-size:13px;font-weight:700;color:var(--ink)">Default Interval — Fallback</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.5">Dipakai jika pelanggan belum punya kategori layanan.</div>
+            </div>
+            <input type="number" value="30" min="1" max="365" id="def-intv-settings" style="width:70px;padding:8px 10px;border-radius:var(--r-sm);background:#fff;border:1.5px solid var(--border2);color:var(--ink);font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:center;outline:none">
+            <span style="font-size:12px;color:var(--ink3)">hari</span>
+            <button onclick="saveDefaultIntervalSettings()" class="btn btn-lime btn-sm">Simpan</button>
+          </div>
         </div>
       </div>
 
@@ -619,7 +966,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
       <div class="accordion" id="acc-danger">
         <div class="acc-header" onclick="toggleAcc('acc-danger')">
           <div class="acc-title"><span class="acc-icon">⚠️</span> Danger Zone</div>
-          <span class="acc-sub">Reset & export data</span>
+          <span class="acc-sub" id="acc-danger-sub">Reset & export data</span>
           <svg class="acc-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="acc-body">
@@ -627,7 +974,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
           <div class="danger-item" style="padding-top:14px">
             <div class="danger-item-info">
               <div class="danger-item-title">Reset Semua Data</div>
-              <div class="danger-item-desc">Hapus semua data di perangkat ini. Kamu harus login ulang.</div>
+              <div class="danger-item-desc">Profil bisnis, semua pelanggan, riwayat pengingat &amp; pengaturan akan <strong style="color:var(--red-dk)">terhapus permanen dari device ini</strong>. Aksi ini ga bisa di-undo. Pastikan sudah Export Data dulu kalau perlu backup.</div>
             </div>
             <button class="btn btn-danger btn-sm" onclick="openResetModal()">Reset</button>
           </div>
@@ -701,21 +1048,108 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;overflow:hidd
   </div>
 </div>
 
+<!-- META CONNECTION DETAIL MODAL -->
+<div class="overlay" id="m-meta-detail">
+  <div class="modal">
+    <div class="mhd">
+      <div class="m-title">Detail Koneksi WhatsApp Business</div>
+      <div class="m-sub">Info teknis dari Meta Cloud API — untuk troubleshooting kalau ada issue</div>
+    </div>
+    <div style="padding:8px 22px 16px">
+      <div class="md-row">
+        <div class="md-k">Nomor WA (display)</div>
+        <div class="md-v" id="md-display-number">—</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Verified Name</div>
+        <div class="md-v" id="md-verified-name">—</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Business Portfolio</div>
+        <div class="md-v" id="md-portfolio-name">—</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Platform</div>
+        <div class="md-v" id="md-platform">CLOUD_API</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Coexistence</div>
+        <div class="md-v" id="md-coexistence">—</div>
+      </div>
+      <div class="md-row">
+        <div class="md-k">Terhubung sejak</div>
+        <div class="md-v" id="md-connected-at">—</div>
+      </div>
+
+      <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)">
+        <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Technical IDs</div>
+        <div class="md-tech-row"><span class="md-tech-k">WABA ID</span><code class="md-tech-v" id="md-waba-id">—</code><button class="md-copy-btn" onclick="copyMetaDetailId('waba-id-real', this)">copy</button></div>
+        <div class="md-tech-row"><span class="md-tech-k">Phone ID</span><code class="md-tech-v" id="md-phone-id">—</code><button class="md-copy-btn" onclick="copyMetaDetailId('phone-id-real', this)">copy</button></div>
+        <div class="md-tech-row"><span class="md-tech-k">Business ID</span><code class="md-tech-v" id="md-biz-id">—</code><button class="md-copy-btn" onclick="copyMetaDetailId('biz-id-real', this)">copy</button></div>
+        <div class="md-tech-row"><span class="md-tech-k">Template NS</span><code class="md-tech-v" id="md-tpl-ns">—</code><button class="md-copy-btn" onclick="copyMetaDetailId('tpl-ns-real', this)">copy</button></div>
+        <input type="hidden" id="waba-id-real" value="">
+        <input type="hidden" id="phone-id-real" value="">
+        <input type="hidden" id="biz-id-real" value="">
+        <input type="hidden" id="tpl-ns-real" value="">
+      </div>
+
+      <div style="margin-top:12px;padding:10px 12px;background:var(--bg3);border-radius:var(--r-sm);font-size:10px;color:var(--ink3);line-height:1.55">
+        ⚠️ Info ini disimpan oleh getstarvio setelah kamu selesai Embedded Signup via Meta. Kalau mau ganti nomor atau reconnect, klik "Hubungkan ulang" di atas. Access token-nya disimpan aman server-side, bukan di browser.
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost btn-sm" onclick="closeMetaDetailModal()">Tutup</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
+/* ── NUMBER FORMAT (Indonesia: titik thousand separator) ── */
+function fmtIDR(n) { return Number(n || 0).toLocaleString('id-ID') }
+function parseIDR(s) { return parseInt(String(s || '').replace(/[^\d]/g, ''), 10) || 0 }
+function formatIDRInput(el) {
+  // Simpan posisi caret relatif dari kanan supaya ga lompat
+  var raw = el.value
+  var caretFromEnd = raw.length - (el.selectionStart || raw.length)
+  var num = parseIDR(raw)
+  el.value = num > 0 ? fmtIDR(num) : ''
+  var newPos = Math.max(0, el.value.length - caretFromEnd)
+  try { el.setSelectionRange(newPos, newPos) } catch(e) {}
+}
+
 /* ── SHARED ── */
 function loadU() {
   try {
     const raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     const u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        const td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      const endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else { u.trialDaysLeft = null; u.trialExpired = false }
     return u
   } catch(e) { return null }
 }
+
+/* Settings EXEMPT dari trial lock — owner harus bisa upload logo, dapatkan QR, export data sebelum subscribe */
+function checkTrialLock() {}
 
 function saveU(u) {
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
@@ -817,6 +1251,126 @@ function toggleAcc(id) {
   if (!wasOpen) el.classList.add('open')
 }
 
+/* ══════════════════════════════════════════════
+   PIN ADMIN — secondary auth untuk aksi kritis
+   Stored plain (mockup) — in production: hash + salt server-side
+   ══════════════════════════════════════════════ */
+function onPinInput(el, fieldId) {
+  // Strip non-digits + clamp to 4
+  var v = el.value.replace(/\D/g, '').slice(0, 4)
+  if (el.value !== v) el.value = v
+  // Reset error state on input
+  var err = document.getElementById('pin-error')
+  var err2 = document.getElementById('pin-error2')
+  if (err) err.style.display = 'none'
+  if (err2) err2.style.display = 'none'
+}
+
+function renderPinAccordion(u) {
+  var hasPin = !!(u && u.adminPin)
+  var setupWrap = document.getElementById('pin-setup-wrap')
+  var changeWrap = document.getElementById('pin-change-wrap')
+  var subLabel = document.getElementById('acc-pin-sub')
+  if (hasPin) {
+    if (setupWrap) setupWrap.style.display = 'none'
+    if (changeWrap) changeWrap.style.display = 'block'
+    if (subLabel) subLabel.textContent = 'Terpasang · ••••'
+    var dateEl = document.getElementById('pin-set-date')
+    if (dateEl && u.adminPinSetAt) {
+      var d = new Date(u.adminPinSetAt)
+      dateEl.textContent = 'Diatur pada ' + d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})
+    }
+  } else {
+    if (setupWrap) setupWrap.style.display = 'block'
+    if (changeWrap) changeWrap.style.display = 'none'
+    if (subLabel) subLabel.textContent = 'Belum diatur'
+  }
+}
+
+function savePinSetup() {
+  var u = loadU()
+  if (!u) return
+  var pin = (document.getElementById('pin-new').value || '').trim()
+  var confirm = (document.getElementById('pin-confirm').value || '').trim()
+  var err = document.getElementById('pin-error')
+
+  if (pin.length !== 4) { err.textContent = 'PIN harus 4 digit angka'; err.style.display = 'block'; return }
+  if (!/^\d{4}$/.test(pin)) { err.textContent = 'PIN hanya boleh angka 0-9'; err.style.display = 'block'; return }
+  if (pin !== confirm) { err.textContent = 'Konfirmasi PIN tidak cocok'; err.style.display = 'block'; return }
+  // Warn on common weak PINs
+  var weakPins = ['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1212']
+  if (weakPins.indexOf(pin) !== -1) {
+    if (!window.confirm('PIN "' + pin + '" mudah ditebak. Tetap lanjut?')) return
+  }
+
+  u.adminPin = pin
+  u.adminPinSetAt = new Date().toISOString()
+  saveU(u)
+  document.getElementById('pin-new').value = ''
+  document.getElementById('pin-confirm').value = ''
+  err.style.display = 'none'
+  renderPinAccordion(u)
+  showToast('🔐 PIN admin berhasil diatur!')
+}
+
+function savePinChange() {
+  var u = loadU()
+  if (!u) return
+  var current = (document.getElementById('pin-current').value || '').trim()
+  var newPin = (document.getElementById('pin-new2').value || '').trim()
+  var confirm = (document.getElementById('pin-confirm2').value || '').trim()
+  var err = document.getElementById('pin-error2')
+
+  if (current !== u.adminPin) { err.textContent = 'PIN sekarang salah'; err.style.display = 'block'; return }
+  if (newPin.length !== 4 || !/^\d{4}$/.test(newPin)) { err.textContent = 'PIN baru harus 4 digit angka'; err.style.display = 'block'; return }
+  if (newPin !== confirm) { err.textContent = 'Konfirmasi PIN baru tidak cocok'; err.style.display = 'block'; return }
+  if (newPin === current) { err.textContent = 'PIN baru sama dengan PIN sekarang'; err.style.display = 'block'; return }
+  var weakPins = ['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1212']
+  if (weakPins.indexOf(newPin) !== -1) {
+    if (!window.confirm('PIN "' + newPin + '" mudah ditebak. Tetap lanjut?')) return
+  }
+
+  u.adminPin = newPin
+  u.adminPinSetAt = new Date().toISOString()
+  saveU(u)
+  document.getElementById('pin-current').value = ''
+  document.getElementById('pin-new2').value = ''
+  document.getElementById('pin-confirm2').value = ''
+  err.style.display = 'none'
+  renderPinAccordion(u)
+  showToast('🔐 PIN admin berhasil diubah!')
+}
+
+function removePin() {
+  var u = loadU()
+  if (!u || !u.adminPin) return
+  var current = window.prompt('Masukkan PIN sekarang untuk hapus PIN admin:')
+  if (current === null) return
+  if (current !== u.adminPin) { showToast('PIN salah', 'error'); return }
+  if (!window.confirm('Yakin mau hapus PIN admin?\n\nSetelah dihapus, aksi kritis tidak akan terproteksi lagi. Kamu bisa setup PIN lagi kapan aja.')) return
+
+  delete u.adminPin
+  delete u.adminPinSetAt
+  saveU(u)
+  renderPinAccordion(u)
+  showToast('PIN admin dihapus — aksi kritis tidak terproteksi lagi')
+}
+
+/* ══════════════════════════════════════════════
+   KATEGORI DEFAULTS — moved from Kategori page
+   ══════════════════════════════════════════════ */
+function saveDefaultIntervalSettings() {
+  var u = loadU()
+  if (!u) return
+  var v = parseInt(document.getElementById('def-intv-settings').value)
+  if (!(v > 0 && v <= 365)) { showToast('Interval harus 1-365 hari', 'error'); return }
+  u.defaultInterval = v
+  saveU(u)
+  var subLabel = document.getElementById('acc-kat-default-sub')
+  if (subLabel) subLabel.textContent = 'Interval fallback ' + v + ' hari'
+  showToast('Default interval disimpan — ' + v + ' hari')
+}
+
 /* ── SAVE PROFILE ── */
 function saveProfile() {
   var u = loadU()
@@ -826,24 +1380,310 @@ function saveProfile() {
   u.adminName = document.getElementById('inp-adminName').value.trim()
   u.country = document.getElementById('inp-country').value
   u.timezone = document.getElementById('inp-timezone').value
+  var avg = parseIDR(document.getElementById('inp-avgServiceValue').value) || 150000
+  u.avgServiceValue = Math.max(1000, avg)
   saveU(u)
   bootSidebar()
   var accProfilSub = document.getElementById('acc-profil-sub')
-  if (accProfilSub) accProfilSub.textContent = u.bizName || '—'
+  if (accProfilSub) accProfilSub.textContent = u.bizName || 'Belum diisi'
   showToast('Profil berhasil disimpan!')
 }
 
-/* ── SAVE WA ── */
+/* ══════════════════════════════════════════════
+   LOGO UPLOAD — canvas resize + validation
+   ══════════════════════════════════════════════ */
+const LOGO_MAX_KB = 200
+const LOGO_RESIZE_PX = 120
+
+function loadLogoFromU() {
+  const u = loadU()
+  if (!u) return
+  if (u.bizLogo) {
+    showLogoPreview(u.bizLogo)
+  } else {
+    hideLogoPreview()
+  }
+}
+
+function showLogoPreview(dataUrl) {
+  const img = document.getElementById('logoImg')
+  const ph = document.getElementById('logoPlaceholder')
+  const removeBtn = document.getElementById('btnLogoRemove')
+  const previewBox = document.getElementById('logoPreview')
+  img.src = dataUrl
+  img.style.display = 'block'
+  ph.style.display = 'none'
+  removeBtn.style.display = ''
+  previewBox.style.borderStyle = 'solid'
+  previewBox.style.borderColor = 'var(--lime2)'
+  previewBox.style.background = '#fff'
+}
+
+function hideLogoPreview() {
+  const img = document.getElementById('logoImg')
+  const ph = document.getElementById('logoPlaceholder')
+  const removeBtn = document.getElementById('btnLogoRemove')
+  const previewBox = document.getElementById('logoPreview')
+  img.src = ''
+  img.style.display = 'none'
+  ph.style.display = ''
+  removeBtn.style.display = 'none'
+  previewBox.style.borderStyle = 'dashed'
+  previewBox.style.borderColor = 'var(--border2)'
+  previewBox.style.background = 'var(--bg3)'
+}
+
+function showLogoError(msg) {
+  const el = document.getElementById('logoError')
+  el.textContent = msg
+  el.style.display = ''
+  document.getElementById('logoWarning').style.display = 'none'
+}
+
+function showLogoWarning(msg) {
+  const el = document.getElementById('logoWarning')
+  el.textContent = msg
+  el.style.display = ''
+}
+
+function clearLogoMessages() {
+  document.getElementById('logoError').style.display = 'none'
+  document.getElementById('logoWarning').style.display = 'none'
+}
+
+function handleLogoUpload(event) {
+  clearLogoMessages()
+  const file = event.target.files[0]
+  if (!file) return
+
+  // Format check
+  if (!/^image\/(png|jpeg|jpg)$/i.test(file.type)) {
+    showLogoError('Format harus PNG atau JPG.')
+    event.target.value = ''
+    return
+  }
+
+  // Size check (200KB)
+  if (file.size > LOGO_MAX_KB * 1024) {
+    showLogoError('Ukuran file maks ' + LOGO_MAX_KB + 'KB. File kamu ' + Math.round(file.size / 1024) + 'KB.')
+    event.target.value = ''
+    return
+  }
+
+  // Read file → load as image → resize via canvas → save
+  const reader = new FileReader()
+  reader.onload = function(e) {
+    const img = new Image()
+    img.onload = function() {
+      // Aspect ratio warning (square-ish: ratio max 1.5)
+      const w = img.naturalWidth, h = img.naturalHeight
+      const ratio = Math.max(w, h) / Math.min(w, h)
+      if (ratio > 1.5) {
+        showLogoWarning('Logo tidak square — bagian gambar mungkin terpotong saat ditampilkan.')
+      }
+
+      // Resize to max 120x120 (preserve aspect ratio with contain logic)
+      const scale = Math.min(LOGO_RESIZE_PX / w, LOGO_RESIZE_PX / h, 1)
+      const newW = Math.round(w * scale)
+      const newH = Math.round(h * scale)
+      const canvas = document.createElement('canvas')
+      canvas.width = newW
+      canvas.height = newH
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, newW, newH)
+      // Use original format for better quality (PNG keeps transparency)
+      const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg'
+      const dataUrl = canvas.toDataURL(outType, 0.85)
+
+      // Save to U.bizLogo
+      const u = loadU()
+      if (!u) return
+      u.bizLogo = dataUrl
+      saveU(u)
+      showLogoPreview(dataUrl)
+      showToast('Logo berhasil di-upload!')
+    }
+    img.onerror = function() {
+      showLogoError('Gagal membaca file gambar. Coba file lain.')
+    }
+    img.src = e.target.result
+  }
+  reader.onerror = function() {
+    showLogoError('Gagal membaca file.')
+  }
+  reader.readAsDataURL(file)
+  event.target.value = '' // reset agar bisa upload file yg sama lagi
+}
+
+function confirmRemoveLogo() {
+  if (!confirm('Hapus logo bisnis? Halaman check-in akan kembali pakai inisial.')) return
+  const u = loadU()
+  if (!u) return
+  u.bizLogo = null
+  saveU(u)
+  hideLogoPreview()
+  clearLogoMessages()
+  showToast('Logo dihapus.')
+}
+
+/* ── SAVE WA + NOTIFICATION PREFERENCES ── */
 function saveWa() {
   var u = loadU()
   if (!u) return
   var cc = document.getElementById('ownerCc').value
   var num = document.getElementById('inp-ownerWa').value.trim()
-  if (num) {
-    u.ownerWa = cc + num
+  // Normalize: strip leading zeros from number (global phone rule)
+  num = num.replace(/\D/g, '')
+  if (num.startsWith('0')) num = num.slice(1)
+  var newOwnerWa = num ? (cc + num) : ''
+
+  // Detect phone-number change: force re-verify if different
+  if (newOwnerWa !== u.ownerWa) {
+    u.ownerWa = newOwnerWa
+    u.ownerWaVerifiedAt = null
+    u.ownerWaOtpPending = null
   }
+
+  // Save notification preferences (migrated from billing)
+  u.billingNotifs = {
+    lowCredit:       document.getElementById('nf-lowCredit').checked,
+    criticalCredit:  document.getElementById('nf-criticalCredit').checked,
+    subLow:          document.getElementById('nf-subLow').checked,
+    renewalReminder: document.getElementById('nf-renewalReminder').checked
+  }
+
   saveU(u)
-  showToast('Pengaturan WhatsApp disimpan!')
+  refreshOwnerWaVerifyUI()
+  showToast('Pengaturan WA & notifikasi disimpan!')
+}
+
+/* ── OTP VERIFICATION (Owner WA) ── */
+function onOwnerWaInput() {
+  // Trigger UI refresh to show Kirim OTP button once user typing a number
+  // (cheap — just re-evaluate which OTP state to show)
+  refreshOwnerWaVerifyUI()
+}
+
+function sendOwnerWaOtp() {
+  var u = loadU()
+  if (!u) return
+  var cc = document.getElementById('ownerCc').value
+  var num = document.getElementById('inp-ownerWa').value.trim().replace(/\D/g, '')
+  if (num.startsWith('0')) num = num.slice(1)
+  if (num.length < 9) {
+    alert('Masukkan nomor WA owner yang valid (min 9 digit) dulu.')
+    return
+  }
+  // Prototype: generate mock 6-digit OTP, expires in 5 min
+  var code = String(Math.floor(100000 + Math.random() * 900000))
+  u.ownerWa = cc + num
+  u.ownerWaOtpPending = { code: code, expiresAt: Date.now() + 5 * 60 * 1000 }
+  u.ownerWaVerifiedAt = null
+  saveU(u)
+  refreshOwnerWaVerifyUI()
+  // Prototype: show code inline so user can test verify
+  var hintEl = document.getElementById('otp-dev-hint')
+  if (hintEl) hintEl.textContent = '(demo: ' + code + ')'
+  // Focus input
+  setTimeout(function() {
+    var input = document.getElementById('otpInput')
+    if (input) input.focus()
+  }, 120)
+  showToast('OTP dikirim ke +' + (cc + num))
+}
+
+function verifyOwnerWaOtp() {
+  var u = loadU()
+  if (!u) return
+  var pending = u.ownerWaOtpPending
+  var errEl = document.getElementById('otpErr')
+  errEl.style.display = 'none'
+  if (!pending) {
+    errEl.textContent = 'OTP belum dikirim. Klik "Kirim ulang".'
+    errEl.style.display = 'block'
+    return
+  }
+  if (Date.now() > pending.expiresAt) {
+    errEl.textContent = 'Kode OTP sudah kadaluarsa. Klik "Kirim ulang".'
+    errEl.style.display = 'block'
+    return
+  }
+  var input = document.getElementById('otpInput').value.trim()
+  if (input !== pending.code) {
+    errEl.textContent = 'Kode OTP salah. Cek lagi.'
+    errEl.style.display = 'block'
+    return
+  }
+  // Success
+  u.ownerWaVerifiedAt = new Date().toISOString()
+  u.ownerWaOtpPending = null
+  saveU(u)
+  refreshOwnerWaVerifyUI()
+  showToast('Nomor WA owner terverifikasi!')
+}
+
+function resetOwnerWaVerify() {
+  if (!confirm('Verifikasi ulang nomor WA owner? Kamu harus input kode OTP baru.')) return
+  var u = loadU()
+  if (!u) return
+  u.ownerWaVerifiedAt = null
+  u.ownerWaOtpPending = null
+  saveU(u)
+  refreshOwnerWaVerifyUI()
+}
+
+function refreshOwnerWaVerifyUI() {
+  var u = loadU()
+  if (!u) return
+  var wrap = document.getElementById('otpWrap')
+  var unv  = document.getElementById('otpUnverified')
+  var pnd  = document.getElementById('otpPending')
+  var vfd  = document.getElementById('otpVerified')
+  if (!wrap || !unv || !pnd || !vfd) return
+
+  // Get current input value (not saved ownerWa — may differ during typing)
+  var cc = document.getElementById('ownerCc').value
+  var num = document.getElementById('inp-ownerWa').value.trim().replace(/\D/g, '')
+  if (num.startsWith('0')) num = num.slice(1)
+  var currentFull = num.length >= 9 ? (cc + num) : ''
+
+  // No ownerWa entered yet: hide entire block
+  if (!currentFull && !u.ownerWa) {
+    wrap.style.display = 'none'
+    return
+  }
+  wrap.style.display = 'block'
+
+  // Check if input changed from saved ownerWa (user is editing)
+  var savedWa = u.ownerWa || ''
+  var numberChanged = currentFull && currentFull !== savedWa
+
+  // Hide all states
+  unv.style.display = 'none'
+  pnd.style.display = 'none'
+  vfd.style.display = 'none'
+
+  // State 1: verified
+  if (u.ownerWaVerifiedAt && !numberChanged) {
+    vfd.style.display = 'block'
+    var whenEl = document.getElementById('otpVerifiedWhen')
+    if (whenEl) {
+      try {
+        var d = new Date(u.ownerWaVerifiedAt)
+        whenEl.textContent = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+      } catch (e) { whenEl.textContent = '' }
+    }
+    return
+  }
+
+  // State 2: OTP sent, waiting verify
+  if (u.ownerWaOtpPending && Date.now() < u.ownerWaOtpPending.expiresAt && !numberChanged) {
+    pnd.style.display = 'block'
+    return
+  }
+
+  // State 3: unverified (default)
+  unv.style.display = 'block'
 }
 
 /* ── QR MODAL ── */
@@ -907,6 +1747,86 @@ function renderWaStatus(u) {
     labelEl.style.color = 'var(--ink3)'
     if (accSub) accSub.textContent = 'Belum terhubung'
   }
+
+  // Render Meta connection card (persistent display kalau onboarding sudah selesai)
+  renderMetaConn(u)
+}
+
+/* ── RENDER META CONNECTION CARD ── */
+function renderMetaConn(u) {
+  var box = document.getElementById('metaConn')
+  if (!box) return
+  if (!u.meta || !u.meta.waba) {
+    box.style.display = 'none'
+    return
+  }
+  box.style.display = 'block'
+
+  var m = u.meta
+  var verified = document.getElementById('mc-verified-name')
+  var portfolio = document.getElementById('mc-portfolio')
+  var quality = document.getElementById('mc-quality')
+  var tier = document.getElementById('mc-tier')
+
+  if (verified) verified.textContent = (m.phoneNumber && m.phoneNumber.verifiedName) || '—'
+  if (portfolio) portfolio.textContent = (m.business && m.business.portfolioName) || '—'
+  if (quality) {
+    var qr = m.phoneNumber && m.phoneNumber.qualityRating
+    var qrLabel = qr === 'GREEN' ? 'HIGH' : qr === 'YELLOW' ? 'MEDIUM' : qr === 'RED' ? 'LOW' : 'UNKNOWN'
+    quality.textContent = qrLabel
+    quality.className = 'mc-quality-badge' + (qr === 'YELLOW' ? ' yellow' : qr === 'RED' ? ' red' : '')
+  }
+  if (tier) {
+    var t = (m.phoneNumber && m.phoneNumber.messagingLimitTier) || 'TIER_1K'
+    var tLabel = { TIER_1K: '1.000/hari', TIER_10K: '10.000/hari', TIER_100K: '100.000/hari', UNLIMITED: 'Unlimited' }[t] || t
+    tier.textContent = tLabel
+  }
+}
+
+function openMetaDetailModal() {
+  var u = loadU()
+  if (!u || !u.meta) return
+  var m = u.meta
+  function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—' }
+  function setVal(id, val) { var el = document.getElementById(id); if (el) el.value = val || '' }
+  function mask(v) { if (!v || v.length < 8) return v; return v.slice(0,4) + '\u2022\u2022\u2022' + v.slice(-4) }
+
+  set('md-display-number', m.phoneNumber && m.phoneNumber.displayNumber)
+  set('md-verified-name', m.phoneNumber && m.phoneNumber.verifiedName)
+  set('md-portfolio-name', m.business && m.business.portfolioName)
+  set('md-platform', (m.phoneNumber && m.phoneNumber.platformType) || 'CLOUD_API')
+  set('md-coexistence', m.coexistenceEnabled ? 'Aktif · WA Business app tetap jalan di HP' : 'Tidak aktif')
+  set('md-connected-at', m.connectedAt ? new Date(m.connectedAt).toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—')
+
+  set('md-waba-id',  mask(m.waba && m.waba.id))
+  set('md-phone-id', mask(m.phoneNumber && m.phoneNumber.id))
+  set('md-biz-id',   mask(m.business && m.business.id))
+  set('md-tpl-ns',   (m.waba && m.waba.templateNamespace) || '—')
+
+  setVal('waba-id-real',  m.waba && m.waba.id)
+  setVal('phone-id-real', m.phoneNumber && m.phoneNumber.id)
+  setVal('biz-id-real',   m.business && m.business.id)
+  setVal('tpl-ns-real',   m.waba && m.waba.templateNamespace)
+
+  document.getElementById('m-meta-detail').classList.add('show')
+}
+
+function closeMetaDetailModal() { document.getElementById('m-meta-detail').classList.remove('show') }
+
+function copyMetaDetailId(fieldId, btn) {
+  var el = document.getElementById(fieldId)
+  if (!el) return
+  var val = el.value || el.textContent
+  try {
+    navigator.clipboard.writeText(val).then(function() {
+      if (btn) {
+        var orig = btn.textContent
+        btn.textContent = 'copied!'
+        btn.style.color = 'var(--lime-dk)'
+        setTimeout(function() { btn.textContent = orig; btn.style.color = '' }, 1200)
+      }
+    })
+  } catch (e) { console.warn('Clipboard error', e) }
 }
 
 /* ══════════════════════════════════════════
@@ -922,15 +1842,101 @@ function copyLink() {
   flashBtn('copy-link-btn', '✓ Disalin', 'Salin')
 }
 
-/* ── COPY TEXT ── */
-function copyText(srcId, btnId) {
-  var el = document.getElementById(srcId)
-  var clone = el.cloneNode(true)
-  var btns = clone.querySelectorAll('button')
-  btns.forEach(function(b){ b.remove() })
-  var text = clone.innerText.trim()
+/* ══════════════════════════════════════════
+   TEKS SIAP PAKAI — color-coded editable templates
+   Placeholder format: {bizName}, {link}
+   Custom edits saved to U.qrTexts (raw with placeholders).
+   ══════════════════════════════════════════ */
+var DEFAULT_QR_TEXTS = {
+  kasir: '\uD83D\uDCF1 Daftar nomor WA, biar ga lupa balik\nsaat waktunya perawatan lanjutan\n\n\u2728 Hasil terbaik datang dari rutinitas tepat waktu\n\u2713 Cuma 10 detik \u00B7 scan QR di bawah \u2193',
+  blast: 'Hai \uD83D\uDC4B\n\nUdah lama ga mampir ke {bizName}?\nMungkin udah waktunya perawatan lanjutan biar\nhasilnya tetep maksimal.\n\nDaftar nomor WA kamu sekali — kami yang ingetin\nsaat jadwal pas: {link}',
+  reply: 'Makasih udah daftar di {bizName} \uD83C\uDF38\n\nMulai sekarang ga perlu pusing inget jadwal.\nKami akan kirim pengingat lewat WA ini saat\nwaktunya kunjungan kamu berikutnya.\n\nSampai ketemu lagi! \uD83D\uDC9A'
+}
+
+function renderTplString(raw, u) {
+  if (!u) u = loadU()
+  var biz = (u && u.bizName) || 'Bisnis Kamu'
+  var slug = (u && u.bizSlug) || 'bisnis-kamu'
+  var link = 'getstarvio.com/checkin/' + slug
+  return (raw || '').replace(/\{bizName\}/g, biz).replace(/\{link\}/g, link)
+}
+
+function getTplRaw(key, u) {
+  if (!u) u = loadU()
+  var saved = u && u.qrTexts && u.qrTexts[key]
+  return (typeof saved === 'string' && saved.length > 0) ? saved : DEFAULT_QR_TEXTS[key]
+}
+
+function isTplEdited(key, u) {
+  if (!u) u = loadU()
+  var saved = u && u.qrTexts && u.qrTexts[key]
+  return typeof saved === 'string' && saved !== DEFAULT_QR_TEXTS[key]
+}
+
+function renderAllTpls() {
+  var u = loadU()  // bisa null — render default tetap jalan dengan fallback bizName/link
+  ;['kasir','blast','reply'].forEach(function(key) {
+    var ta = document.getElementById('tpl-' + key)
+    if (!ta) return
+    ta.value = renderTplString(getTplRaw(key, u), u)
+    var block = document.querySelector('.tpl-block[data-key="' + key + '"]')
+    if (block) block.classList.toggle('is-edited', isTplEdited(key, u))
+  })
+}
+
+var _tplSaveTimers = {}
+function onTplEdit(key) {
+  var ta = document.getElementById('tpl-' + key)
+  if (!ta) return
+  var u = loadU()
+  if (!u) return
+  // Reverse-substitute bizName & link back to placeholders, so edits survive name changes.
+  var biz = u.bizName || 'Bisnis Kamu'
+  var slug = u.bizSlug || 'bisnis-kamu'
+  var link = 'getstarvio.com/checkin/' + slug
+  var raw = ta.value
+  if (biz) raw = raw.split(biz).join('{bizName}')
+  if (link) raw = raw.split(link).join('{link}')
+
+  if (_tplSaveTimers[key]) clearTimeout(_tplSaveTimers[key])
+  _tplSaveTimers[key] = setTimeout(function() {
+    var u2 = loadU()
+    if (!u2) return
+    if (!u2.qrTexts) u2.qrTexts = {}
+    u2.qrTexts[key] = raw
+    saveU(u2)
+    var block = document.querySelector('.tpl-block[data-key="' + key + '"]')
+    if (block) block.classList.toggle('is-edited', isTplEdited(key, u2))
+  }, 350)
+}
+
+function resetTpl(key) {
+  var u = loadU()
+  if (!u) return
+  if (u.qrTexts && u.qrTexts[key]) {
+    delete u.qrTexts[key]
+    saveU(u)
+  }
+  var ta = document.getElementById('tpl-' + key)
+  if (ta) ta.value = renderTplString(DEFAULT_QR_TEXTS[key], u)
+  var block = document.querySelector('.tpl-block[data-key="' + key + '"]')
+  if (block) block.classList.remove('is-edited')
+  flashBtn('btn-' + key, '\u2713 Reset', 'Salin')
+}
+
+function copyTpl(key, btnId) {
+  var ta = document.getElementById('tpl-' + key)
+  if (!ta) return
+  var text = ta.value.trim()
   if (navigator.clipboard) { navigator.clipboard.writeText(text) }
-  flashBtn(btnId, '✓ Tersalin', 'Salin')
+  else { ta.select(); document.execCommand('copy') }
+  flashBtn(btnId, '\u2713 Tersalin', 'Salin')
+}
+
+/* ── BACK-COMPAT shim (kalau ada onclick lama yang masih panggil copyText) ── */
+function copyText(srcId, btnId) {
+  var key = (srcId || '').replace(/^text-|^tpl-/, '')
+  copyTpl(key, btnId)
 }
 
 /* ── FLASH BUTTON ── */
@@ -950,13 +1956,20 @@ function flashBtn(btnId, flashText, origText) {
   }, 1800)
 }
 
-/* ── SHARE WA ── */
+/* ── MARK QR POSTED — set saat owner print/unduh/share QR (sinyal intent install). Dipakai Dashboard setup checklist. ── */
+function markQrPosted() {
+  var u = loadU()
+  if (!u || u.qrPosted) return
+  u.qrPosted = true
+  saveU(u)
+}
+
+/* ── SHARE WA — pakai template "blast" (custom kalau owner sudah edit) ── */
 function shareWA() {
   var u = loadU()
-  var slug = (u && u.bizSlug) || 'bisnis-kamu'
-  var link = 'https://getstarvio.com/checkin/' + slug
-  var msg = 'Halo! Daftarkan dirimu untuk dapat reminder kunjungan otomatis dari kami 😊\n→ ' + link
+  var msg = renderTplString(getTplRaw('blast', u), u)
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+  markQrPosted()
 }
 
 /* ── PRINT QR ── */
@@ -964,35 +1977,54 @@ function printQR() {
   var u = loadU()
   var slug = (u && u.bizSlug) || 'bisnis-kamu'
   var bizName = (u && u.bizName) || 'Bisnis Kamu'
-  var win = window.open('','_blank','width=500,height=600')
+  var bizLogo = (u && u.bizLogo) || ''
+  var initial = bizName.trim().charAt(0).toUpperCase() || 'B'
+  // Logo block: image kalau ada, fallback initial circle
+  var logoHtml = bizLogo
+    ? '<div class="logo-circle"><img src="'+bizLogo+'" alt="Logo"></div>'
+    : '<div class="logo-circle logo-initial">'+initial+'</div>'
+
+  var win = window.open('','_blank','width=500,height=700')
   win.document.write('<!DOCTYPE html><html><head>' +
     '<meta charset="UTF-8">' +
     '<title>QR Check-in — '+bizName+'</title>' +
-    '<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet">' +
+    '<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">' +
     '<style>' +
-      'body{margin:0;padding:0;font-family:Sora,sans-serif;background:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh}' +
-      '.wrap{text-align:center;padding:32px}' +
-      '.top{font-size:14px;font-weight:700;color:#1a1917;margin-bottom:6px}' +
-      '.sub{font-size:12px;color:#9b9a92;margin-bottom:20px}' +
-      '.qr-box{background:#fff;border:2px solid #e2e1d9;border-radius:12px;padding:18px;display:inline-block;margin-bottom:16px}' +
-      '.slug{font-size:11px;font-family:monospace;color:#9b9a92;margin-bottom:12px}' +
-      '.cta{font-size:13px;font-weight:700;color:#2d4a00;background:#edfac8;border:1.5px solid #9fd93a;padding:10px 24px;border-radius:99px;display:inline-block}' +
+      'body{margin:0;padding:0;font-family:Sora,sans-serif;background:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;color:#1a1917}' +
+      '.wrap{text-align:center;padding:40px 32px;max-width:380px}' +
+      '.logo-circle{width:80px;height:80px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:#b8f04a;color:#2d4a00;font-size:34px;font-weight:700;overflow:hidden;border:2px solid #9fd93a}' +
+      '.logo-circle img{width:100%;height:100%;object-fit:cover;display:block}' +
+      '.biz-name{font-size:22px;font-weight:800;color:#1a1917;margin-bottom:6px;letter-spacing:-.3px;line-height:1.2}' +
+      '.tagline{font-size:13px;color:#5c5b55;margin-bottom:22px;line-height:1.5}' +
+      '.qr-box{background:#fff;border:2px solid #e2e1d9;border-radius:14px;padding:18px;display:inline-block;margin-bottom:18px}' +
+      '.scan-cta{font-size:16px;font-weight:700;color:#1a1917;margin-bottom:14px;line-height:1.3}' +
+      '.value-row{display:flex;justify-content:center;gap:18px;margin-bottom:18px;flex-wrap:wrap}' +
+      '.value-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#2d4a00;font-weight:600;background:#edfac8;border:1px solid #c8f07a;padding:4px 10px;border-radius:99px}' +
+      '.slug{font-size:11px;font-family:monospace;color:#9b9a92;margin-bottom:24px;letter-spacing:.02em}' +
+      '.powered{font-size:10px;color:#c2c1b8;font-weight:500;border-top:1px solid #e2e1d9;padding-top:14px;margin-top:8px}' +
     '</style>' +
     '</head><body>' +
     '<div class="wrap">' +
-      '<div class="top">'+bizName+'</div>' +
-      '<div class="sub">Scan untuk daftar &amp; dapat reminder kunjungan otomatis</div>' +
+      logoHtml +
+      '<div class="biz-name">'+bizName+'</div>' +
+      '<div class="tagline">Daftar sekali, dapat pengingat otomatis<br>via WhatsApp sebelum kunjungan kamu</div>' +
       '<div class="qr-box">' +
         document.getElementById('qr-svg').outerHTML +
       '</div>' +
+      '<div class="scan-cta">Scan QR ini untuk daftar</div>' +
+      '<div class="value-row">' +
+        '<span class="value-item">\u2713 Cuma 10 detik</span>' +
+        '<span class="value-item">\u2713 Tanpa aplikasi</span>' +
+      '</div>' +
       '<div class="slug">getstarvio.com/checkin/'+slug+'</div>' +
-      '<div class="cta">📱 Scan QR ini — gratis, &lt;10 detik</div>' +
+      '<div class="powered">Powered by getstarvio</div>' +
     '</div>' +
     '</body></html>')
   win.document.close()
   win.focus()
   setTimeout(function(){ win.print() }, 600)
   flashBtn('btnPrint', '✓ Printing...', 'Print QR')
+  markQrPosted()
 }
 
 /* ── DOWNLOAD QR ── */
@@ -1018,6 +2050,7 @@ function downloadQR() {
   }
   img.src = url
   flashBtn('btnDownload', '✓ Downloading...', 'Unduh PNG')
+  markQrPosted()
 }
 
 /* ── BOOT ── */
@@ -1030,7 +2063,9 @@ function boot() {
   var link = 'getstarvio.com/checkin/' + slug
   document.getElementById('qr-slug').textContent = link
   document.getElementById('link-display').textContent = link
-  document.getElementById('blast-link').textContent = link
+
+  // Render 3 editable copy templates (kasir, blast, reply)
+  renderAllTpls()
 
   // Stats
   var cxs = U.customers || []
@@ -1043,12 +2078,22 @@ function boot() {
   }).length
   document.getElementById('stat-today').textContent = todayScan
 
+  // Dynamic QR sub label (scan count)
+  var qrSub = document.getElementById('acc-qr-sub')
+  if (qrSub) {
+    qrSub.textContent = viaQR > 0
+      ? (viaQR + ' pelanggan via QR')
+      : 'Print QR & share link'
+  }
+
   // ── Profile fields ──
   var accProfilSub = document.getElementById('acc-profil-sub')
   if (accProfilSub) accProfilSub.textContent = U.bizName || '—'
   document.getElementById('inp-bizName').value = U.bizName || ''
   document.getElementById('inp-adminName').value = U.adminName || ''
   document.getElementById('inp-email').value = U.email || ''
+  document.getElementById('inp-avgServiceValue').value = fmtIDR(U.avgServiceValue || 150000)
+  loadLogoFromU()
 
   // Select biz type
   selectedBizType = U.bizType || ''
@@ -1086,13 +2131,65 @@ function boot() {
 
   // WA status
   renderWaStatus(U)
+
+  // OTP verify state
+  refreshOwnerWaVerifyUI()
+
+  // Notification preferences (migrated from billing)
+  var nf = U.billingNotifs || { lowCredit: true, criticalCredit: true, subLow: true, renewalReminder: true }
+  document.getElementById('nf-lowCredit').checked       = nf.lowCredit       !== false
+  document.getElementById('nf-criticalCredit').checked  = nf.criticalCredit  !== false
+  document.getElementById('nf-subLow').checked          = nf.subLow          !== false
+  document.getElementById('nf-renewalReminder').checked = nf.renewalReminder !== false
+
+  // PIN Admin accordion state
+  renderPinAccordion(U)
+
+  // Default interval (migrated from Kategori page)
+  var defIntv = U.defaultInterval || 30
+  var defIntvEl = document.getElementById('def-intv-settings')
+  if (defIntvEl) defIntvEl.value = defIntv
+  var accKatDefSub = document.getElementById('acc-kat-default-sub')
+  if (accKatDefSub) accKatDefSub.textContent = 'Interval fallback ' + defIntv + ' hari'
 }
 
 /* ── INIT ── */
 window.addEventListener('DOMContentLoaded', function() {
+  // Render templates first — selalu jalan, walau loadU() null
+  renderAllTpls()
   boot()
   bootSidebar()
+  checkTrialLock()
+
+  // Auto-open accordion on load: hash anchor wins, else default QR
+  var hash = (location.hash || '').replace('#', '')
+  var allowed = { qr: 'acc-qr', profil: 'acc-profil', wa: 'acc-wa', pin: 'acc-pin', 'kat-default': 'acc-kat-default', danger: 'acc-danger' }
+  var target = allowed[hash] || 'acc-qr'
+  var el = document.getElementById(target)
+  if (el) el.classList.add('open')
 })
+
+/* ── IMPERSONATION CHECK (admin logged in as user) ── */
+(function() {
+  try {
+    var raw = localStorage.getItem('getstarvio_impersonation');
+    if (!raw) return;
+    var imp = JSON.parse(raw);
+    if (!imp || !imp.targetBizId) return;
+    document.addEventListener('DOMContentLoaded', function() {
+      var banner = document.getElementById('impBanner');
+      var bizEl = document.getElementById('impBizName');
+      if (banner) banner.classList.add('show');
+      if (bizEl) bizEl.textContent = imp.targetBizName || imp.targetBizId;
+      document.body.classList.add('imp-active');
+    });
+  } catch(e) {}
+})();
+function exitImpersonate() {
+  try { localStorage.removeItem('getstarvio_impersonation') } catch(e) {}
+  window.location.href = 'getstarvio-admin.html';
+}
 </script>
+
 </body>
 </html>

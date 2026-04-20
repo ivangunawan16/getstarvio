@@ -17,31 +17,39 @@ Halaman ini adalah CRM view — bukan untuk catat kunjungan. Catat kunjungan ada
 ## Layout
 
 Dari atas ke bawah:
-1. Stats Bar
-2. Search + Filter Tabs
-3. Customer Table
-4. (Modal: Detail Pelanggan — slide-in panel atau overlay)
+1. Single Toolbar (filter chips + sort dropdown + search)
+2. Customer Table
+3. (Modal: Detail Pelanggan — slide-in panel atau overlay)
 
 ---
 
 ## Must-Have
 
-### Stats Bar (atas)
-- Total pelanggan
-- Aktif count — warna lime
-- Mendekati count — warna amber
-- Hilang count — warna merah
-- Semua dihitung dari `worstStatus()` tiap customer
+### Single Toolbar (satu baris, gantikan Stats Bar + Filter Tabs lama)
 
-### Search Bar
-- Filter real-time berdasarkan nama atau nomor WA
-- Client-side, tidak perlu submit
+Satu baris kontrol berisi 3 elemen:
 
-### Filter Tabs
-- Semua | Hilang | Mendekati | Aktif
+**Kiri — Filter Chips (dengan count badge):**
+- `[Semua 42]` `[Aktif 28]` `[Mendekati 9]` `[Hilang 5]`
+- Setiap chip punya count badge (jumlah customer di kategori itu)
+- Chip active state: Semua=hitam, Aktif=lime, Mendekati=amber, Hilang=red
 - Filter `customers[]` berdasarkan `worstStatus()`
-- Tab aktif highlight warna yang sesuai (Hilang=red, Mendekati=amber, Aktif=lime)
-- Bisa dikombinasikan dengan search bar
+- Bisa dikombinasikan dengan search
+
+**Kanan — Sort Dropdown:**
+- Trigger button: ikon sort + label aktif + chevron
+- Menu opsi: "Paling Mendesak", "A–Z Nama", "Terlama", "Terbaru"
+- Default: Paling Mendesak
+- Klik di luar dropdown → tutup
+
+**Kanan — Search Input:**
+- Placeholder "Cari nama atau WA..."
+- Filter real-time, dikombinasikan dengan filter chip aktif
+- Width 180px (mobile: full width)
+
+**Mobile (<768px):** toolbar vertikal — filter chips bisa scroll horizontal, sort+search di baris kedua full width.
+
+> ⚠️ TIDAK ADA metric cards terpisah di atas. Count angka total ada di chip "Semua" dan di topbar sub-text ("X pelanggan terdaftar").
 
 ### Customer Table Rows
 Per baris:
@@ -90,6 +98,34 @@ Per baris:
 
 ---
 
+## Trial Behavior — SOFT LOCK
+
+Per TRIAL LOCK MATRIX (`00-global.md`), Pelanggan = **SOFT lock** saat `trialExpired === true`. Filosofi: data ownership — owner harus bisa lihat + export data pelanggan bahkan saat trial habis, tapi action yang konsumsi kredit/subscription di-gate.
+
+Behavior:
+- Banner merah sticky di atas konten: "Trial kamu telah berakhir — Subscribe untuk kirim pengingat otomatis" + CTA lime "Subscribe →" link ke `getstarvio-billing.html`
+- Apply body class `trial-soft-locked` — CSS disable (opacity .45 + pointer-events:none) untuk:
+  - Tombol "Tambah Pelanggan" (topbar)
+  - Tombol "Edit" di Detail Panel
+  - Tombol "Import CSV" (jika ada)
+  - Modal form submit buttons
+- **Export CSV tetap aktif** via `data-always` attribute — data ownership exception
+- Tabel customer + detail panel tetap **fully visible** (read-only preview untuk push subscribe)
+- Filter chips, sort, search tetap berfungsi (query bukan action)
+
+Implementasi:
+```js
+if (U.trialExpired) {
+  document.body.classList.add('trial-soft-locked')
+  document.getElementById('softLockBanner').style.display = 'block'
+  // Tombol dengan data-always tidak kena soft lock CSS
+}
+```
+
+**TIDAK pakai `showTrialLockOverlay()`** — itu untuk hard lock. Pelanggan page punya soft-lock banner sendiri.
+
+---
+
 ## Reference
 
 - **Version acuan:** `version 2.0/getstarvio-pelanggan.html` — v2.1 memotong ~39% (hilang progress bar per service, riwayat reminder, edit modal)
@@ -108,3 +144,5 @@ Per baris:
 | 2026-03-26 | Tambah Reference section — acuan v2.0, pre-select logic, tombol utama |
 | 2026-03-26 | **Update v3:** Hapus semua aksi catat kunjungan (tombol "Kunjungan Hari Ini", pre-select modal, shortcut dari detail panel). Halaman ini murni CRM view. Tambah "Yang TIDAK Ada" section untuk clarity |
 | 2026-03-26 | Sync: Edit modal = date picker + service checklist (recording services), bukan interval customization. Detail panel has Edit button only — no "Catat Kunjungan" shortcut. nav-catat href = getstarvio-catat-kunjungan.html. |
+| 2026-03-27 | Hapus Stats Bar (metric cards) + Filter Tabs + Sort Buttons terpisah. Diganti single toolbar: filter chips (dengan count badge) + sort dropdown + search input dalam satu baris. |
+| 2026-04-18 | **TRIAL LOCK SPEC ADDED.** Tambah "Trial Behavior — SOFT LOCK" section sesuai TRIAL LOCK MATRIX di 00-global.md. Banner merah + disable Tambah/Edit/Import; Export CSV tetap aktif via `data-always` (data ownership). Tabel + detail panel tetap visible sebagai read-only preview. |

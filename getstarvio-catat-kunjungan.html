@@ -164,7 +164,7 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
 /* ── DATE FIELD (matches checkin) ── */
 .date-row{display:flex;flex-direction:column;gap:4px}
 .date-label{font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase}
-.date-input{width:100%;height:48px;padding:0 14px;background:var(--bg2);border:2px solid var(--border);border-radius:var(--r-sm);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--ink)}
+.date-input{width:100%;max-width:100%;min-width:0;height:48px;padding:0 14px;background:var(--bg2);border:2px solid var(--border);border-radius:var(--r-sm);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--ink);box-sizing:border-box;display:block;-webkit-appearance:none;appearance:none}
 .date-toggle{font-size:11px;color:var(--blue);font-weight:600;margin-top:4px;cursor:pointer;text-decoration:none;display:inline-block}
 .date-toggle:hover{text-decoration:underline}
 
@@ -203,6 +203,11 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
 
 /* ── MOBILE ── */
 @media(max-width:767px){
+  /* Modal mobile = fullscreen biar tidak overflow di <375px */
+  .modal{max-width:100%!important;max-height:100vh;border-radius:0;width:100%!important}
+  .overlay{padding:0!important}
+  .mhd{position:sticky;top:0;background:var(--bg2);z-index:5}
+  .mftr{position:sticky;bottom:0;background:var(--bg2);z-index:5}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:200;transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .hamburger-btn{display:flex}
@@ -223,9 +228,31 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
 }
 
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ── IMPERSONATION BANNER (admin logged in as user) ── */
+.imp-banner{position:fixed;top:0;left:0;right:0;z-index:300;background:repeating-linear-gradient(45deg,#e8453c,#e8453c 12px,#c43e37 12px,#c43e37 24px);color:#fff;padding:8px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(232,69,60,.3)}
+.imp-banner.show{display:flex}
+.imp-banner-info{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.imp-banner-info strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp-banner-exit{padding:5px 14px;background:#fff;color:#7a1a16;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;font-size:11px;white-space:nowrap}
+.imp-banner-exit:hover{background:#fdf1f0}
+body.imp-active{padding-top:36px}
+@media(max-width:600px){
+  .imp-banner{font-size:11px;padding:7px 12px}
+  .imp-banner-info strong{font-size:11px}
+  body.imp-active{padding-top:44px}
+}
 </style>
 </head>
 <body>
+<!-- Impersonation banner (admin mode) -->
+<div class="imp-banner" id="impBanner">
+  <div class="imp-banner-info">
+    <span>🎭</span>
+    <span>Impersonating: <strong id="impBizName">—</strong></span>
+  </div>
+  <button class="imp-banner-exit" onclick="exitImpersonate()">Exit Impersonate &rarr;</button>
+</div>
 <div class="shell">
 
 <!-- SIDEBAR OVERLAY (mobile) -->
@@ -243,7 +270,7 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
     <a id="nav-catat"      href="getstarvio-catat-kunjungan.html"   class="nav-item active"><span class="nav-icon">📋</span><span>Catat Kunjungan</span></a>
     <a id="nav-pelanggan"  href="getstarvio-pelanggan.html"         class="nav-item"><span class="nav-icon">👥</span><span>Pelanggan</span><span class="nav-pill np-red" id="nav-lost-n" style="display:none">0</span></a>
     <a id="nav-automation" href="getstarvio-automation.html"        class="nav-item"><span class="nav-icon">🤖</span><span>Automation</span></a>
-    <a id="nav-log"        href="getstarvio-log-reminder.html"      class="nav-item"><span class="nav-icon">📜</span><span>Log Reminder</span></a>
+    <a id="nav-log"        href="getstarvio-log-reminder.html"      class="nav-item"><span class="nav-icon">📜</span><span>Log Pengingat</span></a>
     <a id="nav-kategori"   href="getstarvio-kategori.html"          class="nav-item"><span class="nav-icon">🏷️</span><span>Kategori</span></a>
     <a id="nav-billing"    href="getstarvio-billing.html"           class="nav-item"><span class="nav-icon">💳</span><span>Billing</span></a>
     <a id="nav-settings"   href="getstarvio-settings.html"          class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
@@ -300,16 +327,21 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
       <button class="modal-close" onclick="closeVisitModal()">&times;</button>
     </div>
     <div class="modal-body">
-      <!-- Step indicators -->
-      <div class="steps">
+      <!-- Step indicators (2-step flow) -->
+      <div class="steps" id="steps-indicator">
         <div class="step-dot active" id="dot-1"></div>
         <div class="step-dot" id="dot-2"></div>
-        <div class="step-dot" id="dot-3"></div>
-        <span class="step-label" id="step-label">Langkah 1 dari 3</span>
+        <span class="step-label" id="step-label">Langkah 1 dari 2</span>
       </div>
 
-      <!-- Step 1: Search -->
+      <!-- Step 1: Search + Recent Customers -->
       <div id="step-1">
+        <!-- Recent Customers Row (8 latest, horizontal scroll, tap to skip search) -->
+        <div id="recent-cx-wrap" style="margin-bottom:14px;display:none">
+          <div style="font-size:13px;color:var(--ink3);margin-bottom:8px;font-weight:500">Terakhir dicatat:</div>
+          <div id="recent-cx-row" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;-webkit-overflow-scrolling:touch"></div>
+        </div>
+
         <div class="search-wrap" id="search-wrap">
           <svg class="search-icon" id="search-icon-svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--ink3)" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
           <input type="text" class="search-input" id="cx-search" placeholder="Cari nama atau nomor WA..." autocomplete="off">
@@ -350,30 +382,35 @@ button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
         </div>
       </div>
 
-      <!-- Step 2: Pick Services -->
+      <!-- Step 2: Pick Services + Save (merged, no separate konfirmasi) -->
       <div id="step-2" style="display:none">
         <div class="found-card" id="selected-cx-info">
-          <div class="greeting" id="cx-greeting"></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+            <div class="greeting" id="cx-greeting"></div>
+            <button class="btn btn-ghost btn-sm" onclick="goStep(1)" style="padding:5px 12px;font-size:11px">Ganti</button>
+          </div>
           <div class="date-row" style="margin-top:8px">
             <span class="date-label">Tanggal Kunjungan</span>
             <input type="date" class="date-input" id="visit-date" readonly style="background:var(--bg3);color:var(--ink3)">
             <a href="#" class="date-toggle" id="date-toggle" onclick="enableDateEdit(event)">Bukan hari ini?</a>
           </div>
+          <div id="backdate-warn" style="display:none;font-size:11px;color:var(--amber-dk);background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:7px 10px;margin-top:8px">Kunjungan akan dicatat untuk tanggal <span id="backdate-warn-date"></span></div>
           <div style="font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-top:14px">Pilih layanan hari ini:</div>
           <div class="svc-list" id="service-checklist" style="margin-top:8px"></div>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-ghost" onclick="goStep(1)">Kembali</button>
-          <button class="btn btn-lime" id="btn-step3" onclick="goStep(3)" disabled>Lanjut</button>
+          <button class="btn btn-lime btn-full" id="btn-save-visit" onclick="saveVisit()" disabled style="margin-top:14px;height:48px;font-size:14px;font-weight:700">Simpan Kunjungan</button>
         </div>
       </div>
 
-      <!-- Step 3: Confirm -->
-      <div id="step-3" style="display:none">
-        <div class="summary-card" id="summary-card"></div>
-        <div class="modal-actions">
-          <button class="btn btn-ghost" onclick="goStep(2)">Kembali</button>
-          <button class="btn btn-lime" onclick="saveVisit()">Simpan Kunjungan</button>
+      <!-- Success Screen (replace modal content after save) -->
+      <div id="step-success" style="display:none;text-align:center;padding:20px 8px">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--lime-bg);border:2px solid var(--lime2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;animation:popIn .35s cubic-bezier(.34,1.56,.64,1)">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="var(--lime-dk)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16l5 5 11-11"/></svg>
+        </div>
+        <div style="font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px">Tersimpan!</div>
+        <div id="success-summary" style="font-size:14px;color:var(--ink3);line-height:1.55;margin-bottom:24px;padding:0 12px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <button onclick="catatLagi()" style="height:48px;background:transparent;border:1.5px solid var(--border2);color:var(--ink2);font-weight:600;font-size:13px;font-family:inherit;cursor:pointer;border-radius:var(--r-sm);transition:all .15s">+ Catat Lagi</button>
+          <button class="btn btn-lime" onclick="finishVisit()" style="height:48px;font-weight:700;font-size:14px;box-shadow:0 4px 14px rgba(184,240,74,.35)">✓ Selesai</button>
         </div>
       </div>
     </div>
@@ -409,15 +446,38 @@ function loadU() {
     var raw = localStorage.getItem('getstarvio_user')
     if (!raw) return null
     var u = JSON.parse(raw)
-    if (u.DATA_VERSION !== 4) return null
+    if (u.DATA_VERSION === 4) {
+      if (u.plan === 'free') u.plan = 'trial'
+      if (!u.trialStartedAt) u.trialStartedAt = u.plan === 'subscriber' ? null : new Date().toISOString()
+      if (u.plan === 'trial' && u.trialStartedAt && !u.trialEndsAt) {
+        var td = (u.planConfig && u.planConfig.trialDays) || 14
+        u.trialEndsAt = new Date(new Date(u.trialStartedAt).getTime() + td * 86400000).toISOString()
+      }
+      if (typeof u.trialUsed === 'undefined') u.trialUsed = u.plan === 'subscriber'
+      u.DATA_VERSION = 5
+      localStorage.setItem('getstarvio_user', JSON.stringify(u))
+    }
+    if (u.DATA_VERSION !== 5) return null
     u.remLeft = (u.subCreditsLeft || 0) + (u.topupCreditsLeft || 0)
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      var endMs = new Date(u.trialEndsAt).getTime()
+      u.trialDaysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000))
+      u.trialExpired = Date.now() > endMs || u.remLeft <= 0
+    } else { u.trialDaysLeft = null; u.trialExpired = false }
     return u
   } catch(e) { return null }
 }
 
 function saveU(u) {
+  delete u.remLeft; delete u.trialDaysLeft; delete u.trialExpired
   localStorage.setItem('getstarvio_user', JSON.stringify(u))
 }
+
+// Catat Kunjungan TIDAK pernah di-lock (per spec — kasir harus selalu bisa catat data,
+// kalau di-block data pelanggan hilang). Yang berhenti saat trial expired = automation
+// (handled by Automation page). Stub functions kept untuk konsistensi pattern.
+function showTrialLockOverlay() {}
+function checkTrialLock() {}
 
 function bootSidebar() {
   var page = location.pathname.split('/').pop()
@@ -512,11 +572,13 @@ function openVisitModal() {
   document.getElementById('cx-search').style.display = ''
   document.getElementById('search-icon-svg').style.display = ''
 
-  // Show/hide steps
+  // Show/hide steps (success state always hidden on open)
   document.getElementById('step-1').style.display = ''
   document.getElementById('step-2').style.display = 'none'
-  document.getElementById('step-3').style.display = 'none'
+  document.getElementById('step-success').style.display = 'none'
+  document.getElementById('steps-indicator').style.display = ''
   updateStepUI()
+  renderRecentCustomers()
 
   document.getElementById('visit-modal').classList.add('show')
   document.body.style.overflow = 'hidden'
@@ -529,11 +591,12 @@ function closeVisitModal() {
 }
 
 function updateStepUI() {
-  var titles = { 1: 'Cari Pelanggan', 2: 'Pilih Layanan', 3: 'Konfirmasi' }
-  document.getElementById('modal-step-title').textContent = titles[currentStep]
-  document.getElementById('step-label').textContent = 'Langkah ' + currentStep + ' dari 3'
-  for (var i = 1; i <= 3; i++) {
+  var titles = { 1: 'Cari Pelanggan', 2: 'Pilih Layanan' }
+  document.getElementById('modal-step-title').textContent = titles[currentStep] || 'Cari Pelanggan'
+  document.getElementById('step-label').textContent = 'Langkah ' + currentStep + ' dari 2'
+  for (var i = 1; i <= 2; i++) {
     var dot = document.getElementById('dot-' + i)
+    if (!dot) continue
     dot.className = 'step-dot'
     if (i < currentStep) dot.classList.add('done')
     else if (i === currentStep) dot.classList.add('active')
@@ -544,11 +607,41 @@ function goStep(step) {
   currentStep = step
   document.getElementById('step-1').style.display = step === 1 ? '' : 'none'
   document.getElementById('step-2').style.display = step === 2 ? '' : 'none'
-  document.getElementById('step-3').style.display = step === 3 ? '' : 'none'
+  document.getElementById('step-success').style.display = 'none'
+  document.getElementById('steps-indicator').style.display = ''
   updateStepUI()
-
+  if (step === 1) renderRecentCustomers()
   if (step === 2) renderStep2()
-  if (step === 3) renderStep3()
+}
+
+/* Render Recent Customers Row — 8 latest by service.date */
+function renderRecentCustomers() {
+  var wrap = document.getElementById('recent-cx-wrap')
+  var row = document.getElementById('recent-cx-row')
+  var cxs = (U && U.customers) ? U.customers : []
+  // Get latest service.date per customer, sort desc, take top 8
+  var withLastVisit = cxs.map(function(cx) {
+    var latest = (cx.services || []).reduce(function(acc, s) {
+      if (!s.date) return acc
+      var d = new Date(s.date).getTime()
+      return d > acc ? d : acc
+    }, 0)
+    return { cx: cx, ts: latest }
+  }).filter(function(x) { return x.ts > 0 }).sort(function(a, b) { return b.ts - a.ts }).slice(0, 8)
+
+  if (withLastVisit.length === 0) {
+    wrap.style.display = 'none'
+    return
+  }
+  wrap.style.display = ''
+  row.innerHTML = withLastVisit.map(function(x) {
+    return '<button class="recent-cx-pill" data-cx-id="' + x.cx.id + '" style="background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:14px;font-weight:500;color:var(--ink);white-space:nowrap;cursor:pointer;font-family:inherit;flex-shrink:0;min-height:40px;transition:all .15s">' + escHtml(x.cx.name) + '</button>'
+  }).join('')
+  row.querySelectorAll('.recent-cx-pill').forEach(function(btn) {
+    btn.addEventListener('click', function() { selectCustomer(this.getAttribute('data-cx-id')) })
+    btn.addEventListener('mouseenter', function() { this.style.background = 'var(--lime)'; this.style.color = 'var(--lime-dk)'; this.style.borderColor = 'var(--lime2)' })
+    btn.addEventListener('mouseleave', function() { this.style.background = 'var(--bg3)'; this.style.color = 'var(--ink)'; this.style.borderColor = 'var(--border)' })
+  })
 }
 
 /* ── STEP 1: SEARCH ── */
@@ -668,6 +761,9 @@ function enableDateEdit(e) {
   var minDate = new Date()
   minDate.setDate(minDate.getDate() - 7)
   input.min = minDate.toISOString().split('T')[0]
+  // Re-render warning when date changes
+  input.addEventListener('change', updateSelectedServices)
+  input.addEventListener('input', updateSelectedServices)
   toggle.textContent = 'Maks 7 hari ke belakang'
   toggle.style.color = 'var(--ink3)'
   toggle.style.cursor = 'default'
@@ -728,38 +824,34 @@ function updateSelectedServices() {
       if (cat) selectedServices.push(cat)
     }
   })
-  document.getElementById('btn-step3').disabled = selectedServices.length === 0
-}
-
-/* ── STEP 3: CONFIRM ── */
-function renderStep3() {
-  var date = document.getElementById('visit-date').value
-  var card = document.getElementById('summary-card')
-
-  var svcHtml = selectedServices.map(function(s) {
-    return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;background:var(--lime-bg);color:var(--lime-dk);font-weight:500">' + s.icon + ' ' + escHtml(s.name) + '</span>'
-  }).join(' ')
-
-  var isBackdate = (date !== todayISO())
-  var backdateHtml = ''
-  if (isBackdate) {
-    backdateHtml = '<div style="margin-top:8px;padding:8px 10px;background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);font-size:11px;color:var(--amber-dk);font-weight:600">' +
-      '⚠️ Kunjungan akan dicatat untuk tanggal ' + date + ' (bukan hari ini)</div>'
+  // Enable Save button only when at least 1 service selected
+  var saveBtn = document.getElementById('btn-save-visit')
+  if (saveBtn) saveBtn.disabled = selectedServices.length === 0
+  // Show backdate warning if date != today
+  var dateInput = document.getElementById('visit-date')
+  var warn = document.getElementById('backdate-warn')
+  if (dateInput && warn) {
+    if (dateInput.value && dateInput.value !== todayISO()) {
+      warn.style.display = ''
+      document.getElementById('backdate-warn-date').textContent = formatDateID(dateInput.value)
+    } else {
+      warn.style.display = 'none'
+    }
   }
-
-  card.innerHTML =
-    '<div class="summary-row"><span class="summary-label">Pelanggan</span><span class="summary-val">' + escHtml(selectedCustomer.name) + '</span></div>' +
-    '<div class="summary-row"><span class="summary-label">Layanan</span><span class="summary-val" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end">' + svcHtml + '</span></div>' +
-    '<div class="summary-row"><span class="summary-label">Tanggal</span><span class="summary-val" style="font-family:\'JetBrains Mono\',monospace">' + date + '</span></div>' +
-    backdateHtml
 }
 
-/* ── SAVE VISIT ── */
+function formatDateID(iso) {
+  if (!iso) return ''
+  var d = new Date(iso)
+  return d.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })
+}
+
+/* ── SAVE VISIT → SUCCESS SCREEN (no separate konfirmasi step) ── */
 function saveVisit() {
+  if (selectedServices.length === 0) return
   var date = document.getElementById('visit-date').value
   var cxId = selectedCustomer.id
 
-  // Find customer in U.customers by id
   var cx = (U.customers || []).find(function(c) { return c.id === cxId })
   if (!cx) return
 
@@ -781,9 +873,39 @@ function saveVisit() {
   })
 
   saveU(U)
+
+  // Show Success Screen (replace modal content)
+  var svcNames = selectedServices.map(function(s) { return s.icon + ' ' + s.name }).join(', ')
+  var summary = '<strong>' + escHtml(selectedCustomer.name) + '</strong> — ' + svcNames
+  if (date !== todayISO()) {
+    summary += '<br><span style="color:var(--amber-dk);font-size:12px">(tanggal ' + formatDateID(date) + ')</span>'
+  }
+  document.getElementById('success-summary').innerHTML = summary
+  document.getElementById('step-1').style.display = 'none'
+  document.getElementById('step-2').style.display = 'none'
+  document.getElementById('step-success').style.display = ''
+  document.getElementById('steps-indicator').style.display = 'none'
+  document.getElementById('modal-step-title').textContent = 'Berhasil'
+
+  // Refresh underlying lists (today section + recent customers will re-render on next open)
+  renderTodayVisits()
+}
+
+/* Success Screen handlers */
+function catatLagi() {
+  // Reset state, return to Step 1 — recent customers row will pick up the new entry
+  selectedCustomer = null
+  selectedServices = []
+  goStep(1)
+  document.getElementById('cx-search').value = ''
+  document.getElementById('ac-dropdown').classList.remove('show')
+  document.getElementById('ac-dropdown').innerHTML = ''
+  setTimeout(function() { document.getElementById('cx-search').focus() }, 50)
+}
+
+function finishVisit() {
   closeVisitModal()
   renderTodayVisits()
-  showToast('Kunjungan berhasil dicatat!')
 }
 
 /* ── RENDER TODAY'S VISITS ── */
@@ -877,6 +999,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   bootSidebarData()
   bootSidebar()
+  // Note: NO checkTrialLock — page must always be accessible (kasir can't be blocked)
   renderTodayVisits()
 
   // Search input with debounce
@@ -899,6 +1022,28 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   })
 })
+
+/* ── IMPERSONATION CHECK (admin logged in as user) ── */
+(function() {
+  try {
+    var raw = localStorage.getItem('getstarvio_impersonation');
+    if (!raw) return;
+    var imp = JSON.parse(raw);
+    if (!imp || !imp.targetBizId) return;
+    document.addEventListener('DOMContentLoaded', function() {
+      var banner = document.getElementById('impBanner');
+      var bizEl = document.getElementById('impBizName');
+      if (banner) banner.classList.add('show');
+      if (bizEl) bizEl.textContent = imp.targetBizName || imp.targetBizId;
+      document.body.classList.add('imp-active');
+    });
+  } catch(e) {}
+})();
+function exitImpersonate() {
+  try { localStorage.removeItem('getstarvio_impersonation') } catch(e) {}
+  window.location.href = 'getstarvio-admin.html';
+}
 </script>
+
 </body>
 </html>

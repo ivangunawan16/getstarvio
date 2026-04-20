@@ -136,14 +136,27 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .kv-val{font-size:12px;font-weight:600;color:var(--ink);text-align:right}
 .kv-val.mono{font-family:'JetBrains Mono',monospace}
 
-.field-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:block}
-.field-inp{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .12s}
-.field-inp:focus{border-color:var(--lime2)}
+.field-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:block}
+.field-inp{width:100%;padding:10px 13px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .12s,box-shadow .12s}
+.field-inp::placeholder{color:var(--ink4);opacity:1}
+.field-inp:hover:not([readonly]):not(:disabled){border-color:var(--ink4)}
+.field-inp:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.15)}
+.field-inp[readonly],.field-inp:disabled{background:var(--bg3);color:var(--ink3);cursor:not-allowed;border-color:var(--border)}
+.field-textarea::placeholder,.field-select::placeholder{color:var(--ink4);opacity:1}
+.field-textarea[readonly],.field-textarea:disabled,.field-select:disabled{background:var(--bg3);color:var(--ink3);cursor:not-allowed;border-color:var(--border)}
 
 /* ── CREDIT ADD ── */
 .credit-row{display:flex;gap:8px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
 .credit-inp{flex:1;padding:9px 12px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:14px;font-family:'JetBrains Mono',monospace;font-weight:700;outline:none;text-align:center}
 .credit-inp:focus{border-color:var(--lime2)}
+
+/* ── GRANT FREE SUBSCRIPTION ── */
+.grant-preset{padding:7px 12px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink2);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .12s}
+.grant-preset:hover{border-color:var(--ink4);background:var(--bg3)}
+.grant-preset.active{background:var(--lime);border-color:var(--lime2);color:var(--lime-dk)}
+.grant-mode-opt{transition:all .12s}
+.grant-mode-opt:hover{border-color:var(--lime2)}
+.grant-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#78350f;border:1px solid #fcd34d}
 
 /* ── ACTIVITY LOG ── */
 .log-list{max-height:180px;overflow-y:auto;margin-top:14px;border-top:1px solid var(--border);padding-top:10px}
@@ -196,6 +209,148 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 .tx-amount.reset{color:var(--blue)}
 .tx-amount.welcome{color:var(--amber)}
 
+/* ══════════════════ TEMPLATES TAB ══════════════════ */
+.tpl-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.tpl-toolbar .filter-bar{flex:1;margin-bottom:0}
+.btn-primary{padding:8px 14px;background:var(--lime);color:var(--lime-dk);border:none;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .12s;white-space:nowrap}
+.btn-primary:hover{background:var(--lime2);box-shadow:0 2px 8px rgba(184,240,74,.3)}
+.btn-primary:active{transform:scale(.98)}
+.btn-secondary{padding:7px 12px;background:var(--bg2);border:1px solid var(--border2);color:var(--ink2);border-radius:var(--r-sm);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn-secondary:hover{background:var(--bg3);border-color:var(--ink4)}
+.btn-danger{padding:7px 12px;background:var(--red-bg);border:1px solid rgba(232,69,60,.25);color:var(--red-dk);border-radius:var(--r-sm);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn-danger:hover{background:#fbd8d6}
+
+/* Status badges (template status) */
+.tpl-status{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.tpl-status::before{content:'';width:5px;height:5px;border-radius:50%}
+.tpl-status.approved{background:var(--lime-bg);color:var(--lime-dk);border:1px solid rgba(184,240,74,.35)}
+.tpl-status.approved::before{background:var(--lime2)}
+.tpl-status.pending{background:var(--amber-bg);color:var(--amber-dk);border:1px solid rgba(245,166,35,.25)}
+.tpl-status.pending::before{background:var(--amber)}
+.tpl-status.rejected{background:var(--red-bg);color:var(--red-dk);border:1px solid rgba(232,69,60,.25)}
+.tpl-status.rejected::before{background:var(--red)}
+.tpl-status.paused{background:var(--bg3);color:var(--ink2);border:1px solid var(--border2)}
+.tpl-status.paused::before{background:var(--ink3)}
+.tpl-status.flagged{background:#fff4e0;color:#7a4f00;border:1px solid #fcd88a}
+.tpl-status.flagged::before{background:var(--amber)}
+
+/* Template category chip */
+.tpl-cat{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase}
+.tpl-cat.utility{background:var(--blue-bg);color:var(--blue-dk);border:1px solid rgba(37,99,235,.2)}
+.tpl-cat.marketing{background:#f3e8ff;color:#5b21b6;border:1px solid rgba(168,85,247,.25)}
+.tpl-cat.authentication{background:#fef3c7;color:#854d0e;border:1px solid rgba(245,166,35,.3)}
+
+/* Meta inbox card */
+.meta-inbox{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:18px}
+.meta-inbox-hd{padding:11px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.meta-inbox-title{font-size:12px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px}
+.meta-inbox-title .pulse{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:pulse 2s ease-in-out infinite}
+.meta-inbox-count{font-size:10px;font-weight:700;background:var(--amber-bg);color:var(--amber-dk);padding:2px 8px;border-radius:99px;border:1px solid rgba(245,166,35,.3)}
+.meta-notif{display:flex;align-items:flex-start;gap:11px;padding:11px 16px;border-bottom:1px solid var(--border);transition:background .12s}
+.meta-notif:last-child{border-bottom:none}
+.meta-notif:hover{background:var(--bg3)}
+.meta-notif.read{opacity:.6}
+.meta-notif-ic{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.meta-notif-ic.cat-change{background:var(--amber-bg);color:var(--amber-dk)}
+.meta-notif-ic.rejected{background:var(--red-bg);color:var(--red)}
+.meta-notif-ic.approved{background:var(--lime-bg);color:var(--lime-dk)}
+.meta-notif-ic.paused{background:var(--bg3);color:var(--ink3)}
+.meta-notif-text{flex:1;font-size:12px;color:var(--ink2);line-height:1.5}
+.meta-notif-text strong{color:var(--ink);font-weight:700}
+.meta-notif-time{font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace;flex-shrink:0;white-space:nowrap;padding-top:2px}
+
+/* Template body preview */
+.tpl-body-preview{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink2);background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;line-height:1.55;white-space:pre-wrap;max-height:120px;overflow-y:auto}
+.tpl-var{display:inline-block;background:var(--lime-bg);color:var(--lime-dk);padding:1px 6px;border-radius:4px;font-weight:700}
+
+/* ══════════════════ TIPE LAYANAN TAB ══════════════════ */
+.bt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:18px;align-items:start}
+.bt-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.bt-card:hover{border-color:var(--lime2);box-shadow:0 4px 14px rgba(0,0,0,.04)}
+.bt-card.expanded{border-color:var(--lime2);box-shadow:0 6px 20px rgba(0,0,0,.06);grid-column:1/-1}
+.bt-card.expanded .bt-cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;align-items:start}
+.bt-card.expanded .bt-cat-row{margin-bottom:0}
+.bt-card-hd{padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;background:var(--bg2);transition:background .12s}
+.bt-card-hd:hover{background:var(--bg3)}
+.bt-icon{width:42px;height:42px;border-radius:10px;background:var(--lime-bg);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--lime-bd)}
+.bt-info{flex:1;min-width:0}
+.bt-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.bt-meta{font-size:11px;color:var(--ink3);line-height:1.4}
+.bt-meta code{font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:10px}
+.bt-actions{display:flex;gap:6px;flex-shrink:0}
+.bt-icon-btn{width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.bt-icon-btn:hover{background:var(--bg4);color:var(--ink)}
+.bt-icon-btn svg{width:13px;height:13px}
+.bt-icon-btn.danger:hover{background:var(--red-bg);color:var(--red);border-color:rgba(232,69,60,.3)}
+
+.bt-cats{padding:0 18px 16px;border-top:1px solid var(--border);background:var(--bg3);display:none}
+.bt-card.expanded .bt-cats{display:block}
+.bt-cats-hd{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 10px;display:flex;align-items:center;justify-content:space-between}
+
+/* 2-row preset row: top = icon+name+interval+actions, bottom = template badge */
+.bt-cat-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  grid-template-areas:"icon name meta actions" "tpl tpl tpl tpl";
+  align-items:center;column-gap:10px;row-gap:6px;
+  padding:11px 13px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r-sm);margin-bottom:8px;
+}
+.bt-cat-icon{grid-area:icon;font-size:18px;line-height:1}
+.bt-cat-name{grid-area:name;font-size:13px;font-weight:600;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bt-cat-meta{grid-area:meta;font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:3px 9px;border-radius:99px;border:1px solid var(--border);white-space:nowrap;font-weight:600}
+.bt-cat-actions{grid-area:actions;display:flex;gap:5px}
+.bt-cat-tpl{grid-area:tpl;font-size:10px;font-weight:600;color:var(--lime-dk);background:var(--lime-bg);padding:4px 10px;border-radius:99px;border:1px solid var(--lime-bd);font-family:'JetBrains Mono',monospace;display:inline-flex;align-items:center;gap:5px;justify-self:start;max-width:100%}
+.bt-cat-tpl::before{content:'\1F4DD';font-size:10px}
+.bt-cat-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;background:transparent;border:1.5px dashed var(--border2);color:var(--ink3);border-radius:var(--r-sm);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s;margin-top:4px}
+.bt-cat-add:hover{border-color:var(--lime2);color:var(--lime-dk);background:var(--lime-bg)}
+
+@media(max-width:600px){
+  .bt-grid{grid-template-columns:1fr;gap:10px}
+  .bt-card-hd{padding:14px 14px}
+  .bt-cats{padding:0 14px 12px}
+}
+
+/* Modal extensions */
+.modal-lg{width:640px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.field-row .field-cell{margin-bottom:0}
+.field-textarea{width:100%;padding:11px 13px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:90px;line-height:1.6;transition:border-color .12s,box-shadow .12s;margin-bottom:14px}
+.field-textarea:hover{border-color:var(--ink4)}
+.field-textarea:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.15)}
+.field-textarea.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+.field-select{width:100%;padding:10px 13px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:inherit;outline:none;cursor:pointer;margin-bottom:14px;transition:border-color .12s,box-shadow .12s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%239b9a92' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.field-select:hover{border-color:var(--ink4)}
+.field-select:focus{border-color:var(--lime2);box-shadow:0 0 0 3px rgba(184,240,74,.15)}
+.field-help{font-size:11px;color:var(--ink3);margin-top:-10px;margin-bottom:16px;line-height:1.55}
+.field-help code{font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:1px 6px;border-radius:3px;color:var(--ink2);font-size:10.5px}
+
+/* Template Edit — Example Parameters section */
+.tpl-example-sec{margin-top:14px;padding:14px;background:var(--bg2);border:1.5px dashed var(--border2);border-radius:var(--r-sm)}
+.tpl-example-head{margin-bottom:10px}
+.tpl-example-title{font-size:11px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.tpl-example-sub{font-size:11px;color:var(--ink3);line-height:1.5}
+.tpl-example-fields{display:flex;flex-direction:column;gap:8px}
+.tpl-example-empty{padding:14px;text-align:center;color:var(--ink3);font-size:11px;font-style:italic;background:var(--bg3);border-radius:var(--r-sm)}
+.tpl-example-empty code{font-family:'JetBrains Mono',monospace;background:#fff;padding:2px 6px;border-radius:3px;color:var(--ink);font-size:10px;font-style:normal;font-weight:600}
+.tpl-example-row{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.tpl-example-key{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--lime-dk);background:var(--lime-bg);padding:5px 9px;border-radius:4px;white-space:nowrap;min-width:42px;text-align:center}
+.tpl-example-label{font-size:10px;color:var(--ink3);font-weight:600;margin-bottom:3px}
+.tpl-example-input{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:12px;color:var(--ink);background:#fff;outline:none;transition:border-color .15s}
+.tpl-example-input:focus{border-color:var(--lime2)}
+
+/* Template Edit — Preview section */
+.tpl-preview-sec{margin-top:14px;padding:14px;background:#e5ddd5;border-radius:var(--r-sm)}
+.tpl-preview-bubble{background:#fff;border-radius:8px 8px 8px 0;padding:10px 12px;max-width:340px;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.tpl-preview-body{font-size:13px;color:#202020;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.tpl-preview-body strong{font-weight:700;color:var(--lime-dk);background:var(--lime-bg);padding:0 3px;border-radius:3px}
+
+/* Meta API payload preview modal */
+.pl-endpoint{margin-bottom:14px;border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;background:var(--bg2)}
+.pl-ep-label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.pl-ep-code{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);background:var(--bg3);padding:8px 10px;border-radius:4px;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pl-json{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);background:var(--bg3);padding:10px 12px;border-radius:4px;white-space:pre-wrap;word-break:break-word;line-height:1.55;margin:0;overflow-x:auto;max-height:260px}
+
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .stats-row{grid-template-columns:repeat(2,1fr)}
@@ -215,10 +370,33 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
     </div>
     <div class="gate-title">getstarvio Admin</div>
     <div class="gate-sub">Command Center · Internal Only</div>
-    <form onsubmit="return tryLogin(event)">
-      <input class="gate-inp" id="gate-pw" type="password" placeholder="Password" autofocus>
-      <button class="gate-btn" type="submit">Masuk</button>
-    </form>
+
+    <!-- Step 1: Google OAuth (must complete first) -->
+    <div id="gate-step-google">
+      <button class="gate-btn" type="button" onclick="tryGoogleAdmin()" style="background:#fff;color:var(--ink);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;gap:10px">
+        <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+          <path d="M17.64 9.2c0-.638-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+          <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        Lanjut dengan Google
+      </button>
+      <div style="font-size:11px;color:var(--ink3);margin-top:14px;line-height:1.55">Hanya akun @getstarvio.com yang diizinkan akses admin panel.</div>
+    </div>
+
+    <!-- Step 2: Password (after Google verified) -->
+    <div id="gate-step-pw" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:var(--r-sm);padding:8px 12px;margin-bottom:14px;font-size:11px;color:var(--lime-dk);font-weight:600">
+        <span>✓</span><span id="gate-google-email">admin@getstarvio.com</span>
+      </div>
+      <form onsubmit="return tryLogin(event)">
+        <input class="gate-inp" id="gate-pw" type="password" placeholder="Admin password" autofocus>
+        <button class="gate-btn" type="submit">Masuk</button>
+      </form>
+      <button onclick="resetAdminLogin()" style="background:none;border:none;color:var(--ink3);font-size:11px;margin-top:10px;cursor:pointer;text-decoration:underline;font-family:inherit">← Ganti akun Google</button>
+    </div>
+
     <div class="gate-error" id="gate-error"></div>
   </div>
 </div>
@@ -244,8 +422,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
   <!-- TAB NAV -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('dashboard',this)">Dashboard</button>
+    <button class="tab-btn" onclick="switchTab('templates',this)">Templates</button>
+    <button class="tab-btn" onclick="switchTab('biz-types',this)">Tipe Layanan</button>
     <button class="tab-btn" onclick="switchTab('plan-config',this)">Plan Config</button>
     <button class="tab-btn" onclick="switchTab('transactions',this)">Transactions</button>
+    <button class="tab-btn" onclick="switchTab('audit',this)">Audit Log</button>
   </div>
 
   <!-- CONTENT -->
@@ -288,7 +469,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
       <select class="filter-sel" id="s-status" onchange="renderTable()">
         <option value="all">Semua Status</option>
         <option value="active">Aktif</option>
-        <option value="trial">Trial</option>
+        <option value="trial_aktif">Trial Aktif</option>
+        <option value="trial_expired">Trial Expired</option>
         <option value="suspended">Suspended</option>
         <option value="churned">Churned</option>
       </select>
@@ -327,6 +509,81 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
 
     </div><!-- /tab-dashboard -->
 
+    <!-- ══════════ TAB: TEMPLATES ══════════ -->
+    <div class="tab-section" id="tab-templates">
+
+      <!-- Meta Notifications inbox -->
+      <div class="meta-inbox" id="meta-inbox-wrap">
+        <div class="meta-inbox-hd">
+          <div class="meta-inbox-title"><span class="pulse"></span>Notifikasi dari Meta</div>
+          <span class="meta-inbox-count" id="meta-inbox-count">0 baru</span>
+        </div>
+        <div id="meta-inbox-list"></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="tpl-toolbar">
+        <div class="filter-bar">
+          <div class="search-wrap">
+            <svg class="search-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="4"/><path d="M10.5 10.5l3 3"/></svg>
+            <input class="search-inp" id="tpl-search" placeholder="Cari nama template..." oninput="renderTemplates()">
+          </div>
+          <select class="filter-sel" id="tpl-cat-filter" onchange="renderTemplates()">
+            <option value="all">Semua Kategori</option>
+            <option value="UTILITY">Utility</option>
+            <option value="MARKETING">Marketing</option>
+            <option value="AUTHENTICATION">Authentication</option>
+          </select>
+          <select class="filter-sel" id="tpl-status-filter" onchange="renderTemplates()">
+            <option value="all">Semua Status</option>
+            <option value="APPROVED">Approved</option>
+            <option value="PENDING">Pending</option>
+            <option value="REJECTED">Rejected</option>
+            <option value="PAUSED">Paused</option>
+            <option value="FLAGGED">Flagged</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="openTemplateModal()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+          Tambah Template
+        </button>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Nama Template</th>
+              <th>Kategori</th>
+              <th>Bahasa</th>
+              <th>Status</th>
+              <th>Last Updated</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tpl-tbody"></tbody>
+        </table>
+      </div>
+    </div><!-- /tab-templates -->
+
+    <!-- ══════════ TAB: TIPE LAYANAN (Biz Types) ══════════ -->
+    <div class="tab-section" id="tab-biz-types">
+
+      <div class="section-hd" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 7h12M5 10h6"/></svg>
+          Tipe Bisnis & Preset Kategori
+        </div>
+        <button class="btn-primary" onclick="openBizTypeModal()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+          Tambah Tipe Bisnis
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:14px;line-height:1.55">Tipe bisnis dan preset kategori muncul di onboarding step "Jenis Bisnis" + "Kategori Layanan". Klik kartu untuk expand & edit preset.</div>
+
+      <div class="bt-grid" id="bt-grid"></div>
+    </div><!-- /tab-biz-types -->
+
     <!-- ══════════ TAB: PLAN CONFIG ══════════ -->
     <div class="tab-section" id="tab-plan-config">
       <div class="section-hd">
@@ -338,24 +595,27 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
       </div>
 
       <div style="max-width:600px">
-        <!-- Free Plan -->
+        <!-- Free Trial -->
         <div class="plan-config">
           <div class="plan-config-hd">
             <div>
-              <div class="plan-config-name">Free Plan</div>
-              <div style="font-size:11px;color:var(--ink3);margin-top:2px">One-time trial — tidak reset</div>
+              <div class="plan-config-name">Free Trial</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:2px">14 hari ATAU welcome bonus habis (mana duluan) — setelah itu wajib subscribe</div>
             </div>
             <span class="badge b-gray">Trial</span>
           </div>
           <div class="plan-field">
-            <div class="plan-field-lbl">Welcome bonus</div>
+            <div class="plan-field-lbl">Welcome bonus credits</div>
             <input class="plan-field-inp" id="pc-free-bonus" value="100" type="number" min="0">
-            <div class="plan-field-unit">kredit</div>
+            <div class="plan-field-unit">kredit (langsung masuk topup, permanent)</div>
           </div>
           <div class="plan-field">
-            <div class="plan-field-lbl">Reset otomatis</div>
-            <input class="plan-field-inp" value="Tidak" disabled style="opacity:.4;width:80px">
-            <div class="plan-field-unit"></div>
+            <div class="plan-field-lbl">Trial duration</div>
+            <input class="plan-field-inp" id="pc-trial-days" value="14" type="number" min="1" max="90">
+            <div class="plan-field-unit">hari</div>
+          </div>
+          <div class="plan-field">
+            <div class="plan-field-lbl" style="font-size:11px;color:var(--ink3);font-style:italic">Setelah trial: dashboard accessible tapi automation OFF + popup paksa subscribe + tombol top-up disabled</div>
           </div>
         </div>
 
@@ -370,16 +630,19 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           </div>
           <div class="plan-field">
             <div class="plan-field-lbl">Kredit per bulan</div>
-            <input class="plan-field-inp" id="pc-sub-credit" value="250" type="number" min="0">
+            <input class="plan-field-inp" id="pc-sub-credit" value="300" type="number" min="0">
             <div class="plan-field-unit">kredit / bulan</div>
           </div>
-          <div class="plan-field" style="padding-left:32px">
-            <div class="plan-field-lbl" style="font-size:11px;color:var(--ink3);font-style:italic">250 kredit/bulan (flat)</div>
+          <div class="plan-field">
+            <div class="plan-field-lbl">Harga normal</div>
+            <input class="plan-field-inp" id="pc-sub-price-normal" value="499.000" type="text" inputmode="numeric" oninput="formatIDRInput(this);recalcSubDiscount()">
+            <div class="plan-field-unit">IDR / bulan</div>
           </div>
           <div class="plan-field">
-            <div class="plan-field-lbl">Harga</div>
-            <input class="plan-field-inp" id="pc-sub-price" value="250000" type="number" min="0">
+            <div class="plan-field-lbl">Harga Early Access</div>
+            <input class="plan-field-inp" id="pc-sub-price" value="249.000" type="text" inputmode="numeric" oninput="formatIDRInput(this);recalcSubDiscount()">
             <div class="plan-field-unit">IDR / bulan</div>
+            <span class="plan-tier-badge" id="pc-sub-discount" style="background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3">-50%</span>
           </div>
           <div class="plan-field">
             <div class="plan-field-lbl">Reset otomatis</div>
@@ -398,42 +661,37 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
           <div class="plan-config-hd">
             <div>
               <div class="plan-config-name">Top-Up Pricing</div>
-              <div style="font-size:11px;color:var(--ink3);margin-top:2px">Tidak kadaluarsa · digunakan setelah kuota habis</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:2px">Tidak kadaluarsa · digunakan setelah kuota habis · flat tier pricing</div>
             </div>
             <span class="badge b-blue">Add-on</span>
           </div>
-          <div class="plan-field">
-            <div class="plan-field-lbl">Harga per kredit</div>
-            <input class="plan-field-inp" id="pc-topup-price" value="1000" type="number" min="0">
-            <div class="plan-field-unit">IDR / kredit</div>
-          </div>
-          <div style="padding:10px 16px;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Paket Tiers</div>
+          <div style="padding:10px 16px;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Paket Tiers (per-kredit auto-calculated)</div>
           <div class="plan-tier">
             <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">1.</span>
             <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
-            <input class="plan-field-inp" id="pc-tier1-price" value="250000" type="number" min="0" style="width:100px" oninput="recalcTier(1)">
+            <input class="plan-field-inp" id="pc-tier1-price" value="399.000" type="text" inputmode="numeric" style="width:110px" oninput="formatIDRInput(this);recalcTier(1)">
             <span style="color:var(--ink3)">→</span>
-            <input class="plan-field-inp" id="pc-tier1-credits" value="300" type="number" min="1" style="width:70px" oninput="recalcTier(1)">
+            <input class="plan-field-inp" id="pc-tier1-credits" value="200" type="number" min="1" style="width:70px" oninput="recalcTier(1)">
             <span style="font-size:11px;color:var(--ink3)">kredit</span>
-            <span class="plan-tier-badge" id="pc-tier1-bonus">+20%</span>
+            <span class="plan-tier-badge" id="pc-tier1-bonus">Rp 1.995/kredit</span>
           </div>
           <div class="plan-tier">
             <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">2.</span>
             <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
-            <input class="plan-field-inp" id="pc-tier2-price" value="500000" type="number" min="0" style="width:100px" oninput="recalcTier(2)">
+            <input class="plan-field-inp" id="pc-tier2-price" value="749.000" type="text" inputmode="numeric" style="width:110px" oninput="formatIDRInput(this);recalcTier(2)">
             <span style="color:var(--ink3)">→</span>
-            <input class="plan-field-inp" id="pc-tier2-credits" value="625" type="number" min="1" style="width:70px" oninput="recalcTier(2)">
+            <input class="plan-field-inp" id="pc-tier2-credits" value="500" type="number" min="1" style="width:70px" oninput="recalcTier(2)">
             <span style="font-size:11px;color:var(--ink3)">kredit</span>
-            <span class="plan-tier-badge" id="pc-tier2-bonus">+25%</span>
+            <span class="plan-tier-badge" id="pc-tier2-bonus">Rp 1.498/kredit</span>
           </div>
           <div class="plan-tier">
             <span style="font-weight:600;color:var(--ink3);font-size:11px;min-width:20px">3.</span>
             <span style="font-weight:600;color:var(--ink);font-size:11px">Rp</span>
-            <input class="plan-field-inp" id="pc-tier3-price" value="1000000" type="number" min="0" style="width:100px" oninput="recalcTier(3)">
+            <input class="plan-field-inp" id="pc-tier3-price" value="1.299.000" type="text" inputmode="numeric" style="width:110px" oninput="formatIDRInput(this);recalcTier(3)">
             <span style="color:var(--ink3)">→</span>
-            <input class="plan-field-inp" id="pc-tier3-credits" value="1500" type="number" min="1" style="width:70px" oninput="recalcTier(3)">
+            <input class="plan-field-inp" id="pc-tier3-credits" value="1000" type="number" min="1" style="width:70px" oninput="recalcTier(3)">
             <span style="font-size:11px;color:var(--ink3)">kredit</span>
-            <span class="plan-tier-badge" id="pc-tier3-bonus">+50%</span>
+            <span class="plan-tier-badge" id="pc-tier3-bonus">Rp 1.299/kredit</span>
           </div>
         </div>
 
@@ -479,6 +737,51 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
       </div>
     </div><!-- /tab-transactions -->
 
+    <div class="tab-section" id="tab-audit">
+      <div class="section-hd">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 2h12v12H2z"/><path d="M5 6h6M5 9h6M5 12h3"/></svg>
+        Audit Log
+      </div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:14px;line-height:1.55">Semua admin action kritis tercatat di sini untuk compliance + security trail. Data lokal per device, max 500 entri terbaru.</div>
+
+      <div class="filter-bar">
+        <select class="filter-sel" id="audit-filter" onchange="renderAuditLog()" style="min-width:200px">
+          <option value="all">Semua Action</option>
+          <option value="credit_topup">💳 Tambah Kredit</option>
+          <option value="grant_free_subscription">🎁 Grant Free Subscription</option>
+          <option value="revoke_free_grant">🔁 Revoke Grant</option>
+          <option value="extend_trial">⏱ Extend Trial</option>
+          <option value="suspend_account">🚫 Suspend Account</option>
+          <option value="activate_account">✅ Activate Account</option>
+          <option value="impersonate_start">🎭 Login as User</option>
+          <option value="impersonate_end">🚪 Exit Impersonate</option>
+          <option value="save_plan_config">⚙️ Save Plan Config</option>
+          <option value="save_template">💾 Save Template</option>
+          <option value="delete_template">🗑 Hapus Template</option>
+          <option value="save_biztype">🏷️ Save Biz Type</option>
+          <option value="delete_biztype">🗑 Hapus Biz Type</option>
+          <option value="save_preset">🏷️ Save Preset</option>
+          <option value="delete_preset">🗑 Hapus Preset</option>
+        </select>
+        <button class="btn-secondary" onclick="exportAuditLog()" style="margin-left:auto">📥 Export CSV</button>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width:150px">Waktu</th>
+              <th style="width:170px">Action</th>
+              <th>Target</th>
+              <th>Details</th>
+              <th style="width:200px">Admin</th>
+            </tr>
+          </thead>
+          <tbody id="audit-tbody"></tbody>
+        </table>
+      </div>
+    </div><!-- /tab-audit -->
+
   </div><!-- /content -->
 </div><!-- /shell -->
 
@@ -494,18 +797,332 @@ html,body{height:100%;font-family:'Sora',sans-serif;font-size:13px;background:va
   </div>
 </div>
 
+<!-- ══════════════════ GRANT FREE SUBSCRIPTION MODAL ══════════════════ -->
+<div class="overlay" id="modal-grant" onclick="if(event.target===this)closeModal('modal-grant')">
+  <div class="modal" style="max-width:540px">
+    <div class="mhd">
+      <div class="m-title">🎁 Grant Free Subscription</div>
+      <button class="m-close" onclick="closeModal('modal-grant')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="grant-biz-id">
+
+      <!-- Current state snapshot -->
+      <div id="grant-current" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:14px;font-size:11px;line-height:1.6;color:var(--ink2)">
+        <!-- Populated by openGrantModal -->
+      </div>
+
+      <!-- Mode selector -->
+      <label class="field-lbl" style="margin-bottom:6px">Mode Grant</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">
+        <label class="grant-mode-opt" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--r-sm);cursor:pointer;font-size:12px;background:var(--lime-bg);border-color:var(--lime2)">
+          <input type="radio" name="grant-mode" value="extend" checked onchange="setGrantMode('extend')" style="accent-color:var(--lime-dk)">
+          <span><strong>Tambah durasi</strong><br><span style="font-size:10px;color:var(--ink3)">+1/3/6/12 bulan dari sekarang</span></span>
+        </label>
+        <label class="grant-mode-opt" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--r-sm);cursor:pointer;font-size:12px;background:var(--bg2)">
+          <input type="radio" name="grant-mode" value="date" onchange="setGrantMode('date')" style="accent-color:var(--lime-dk)">
+          <span><strong>Set end date</strong><br><span style="font-size:10px;color:var(--ink3)">Gratis sampai tanggal X</span></span>
+        </label>
+      </div>
+
+      <!-- Extend mode UI -->
+      <div id="grant-extend-ui">
+        <label class="field-lbl">Durasi</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          <button type="button" class="grant-preset" data-days="30" onclick="setGrantPreset(30)">+1 bulan</button>
+          <button type="button" class="grant-preset active" data-days="90" onclick="setGrantPreset(90)">+3 bulan</button>
+          <button type="button" class="grant-preset" data-days="180" onclick="setGrantPreset(180)">+6 bulan</button>
+          <button type="button" class="grant-preset" data-days="365" onclick="setGrantPreset(365)">+1 tahun</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span style="font-size:11px;color:var(--ink3)">Atau custom:</span>
+          <input type="number" id="grant-custom-days" value="90" min="1" max="3650" class="field-inp" style="width:100px;margin-bottom:0;font-family:'JetBrains Mono',monospace;text-align:center" oninput="onGrantCustomDays()">
+          <span style="font-size:11px;color:var(--ink3)">hari</span>
+        </div>
+      </div>
+
+      <!-- Date mode UI -->
+      <div id="grant-date-ui" style="display:none">
+        <label class="field-lbl">Gratis sampai tanggal</label>
+        <input type="date" id="grant-end-date" class="field-inp" style="margin-bottom:14px;font-family:'JetBrains Mono',monospace" onchange="updateGrantPreview()">
+      </div>
+
+      <!-- Reason (required) -->
+      <label class="field-lbl">Alasan <span style="color:var(--red);font-weight:400">*</span></label>
+      <select class="field-select" id="grant-reason" onchange="onGrantReasonChange()">
+        <option value="">Pilih alasan...</option>
+        <option value="beta_tester">🧪 Beta tester comp</option>
+        <option value="partnership">🤝 Partnership / Influencer</option>
+        <option value="churn_recovery">💚 Churn recovery (win-back)</option>
+        <option value="bug_apology">🐛 Bug / outage apology</option>
+        <option value="internal_demo">🎯 Internal demo / training</option>
+        <option value="early_adopter">⭐ Early adopter promo</option>
+        <option value="other">✏️ Other (butuh note wajib)</option>
+      </select>
+
+      <!-- Internal note -->
+      <label class="field-lbl" style="margin-top:4px">Catatan Internal <span id="grant-note-req" style="color:var(--ink4);font-weight:400;font-size:10px">opsional</span></label>
+      <textarea id="grant-note" class="field-textarea" placeholder="Context tambahan: PO number, nama influencer, ticket ID, dll." style="min-height:60px;margin-bottom:14px;resize:vertical" oninput="updateGrantPreview()"></textarea>
+
+      <!-- Live preview -->
+      <div style="background:var(--lime-bg);border:1px solid #c8f07a;border-radius:var(--r-sm);padding:12px 14px;font-size:12px;line-height:1.7;color:var(--lime-dk)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;opacity:.75">📊 Preview setelah grant</div>
+        <div id="grant-preview">
+          <!-- Populated by updateGrantPreview -->
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-grant')">Batal</button>
+      <button class="btn-primary" id="grant-confirm-btn" onclick="doGrantFree()" style="background:var(--lime);color:var(--lime-dk)">🔒 Confirm Grant</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ TEMPLATE MODAL ══════════════════ -->
+<div class="overlay" id="modal-template" onclick="if(event.target===this)closeModal('modal-template')">
+  <div class="modal modal-lg">
+    <div class="mhd">
+      <div class="m-title" id="tpl-modal-title">Tambah Template Baru</div>
+      <button class="m-close" onclick="closeModal('modal-template')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="tpl-edit-id">
+
+      <div class="field-row">
+        <div class="field-cell">
+          <label class="field-lbl">Nama Template</label>
+          <input class="field-inp" id="tpl-name" placeholder="contoh: reminder_balik" style="font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:0">
+        </div>
+        <div class="field-cell">
+          <label class="field-lbl">Bahasa</label>
+          <select class="field-select" id="tpl-lang" style="margin-bottom:0">
+            <option value="id">🇮🇩 Indonesia (id)</option>
+            <option value="en_US">🇺🇸 English (en_US)</option>
+            <option value="ms_MY">🇲🇾 Malay (ms_MY)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-help">Nama harus huruf kecil + underscore (snake_case). Tidak bisa diubah setelah submit ke Meta.</div>
+
+      <label class="field-lbl">Kategori (sesuai Meta)</label>
+      <select class="field-select" id="tpl-category">
+        <option value="UTILITY">UTILITY — transactional, account update, alert, status (paling banyak dipakai)</option>
+        <option value="MARKETING">MARKETING — promo, ajakan, soft sell (lebih ketat, perlu opt-in jelas)</option>
+        <option value="AUTHENTICATION">AUTHENTICATION — OTP, kode verifikasi (khusus, format terbatas)</option>
+      </select>
+      <div class="field-help">Meta dapat <strong>mengubah kategori</strong> setelah review. Kalau berubah, notifikasi muncul di inbox di atas.</div>
+
+      <label class="field-lbl">Body Pesan</label>
+      <textarea class="field-textarea mono" id="tpl-body" placeholder="Halo {{1}}, sudah waktunya perawatan lanjutan setelah {{2}} di {{3}} pada {{4}}..." oninput="onTplBodyChange()"></textarea>
+      <div class="field-help">Pakai placeholder <code>{{1}}</code>, <code>{{2}}</code>, dst untuk variabel. Variabel diisi otomatis dari data customer saat pesan dikirim.</div>
+
+      <!-- ═══ CONTOH PARAMETER (Meta requirement) ═══ -->
+      <div class="tpl-example-sec">
+        <div class="tpl-example-head">
+          <div class="tpl-example-title">Contoh Parameter</div>
+          <div class="tpl-example-sub">Meta <strong>wajib</strong> lihat contoh nyata untuk setiap variabel sebelum approve. Isi dengan data customer yang realistic — bukan "test" atau "xxx".</div>
+        </div>
+        <div id="tpl-example-fields" class="tpl-example-fields">
+          <!-- Auto-rendered dari {{N}} yang detected di body -->
+          <div class="tpl-example-empty">Ketik placeholder <code>{{1}}</code> di body untuk mulai mengisi contoh parameter.</div>
+        </div>
+      </div>
+
+      <!-- ═══ PREVIEW RENDERED ═══ -->
+      <div class="tpl-preview-sec" id="tpl-preview-sec" style="display:none">
+        <div class="tpl-example-head">
+          <div class="tpl-example-title">Preview Pesan</div>
+          <div class="tpl-example-sub">Seperti inilah pesan akan terlihat di WhatsApp customer.</div>
+        </div>
+        <div class="tpl-preview-bubble">
+          <div class="tpl-preview-body" id="tpl-preview-body"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-template')">Batal</button>
+      <button class="btn-primary" onclick="saveTemplate()">Submit ke Meta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ META API PAYLOAD PREVIEW MODAL ══════════════════ -->
+<div class="overlay" id="modal-payload" onclick="if(event.target===this)closeModal('modal-payload')">
+  <div class="modal" style="max-width:680px">
+    <div class="mhd">
+      <div class="m-title">Meta Graph API — Template Submission Payload</div>
+      <button class="m-close" onclick="closeModal('modal-payload')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <div class="field-help" style="margin-bottom:12px">
+        Payload exact yang di-submit ke <code style="background:var(--bg3);padding:2px 5px;border-radius:3px;font-size:10px">POST /{WABA_ID}/message_templates</code> saat template di-submit ke Meta untuk review. Reviewer Meta lihat ini untuk approve/reject.
+      </div>
+
+      <div class="pl-endpoint">
+        <div class="pl-ep-label">Endpoint</div>
+        <code class="pl-ep-code" id="pl-endpoint">POST https://graph.facebook.com/v21.0/{WABA_ID}/message_templates</code>
+      </div>
+
+      <div class="pl-endpoint">
+        <div class="pl-ep-label">Request Headers</div>
+        <code class="pl-ep-code">Authorization: Bearer {ACCESS_TOKEN}
+Content-Type: application/json</code>
+      </div>
+
+      <div class="pl-endpoint">
+        <div class="pl-ep-label">Request Body</div>
+        <pre class="pl-json" id="pl-body">{}</pre>
+        <button class="btn-secondary" style="margin-top:6px;font-size:11px;padding:6px 10px" onclick="copyPayloadToClip()">Copy to clipboard</button>
+      </div>
+
+      <div class="pl-endpoint">
+        <div class="pl-ep-label">Expected Response (success)</div>
+        <pre class="pl-json" id="pl-response">{
+  "id": "xxxxxxxxxxxxxxx",
+  "status": "PENDING",
+  "category": "UTILITY"
+}</pre>
+      </div>
+
+      <div class="pl-endpoint" style="border:1px solid var(--lime-bd);background:var(--lime-bg)">
+        <div class="pl-ep-label" style="color:var(--lime-dk)">Webhook after review (~24h)</div>
+        <pre class="pl-json" style="background:#fff" id="pl-webhook">{
+  "object": "whatsapp_business_account",
+  "entry": [{
+    "id": "{WABA_ID}",
+    "changes": [{
+      "field": "message_template_status_update",
+      "value": {
+        "event": "APPROVED",
+        "message_template_id": "xxxxxxxxxxxxxxx",
+        "message_template_name": "{TEMPLATE_NAME}",
+        "message_template_language": "id",
+        "reason": "NONE"
+      }
+    }]
+  }]
+}</pre>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-payload')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ BIZ TYPE MODAL ══════════════════ -->
+<div class="overlay" id="modal-biztype" onclick="if(event.target===this)closeModal('modal-biztype')">
+  <div class="modal">
+    <div class="mhd">
+      <div class="m-title" id="bt-modal-title">Tambah Tipe Bisnis</div>
+      <button class="m-close" onclick="closeModal('modal-biztype')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="bt-edit-id">
+
+      <div class="field-row">
+        <div class="field-cell">
+          <label class="field-lbl">Nama Tipe Bisnis</label>
+          <input class="field-inp" id="bt-name" placeholder="contoh: Salon" style="margin-bottom:0">
+        </div>
+        <div class="field-cell">
+          <label class="field-lbl">Icon (emoji)</label>
+          <input class="field-inp" id="bt-icon" placeholder="💇" style="font-size:18px;text-align:center;margin-bottom:0">
+        </div>
+      </div>
+      <div class="field-help">Tipe bisnis akan muncul di onboarding step "Jenis Bisnis". Pilih icon yg representatif.</div>
+
+      <label class="field-lbl">ID (slug, lowercase)</label>
+      <input class="field-inp" id="bt-id" placeholder="contoh: salon" style="font-family:'JetBrains Mono',monospace;font-size:12px">
+      <div class="field-help">Slug unik, tidak bisa diubah. Pakai untuk pemetaan ke preset kategori.</div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-biztype')">Batal</button>
+      <button class="btn-primary" onclick="saveBizType()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ PRESET CATEGORY MODAL ══════════════════ -->
+<div class="overlay" id="modal-preset-cat" onclick="if(event.target===this)closeModal('modal-preset-cat')">
+  <div class="modal">
+    <div class="mhd">
+      <div class="m-title" id="pc-modal-title">Tambah Preset Kategori</div>
+      <button class="m-close" onclick="closeModal('modal-preset-cat')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="pc-bt-id">
+      <input type="hidden" id="pc-edit-id">
+
+      <div class="field-row">
+        <div class="field-cell">
+          <label class="field-lbl">Nama Layanan</label>
+          <input class="field-inp" id="pc-name" placeholder="contoh: Facial" style="margin-bottom:0">
+        </div>
+        <div class="field-cell">
+          <label class="field-lbl">Icon (emoji)</label>
+          <input class="field-inp" id="pc-icon" placeholder="💆" style="font-size:18px;text-align:center;margin-bottom:0">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-cell">
+          <label class="field-lbl">Default Interval (hari)</label>
+          <input type="number" class="field-inp" id="pc-interval" value="30" min="1" max="365" style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:center;margin-bottom:0">
+        </div>
+        <div class="field-cell">
+          <label class="field-lbl">Default Template</label>
+          <select class="field-select" id="pc-template" style="margin-bottom:0">
+            <option value="aftercare_followup_1">Aftercare #1 — formal</option>
+            <option value="aftercare_followup_2">Aftercare #2 — terima kasih</option>
+            <option value="aftercare_followup_3">Aftercare #3 — casual</option>
+            <option value="aftercare_followup_4">Aftercare #4 — semoga puas</option>
+            <option value="aftercare_followup_5">Aftercare #5 — tanya hasil</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-help">Preset ini muncul di onboarding step "Kategori Layanan" untuk customer pilih.</div>
+    </div>
+    <div class="mft">
+      <button class="btn-secondary" onclick="closeModal('modal-preset-cat')">Batal</button>
+      <button class="btn-primary" onclick="savePresetCat()">Simpan</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-wrap" id="toast-container"></div>
 
 <script>
 // ══════════════════════════════
+// HELPERS — Indonesia number format (titik thousand separator)
+// ══════════════════════════════
+function fmtIDR(n) { return Number(n || 0).toLocaleString('id-ID') }
+function parseIDR(s) { return parseInt(String(s || '').replace(/[^\d]/g, ''), 10) || 0 }
+function formatIDRInput(el) {
+  var raw = el.value
+  var caretFromEnd = raw.length - (el.selectionStart || raw.length)
+  var num = parseIDR(raw)
+  el.value = num > 0 ? fmtIDR(num) : ''
+  var newPos = Math.max(0, el.value.length - caretFromEnd)
+  try { el.setSelectionRange(newPos, newPos) } catch(e) {}
+}
+
+// ══════════════════════════════
 // ADMIN DATA
 // ══════════════════════════════
+// Helper: tanggal relatif untuk trial states
+function _daysFromNow(n) { var d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); }
+
 const ADMIN_DATA = [
-  { id:'biz-1', name:'Celestial Spa & Wellness', type:'spa', joinDate:'2025-11-15', status:'active', creditLeft:63, creditMax:100, remindersSent:37, waStatus:'connected', owner:'Cynthia', email:'cynthia@gmail.com' },
-  { id:'biz-2', name:'Salon Cantik', type:'salon', joinDate:'2026-01-20', status:'active', creditLeft:12, creditMax:100, remindersSent:88, waStatus:'connected', owner:'Diana', email:'diana@gmail.com' },
-  { id:'biz-3', name:'Barber Bros', type:'barbershop', joinDate:'2026-02-01', status:'trial', creditLeft:85, creditMax:100, remindersSent:15, waStatus:'connected', owner:'Riko', email:'riko@gmail.com' },
+  { id:'biz-1', name:'Demo Business', type:'spa', joinDate:'2025-11-15', status:'active', creditLeft:63, creditMax:300, remindersSent:37, waStatus:'connected', owner:'Meta Reviewer', email:'meta_reviewer@getstarvio.com' },
+  { id:'biz-2', name:'Salon Cantik', type:'salon', joinDate:'2026-01-20', status:'active', creditLeft:12, creditMax:300, remindersSent:88, waStatus:'connected', owner:'Diana', email:'diana@gmail.com' },
+  { id:'biz-3', name:'Barber Bros', type:'barbershop', joinDate:'2026-02-01', status:'trial_aktif', trialEndsAt:_daysFromNow(8),  creditLeft:85, creditMax:100, remindersSent:15, waStatus:'connected', owner:'Riko', email:'riko@gmail.com' },
   { id:'biz-4', name:'Nail Palace', type:'nail', joinDate:'2025-09-10', status:'suspended', creditLeft:0, creditMax:500, remindersSent:423, waStatus:'disconnected', owner:'Jessica', email:'jessica@gmail.com' },
-  { id:'biz-5', name:'Klinik Estetika', type:'klinik', joinDate:'2025-12-01', status:'churned', creditLeft:0, creditMax:100, remindersSent:67, waStatus:'disconnected', owner:'Dr. Rina', email:'rina@gmail.com' }
+  { id:'biz-5', name:'Klinik Estetika', type:'klinik', joinDate:'2025-12-01', status:'churned', creditLeft:0, creditMax:100, remindersSent:67, waStatus:'disconnected', owner:'Dr. Rina', email:'rina@gmail.com' },
+  // Trial state samples (added per ADMIN-UPDATE.md)
+  { id:'biz-6', name:'Lash Studio Bella', type:'skincare', joinDate:_daysFromNow(-12), status:'trial_aktif',   trialEndsAt:_daysFromNow(2),  creditLeft:23, creditMax:100, remindersSent:5,  waStatus:'connected',    owner:'Bella',  email:'bella@gmail.com' },
+  { id:'biz-7', name:'Barbershop Raka',   type:'barbershop',joinDate:_daysFromNow(-20), status:'trial_expired', trialEndsAt:_daysFromNow(-6), creditLeft:30, creditMax:100, remindersSent:42, waStatus:'connected',    owner:'Raka',   email:'raka@gmail.com' }
 ];
 
 // Activity logs per business (simulated)
@@ -542,10 +1159,157 @@ const ACTIVITY_LOG = {
 var currentDetailId = null;
 
 // ══════════════════════════════
+// ADMIN AUDIT LOG — compliance + security trail
+// Semua admin action kritis lewat sini. Persisted di localStorage.
+// ══════════════════════════════
+var ADMIN_AUDIT_LOG = (function() {
+  try { return JSON.parse(localStorage.getItem('getstarvio_admin_audit') || '[]') }
+  catch(e) { return [] }
+})();
+var _adminEmail = ''; // set saat Google OAuth berhasil
+
+function logAdminAction(action, target, details) {
+  var entry = {
+    id: 'audit-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+    timestamp: new Date().toISOString(),
+    admin: _adminEmail || 'admin@getstarvio.com',
+    action: action,     // e.g., 'credit_topup', 'suspend_account', 'impersonate_user'
+    target: target,     // target biz id atau template id
+    details: details || {}  // free-form {amount, reason, etc}
+  };
+  ADMIN_AUDIT_LOG.unshift(entry);
+  // Cap at 500 entries (oldest dropped)
+  if (ADMIN_AUDIT_LOG.length > 500) ADMIN_AUDIT_LOG.length = 500;
+  try { localStorage.setItem('getstarvio_admin_audit', JSON.stringify(ADMIN_AUDIT_LOG)) } catch(e) {}
+  // Re-render audit tab kalau lagi visible
+  if (document.getElementById('tab-audit') && document.getElementById('tab-audit').classList.contains('active')) {
+    renderAuditLog();
+  }
+}
+
+function fmtAuditTime(iso) {
+  var d = new Date(iso);
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+
+function auditActionLabel(action) {
+  var labels = {
+    credit_topup: '💳 Tambah Kredit',
+    grant_free_subscription: '🎁 Grant Free Subscription',
+    revoke_free_grant: '🔁 Revoke Grant',
+    extend_trial: '⏱ Extend Trial',
+    send_wa_owner: '💬 Send WA to Owner',
+    export_biz_data: '📥 Export Biz Data',
+    suspend_account: '🚫 Suspend Account',
+    activate_account: '✅ Activate Account',
+    impersonate_start: '🎭 Login as User',
+    impersonate_end: '🚪 Exit Impersonate',
+    delete_template: '🗑 Hapus Template',
+    save_template: '💾 Save Template',
+    save_plan_config: '⚙️ Save Plan Config',
+    save_biztype: '🏷️ Save Biz Type',
+    delete_biztype: '🗑 Hapus Biz Type',
+    save_preset: '🏷️ Save Preset',
+    delete_preset: '🗑 Hapus Preset'
+  };
+  return labels[action] || action;
+}
+
+function exportAuditLog() {
+  var BOM = '\uFEFF';
+  var rows = ['Waktu,Action,Target,Target Name,Details,Admin'];
+  ADMIN_AUDIT_LOG.forEach(function(r) {
+    var biz = r.target ? ADMIN_DATA.find(function(x){ return x.id === r.target }) : null;
+    var detailStr = r.details && Object.keys(r.details).length
+      ? Object.keys(r.details).map(function(k){ return k + '=' + r.details[k] }).join('; ')
+      : '';
+    var esc = function(s) { s = String(s == null ? '' : s); return /[,"\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s };
+    rows.push([r.timestamp, r.action, r.target || '', biz ? biz.name : '', detailStr, r.admin].map(esc).join(','));
+  });
+  var csv = BOM + rows.join('\n');
+  var blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'admin-audit-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Audit log exported (' + ADMIN_AUDIT_LOG.length + ' entries)', 'success');
+}
+
+function renderAuditLog() {
+  var tbody = document.getElementById('audit-tbody');
+  if (!tbody) return;
+  var filter = (document.getElementById('audit-filter') || {}).value || 'all';
+  var rows = ADMIN_AUDIT_LOG;
+  if (filter !== 'all') rows = rows.filter(function(r){ return r.action === filter });
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px 20px;color:var(--ink3);font-size:12px">Belum ada audit log. Semua admin action kritis akan tercatat di sini.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.slice(0, 200).map(function(r) {
+    var targetStr = '';
+    if (r.target) {
+      var biz = ADMIN_DATA.find(function(x){ return x.id === r.target });
+      targetStr = biz ? biz.name : r.target;
+    }
+    var detailStr = '';
+    if (r.details && Object.keys(r.details).length) {
+      detailStr = Object.keys(r.details).map(function(k) {
+        return '<span style="color:var(--ink3)">' + k + ':</span> <code style="font-family:\'JetBrains Mono\',monospace;font-size:11px;background:var(--bg3);padding:1px 6px;border-radius:3px">' + r.details[k] + '</code>';
+      }).join(' · ');
+    }
+    return '<tr>' +
+      '<td style="white-space:nowrap;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--ink3)">' + fmtAuditTime(r.timestamp) + '</td>' +
+      '<td style="white-space:nowrap"><span style="font-weight:600;color:var(--ink)">' + auditActionLabel(r.action) + '</span></td>' +
+      '<td>' + targetStr + '</td>' +
+      '<td style="font-size:11px">' + detailStr + '</td>' +
+      '<td style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--ink3);white-space:nowrap">' + r.admin + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+// ══════════════════════════════
 // PASSWORD GATE
 // ══════════════════════════════
+/* Admin login = dual auth: Google OAuth (must be @getstarvio.com) + password.
+   Production: replace mock with real Google Identity Services. */
+var _adminGoogleVerified = false
+
+function tryGoogleAdmin() {
+  // MOCK: simulate Google account picker. In prod, ganti dengan Google Identity Services.
+  var email = prompt('🔐 Mock Google sign-in (admin only)\n\nMasukkan email admin (@getstarvio.com):', 'admin@getstarvio.com')
+  if (email === null) return
+  email = email.trim().toLowerCase()
+  var err = document.getElementById('gate-error')
+  if (!/@getstarvio\.com$/i.test(email)) {
+    err.textContent = 'Akun ditolak — hanya email @getstarvio.com yang diizinkan.'
+    setTimeout(function(){ err.textContent = '' }, 3500)
+    return
+  }
+  _adminGoogleVerified = true
+  _adminEmail = email
+  document.getElementById('gate-google-email').textContent = '✓ ' + email
+  document.getElementById('gate-step-google').style.display = 'none'
+  document.getElementById('gate-step-pw').style.display = 'block'
+  setTimeout(function(){ document.getElementById('gate-pw').focus() }, 100)
+}
+
+function resetAdminLogin() {
+  _adminGoogleVerified = false
+  document.getElementById('gate-step-pw').style.display = 'none'
+  document.getElementById('gate-step-google').style.display = 'block'
+  document.getElementById('gate-pw').value = ''
+  document.getElementById('gate-error').textContent = ''
+}
+
 function tryLogin(e) {
   e.preventDefault();
+  if (!_adminGoogleVerified) {
+    document.getElementById('gate-error').textContent = 'Verify Google account dulu.'
+    return false
+  }
   var pw = document.getElementById('gate-pw');
   var err = document.getElementById('gate-error');
   if (pw.value === 'getstarvio2026') {
@@ -567,8 +1331,7 @@ function tryLogin(e) {
 function doLogout() {
   document.getElementById('shell').classList.add('hidden');
   document.getElementById('gate').classList.remove('hidden');
-  document.getElementById('gate-pw').value = '';
-  document.getElementById('gate-error').textContent = '';
+  resetAdminLogin();
 }
 
 // ══════════════════════════════
@@ -590,7 +1353,7 @@ function startClock() {
 // STATS
 // ══════════════════════════════
 function updateStats() {
-  var active = ADMIN_DATA.filter(function(b){ return b.status === 'active' || b.status === 'trial'; }).length;
+  var active = ADMIN_DATA.filter(function(b){ return b.status === 'active' || b.status === 'trial' || b.status === 'trial_aktif'; }).length;
   var totalCredits = ADMIN_DATA.reduce(function(s,b){ return s + b.creditMax; }, 0);
   var totalReminders = ADMIN_DATA.reduce(function(s,b){ return s + b.remindersSent; }, 0);
   var churnRisks = getChurnRisks().length;
@@ -618,6 +1381,11 @@ function renderTable() {
   var html = '';
   filtered.forEach(function(b) {
     var statusBadge = getStatusBadge(b.status);
+    var hasActiveGrant = b.grantedSubEndsAt && (new Date(b.grantedSubEndsAt) > new Date());
+    if (hasActiveGrant) {
+      var gDaysLeft = Math.ceil((new Date(b.grantedSubEndsAt) - Date.now()) / 86400000);
+      statusBadge += ' <span class="grant-badge" title="Free sub sampai ' + b.grantedSubEndsAt + ' (' + gDaysLeft + ' hari lagi)">🎁</span>';
+    }
     var waBadge = b.waStatus === 'connected'
       ? '<span class="badge b-lime"><span class="dot" style="background:var(--lime-dk)"></span>Connected</span>'
       : '<span class="badge b-red"><span class="dot" style="background:var(--red)"></span>Disconnected</span>';
@@ -643,17 +1411,69 @@ function renderTable() {
 
 function getStatusBadge(status) {
   switch(status) {
-    case 'active':    return '<span class="badge b-lime">Aktif</span>';
-    case 'trial':     return '<span class="badge b-blue">Trial</span>';
-    case 'suspended': return '<span class="badge b-red">Suspended</span>';
-    case 'churned':   return '<span class="badge b-gray">Churned</span>';
-    default:          return '<span class="badge b-gray">'+status+'</span>';
+    case 'active':         return '<span class="badge b-lime">Aktif</span>';
+    case 'trial':          return '<span class="badge b-blue">Trial</span>';  // legacy fallback
+    case 'trial_aktif':    return '<span class="badge b-blue">Trial Aktif</span>';
+    case 'trial_expired':  return '<span class="badge b-amber">Trial Expired</span>';
+    case 'suspended':      return '<span class="badge b-red">Suspended</span>';
+    case 'churned':        return '<span class="badge b-gray">Churned</span>';
+    default:               return '<span class="badge b-gray">'+status+'</span>';
   }
 }
 
 // ══════════════════════════════
 // DETAIL MODAL
 // ══════════════════════════════
+
+/* Internal notes storage — admin-only context per business */
+var INTERNAL_NOTES = (function(){
+  try { return JSON.parse(localStorage.getItem('getstarvio_admin_notes') || '{}') }
+  catch(e) { return {} }
+})();
+function saveInternalNotes() {
+  try { localStorage.setItem('getstarvio_admin_notes', JSON.stringify(INTERNAL_NOTES)) } catch(e) {}
+}
+
+/* Tags storage per business (VIP, Watch, Risk) */
+var BIZ_TAGS = (function(){
+  try { return JSON.parse(localStorage.getItem('getstarvio_admin_biztags') || '{}') }
+  catch(e) { return {} }
+})();
+function saveBizTags() {
+  try { localStorage.setItem('getstarvio_admin_biztags', JSON.stringify(BIZ_TAGS)) } catch(e) {}
+}
+
+/* Churn risk score 0-100 dari sinyal yang ada */
+function computeChurnRisk(b) {
+  var score = 0, reasons = [];
+  // Admin-granted free subscription = healthy (we comp'd them, they're not at churn risk)
+  var hasActiveGrant = b.grantedSubEndsAt && (new Date(b.grantedSubEndsAt) > new Date());
+  if (hasActiveGrant) return { score: 0, reasons: [] };
+
+  var pctCredit = b.creditMax > 0 ? (b.creditLeft / b.creditMax) : 0;
+  if (pctCredit <= 0) { score += 40; reasons.push('Kredit habis'); }
+  else if (pctCredit < 0.2) { score += 20; reasons.push('Kredit <20%'); }
+  if (b.waStatus !== 'connected') { score += 25; reasons.push('WA disconnected'); }
+  if (b.status === 'suspended') { score += 20; reasons.push('Suspended'); }
+  if (b.status === 'churned') { score = 100; reasons.push('Churned'); }
+  if (b.status === 'trial_expired') { score += 30; reasons.push('Trial expired'); }
+  if (b.trialEndsAt) {
+    var daysLeft = Math.ceil((new Date(b.trialEndsAt) - Date.now()) / 86400000);
+    if (daysLeft > 0 && daysLeft <= 3) { score += 15; reasons.push('Trial ending ' + daysLeft + 'd'); }
+  }
+  return { score: Math.min(100, score), reasons: reasons };
+}
+
+function fmtRelDays(iso) {
+  if (!iso) return '—';
+  var days = Math.floor((Date.now() - new Date(iso)) / 86400000);
+  if (days === 0) return 'hari ini';
+  if (days === 1) return '1 hari lalu';
+  if (days < 30) return days + ' hari lalu';
+  if (days < 365) return Math.floor(days/30) + ' bulan lalu';
+  return Math.floor(days/365) + ' tahun lalu';
+}
+
 function openDetail(id) {
   var b = ADMIN_DATA.find(function(x){ return x.id === id; });
   if (!b) return;
@@ -663,8 +1483,36 @@ function openDetail(id) {
 
   var creditColor = b.creditLeft <= 0 ? 'var(--red)' : b.creditLeft <= 20 ? 'var(--amber)' : 'var(--lime-dk)';
   var statusBadge = getStatusBadge(b.status);
+  var tags = BIZ_TAGS[b.id] || [];
+  var note = INTERNAL_NOTES[b.id] || '';
+  var risk = computeChurnRisk(b);
+  var isSubscriber = (b.status === 'active');
+  var isTrial = (b.status === 'trial' || b.status === 'trial_aktif');
+  var mrr = isSubscriber ? 249000 : 0;
 
   var html = '';
+
+  // ── RISK + TAGS STRIP (top) ──
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)">';
+  if (risk.score >= 60) {
+    html += '<span class="badge" style="background:var(--red-bg);color:var(--red-dk);border:1px solid #f5c5c3"><span class="dot" style="background:var(--red)"></span>Churn Risk ' + risk.score + '%</span>';
+  } else if (risk.score >= 30) {
+    html += '<span class="badge" style="background:var(--amber-bg);color:var(--amber-dk);border:1px solid #fcd88a"><span class="dot" style="background:var(--amber)"></span>At-risk ' + risk.score + '%</span>';
+  } else {
+    html += '<span class="badge b-lime"><span class="dot" style="background:var(--lime-dk)"></span>Healthy</span>';
+  }
+  ['VIP','Watch','Risk'].forEach(function(t) {
+    var active = tags.indexOf(t) !== -1;
+    var cols = t === 'VIP' ? ['#fbbf24','#78350f'] : t === 'Watch' ? ['#3b82f6','#1e3a8a'] : ['#e8453c','#7a1a16'];
+    var style = active
+      ? 'background:' + cols[0] + ';color:#fff;border:1px solid ' + cols[0]
+      : 'background:var(--bg2);color:var(--ink3);border:1.5px dashed var(--border2)';
+    html += '<button onclick="toggleBizTag(\'' + b.id + '\',\'' + t + '\')" class="badge" style="' + style + ';cursor:pointer;font-family:inherit">' + (active ? '\u2713 ' : '+ ') + t + '</button>';
+  });
+  html += '</div>';
+  if (risk.score >= 30 && risk.reasons.length) {
+    html += '<div style="font-size:11px;color:var(--amber-dk);background:var(--amber-bg);border:1px solid #fcd88a;border-radius:var(--r-sm);padding:8px 12px;margin-bottom:14px;line-height:1.55">\u26A0 ' + risk.reasons.join(' \u00B7 ') + '</div>';
+  }
 
   // Business Info
   html += '<div style="margin-bottom:16px">';
@@ -672,9 +1520,51 @@ function openDetail(id) {
   html += '<div class="kv"><span class="kv-key">Owner</span><span class="kv-val">'+b.owner+'</span></div>';
   html += '<div class="kv"><span class="kv-key">Email</span><span class="kv-val mono" style="font-size:11px">'+b.email+'</span></div>';
   html += '<div class="kv"><span class="kv-key">Type</span><span class="kv-val" style="text-transform:capitalize">'+b.type+'</span></div>';
-  html += '<div class="kv"><span class="kv-key">Join Date</span><span class="kv-val mono">'+b.joinDate+'</span></div>';
+  html += '<div class="kv"><span class="kv-key">Join Date</span><span class="kv-val mono">'+b.joinDate+' <span style="color:var(--ink3);font-family:inherit">(' + fmtRelDays(b.joinDate) + ')</span></span></div>';
   html += '<div class="kv"><span class="kv-key">Status</span><span class="kv-val">'+statusBadge+'</span></div>';
   html += '<div class="kv"><span class="kv-key">WA Status</span><span class="kv-val">'+(b.waStatus==='connected'?'<span class="badge b-lime"><span class="dot" style="background:var(--lime-dk)"></span>Connected</span>':'<span class="badge b-red"><span class="dot" style="background:var(--red)"></span>Disconnected</span>')+'</span></div>';
+  html += '</div>';
+
+  // ── SUBSCRIPTION ──
+  html += '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Subscription</div>';
+  // Check for admin-granted free subscription (separate from paid subscription)
+  var hasActiveGrant = b.grantedSubEndsAt && (new Date(b.grantedSubEndsAt) > new Date());
+  if (hasActiveGrant) {
+    var grantDaysLeft = Math.ceil((new Date(b.grantedSubEndsAt) - Date.now()) / 86400000);
+    var grantReasonLabel = (GRANT_REASON_LABELS[b.grantReason] || b.grantReason || 'Unspecified');
+    html += '<div class="kv"><span class="kv-key">Plan</span><span class="kv-val"><span class="grant-badge">\uD83C\uDF81 Subscriber (Admin-Granted)</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">Gratis Sampai</span><span class="kv-val mono" style="font-weight:700;color:#78350f">' + b.grantedSubEndsAt + ' <span style="font-family:inherit">(' + grantDaysLeft + ' hari lagi)</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">Granted By</span><span class="kv-val" style="font-size:11px">' + (b.grantedBy || 'admin') + '</span></div>';
+    html += '<div class="kv"><span class="kv-key">Alasan</span><span class="kv-val" style="font-size:11px">' + grantReasonLabel + '</span></div>';
+    if (b.grantNote) {
+      html += '<div class="kv"><span class="kv-key">Catatan</span><span class="kv-val" style="font-size:11px;color:var(--ink3);font-style:italic">' + escHtml(b.grantNote) + '</span></div>';
+    }
+    html += '<div class="kv"><span class="kv-key">MRR Lost</span><span class="kv-val mono" style="color:var(--amber-dk)">Rp ' + (249000).toLocaleString('id-ID') + '/bln <span style="font-family:inherit;font-size:10px">(comp)</span></span></div>';
+    html += '<div style="margin-top:8px"><button class="btn btn-ghost btn-sm" onclick="revokeGrant(\'' + b.id + '\')" style="font-size:10px;padding:5px 10px">\u21BA Revoke grant</button></div>';
+  } else if (isSubscriber) {
+    html += '<div class="kv"><span class="kv-key">Plan</span><span class="kv-val"><span class="badge b-lime">\u2B50 Subscriber</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">MRR</span><span class="kv-val mono" style="font-weight:700;color:var(--lime-dk)">Rp ' + mrr.toLocaleString('id-ID') + '/bln</span></div>';
+    if (b.nextRenewal) html += '<div class="kv"><span class="kv-key">Next Renewal</span><span class="kv-val mono">'+b.nextRenewal+'</span></div>';
+  } else if (isTrial) {
+    var daysLeft = b.trialEndsAt ? Math.max(0, Math.ceil((new Date(b.trialEndsAt) - Date.now()) / 86400000)) : 0;
+    html += '<div class="kv"><span class="kv-key">Plan</span><span class="kv-val"><span class="badge b-blue">\uD83C\uDF81 Trial Aktif</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">Trial Ends</span><span class="kv-val mono">' + (b.trialEndsAt || '—') + ' <span style="color:' + (daysLeft <= 3 ? 'var(--red-dk)' : 'var(--ink3)') + ';font-family:inherit">(' + daysLeft + ' hari lagi)</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">MRR</span><span class="kv-val mono" style="color:var(--ink3)">Rp 0 <span style="font-family:inherit">(pending)</span></span></div>';
+  } else {
+    html += '<div class="kv"><span class="kv-key">Plan</span><span class="kv-val"><span class="badge b-gray">' + b.status + '</span></span></div>';
+    html += '<div class="kv"><span class="kv-key">MRR</span><span class="kv-val mono" style="color:var(--ink3)">Rp 0</span></div>';
+  }
+  html += '</div>';
+
+  // ── USAGE METRICS ──
+  html += '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Usage</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">';
+  html += '<div style="background:var(--bg3);padding:10px;border-radius:var(--r-sm);text-align:center"><div style="font-size:18px;font-weight:700;font-family:\'JetBrains Mono\',monospace;color:var(--ink)">'+b.remindersSent+'</div><div style="font-size:10px;color:var(--ink3);margin-top:2px">Reminder sent</div></div>';
+  html += '<div style="background:var(--bg3);padding:10px;border-radius:var(--r-sm);text-align:center"><div style="font-size:18px;font-weight:700;font-family:\'JetBrains Mono\',monospace;color:var(--ink)">'+(b.customerCount || '—')+'</div><div style="font-size:10px;color:var(--ink3);margin-top:2px">Pelanggan</div></div>';
+  html += '<div style="background:var(--bg3);padding:10px;border-radius:var(--r-sm);text-align:center"><div style="font-size:18px;font-weight:700;font-family:\'JetBrains Mono\',monospace;color:var(--ink)">'+(b.responseRate ? b.responseRate+'%' : '—')+'</div><div style="font-size:10px;color:var(--ink3);margin-top:2px">Response rate</div></div>';
+  html += '</div>';
   html += '</div>';
 
   // Credits
@@ -700,15 +1590,38 @@ function openDetail(id) {
   html += '</div>';
   html += '</div>';
 
-  // Suspend / Activate toggle
+  // Internal Notes (admin-only)
+  html += '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">Internal Notes <span style="color:var(--ink4);font-weight:500;text-transform:none;letter-spacing:0">admin-only, tidak visible ke owner</span></div>';
+  html += '<textarea id="md-internal-note" placeholder="Context untuk support team: preferensi komunikasi, history issue, perjanjian khusus, dsb." style="width:100%;min-height:70px;padding:10px 13px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-sm);font-family:inherit;font-size:12px;resize:vertical;outline:none;line-height:1.55" onblur="saveNoteForBiz(\'' + b.id + '\')">' + note + '</textarea>';
+  html += '</div>';
+
+  // Quick Actions
   html += '<div style="margin-bottom:16px">';
   html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Actions</div>';
-  if (b.status === 'active' || b.status === 'trial') {
-    html += '<button class="btn btn-red" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">Suspend Account</button>';
+  html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">';
+  html += '<button class="btn btn-lime btn-sm" onclick="impersonateUser(\'' + b.id + '\')">\uD83C\uDFAD Login as User</button>';
+  if (isTrial || b.status === 'trial_expired') {
+    html += '<button class="btn btn-lime btn-sm" onclick="extendTrial(\'' + b.id + '\')" style="background:var(--amber);color:var(--amber-dk)">\u23F1 Extend Trial</button>';
   } else {
-    html += '<button class="btn btn-lime" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">Activate Account</button>';
+    html += '<button class="btn btn-ghost btn-sm" disabled style="opacity:.4;cursor:not-allowed">\u23F1 Extend Trial</button>';
+  }
+  // Grant Free Subscription — available for all except churned
+  if (b.status !== 'churned') {
+    html += '<button class="btn btn-sm" onclick="openGrantModal(\'' + b.id + '\')" style="grid-column:span 2;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#78350f;border:1.5px solid #fcd34d;font-weight:700">\uD83C\uDF81 Grant Free Subscription</button>';
+  }
+  html += '<button class="btn btn-ghost btn-sm" onclick="sendWAToOwner(\'' + b.id + '\')">\uD83D\uDCAC Kirim WA Owner</button>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="exportBizData(\'' + b.id + '\')">\uD83D\uDCE5 Export Data</button>';
+  if (b.status === 'active' || b.status === 'trial' || b.status === 'trial_aktif') {
+    html += '<button class="btn btn-red btn-sm" style="grid-column:span 2" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">\uD83D\uDEAB Suspend Account</button>';
+  } else {
+    html += '<button class="btn btn-lime btn-sm" style="grid-column:span 2" id="btn-toggle-status" onclick="doToggleStatus(\''+b.id+'\')">\u2705 Activate Account</button>';
   }
   html += '</div>';
+  html += '</div>';
+
+  // Meta WhatsApp Business Connection Section
+  html += buildMetaConnectionSection(b);
 
   // Activity Log
   var logs = ACTIVITY_LOG[b.id] || [];
@@ -732,6 +1645,518 @@ function openDetail(id) {
   openModal('modal-detail');
 }
 
+/* ── Build Meta WABA Connection section in business detail ── */
+function buildMetaConnectionSection(b) {
+  // Seed realistic Meta data from business (use seeded IDs if available, else generate deterministic mock)
+  var meta = b.meta || generateMockMetaForBiz(b);
+
+  // Quality rating visual mapping
+  var qr = meta.phoneNumber.qualityRating;
+  var qrColor = qr === 'GREEN' ? 'var(--lime-dk)' : (qr === 'YELLOW' ? 'var(--amber-dk)' : (qr === 'RED' ? 'var(--red)' : 'var(--ink3)'));
+  var qrBg    = qr === 'GREEN' ? 'var(--lime-bg)' : (qr === 'YELLOW' ? 'var(--amber-bg)' : (qr === 'RED' ? 'var(--red-bg)' : 'var(--bg3)'));
+  var qrLabel = qr === 'GREEN' ? 'HIGH' : (qr === 'YELLOW' ? 'MEDIUM' : (qr === 'RED' ? 'LOW' : 'UNKNOWN'));
+
+  // Mask helper
+  function mask(id) { if (!id || id.length < 8) return id; return id.slice(0,4) + '\u2022\u2022\u2022' + id.slice(-4); }
+
+  var html = '<div style="margin-bottom:16px">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:6px">';
+  html += '<span style="font-size:13px">\uD83D\uDCF1</span> Meta WhatsApp Business Connection';
+  html += '</div>';
+
+  // Top row: display number + verified name
+  html += '<div style="background:#fff;border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;margin-bottom:8px">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px">';
+  html += '<div>';
+  html += '<div style="font-size:13px;font-weight:700;color:var(--ink);font-family:\'JetBrains Mono\',monospace">' + (meta.phoneNumber.displayNumber || '—') + '</div>';
+  html += '<div style="font-size:11px;color:var(--ink3);margin-top:2px">' + (meta.phoneNumber.verifiedName || '—') + ' <span style="color:var(--lime-dk)">\u2713 verified</span></div>';
+  html += '<div style="font-size:10px;color:var(--ink4);margin-top:2px">Business Portfolio: ' + (meta.business.portfolioName || '—') + '</div>';
+  html += '</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">';
+  html += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;background:' + qrBg + ';color:' + qrColor + '"><span style="width:5px;height:5px;border-radius:50%;background:' + qrColor + '"></span>Quality: ' + qrLabel + '</span>';
+  html += '<span style="padding:3px 8px;border-radius:99px;font-size:10px;font-weight:600;background:var(--bg3);color:var(--ink2)">Tier: ' + (meta.phoneNumber.messagingLimitTier || 'TIER_1K').replace('TIER_', '') + '/day</span>';
+  html += '</div>';
+  html += '</div>';
+
+  // Coexistence status
+  if (meta.coexistence && meta.coexistence.enabled) {
+    html += '<div style="border-top:1px dashed var(--border);padding-top:8px;display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--ink2)">';
+    html += '<span style="display:inline-flex;align-items:center;gap:4px"><span>\uD83C\uDFAF</span>Coexistence aktif</span>';
+    html += '<span style="color:var(--ink4)">\u2022</span>';
+    html += '<span style="display:inline-flex;align-items:center;gap:4px">' + (meta.coexistence.contactsSynced ? '\u2713 kontak tersinkron' : '\u26A0 kontak belum sync') + '</span>';
+    html += '<span style="color:var(--ink4)">\u2022</span>';
+    html += '<span style="display:inline-flex;align-items:center;gap:4px">' + (meta.coexistence.historySynced ? '\u2713 history tersinkron' : '\u26A0 history belum sync') + '</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Technical IDs (small grid)
+  html += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;font-family:\'JetBrains Mono\',monospace">';
+  html += '<div style="display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;font-size:10px">';
+  html += '<span style="color:var(--ink3);font-weight:600">WABA ID</span><code style="background:#fff;padding:3px 6px;border-radius:3px;color:var(--ink)">' + mask(meta.waba.id) + '</code><button class="btn btn-ghost btn-sm" style="padding:3px 7px;font-size:9px" onclick="copyMetaId(\'' + meta.waba.id + '\', this)">copy</button>';
+  html += '<span style="color:var(--ink3);font-weight:600">Phone ID</span><code style="background:#fff;padding:3px 6px;border-radius:3px;color:var(--ink)">' + mask(meta.phoneNumber.id) + '</code><button class="btn btn-ghost btn-sm" style="padding:3px 7px;font-size:9px" onclick="copyMetaId(\'' + meta.phoneNumber.id + '\', this)">copy</button>';
+  html += '<span style="color:var(--ink3);font-weight:600">Business ID</span><code style="background:#fff;padding:3px 6px;border-radius:3px;color:var(--ink)">' + mask(meta.business.id) + '</code><button class="btn btn-ghost btn-sm" style="padding:3px 7px;font-size:9px" onclick="copyMetaId(\'' + meta.business.id + '\', this)">copy</button>';
+  html += '<span style="color:var(--ink3);font-weight:600">Platform</span><code style="background:#fff;padding:3px 6px;border-radius:3px;color:var(--ink);grid-column:span 2">' + (meta.phoneNumber.platformType || 'CLOUD_API') + '</code>';
+  html += '</div>';
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+/* Generate deterministic mock meta data from business (for seeded ADMIN_DATA entries) */
+function generateMockMetaForBiz(b) {
+  // Deterministic seed from bizId
+  var seed = parseInt((b.id || 'biz-001').replace(/\D/g,'')) || 1;
+  var pad = function(n, w) { var s = String(n); while (s.length < w) s = '0' + s; return s; };
+  var wabaId = '10' + pad(5783024692731 + seed * 7, 13);
+  var phoneId = '6' + pad(98201013402857 + seed * 11, 14);
+  var bizPortfolioId = '4' + pad(92187365201744 + seed * 13, 14);
+
+  return {
+    waba: {
+      id: wabaId,
+      name: (b.bizName || 'Business') + ' WABA',
+      accountReviewStatus: 'APPROVED'
+    },
+    phoneNumber: {
+      id: phoneId,
+      displayNumber: '+62 ' + (b.ownerWa || '812345678901').slice(2, 5) + ' ' + (b.ownerWa || '812345678901').slice(5, 9) + ' ' + (b.ownerWa || '812345678901').slice(9, 13),
+      verifiedName: b.bizName || 'Business',
+      qualityRating: seed % 5 === 0 ? 'YELLOW' : 'GREEN',
+      platformType: 'CLOUD_API',
+      codeVerificationStatus: 'VERIFIED',
+      messagingLimitTier: (seed % 3 === 0 ? 'TIER_10K' : 'TIER_1K'),
+      throughputLevel: 'STANDARD'
+    },
+    business: {
+      id: bizPortfolioId,
+      portfolioName: (b.bizName || 'Business') + ' Business Portfolio',
+      verificationStatus: 'VERIFIED',
+      twoFactorType: 'admin_required'
+    },
+    coexistence: {
+      enabled: true,
+      contactsSynced: true,
+      historySynced: seed % 2 === 0  // mix: some synced history, some didn't approve
+    }
+  };
+}
+
+function copyMetaId(id, btn) {
+  try {
+    navigator.clipboard.writeText(id).then(function() {
+      if (btn) {
+        var orig = btn.textContent;
+        btn.textContent = 'copied!';
+        btn.style.color = 'var(--lime-dk)';
+        setTimeout(function() { btn.textContent = orig; btn.style.color = ''; }, 1200);
+      }
+    });
+  } catch (e) { console.warn('Clipboard error', e); }
+}
+
+/* ── Business-detail quick action handlers ── */
+function toggleBizTag(bizId, tag) {
+  if (!BIZ_TAGS[bizId]) BIZ_TAGS[bizId] = [];
+  var idx = BIZ_TAGS[bizId].indexOf(tag);
+  if (idx === -1) BIZ_TAGS[bizId].push(tag); else BIZ_TAGS[bizId].splice(idx, 1);
+  saveBizTags();
+  openDetail(bizId);
+}
+
+function saveNoteForBiz(bizId) {
+  var txt = (document.getElementById('md-internal-note') || {}).value || '';
+  INTERNAL_NOTES[bizId] = txt;
+  saveInternalNotes();
+  // Silent save — no toast untuk smooth typing
+}
+
+function extendTrial(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  var days = prompt('Extend trial berapa hari? (7 / 14 / 30)', '7');
+  if (days === null) return;
+  days = parseInt(days, 10);
+  if ([7,14,30].indexOf(days) === -1) { toast('Pilih 7, 14, atau 30 hari', 'error'); return; }
+  var pw = prompt('\u26A0 EXTEND TRIAL\n\nTambah ' + days + ' hari ke trial "' + b.name + '"?\n\nMasukkan password admin:');
+  if (pw === null) return;
+  if (pw !== 'getstarvio2026') { toast('Password salah', 'error'); return; }
+  var current = b.trialEndsAt ? new Date(b.trialEndsAt) : new Date();
+  if (current < new Date()) current = new Date();
+  current.setDate(current.getDate() + days);
+  b.trialEndsAt = current.toISOString().slice(0,10);
+  if (b.status === 'trial_expired') b.status = 'trial_aktif';
+  logAdminAction('extend_trial', bizId, { days: days, newEndDate: b.trialEndsAt });
+  toast('Trial extended +' + days + ' hari ke ' + b.trialEndsAt, 'success');
+  renderTable();
+  openDetail(bizId);
+}
+
+// ══════════════════════════════
+// GRANT FREE SUBSCRIPTION — admin comp untuk beta/partner/churn-recovery
+// ══════════════════════════════
+var GRANT_REASON_LABELS = {
+  beta_tester: '🧪 Beta tester comp',
+  partnership: '🤝 Partnership / Influencer',
+  churn_recovery: '💚 Churn recovery (win-back)',
+  bug_apology: '🐛 Bug / outage apology',
+  internal_demo: '🎯 Internal demo / training',
+  early_adopter: '⭐ Early adopter promo',
+  other: '✏️ Other'
+};
+var GRANT_SUB_VALUE_IDR = 249000;  // Rp 249.000/bulan (early access price)
+var _grantCurrentPreset = 90;      // default +3 months
+var _grantCurrentBizId = null;
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+function openGrantModal(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  _grantCurrentBizId = bizId;
+
+  // Reset form
+  document.getElementById('grant-biz-id').value = bizId;
+  document.querySelector('input[name="grant-mode"][value="extend"]').checked = true;
+  setGrantMode('extend');
+  setGrantPreset(90);
+  document.getElementById('grant-custom-days').value = 90;
+  document.getElementById('grant-reason').value = '';
+  document.getElementById('grant-note').value = '';
+  onGrantReasonChange();
+
+  // Pre-fill end date input (90 days from now)
+  var futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + 90);
+  document.getElementById('grant-end-date').value = futureDate.toISOString().slice(0,10);
+  document.getElementById('grant-end-date').min = new Date().toISOString().slice(0,10);
+
+  // Populate current state snapshot
+  var planLabel = 'Unknown';
+  var accessLabel = '—';
+  if (b.grantedSubEndsAt && new Date(b.grantedSubEndsAt) > new Date()) {
+    var existingLeft = Math.ceil((new Date(b.grantedSubEndsAt) - Date.now()) / 86400000);
+    planLabel = '🎁 Sudah di-grant (expires ' + b.grantedSubEndsAt + ', ' + existingLeft + ' hari lagi)';
+    accessLabel = b.grantedSubEndsAt;
+  } else if (b.status === 'active') {
+    planLabel = '⭐ Subscriber paid';
+    accessLabel = b.nextRenewal || 'active';
+  } else if (b.status === 'trial' || b.status === 'trial_aktif') {
+    planLabel = '🎁 Trial aktif';
+    accessLabel = b.trialEndsAt || '—';
+  } else if (b.status === 'trial_expired') {
+    planLabel = '⏰ Trial expired';
+    accessLabel = 'locked';
+  } else {
+    planLabel = b.status;
+  }
+  document.getElementById('grant-current').innerHTML =
+    '<div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">State saat ini</div>' +
+    '<div><strong>' + escHtml(b.name) + '</strong> · ' + planLabel + '</div>' +
+    '<div style="color:var(--ink3);margin-top:2px">Akses sekarang sampai: <code style="font-family:\'JetBrains Mono\',monospace">' + accessLabel + '</code></div>';
+
+  updateGrantPreview();
+  openModal('modal-grant');
+}
+
+function setGrantMode(mode) {
+  document.getElementById('grant-extend-ui').style.display = (mode === 'extend') ? 'block' : 'none';
+  document.getElementById('grant-date-ui').style.display = (mode === 'date') ? 'block' : 'none';
+  // Update radio card visual state
+  document.querySelectorAll('.grant-mode-opt').forEach(function(el) {
+    var input = el.querySelector('input[type=radio]');
+    if (input && input.checked) {
+      el.style.background = 'var(--lime-bg)';
+      el.style.borderColor = 'var(--lime2)';
+    } else {
+      el.style.background = 'var(--bg2)';
+      el.style.borderColor = 'var(--border2)';
+    }
+  });
+  updateGrantPreview();
+}
+
+function setGrantPreset(days) {
+  _grantCurrentPreset = days;
+  document.querySelectorAll('.grant-preset').forEach(function(btn) {
+    btn.classList.toggle('active', parseInt(btn.dataset.days, 10) === days);
+  });
+  document.getElementById('grant-custom-days').value = days;
+  updateGrantPreview();
+}
+
+function onGrantCustomDays() {
+  var v = parseInt(document.getElementById('grant-custom-days').value, 10);
+  if (!v || v < 1) v = 1;
+  _grantCurrentPreset = v;
+  // De-activate preset buttons if value doesn't match
+  document.querySelectorAll('.grant-preset').forEach(function(btn) {
+    btn.classList.toggle('active', parseInt(btn.dataset.days, 10) === v);
+  });
+  updateGrantPreview();
+}
+
+function onGrantReasonChange() {
+  var reason = document.getElementById('grant-reason').value;
+  var reqLbl = document.getElementById('grant-note-req');
+  if (reason === 'other') {
+    reqLbl.textContent = 'wajib untuk "Other"';
+    reqLbl.style.color = 'var(--red)';
+  } else {
+    reqLbl.textContent = 'opsional';
+    reqLbl.style.color = 'var(--ink4)';
+  }
+  updateGrantPreview();
+}
+
+function computeGrantEndDate() {
+  var mode = (document.querySelector('input[name="grant-mode"]:checked') || {}).value || 'extend';
+  if (mode === 'date') {
+    var dateStr = document.getElementById('grant-end-date').value;
+    if (!dateStr) return null;
+    return new Date(dateStr + 'T23:59:59');
+  }
+  // Extend mode: base = max(now, existing grant end, existing trial end)
+  var b = ADMIN_DATA.find(function(x){ return x.id === _grantCurrentBizId });
+  var base = new Date();
+  if (b) {
+    if (b.grantedSubEndsAt && new Date(b.grantedSubEndsAt) > base) base = new Date(b.grantedSubEndsAt);
+  }
+  var days = parseInt(document.getElementById('grant-custom-days').value, 10) || _grantCurrentPreset;
+  var result = new Date(base);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function updateGrantPreview() {
+  var prev = document.getElementById('grant-preview');
+  if (!prev) return;
+  var b = ADMIN_DATA.find(function(x){ return x.id === _grantCurrentBizId });
+  if (!b) { prev.innerHTML = '—'; return; }
+
+  var endDate = computeGrantEndDate();
+  if (!endDate || isNaN(endDate.getTime())) {
+    prev.innerHTML = '<span style="color:var(--red-dk)">⚠ Pilih durasi atau tanggal dulu</span>';
+    return;
+  }
+
+  var nowD = new Date(); nowD.setHours(0,0,0,0);
+  var endD = new Date(endDate); endD.setHours(0,0,0,0);
+  var totalDays = Math.ceil((endD - nowD) / 86400000);
+
+  // Plan transition
+  var fromPlan, toPlan;
+  if (b.grantedSubEndsAt && new Date(b.grantedSubEndsAt) > new Date()) {
+    fromPlan = '🎁 Subscriber (granted)';
+    toPlan = '🎁 Subscriber (grant extended)';
+  } else if (b.status === 'active') {
+    fromPlan = '⭐ Subscriber (paid)';
+    toPlan = '⭐ + 🎁 Subscriber (paid + grant)';
+  } else if (b.status === 'trial' || b.status === 'trial_aktif') {
+    fromPlan = '🎁 Trial';
+    toPlan = '⭐ Subscriber (admin-granted)';
+  } else {
+    fromPlan = '⏰ ' + b.status;
+    toPlan = '⭐ Subscriber (admin-granted)';
+  }
+
+  var endStr = endDate.toISOString().slice(0,10);
+  var monthsEstimate = Math.round(totalDays / 30 * 10) / 10;
+  var valueIdr = Math.round((totalDays / 30) * GRANT_SUB_VALUE_IDR);
+
+  prev.innerHTML =
+    '<div><strong>Plan:</strong> ' + fromPlan + ' → <strong>' + toPlan + '</strong></div>' +
+    '<div><strong>Akses sampai:</strong> <code style="font-family:\'JetBrains Mono\',monospace;background:#fff;padding:1px 6px;border-radius:3px">' + endStr + '</code> (' + totalDays + ' hari / ~' + monthsEstimate + ' bulan)</div>' +
+    '<div><strong>Credit:</strong> 300/bulan (auto-reset setiap siklus)</div>' +
+    '<div><strong>Value comp:</strong> <code style="font-family:\'JetBrains Mono\',monospace;background:#fff;padding:1px 6px;border-radius:3px">Rp ' + valueIdr.toLocaleString('id-ID') + '</code> MRR foregone</div>';
+}
+
+function doGrantFree() {
+  var bizId = document.getElementById('grant-biz-id').value;
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+
+  var reason = document.getElementById('grant-reason').value;
+  var note = document.getElementById('grant-note').value.trim();
+  var endDate = computeGrantEndDate();
+
+  // Validation
+  if (!reason) { toast('Pilih alasan dulu ya', 'error'); return; }
+  if (reason === 'other' && !note) { toast('Catatan wajib untuk alasan "Other"', 'error'); return; }
+  if (!endDate || isNaN(endDate.getTime())) { toast('Durasi / tanggal belum valid', 'error'); return; }
+  if (endDate <= new Date()) { toast('End date harus di masa depan', 'error'); return; }
+
+  var endDateStr = endDate.toISOString().slice(0,10);
+  var totalDays = Math.ceil((endDate - new Date()) / 86400000);
+
+  // Password gate
+  var pw = prompt('⚠ KONFIRMASI GRANT FREE SUBSCRIPTION\n\n' +
+    'Beri "' + b.name + '" akses gratis sampai ' + endDateStr + ' (' + totalDays + ' hari)?\n' +
+    'Alasan: ' + (GRANT_REASON_LABELS[reason] || reason) + '\n' +
+    'Value yang di-comp: ~Rp ' + Math.round((totalDays / 30) * GRANT_SUB_VALUE_IDR).toLocaleString('id-ID') + '\n\n' +
+    'Masukkan password admin untuk konfirmasi:');
+  if (pw === null) return;
+  if (pw !== 'getstarvio2026') {
+    toast('Password admin salah — grant dibatalkan', 'error');
+    return;
+  }
+
+  // Apply grant
+  var prevState = {
+    status: b.status,
+    grantedSubEndsAt: b.grantedSubEndsAt || null
+  };
+  b.grantedSubEndsAt = endDateStr;
+  b.grantedBy = _adminEmail || 'admin@getstarvio.com';
+  b.grantReason = reason;
+  b.grantNote = note;
+  b.grantDays = totalDays;
+  b.grantedAt = new Date().toISOString();
+
+  // Upgrade status: trial/trial_expired → active (subscriber-like)
+  // Note: we don't overwrite paid subscribers' status; grant is additive via grantedSubEndsAt
+  if (b.status === 'trial' || b.status === 'trial_aktif' || b.status === 'trial_expired') {
+    b.status = 'active';
+  }
+
+  // Refill credits — 300 initial (monthly allocation)
+  if (typeof b.creditLeft === 'number' && b.creditLeft < 300) {
+    b.creditLeft = 300;
+    b.creditMax = Math.max(b.creditMax || 0, 300);
+  }
+
+  // Activity log (user-facing)
+  if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
+  var now = new Date();
+  var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  ACTIVITY_LOG[b.id].unshift({
+    time: ts,
+    text: '🎁 Free subscription granted until ' + endDateStr + ' · ' + (GRANT_REASON_LABELS[reason] || reason)
+  });
+
+  // Audit log (admin-facing)
+  logAdminAction('grant_free_subscription', bizId, {
+    endDate: endDateStr,
+    days: totalDays,
+    reason: reason,
+    reasonLabel: GRANT_REASON_LABELS[reason] || reason,
+    note: note,
+    valueIdr: Math.round((totalDays / 30) * GRANT_SUB_VALUE_IDR),
+    prevStatus: prevState.status,
+    prevGrantEnd: prevState.grantedSubEndsAt
+  });
+
+  toast('🎁 Granted free sub sampai ' + endDateStr + ' ke ' + b.name, 'success');
+  closeModal('modal-grant');
+  renderTable();
+  updateStats();
+  openDetail(bizId);  // refresh detail modal
+}
+
+function revokeGrant(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b || !b.grantedSubEndsAt) return;
+
+  var confirmed = confirm('🔁 REVOKE GRANT\n\nBatalkan free subscription grant ke "' + b.name + '"?\n\n' +
+    'Akses akan kembali ke state sebelum grant (trial / expired / active-paid).\n' +
+    'Action ini tercatat di audit log.');
+  if (!confirmed) return;
+
+  var pw = prompt('Masukkan password admin untuk konfirmasi revoke:');
+  if (pw === null) return;
+  if (pw !== 'getstarvio2026') { toast('Password salah', 'error'); return; }
+
+  var revokedEnd = b.grantedSubEndsAt;
+  var revokedReason = b.grantReason;
+  var revokedDays = b.grantDays || 0;
+
+  delete b.grantedSubEndsAt;
+  delete b.grantedBy;
+  delete b.grantReason;
+  delete b.grantNote;
+  delete b.grantDays;
+  delete b.grantedAt;
+
+  // Re-derive status: if they were on trial before grant, and trial still valid → trial; else → trial_expired
+  if (b.trialEndsAt && new Date(b.trialEndsAt) > new Date()) {
+    b.status = 'trial_aktif';
+  } else if (!b.nextRenewal) {
+    // No paid subscription either → trial_expired
+    b.status = 'trial_expired';
+  }
+  // else: leave as-is (paid subscriber, grant was additive)
+
+  if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
+  var now = new Date();
+  var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  ACTIVITY_LOG[b.id].unshift({
+    time: ts,
+    text: '🔁 Free subscription grant revoked (was until ' + revokedEnd + ')'
+  });
+
+  logAdminAction('revoke_free_grant', bizId, {
+    revokedEndDate: revokedEnd,
+    revokedReason: revokedReason,
+    revokedDays: revokedDays
+  });
+
+  toast('Grant revoked untuk ' + b.name, 'success');
+  renderTable();
+  updateStats();
+  openDetail(bizId);
+}
+
+function sendWAToOwner(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  var msg = prompt('Kirim WA ke owner "' + b.owner + '" dari getstarvio support:',
+    'Halo ' + b.owner + ', tim getstarvio mau check-in kabar kamu. Ada yang bisa kami bantu?');
+  if (!msg) return;
+  var phone = (b.phone || '62810000000').replace(/\D/g,'');
+  window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(msg), '_blank');
+  logAdminAction('send_wa_owner', bizId, { msgLen: msg.length });
+  toast('WA opened — send via web/app', 'success');
+}
+
+function exportBizData(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  var data = {
+    business: b,
+    activityLog: ACTIVITY_LOG[bizId] || [],
+    internalNote: INTERNAL_NOTES[bizId] || '',
+    tags: BIZ_TAGS[bizId] || [],
+    exportedAt: new Date().toISOString(),
+    exportedBy: _adminEmail || 'admin'
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'getstarvio-' + b.id + '-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  logAdminAction('export_biz_data', bizId, { format: 'json' });
+  toast('Data exported', 'success');
+}
+
+function impersonateUser(bizId) {
+  var b = ADMIN_DATA.find(function(x){ return x.id === bizId });
+  if (!b) return;
+  var confirmed = confirm('\uD83C\uDFAD LOGIN AS USER\n\nBuka dashboard user "' + b.name + '" (owner: ' + b.owner + ')?\n\n\u2022 Banner merah akan muncul di semua page menandakan impersonation mode.\n\u2022 Semua action tetap tercatat di audit log.\n\u2022 Click "Exit Impersonate" di banner untuk kembali ke admin.');
+  if (!confirmed) return;
+  var flag = {
+    adminEmail: _adminEmail || 'admin@getstarvio.com',
+    targetBizId: bizId,
+    targetBizName: b.name,
+    startedAt: new Date().toISOString()
+  };
+  try { localStorage.setItem('getstarvio_impersonation', JSON.stringify(flag)) } catch(e) {}
+  logAdminAction('impersonate_start', bizId, { targetName: b.name });
+  window.location.href = 'getstarvio-dashboard.html';
+}
+
 // ══════════════════════════════
 // ACTIONS (prototype = setTimeout + visual feedback)
 // ══════════════════════════════
@@ -743,17 +2168,28 @@ function doAddCredit() {
   var b = ADMIN_DATA.find(function(x){ return x.id === currentDetailId; });
   if (!b) return;
 
+  // Password gate — high-impact financial action, prevent fat-finger / unauthorized access
+  var pw = prompt('⚠ KONFIRMASI ADMIN ACTION\n\nTambah ' + amount + ' kredit ke ' + b.name + '?\nKredit ini akan tercatat di ledger sebagai admin top-up.\n\nMasukkan password admin untuk konfirmasi:');
+  if (pw === null) return;
+  if (pw !== 'getstarvio2026') {
+    toast('Password admin salah — penambahan kredit dibatalkan', 'error');
+    return;
+  }
+
   var btn = inp.nextElementSibling;
   btn.textContent = 'Menambahkan...';
   btn.disabled = true;
 
   setTimeout(function() {
     b.creditLeft += amount;
-    // Add to log
+    // Add to business activity log
     if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
     var now = new Date();
     var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
     ACTIVITY_LOG[b.id].unshift({ time: ts, text: 'Credit top-up +'+amount+' by admin' });
+
+    // Audit log
+    logAdminAction('credit_topup', b.id, { amount: amount, balanceAfter: b.creditLeft });
 
     toast('Berhasil menambahkan '+amount+' kredit ke '+b.name, 'success');
     renderTable();
@@ -768,6 +2204,14 @@ function doToggleStatus(id) {
 
   var btn = document.getElementById('btn-toggle-status');
   var isActive = (b.status === 'active' || b.status === 'trial');
+
+  // Suspend = high-impact action — require password gate
+  if (isActive) {
+    var pw = prompt('⚠ SUSPEND ACCOUNT\n\nSuspend "' + b.name + '"? Owner ga bisa login sampai di-aktivasi lagi.\n\nMasukkan password admin:');
+    if (pw === null) return;
+    if (pw !== 'getstarvio2026') { toast('Password admin salah — suspend dibatalkan', 'error'); return; }
+  }
+
   btn.textContent = isActive ? 'Suspending...' : 'Activating...';
   btn.disabled = true;
 
@@ -780,11 +2224,14 @@ function doToggleStatus(id) {
       b.status = 'active';
       toast(b.name + ' telah diaktifkan kembali', 'success');
     }
-    // Add to log
+    // Add to business activity log
     if (!ACTIVITY_LOG[b.id]) ACTIVITY_LOG[b.id] = [];
     var now = new Date();
     var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
     ACTIVITY_LOG[b.id].unshift({ time: ts, text: 'Status changed from '+oldStatus+' to '+b.status+' by admin' });
+
+    // Audit log
+    logAdminAction(isActive ? 'suspend_account' : 'activate_account', b.id, { from: oldStatus, to: b.status });
 
     renderTable();
     renderChurnRisks();
@@ -799,25 +2246,39 @@ function doToggleStatus(id) {
 function getChurnRisks() {
   var risks = [];
   var now = new Date();
+  var DAY = 86400000;
 
   ADMIN_DATA.forEach(function(b) {
-    // Credit exhausted (creditLeft === 0 and not already churned)
+    // Kredit habis & belum top up >7 hari
     if (b.creditLeft <= 0 && b.status !== 'churned') {
-      risks.push({ biz: b, reason: 'Kredit habis — sudah 0/' + b.creditMax, level: 'danger' });
+      risks.push({ biz: b, reason: 'Kredit habis, belum top up', level: 'danger' });
     }
-    // WA disconnected
+    // WA putus >3 hari
     if (b.waStatus === 'disconnected' && b.status !== 'churned') {
       risks.push({ biz: b, reason: 'WhatsApp terputus > 3 hari', level: 'danger' });
     }
-    // Trial expiring (trial status, check join date)
-    if (b.status === 'trial') {
-      var joinDate = new Date(b.joinDate);
-      var trialEnd = new Date(joinDate);
-      trialEnd.setDate(trialEnd.getDate() + 30); // 30 day trial
-      var daysLeft = Math.ceil((trialEnd - now) / (1000*60*60*24));
-      if (daysLeft < 7 && daysLeft >= 0) {
-        risks.push({ biz: b, reason: 'Trial berakhir dalam ' + daysLeft + ' hari', level: 'warn' });
+    // Trial expiring soon (≤3 hari) — pakai trialEndsAt baru
+    if (b.status === 'trial_aktif' && b.trialEndsAt) {
+      var endMs = new Date(b.trialEndsAt).getTime();
+      var daysLeft = Math.ceil((endMs - now.getTime()) / DAY);
+      if (daysLeft <= 3 && daysLeft >= 0) {
+        risks.push({ biz: b, reason: 'Trial segera berakhir (' + daysLeft + ' hari)', level: 'warn' });
       }
+    }
+    // Trial expired >3 hari belum subscribe
+    if (b.status === 'trial_expired' && b.trialEndsAt) {
+      var endMs2 = new Date(b.trialEndsAt).getTime();
+      var daysSince = Math.floor((now.getTime() - endMs2) / DAY);
+      if (daysSince >= 3) {
+        risks.push({ biz: b, reason: 'Trial expired ' + daysSince + ' hari, belum subscribe', level: 'danger' });
+      }
+    }
+    // Legacy 'trial' status fallback
+    if (b.status === 'trial' && !b.trialEndsAt) {
+      var joinDate = new Date(b.joinDate);
+      var trialEnd = new Date(joinDate); trialEnd.setDate(trialEnd.getDate() + 30);
+      var dl = Math.ceil((trialEnd - now) / DAY);
+      if (dl < 7 && dl >= 0) risks.push({ biz: b, reason: 'Trial berakhir dalam ' + dl + ' hari', level: 'warn' });
     }
   });
   return risks;
@@ -885,18 +2346,624 @@ function switchTab(tab, el) {
   if (section) section.classList.add('active');
   if (el) el.classList.add('active');
   if (tab === 'transactions') renderTx();
+  if (tab === 'templates') { renderTemplates(); renderMetaInbox(); }
+  if (tab === 'biz-types') renderBizTypes();
+  if (tab === 'audit') renderAuditLog();
+}
+
+// ══════════════════════════════════════════════
+// TEMPLATES — manage WA templates (Meta approval flow)
+// ══════════════════════════════════════════════
+
+// ── TEMPLATE VARIABLES (semua template aftercare pakai mapping yang sama) ──
+// {{1}} = Nama customer       (contoh: Kak Sarah)
+// {{2}} = Nama layanan        (contoh: Hair Smoothing, Cuci Mobil, Pet Grooming, dll)
+// {{3}} = Tanggal kunjungan   (contoh: 15 Maret 2026)
+// {{4}} = Nama bisnis         (contoh: Salon Cantika)
+// Catatan: TIDAK ada {{5}} timing — pesan dikirim TEPAT WAKTU sesuai cats[].interval,
+// jadi tidak perlu lagi menyebut "dalam X minggu". Template jadi ga rigid,
+// bisa dipakai oleh interval berapa pun (7 hari, 3 minggu, 3 bulan).
+
+var TEMPLATES = [
+  // ═══ AFTERCARE FOLLOW-UP (utility-compliant, post-visit) — 4 variabel, no rigid timing ═══
+  { id:'tpl-aft-1', name:'aftercare_followup_1', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\n{{2}} kamu pada {{3}} di {{4}} sudah berjalan dengan baik.\n\nSekarang waktunya untuk perawatan lanjutan supaya hasilnya tetap optimal.\n\nKalau ada pertanyaan soal perawatan kamu, langsung balas chat ini aja.', example: { body_text: [['Sarah','Hair Smoothing','15 Maret 2026','Salon Wangi']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:00:00.000Z', approvedAt:'2026-04-10T09:24:00.000Z' },
+  { id:'tpl-aft-2', name:'aftercare_followup_2', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nMakasih sudah percaya {{4}} untuk {{2}} kamu pada {{3}}.\n\nSupaya hasilnya tetap maksimal, sekarang waktu yang pas untuk menjadwalkan perawatan lanjutan.\n\nAda yang mau ditanyakan? Balas aja chat ini ya.', example: { body_text: [['Budi','Facial Treatment','12 April 2026','Klinik Estetika Sehat']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:01:00.000Z', approvedAt:'2026-04-10T09:48:00.000Z' },
+  { id:'tpl-aft-3', name:'aftercare_followup_3', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nIni follow-up dari {{2}} kamu tanggal {{3}} di {{4}}.\n\nSekarang waktu yang pas untuk perawatan lanjutan supaya hasilnya tetap terjaga.\n\nKalau mau tanya-tanya, balas aja ya!', example: { body_text: [['Maya','Manicure & Pedicure','08 April 2026','Pretty Nails Studio']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:02:00.000Z', approvedAt:'2026-04-10T10:15:00.000Z' },
+  { id:'tpl-aft-4', name:'aftercare_followup_4', category:'UTILITY', language:'id', status:'APPROVED', body:'Hi {{1}},\n\nSemoga puas dengan {{2}} kamu pada {{3}} di {{4}} ya.\n\nSudah waktunya untuk perawatan lanjutan nih — biar hasilnya tetap optimal.\n\nButuh bantuan booking? Langsung balas chat ini aja.', example: { body_text: [['Rian','Potong Rambut','10 April 2026','Barbershop Ganteng']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:03:00.000Z', approvedAt:'2026-04-10T11:02:00.000Z' },
+  { id:'tpl-aft-5', name:'aftercare_followup_5', category:'UTILITY', language:'id', status:'APPROVED', body:'Halo {{1}},\n\nGimana hasil {{2}} kamu tanggal {{3}} di {{4}}? Semoga cocok ya!\n\nUntuk menjaga hasilnya, sekarang pas waktunya untuk perawatan lanjutan.\n\nKalau ada keluhan atau pertanyaan, balas aja langsung di sini.', example: { body_text: [['Citra','Body Massage','05 April 2026','Spa Harmoni']] }, header:'', footer:'', buttons:[], updatedAt:'2026-04-18', submittedAt:'2026-04-10T08:04:00.000Z', approvedAt:'2026-04-10T12:20:00.000Z' },
+
+  // ═══ AUTH & LEGACY (kompatibilitas) ═══
+  { id:'tpl-001', name:'reminder_balik',   category:'UTILITY',        language:'id', status:'APPROVED', body:'Halo {{1}}, sudah {{2}} hari sejak {{3}} di {{4}}. Saatnya kembali ✨ Balas untuk booking ya!', header:'', footer:'', buttons:['Booking Sekarang'], updatedAt:'2026-04-10' },
+  { id:'tpl-007', name:'otp_verification', category:'AUTHENTICATION', language:'id', status:'APPROVED', body:'Kode verifikasi getstarvio kamu: {{1}}. Berlaku 5 menit.', header:'', footer:'', buttons:[], updatedAt:'2026-02-20' }
+];
+
+// NOTE: TIMING_MAP dihapus — {{5}} timing variable sudah tidak dipakai lagi.
+// Template aftercare sekarang ga rigid (tidak menyebut "dalam X minggu"), jadi
+// ga perlu mapping timing per kategori. Interval kirim tetap handled di cats[].interval.
+
+var META_NOTIFICATIONS = [
+  { id:'n-004', type:'approved', templateId:'tpl-001', templateName:'reminder_balik', receivedAt:'2026-04-10 11:15', read:true }
+];
+
+function renderMetaInbox() {
+  var listEl = document.getElementById('meta-inbox-list');
+  var countEl = document.getElementById('meta-inbox-count');
+  if (!listEl) return;
+  var unread = META_NOTIFICATIONS.filter(function(n){ return !n.read }).length;
+  countEl.textContent = unread + ' baru';
+  countEl.style.display = unread > 0 ? '' : 'none';
+
+  var html = '';
+  META_NOTIFICATIONS.forEach(function(n) {
+    var ic, txt;
+    switch (n.type) {
+      case 'category_change':
+        ic = '<div class="meta-notif-ic cat-change">⇄</div>';
+        txt = 'Meta mengubah kategori template <strong>' + n.templateName + '</strong> dari <strong>' + n.from + '</strong> → <strong>' + n.to + '</strong>. Cek apakah penggunaan masih sesuai.';
+        break;
+      case 'rejected':
+        ic = '<div class="meta-notif-ic rejected">✕</div>';
+        txt = 'Template <strong>' + n.templateName + '</strong> ditolak Meta. Alasan: <em>' + (n.reason || '—') + '</em>';
+        break;
+      case 'flagged':
+        ic = '<div class="meta-notif-ic paused">⚠</div>';
+        txt = 'Template <strong>' + n.templateName + '</strong> di-flag. ' + (n.reason || '');
+        break;
+      case 'approved':
+        ic = '<div class="meta-notif-ic approved">✓</div>';
+        txt = 'Template <strong>' + n.templateName + '</strong> disetujui Meta dan siap dipakai.';
+        break;
+      default:
+        ic = '<div class="meta-notif-ic paused">·</div>';
+        txt = 'Update untuk template <strong>' + n.templateName + '</strong>';
+    }
+    html += '<div class="meta-notif' + (n.read ? ' read' : '') + '" onclick="markNotifRead(\'' + n.id + '\')">' +
+      ic + '<div class="meta-notif-text">' + txt + '</div>' +
+      '<div class="meta-notif-time">' + n.receivedAt.split(' ')[0] + '<br>' + (n.receivedAt.split(' ')[1] || '') + '</div>' +
+      '</div>';
+  });
+  if (META_NOTIFICATIONS.length === 0) html = '<div style="padding:24px;text-align:center;color:var(--ink3);font-size:12px">Tidak ada notifikasi dari Meta.</div>';
+  listEl.innerHTML = html;
+}
+
+function markNotifRead(id) {
+  var n = META_NOTIFICATIONS.find(function(x){ return x.id === id });
+  if (n) { n.read = true; renderMetaInbox(); }
+}
+
+function renderTemplates() {
+  var q = (document.getElementById('tpl-search')?.value || '').toLowerCase();
+  var catF = document.getElementById('tpl-cat-filter')?.value || 'all';
+  var statusF = document.getElementById('tpl-status-filter')?.value || 'all';
+
+  var filtered = TEMPLATES.filter(function(t) {
+    return (catF === 'all' || t.category === catF) &&
+           (statusF === 'all' || t.status === statusF) &&
+           (!q || t.name.toLowerCase().indexOf(q) >= 0);
+  });
+
+  var html = '';
+  if (!filtered.length) {
+    html = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">Tidak ada template ditemukan.</td></tr>';
+  } else {
+    filtered.forEach(function(t) {
+      var exampleStr = '';
+      if (t.example && t.example.body_text && t.example.body_text[0]) {
+        var ex = t.example.body_text[0];
+        exampleStr = '<div style="font-size:10px;color:var(--ink3);margin-top:3px;font-family:\'JetBrains Mono\',monospace">e.g. {{1}}=' + ex[0] + ' · {{2}}=' + (ex[1]||'—') + ' · {{3}}=' + (ex[2]||'—') + ' · {{4}}=' + (ex[3]||'—') + '</div>';
+      }
+      html += '<tr>' +
+        '<td><span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:var(--ink)">' + t.name + '</span>' + exampleStr + '</td>' +
+        '<td><span class="tpl-cat ' + t.category.toLowerCase() + '">' + t.category + '</span></td>' +
+        '<td><span style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--ink2)">' + t.language + '</span></td>' +
+        '<td><span class="tpl-status ' + t.status.toLowerCase() + '">' + t.status + '</span></td>' +
+        '<td style="font-size:11px;color:var(--ink3);font-family:\'JetBrains Mono\',monospace">' + t.updatedAt + '</td>' +
+        '<td><div style="display:flex;gap:5px">' +
+          '<button class="bt-icon-btn" onclick="openPayloadModal(\'' + t.id + '\')" title="View Meta API Payload"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h8M4 8h8M4 12h5"/><circle cx="13" cy="12" r="1"/></svg></button>' +
+          '<button class="bt-icon-btn" onclick="openTemplateModal(\'' + t.id + '\')" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2l3 3-7 7-4 1 1-4 7-7z"/></svg></button>' +
+          (t.status === 'REJECTED' || t.status === 'PAUSED' ? '<button class="bt-icon-btn" onclick="resubmitTemplate(\'' + t.id + '\')" title="Resubmit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8a6 6 0 1011-3"/><path d="M13 2v3h-3"/></svg></button>' : '') +
+          '<button class="bt-icon-btn danger" onclick="deleteTemplate(\'' + t.id + '\')" title="Delete"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg></button>' +
+        '</div></td>' +
+      '</tr>';
+    });
+  }
+  document.getElementById('tpl-tbody').innerHTML = html;
+}
+
+/* ── TEMPLATE EDIT ──
+   Simplified modal: name + lang + category + body + example params + preview.
+   HEADER/FOOTER/BUTTONS dihapus dari UI (tetap ada di data model untuk
+   backward compat; legacy templates seperti tpl-001 punya buttons yang
+   ga di-expose di edit UI, tapi tidak dihapus otomatis). */
+
+// Helpful variable labels untuk aftercare templates yang standard.
+// Kalau template custom atau variable di luar 1-4, pakai generic "Variabel {{N}}".
+var AFTERCARE_VAR_LABELS = {
+  1: 'Nama pelanggan',
+  2: 'Jenis layanan',
+  3: 'Tanggal kunjungan',
+  4: 'Nama bisnis'
+};
+
+function openTemplateModal(id) {
+  var t = id ? TEMPLATES.find(function(x){ return x.id === id }) : null;
+  document.getElementById('tpl-modal-title').textContent = t ? 'Edit Template' : 'Tambah Template Baru';
+  document.getElementById('tpl-edit-id').value = t ? t.id : '';
+  document.getElementById('tpl-name').value = t ? t.name : '';
+  document.getElementById('tpl-name').readOnly = !!t;  // name immutable after submit
+  document.getElementById('tpl-lang').value = t ? t.language : 'id';
+  document.getElementById('tpl-category').value = t ? t.category : 'UTILITY';
+  document.getElementById('tpl-body').value = t ? t.body : '';
+
+  // Populate example parameters dari existing template atau kosong untuk template baru
+  var existingExample = (t && t.example && t.example.body_text && t.example.body_text[0]) || [];
+  window.__tplExampleCache = existingExample;  // simpan buat pre-fill saat render
+
+  document.getElementById('modal-template').classList.add('show');
+  onTplBodyChange();  // initial render: fields + preview
+}
+
+/* Detect all {{N}} variables in body and render an input per unique variable.
+   Preserves user input saat variable masih ada, clear saat variable dihapus. */
+function onTplBodyChange() {
+  var body = document.getElementById('tpl-body').value || '';
+  // Find all {{N}} variables, sorted numerically unique
+  var matches = body.match(/\{\{(\d+)\}\}/g) || [];
+  var nums = [];
+  matches.forEach(function(m) {
+    var n = parseInt(m.replace(/[{}]/g, ''));
+    if (!isNaN(n) && nums.indexOf(n) === -1) nums.push(n);
+  });
+  nums.sort(function(a,b){ return a-b; });
+
+  var wrap = document.getElementById('tpl-example-fields');
+  var previewSec = document.getElementById('tpl-preview-sec');
+
+  if (nums.length === 0) {
+    wrap.innerHTML = '<div class="tpl-example-empty">Ketik placeholder <code>{{1}}</code> di body untuk mulai mengisi contoh parameter.</div>';
+    if (previewSec) previewSec.style.display = 'none';
+    return;
+  }
+
+  // Render input per variable — preserve existing values kalau ada
+  var existingInputs = {};
+  document.querySelectorAll('.tpl-example-input').forEach(function(el) {
+    var n = parseInt(el.getAttribute('data-var'));
+    if (!isNaN(n)) existingInputs[n] = el.value;
+  });
+
+  var html = '';
+  nums.forEach(function(n) {
+    var label = AFTERCARE_VAR_LABELS[n] || 'Variabel {{' + n + '}}';
+    // Priority: user's current input > cache dari openTemplateModal > empty
+    var val = existingInputs[n] !== undefined ? existingInputs[n] :
+              (window.__tplExampleCache && window.__tplExampleCache[n-1]) || '';
+    var placeholder = getTplPlaceholder(n);
+    html += '<div class="tpl-example-row">' +
+              '<span class="tpl-example-key">{{' + n + '}}</span>' +
+              '<div>' +
+                '<div class="tpl-example-label">' + label + '</div>' +
+                '<input type="text" class="tpl-example-input" data-var="' + n + '" ' +
+                       'value="' + escapeHtml(val) + '" ' +
+                       'placeholder="' + escapeHtml(placeholder) + '" ' +
+                       'oninput="updateTplPreview()">' +
+              '</div>' +
+            '</div>';
+  });
+  wrap.innerHTML = html;
+
+  if (previewSec) previewSec.style.display = 'block';
+  updateTplPreview();
+}
+
+/* Placeholder examples — contoh realistic per variable untuk aftercare UMKM */
+function getTplPlaceholder(n) {
+  var placeholders = {
+    1: 'contoh: Sarah',
+    2: 'contoh: Hair Smoothing',
+    3: 'contoh: 15 Maret 2026',
+    4: 'contoh: Salon Wangi'
+  };
+  return placeholders[n] || 'isi contoh realistic';
+}
+
+/* Live preview: render body dengan example values disubstitusi */
+function updateTplPreview() {
+  var body = document.getElementById('tpl-body').value || '';
+  var preview = body;
+  document.querySelectorAll('.tpl-example-input').forEach(function(el) {
+    var n = el.getAttribute('data-var');
+    var val = el.value || '{{' + n + '}}';
+    // Highlight substituted values with <strong> for visual differentiation
+    var wrapped = val === '{{' + n + '}}' ? val : '<strong>' + escapeHtml(val) + '</strong>';
+    preview = preview.split('{{' + n + '}}').join(wrapped);
+  });
+  // Escape remaining body, but we already wrapped example values
+  // Simpler: use innerHTML carefully — body parts already escaped via split
+  var body_el = document.getElementById('tpl-preview-body');
+  if (body_el) body_el.innerHTML = preview;
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, function(c) {
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+
+/* ── META API PAYLOAD PREVIEW ──
+   Show exact JSON that getstarvio sends to Meta Graph API when submitting
+   a template for review. Critical for Meta App Review Video 2 demonstration. */
+function openPayloadModal(id) {
+  var t = TEMPLATES.find(function(x){ return x.id === id });
+  if (!t) return;
+
+  // Build example payload exactly as Meta expects
+  var components = [];
+  if (t.header) components.push({ type: 'HEADER', format: 'TEXT', text: t.header });
+  var bodyComp = { type: 'BODY', text: t.body };
+  if (t.example && t.example.body_text) bodyComp.example = { body_text: t.example.body_text };
+  components.push(bodyComp);
+  if (t.footer) components.push({ type: 'FOOTER', text: t.footer });
+  if (t.buttons && t.buttons.length) {
+    components.push({
+      type: 'BUTTONS',
+      buttons: t.buttons.map(function(b){ return { type: 'QUICK_REPLY', text: b }; })
+    });
+  }
+
+  var payload = {
+    name: t.name,
+    category: t.category,
+    language: t.language,
+    components: components
+  };
+
+  var bodyEl = document.getElementById('pl-body');
+  if (bodyEl) bodyEl.textContent = JSON.stringify(payload, null, 2);
+
+  var wabaId = '{WABA_ID}';
+  try {
+    var u = JSON.parse(localStorage.getItem('getstarvio_user') || '{}');
+    if (u.meta && u.meta.waba && u.meta.waba.id) wabaId = u.meta.waba.id;
+  } catch (e) {}
+  var epEl = document.getElementById('pl-endpoint');
+  if (epEl) epEl.textContent = 'POST https://graph.facebook.com/v21.0/' + wabaId + '/message_templates';
+
+  // Response mock based on status
+  var respEl = document.getElementById('pl-response');
+  if (respEl) {
+    respEl.textContent = JSON.stringify({
+      id: t.id.replace('tpl-', '9876543210'),
+      status: 'PENDING',
+      category: t.category
+    }, null, 2);
+  }
+
+  // Webhook with current status
+  var wbEl = document.getElementById('pl-webhook');
+  if (wbEl) {
+    wbEl.textContent = JSON.stringify({
+      object: 'whatsapp_business_account',
+      entry: [{
+        id: wabaId,
+        changes: [{
+          field: 'message_template_status_update',
+          value: {
+            event: t.status === 'PENDING' ? 'PENDING' : t.status,
+            message_template_id: t.id.replace('tpl-', '9876543210'),
+            message_template_name: t.name,
+            message_template_language: t.language,
+            reason: t.status === 'REJECTED' ? 'PROMOTIONAL_CONTENT_IN_UTILITY' : 'NONE'
+          }
+        }]
+      }]
+    }, null, 2);
+  }
+
+  document.getElementById('modal-payload').classList.add('show');
+}
+
+function copyPayloadToClip() {
+  var el = document.getElementById('pl-body');
+  if (!el) return;
+  try {
+    navigator.clipboard.writeText(el.textContent).then(function() {
+      toast('Payload copied to clipboard.', 'success');
+    });
+  } catch (e) { console.warn('Clipboard error', e); }
+}
+
+function saveTemplate() {
+  var id = document.getElementById('tpl-edit-id').value;
+  var name = document.getElementById('tpl-name').value.trim();
+  var body = document.getElementById('tpl-body').value.trim();
+  if (!name || !body) { toast('Nama dan body template wajib diisi.', 'error'); return; }
+  if (!/^[a-z0-9_]+$/.test(name)) { toast('Nama harus huruf kecil + angka + underscore.', 'error'); return; }
+
+  // Collect example parameters — Meta wajib untuk approval
+  var exampleValues = [];
+  var exampleInputs = document.querySelectorAll('.tpl-example-input');
+  var hasVariables = exampleInputs.length > 0;
+  var allFilled = true;
+  exampleInputs.forEach(function(el) {
+    var val = el.value.trim();
+    if (!val) allFilled = false;
+    exampleValues.push(val);
+  });
+
+  // Kalau body ada variable tapi example belum lengkap, blokir submit
+  if (hasVariables && !allFilled) {
+    toast('Lengkapi semua contoh parameter dulu. Meta wajib contoh untuk approve.', 'error');
+    return;
+  }
+
+  var data = {
+    name: name,
+    language: document.getElementById('tpl-lang').value,
+    category: document.getElementById('tpl-category').value,
+    body: body,
+    updatedAt: new Date().toISOString().slice(0,10)
+  };
+
+  // Attach example object kalau ada variables (Meta API format)
+  if (hasVariables) {
+    data.example = { body_text: [exampleValues] };
+  }
+
+  if (id) {
+    var idx = TEMPLATES.findIndex(function(x){ return x.id === id });
+    if (idx >= 0) {
+      // Merge: preserve existing header/footer/buttons (legacy templates backward compat)
+      // tapi overwrite body/category/example dengan nilai baru
+      TEMPLATES[idx] = Object.assign({}, TEMPLATES[idx], data, { status:'PENDING' });
+      logAdminAction('save_template', id, { name: name, category: data.category, mode: 'edit_resubmit' });
+      toast('Template di-resubmit ke Meta untuk review.', 'success');
+    }
+  } else {
+    data.id = 'tpl-' + (Date.now() % 10000);
+    data.status = 'PENDING';
+    data.header = '';      // Template baru: no header
+    data.footer = '';      // Template baru: no footer
+    data.buttons = [];     // Template baru: no buttons
+    TEMPLATES.push(data);
+    logAdminAction('save_template', data.id, { name: name, category: data.category, mode: 'create' });
+    toast('Template baru di-submit ke Meta. Review biasanya 1-24 jam.', 'success');
+  }
+  closeModal('modal-template');
+  renderTemplates();
+}
+
+function resubmitTemplate(id) {
+  var t = TEMPLATES.find(function(x){ return x.id === id });
+  if (!t) return;
+  t.status = 'PENDING';
+  t.updatedAt = new Date().toISOString().slice(0,10);
+  renderTemplates();
+  toast('Template ' + t.name + ' di-resubmit ke Meta.', 'success');
+}
+
+function deleteTemplate(id) {
+  var t = TEMPLATES.find(function(x){ return x.id === id });
+  if (!t) return;
+  // Two-step confirm: type the template name to delete (prevent fat-finger accidents)
+  var typed = prompt('⚠ HAPUS TEMPLATE PERMANEN\n\nTemplate: "' + t.name + '"\nStatus: ' + t.status + '\n\nKetik nama template di bawah untuk konfirmasi:\n(case-sensitive)');
+  if (typed === null) return;
+  if (typed.trim() !== t.name) {
+    toast('Nama template tidak cocok — penghapusan dibatalkan', 'error');
+    return;
+  }
+  TEMPLATES = TEMPLATES.filter(function(x){ return x.id !== id });
+  logAdminAction('delete_template', id, { name: t.name, status: t.status });
+  renderTemplates();
+  toast('Template "' + t.name + '" dihapus.', 'success');
+}
+
+// ══════════════════════════════════════════════
+// BIZ TYPES — manage business types & preset categories
+// ══════════════════════════════════════════════
+
+var BIZ_TYPES = [
+  { id:'salon', name:'Salon', icon:'💇', presets:[
+    { id:'keriting',  name:'Keriting',   icon:'💇', interval:60, templateId:'aftercare_followup_1' },
+    { id:'smoothing', name:'Smoothing',  icon:'✨', interval:90, templateId:'aftercare_followup_1' },
+    { id:'haircolor', name:'Hair Color', icon:'🎨', interval:45, templateId:'aftercare_followup_3' },
+    { id:'hairmask',  name:'Hair Mask',  icon:'🧴', interval:21, templateId:'aftercare_followup_1' },
+    { id:'blowdry',   name:'Blow Dry',   icon:'💨', interval:14, templateId:'aftercare_followup_3' },
+    { id:'creambath', name:'Creambath',  icon:'🧖', interval:21, templateId:'aftercare_followup_1' }
+  ]},
+  { id:'spa', name:'Spa', icon:'🧖', presets:[
+    { id:'fullbody',  name:'Full Body Massage', icon:'🤲', interval:21, templateId:'aftercare_followup_1' },
+    { id:'facial',    name:'Facial',            icon:'💆', interval:30, templateId:'aftercare_followup_1' },
+    { id:'bodyscrub', name:'Body Scrub',        icon:'🛁', interval:28, templateId:'aftercare_followup_1' },
+    { id:'aroma',     name:'Aromaterapi',       icon:'🌿', interval:21, templateId:'aftercare_followup_3' }
+  ]},
+  { id:'klinik', name:'Klinik/Dokter', icon:'🩺', presets:[
+    { id:'konsul',    name:'Konsultasi',       icon:'🩺', interval:30, templateId:'aftercare_followup_4' },
+    { id:'skincare2', name:'Perawatan Kulit',  icon:'🧴', interval:21, templateId:'aftercare_followup_1' },
+    { id:'laser',     name:'Laser Treatment',  icon:'⚡', interval:30, templateId:'aftercare_followup_1' },
+    { id:'chemical',  name:'Chemical Peel',    icon:'⚗️', interval:21, templateId:'aftercare_followup_1' }
+  ]},
+  { id:'barbershop', name:'Barbershop', icon:'💈', presets:[
+    { id:'potong',  name:'Potong Rambut',  icon:'✂️', interval:21, templateId:'aftercare_followup_1' },
+    { id:'cukur',   name:'Cukur Jenggot',  icon:'🪒', interval:14, templateId:'aftercare_followup_1' },
+    { id:'hairwax', name:'Hair Wax',       icon:'💈', interval:14, templateId:'aftercare_followup_3' }
+  ]},
+  { id:'nail', name:'Nail Studio', icon:'💅', presets:[
+    { id:'mani',     name:'Manicure',  icon:'💅', interval:14, templateId:'aftercare_followup_1' },
+    { id:'pedi',     name:'Pedicure',  icon:'🦶', interval:14, templateId:'aftercare_followup_1' },
+    { id:'nailart',  name:'Nail Art',  icon:'🎨', interval:21, templateId:'aftercare_followup_3' },
+    { id:'gelnails', name:'Gel Nails', icon:'✨', interval:21, templateId:'aftercare_followup_1' }
+  ]},
+  { id:'bengkel', name:'Bengkel', icon:'🔧', presets:[
+    { id:'oli',    name:'Ganti Oli',    icon:'🛢️', interval:90,  templateId:'aftercare_followup_2' },
+    { id:'servis', name:'Servis Rutin', icon:'🔧', interval:180, templateId:'aftercare_followup_1' }
+  ]},
+  { id:'skincare', name:'Skincare/Estetik', icon:'✨', presets:[
+    { id:'facial3', name:'Facial',        icon:'💆', interval:30, templateId:'aftercare_followup_1' },
+    { id:'chem3',   name:'Chemical Peel', icon:'⚗️', interval:21, templateId:'aftercare_followup_1' }
+  ]},
+  { id:'lainnya', name:'Lainnya', icon:'🏪', presets:[
+    { id:'l1', name:'Layanan Utama', icon:'✨', interval:30, templateId:'aftercare_followup_1' }
+  ]}
+];
+
+function renderBizTypes() {
+  var grid = document.getElementById('bt-grid');
+  if (!grid) return;
+  var html = '';
+  BIZ_TYPES.forEach(function(bt) {
+    html += '<div class="bt-card" id="btc-' + bt.id + '">' +
+      '<div class="bt-card-hd" onclick="toggleBizType(\'' + bt.id + '\')">' +
+        '<div class="bt-icon">' + bt.icon + '</div>' +
+        '<div class="bt-info">' +
+          '<div class="bt-name">' + bt.name + '</div>' +
+          '<div class="bt-meta">' + bt.presets.length + ' preset · id: <code style="font-family:\'JetBrains Mono\',monospace">' + bt.id + '</code></div>' +
+        '</div>' +
+        '<div class="bt-actions" onclick="event.stopPropagation()">' +
+          '<button class="bt-icon-btn" onclick="openBizTypeModal(\'' + bt.id + '\')" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2l3 3-7 7-4 1 1-4 7-7z"/></svg></button>' +
+          '<button class="bt-icon-btn danger" onclick="deleteBizType(\'' + bt.id + '\')" title="Delete"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bt-cats">' +
+        '<div class="bt-cats-hd">Preset Kategori (' + bt.presets.length + ')</div>' +
+        '<div class="bt-cats-grid">';
+    bt.presets.forEach(function(p) {
+      html += '<div class="bt-cat-row">' +
+        '<span class="bt-cat-icon">' + p.icon + '</span>' +
+        '<span class="bt-cat-name" title="' + p.name + '">' + p.name + '</span>' +
+        '<span class="bt-cat-meta">' + p.interval + ' hari</span>' +
+        '<span class="bt-cat-actions">' +
+          '<button class="bt-icon-btn" onclick="openPresetCatModal(\'' + bt.id + '\',\'' + p.id + '\')" title="Edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2l3 3-7 7-4 1 1-4 7-7z"/></svg></button>' +
+          '<button class="bt-icon-btn danger" onclick="deletePresetCat(\'' + bt.id + '\',\'' + p.id + '\')" title="Delete"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg></button>' +
+        '</span>' +
+        '<span class="bt-cat-tpl" title="Template default">' + p.templateId + '</span>' +
+      '</div>';
+    });
+    html += '</div>'; // close .bt-cats-grid
+    html += '<button class="bt-cat-add" onclick="openPresetCatModal(\'' + bt.id + '\')">+ Tambah preset kategori</button>';
+    html += '</div></div>';
+  });
+  grid.innerHTML = html;
+}
+
+function toggleBizType(id) {
+  document.getElementById('btc-' + id).classList.toggle('expanded');
+}
+
+function openBizTypeModal(id) {
+  var bt = id ? BIZ_TYPES.find(function(x){ return x.id === id }) : null;
+  document.getElementById('bt-modal-title').textContent = bt ? 'Edit Tipe Bisnis' : 'Tambah Tipe Bisnis';
+  document.getElementById('bt-edit-id').value = bt ? bt.id : '';
+  document.getElementById('bt-name').value = bt ? bt.name : '';
+  document.getElementById('bt-icon').value = bt ? bt.icon : '';
+  document.getElementById('bt-id').value = bt ? bt.id : '';
+  document.getElementById('bt-id').readOnly = !!bt;
+  document.getElementById('modal-biztype').classList.add('show');
+}
+
+function saveBizType() {
+  var editId = document.getElementById('bt-edit-id').value;
+  var name = document.getElementById('bt-name').value.trim();
+  var icon = document.getElementById('bt-icon').value.trim();
+  var id = document.getElementById('bt-id').value.trim().toLowerCase();
+  if (!name || !icon || !id) { toast('Nama, icon, dan id wajib diisi.', 'error'); return; }
+  if (!editId && BIZ_TYPES.find(function(x){ return x.id === id })) { toast('ID sudah dipakai. Pilih ID lain.', 'error'); return; }
+
+  if (editId) {
+    var bt = BIZ_TYPES.find(function(x){ return x.id === editId });
+    if (bt) { bt.name = name; bt.icon = icon; }
+    logAdminAction('save_biztype', editId, { name: name, mode: 'edit' });
+  } else {
+    BIZ_TYPES.push({ id:id, name:name, icon:icon, presets:[] });
+    logAdminAction('save_biztype', id, { name: name, mode: 'create' });
+  }
+  closeModal('modal-biztype');
+  renderBizTypes();
+  toast('Tipe bisnis ' + (editId ? 'diupdate' : 'ditambah') + '.', 'success');
+}
+
+function deleteBizType(id) {
+  var bt = BIZ_TYPES.find(function(x){ return x.id === id });
+  if (!bt) return;
+  // Type name for confirmation (anti fat-finger — biztype affects onboarding)
+  var typed = prompt('⚠ HAPUS TIPE BISNIS PERMANEN\n\nTipe: "' + bt.name + '" + ' + bt.presets.length + ' preset kategori.\nIni akan hilang dari onboarding flow untuk user baru.\n\nKetik nama tipe bisnis untuk konfirmasi:');
+  if (typed === null) return;
+  if (typed.trim() !== bt.name) { toast('Nama tidak cocok — penghapusan dibatalkan', 'error'); return; }
+  BIZ_TYPES = BIZ_TYPES.filter(function(x){ return x.id !== id });
+  logAdminAction('delete_biztype', id, { name: bt.name, presetCount: bt.presets.length });
+  renderBizTypes();
+  toast('Tipe bisnis "' + bt.name + '" dihapus.', 'success');
+}
+
+function openPresetCatModal(btId, pId) {
+  var bt = BIZ_TYPES.find(function(x){ return x.id === btId });
+  if (!bt) return;
+  var p = pId ? bt.presets.find(function(x){ return x.id === pId }) : null;
+  document.getElementById('pc-modal-title').textContent = p ? 'Edit Preset Kategori' : 'Tambah Preset Kategori (' + bt.name + ')';
+  document.getElementById('pc-bt-id').value = btId;
+  document.getElementById('pc-edit-id').value = p ? p.id : '';
+  document.getElementById('pc-name').value = p ? p.name : '';
+  document.getElementById('pc-icon').value = p ? p.icon : '✨';
+  document.getElementById('pc-interval').value = p ? p.interval : 30;
+  document.getElementById('pc-template').value = p ? p.templateId : 'aftercare_followup_1';
+  document.getElementById('modal-preset-cat').classList.add('show');
+}
+
+function savePresetCat() {
+  var btId = document.getElementById('pc-bt-id').value;
+  var editId = document.getElementById('pc-edit-id').value;
+  var bt = BIZ_TYPES.find(function(x){ return x.id === btId });
+  if (!bt) return;
+  var name = document.getElementById('pc-name').value.trim();
+  var icon = document.getElementById('pc-icon').value.trim() || '✨';
+  var interval = parseInt(document.getElementById('pc-interval').value) || 30;
+  var templateId = document.getElementById('pc-template').value;
+  if (!name) { toast('Nama layanan wajib diisi.', 'error'); return; }
+
+  if (editId) {
+    var p = bt.presets.find(function(x){ return x.id === editId });
+    if (p) { p.name = name; p.icon = icon; p.interval = interval; p.templateId = templateId; }
+    logAdminAction('save_preset', btId, { presetId: editId, name: name, interval: interval, templateId: templateId, mode: 'edit' });
+  } else {
+    var pid = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') || ('preset-' + Date.now() % 1000);
+    bt.presets.push({ id:pid, name:name, icon:icon, interval:interval, templateId:templateId });
+    logAdminAction('save_preset', btId, { presetId: pid, name: name, interval: interval, templateId: templateId, mode: 'create' });
+  }
+  closeModal('modal-preset-cat');
+  renderBizTypes();
+  // Re-expand the card we just edited
+  setTimeout(function(){ document.getElementById('btc-' + btId).classList.add('expanded'); }, 50);
+  toast('Preset kategori ' + (editId ? 'diupdate' : 'ditambah') + '.', 'success');
+}
+
+function deletePresetCat(btId, pId) {
+  var bt = BIZ_TYPES.find(function(x){ return x.id === btId });
+  if (!bt) return;
+  var p = bt.presets.find(function(x){ return x.id === pId });
+  if (!p) return;
+  if (!confirm('Hapus preset "' + p.name + '" dari ' + bt.name + '?')) return;
+  bt.presets = bt.presets.filter(function(x){ return x.id !== pId });
+  logAdminAction('delete_preset', btId, { presetId: pId, name: p.name });
+  renderBizTypes();
+  setTimeout(function(){ document.getElementById('btc-' + btId).classList.add('expanded'); }, 50);
+  toast('Preset "' + p.name + '" dihapus.', 'success');
 }
 
 // ══════════════════════════════
 // PLAN CONFIG
 // ══════════════════════════════
 function recalcTier(n) {
-  var pricePerCredit = parseInt(document.getElementById('pc-topup-price').value) || 1000
-  var price = parseInt(document.getElementById('pc-tier' + n + '-price').value) || 0
-  var credits = parseInt(document.getElementById('pc-tier' + n + '-credits').value) || 0
-  var baseCredits = Math.floor(price / pricePerCredit)
-  var bonusPct = baseCredits > 0 ? Math.round((credits - baseCredits) / baseCredits * 100) : 0
-  document.getElementById('pc-tier' + n + '-bonus').textContent = bonusPct > 0 ? '+' + bonusPct + '%' : '0%'
+  var price = parseIDR(document.getElementById('pc-tier' + n + '-price').value)
+  var credits = parseInt(document.getElementById('pc-tier' + n + '-credits').value, 10) || 0
+  var perCredit = credits > 0 ? Math.round(price / credits) : 0
+  document.getElementById('pc-tier' + n + '-bonus').textContent = 'Rp ' + perCredit.toLocaleString('id-ID') + '/kredit'
+}
+
+function recalcSubDiscount() {
+  var normal = parseIDR(document.getElementById('pc-sub-price-normal').value)
+  var early = parseIDR(document.getElementById('pc-sub-price').value)
+  var pct = normal > 0 ? Math.round((1 - early / normal) * 100) : 0
+  document.getElementById('pc-sub-discount').textContent = pct > 0 ? '-' + pct + '%' : ''
 }
 
 function loadPlanConfig() {
@@ -907,52 +2974,88 @@ function loadPlanConfig() {
     var pc = u.planConfig
     if (!pc) return
     if (pc.freeBonus !== undefined) document.getElementById('pc-free-bonus').value = pc.freeBonus
+    if (pc.trialDays !== undefined) document.getElementById('pc-trial-days').value = pc.trialDays
     if (pc.subCredits !== undefined) document.getElementById('pc-sub-credit').value = pc.subCredits
-    if (pc.subPrice !== undefined) document.getElementById('pc-sub-price').value = pc.subPrice
-    if (pc.topupPrice !== undefined) document.getElementById('pc-topup-price').value = pc.topupPrice
+    if (pc.subPrice !== undefined) document.getElementById('pc-sub-price').value = fmtIDR(pc.subPrice)
+    if (pc.subPriceNormal !== undefined) document.getElementById('pc-sub-price-normal').value = fmtIDR(pc.subPriceNormal)
     var tiers = pc.tiers || []
     for (var i = 0; i < tiers.length && i < 3; i++) {
-      document.getElementById('pc-tier' + (i+1) + '-price').value = tiers[i].price
+      document.getElementById('pc-tier' + (i+1) + '-price').value = fmtIDR(tiers[i].price)
       document.getElementById('pc-tier' + (i+1) + '-credits').value = tiers[i].credits
       recalcTier(i+1)
     }
+    recalcSubDiscount()
   } catch(e) {}
 }
 
 function savePlanConfig() {
   var btn = event.target;
+
+  // Validation: tiers harus ada price > 0 + credits > 0 (cegah div by zero / data corrupt)
+  var tiers = []
+  for (var i = 1; i <= 3; i++) {
+    var price = parseIDR(document.getElementById('pc-tier' + i + '-price').value)
+    var credits = parseInt(document.getElementById('pc-tier' + i + '-credits').value, 10) || 0
+    if (price <= 0 || credits <= 0) {
+      toast('Tier ' + i + ': harga & kredit harus lebih dari 0', 'error');
+      return;
+    }
+    tiers.push({ price: price, credits: credits })
+  }
+
+  var freeBonus = parseInt(document.getElementById('pc-free-bonus').value, 10) || 0
+  var trialDays = parseInt(document.getElementById('pc-trial-days').value, 10) || 0
+  var subCredits = parseInt(document.getElementById('pc-sub-credit').value, 10) || 0
+  var subPrice = parseIDR(document.getElementById('pc-sub-price').value)
+  var subPriceNormal = parseIDR(document.getElementById('pc-sub-price-normal').value)
+
+  if (freeBonus < 1 || trialDays < 1 || subCredits < 1 || subPrice < 1 || subPriceNormal < 1) {
+    toast('Semua field plan config harus lebih dari 0', 'error');
+    return;
+  }
+  if (subPrice > subPriceNormal) {
+    toast('Harga Early Access tidak boleh lebih besar dari harga normal', 'error');
+    return;
+  }
+
   btn.textContent = 'Menyimpan...';
   btn.disabled = true;
 
-  var tiers = []
-  for (var i = 1; i <= 3; i++) {
-    tiers.push({
-      price: parseInt(document.getElementById('pc-tier' + i + '-price').value) || 0,
-      credits: parseInt(document.getElementById('pc-tier' + i + '-credits').value) || 0
-    })
-  }
-
   var planConfig = {
-    freeBonus: parseInt(document.getElementById('pc-free-bonus').value) || 100,
-    subCredits: parseInt(document.getElementById('pc-sub-credit').value) || 250,
-    subPrice: parseInt(document.getElementById('pc-sub-price').value) || 250000,
-    topupPrice: parseInt(document.getElementById('pc-topup-price').value) || 1000,
+    freeBonus: freeBonus,
+    trialDays: trialDays,
+    subCredits: subCredits,
+    subPrice: subPrice,
+    subPriceNormal: subPriceNormal,
     tiers: tiers
   }
 
   try {
+    // 1) Update current user (Meta Reviewer demo) — mempengaruhi billing / display di app
     var raw = localStorage.getItem('getstarvio_user')
     if (raw) {
       var u = JSON.parse(raw)
       u.planConfig = planConfig
       localStorage.setItem('getstarvio_user', JSON.stringify(u))
     }
+    // 2) Publish ke global defaults — dibaca oleh onboarding (new signup) +
+    //    login trust badges. All app pages yang pakai getPlanConfigDefaults()
+    //    akan otomatis propagate.
+    localStorage.setItem('getstarvio_pc_defaults', JSON.stringify(planConfig))
   } catch(e) {}
+
+  // Audit log
+  logAdminAction('save_plan_config', null, {
+    subPrice: planConfig.subPrice,
+    subPriceNormal: planConfig.subPriceNormal,
+    trialDays: planConfig.trialDays,
+    freeBonus: planConfig.freeBonus
+  });
 
   setTimeout(function() {
     btn.textContent = 'Simpan Konfigurasi';
     btn.disabled = false;
-    toast('Konfigurasi plan berhasil disimpan', 'success');
+    toast('Konfigurasi plan berhasil disimpan & dipublish ke app', 'success');
   }, 800);
 }
 
@@ -987,11 +3090,11 @@ var TX_DATA = [];
       var amt = Math.floor(Math.random()*15)+5;
       balance += amt;
       TX_DATA.push({
-        company: b.name, type:'usage', label:'Penggunaan Reminder',
+        company: b.name, type:'usage', label:'Penggunaan Pengingat',
         icon:'−', cls:'sub', sign:'-', amount: amt,
         date: d.toISOString().split('T')[0],
         balanceAfter: Math.max(0, b.creditLeft + Math.floor(Math.random()*50)),
-        keterangan: amt+' reminder terkirim'
+        keterangan: amt+' pengingat terkirim'
       });
     }
 
@@ -1000,9 +3103,9 @@ var TX_DATA = [];
       var sd = new Date('2026-03-01');
       TX_DATA.push({
         company: b.name, type:'subscription', label:'Langganan Bulanan',
-        icon:'↺', cls:'reset', sign:'+', amount:250,
+        icon:'↺', cls:'reset', sign:'+', amount:300,
         date: sd.toISOString().split('T')[0],
-        balanceAfter: 250, keterangan:'Reset + kredit bulanan Maret'
+        balanceAfter: 300, keterangan:'Reset + kredit bulanan Maret (Early Access 50% off)'
       });
     }
 
@@ -1012,10 +3115,10 @@ var TX_DATA = [];
       td.setDate(td.getDate() - ci*2);
       TX_DATA.push({
         company: b.name, type:'topup', label:'Top Up Kredit',
-        icon:'+', cls:'add', sign:'+', amount:300,
+        icon:'+', cls:'add', sign:'+', amount:200,
         date: td.toISOString().split('T')[0],
-        balanceAfter: b.creditLeft + 300,
-        keterangan:'Paket Rp 250.000 (+20% bonus)'
+        balanceAfter: b.creditLeft + 200,
+        keterangan:'Paket 200 kredit — Rp 399.000'
       });
     }
   });

@@ -29,17 +29,61 @@ Konten QR check-in yang dulu ada di halaman Kumpulkan sekarang ada di sini:
 - **Tips box** — tips supaya lebih banyak yang scan
 
 ### Section 2: Profil Bisnis
+- **Logo Bisnis (opsional, di atas Nama Bisnis):**
+  - Upload area 120x120 dashed border + placeholder "📷 Upload logo"
+  - Setelah upload: preview logo + tombol "📤 Upload" (ganti) + "🗑️ Hapus" (dengan confirm dialog)
+  - Accept: `.png, .jpg, .jpeg`
+  - Validasi:
+    - Format: PNG/JPG only (error inline kalau bukan)
+    - Max size 200KB (error inline kalau lebih, tampilkan ukuran file)
+    - Aspect ratio: square-ish (max 1.5:1) — kalau lebih, warning amber "bagian gambar mungkin terpotong"
+  - **Resize via canvas** ke max 120x120 sebelum disimpan (preserve aspect, output PNG kalau input PNG, JPEG 0.85 quality kalau input JPG)
+  - Save base64 data URL ke `getstarvio_user.bizLogo`
+  - Hapus → set `bizLogo = null` (fallback ke initial circle di check-in)
 - Edit: Nama Bisnis, Jenis Bisnis (visual grid, sama seperti onboarding), Timezone
 - Nama Admin (read-only)
 - Email (read-only, dari Google OAuth)
-- Tombol "Simpan Profil" — update localStorage
+- Tombol "Simpan Profil" — update localStorage (kecuali logo yang auto-save saat upload)
 
-### Section 3: WhatsApp
+### Section 3: WhatsApp & Notifikasi
+
+**WA Connection Status:**
 - Nomor WA aktif: tampilkan `waNum` + status dot (hijau/merah) + label terhubung/terputus
 - Tombol "Hubungkan ulang" → buka QR reconnect modal
 - QR reconnect modal: scan QR + "Simulasi Terhubung" button
-- Nomor WA Pemilik (`ownerWa`) — editable, apply global phone rules
-- Tombol "Simpan WhatsApp"
+
+**Nomor WA Pemilik (`ownerWa`) + OTP Verification:**
+- Editable input dengan country code selector (apply global phone rules: strip leading 0, simpan format `628xxx`)
+- Hint: "Nomor ini dipakai untuk menerima notifikasi billing via WhatsApp"
+- **OTP verification flow** (tercantum persis di bawah field, tidak di modal terpisah):
+  - **State 1 — Belum diverifikasi (amber):** warning card amber "Nomor belum diverifikasi" + sub "Verifikasi via OTP agar notifikasi billing bisa terkirim" + tombol "Kirim OTP"
+  - **State 2 — OTP terkirim (white + lime border):** card dengan "Masukkan kode 6-digit" + hint "(demo: 123456)" untuk prototype + OTP input (JetBrains Mono, letter-spacing wide, centered) + tombol "Verifikasi" + tombol "Kirim ulang" + inline error message area
+  - **State 3 — Terverifikasi (lime):** card lime dengan check icon + "Nomor terverifikasi" + tanggal verifikasi + tombol "Verifikasi ulang" (untuk ganti nomor)
+- **Logika OTP:**
+  - `sendOwnerWaOtp()`: generate 6-digit code, simpan ke `u.ownerWaOtpPending = { code, expiresAt }` (expiry 5 menit), tampilkan kode inline di "hint" untuk prototype testing
+  - `verifyOwnerWaOtp()`: cek input match + belum expired → set `u.ownerWaVerifiedAt = ISO string`, clear pending
+  - `resetOwnerWaVerify()`: confirm dialog → clear `ownerWaVerifiedAt` + `ownerWaOtpPending` → back ke state 1
+  - **Auto re-verify trigger:** kalau user ubah nomor WA pemilik → hapus `ownerWaVerifiedAt`, paksa verifikasi ulang
+  - Kalau OTP expired: error "Kode OTP sudah kadaluarsa. Klik Kirim ulang."
+  - Kalau OTP salah: error "Kode OTP salah. Cek lagi."
+
+**Pengaturan Notifikasi (migrated dari billing page Section 8):**
+- **Divider** dashed di atas notif section (memisahkan dari field WA)
+- Heading: "Pengaturan Notifikasi" + sub "Pilih notifikasi yang ingin diterima di WhatsApp owner."
+- 4 checkbox cards (bordered, active state = lime-bg + lime-border):
+  1. **Kredit total rendah** — "Saat kredit total turun di bawah 30" — key `lowCredit` (default ON)
+  2. **Kredit total kritis** — "Saat kredit total turun di bawah 10" — key `criticalCredit` (default ON)
+  3. **Kredit subscription hampir habis** — "Saat kredit bulanan subscription < 50" — key `subLow` (default ON)
+  4. **Pengingat perpanjangan langganan** — "3 hari sebelum subscription otomatis diperpanjang" — key `renewalReminder` (default ON)
+- Simpan ke `u.billingNotifs = { lowCredit, criticalCredit, subLow, renewalReminder }`
+
+**Tombol Simpan (combined):** "Simpan Pengaturan WA & Notifikasi" — save both:
+- `u.ownerWa` (dengan cc prefix + number)
+- Detect if new ownerWa ≠ saved → reset `ownerWaVerifiedAt = null` + `ownerWaOtpPending = null` (paksa re-verify)
+- `u.billingNotifs` dari 4 checkbox states
+- Toast "Pengaturan WA & notifikasi disimpan!" + refresh OTP verify UI
+
+**Why semua di satu section:** notifikasi billing (low credit, kritis, renewal) dikirim ke `ownerWa`. Taruh nomor + verifikasi + pilihan notif di 1 tempat supaya owner langsung lihat connection: "nomor ini → notifikasi ini".
 
 ### Section 4: Danger Zone (collapsible, paling bawah)
 - "Reset semua data" → konfirmasi modal → `localStorage.removeItem('getstarvio_user')` → redirect ke login
@@ -74,4 +118,8 @@ Konten QR check-in yang dulu ada di halaman Kumpulkan sekarang ada di sini:
 | 2026-03-26 | File dibuat. Halaman baru — belum dibangun di versi sebelumnya |
 | 2026-03-26 | Tambah Reference section — halaman baru, pattern dari onboarding visual grid |
 | 2026-03-26 | **Major update:** Added QR Check-in section (top of page) — moved from old Kumpulkan page. Includes QR display, Print/Unduh, link+Salin+Share WA, Cara pakai 4 langkah, Teks siap pakai (3 blocks), Stats (Scan Hari Ini, Total via QR), Tips box. WA reconnect kept in Settings for owner WA. Section order: QR Check-in → Profil Bisnis → WhatsApp → Danger Zone. |
+| 2026-04-18 | **Tambah Logo Upload** di Section 2 (Profil Bisnis, di atas Nama Bisnis). Upload area 120x120 dashed → preview + tombol Ganti/Hapus (dengan confirm). Accept PNG/JPG, max 200KB, aspect ratio square-ish (warning kalau lebih dari 1.5:1). Resize via canvas ke max 120x120 sebelum simpan base64 ke `bizLogo`. Logo dipakai di check-in page header + QR print layout (fallback ke initial circle kalau null). Auto-save (tidak perlu klik "Simpan Profil"). **QR print layout updated:** logo/initial circle 80px + bizName 22px bold + QR + "Scan untuk check-in" + "Powered by getstarvio" footer. |
+| 2026-04-18 | **Tambah avgServiceValue field** di Section 2 (Profil Bisnis, di bawah Nama Admin). Number input dengan prefix "Rp" + JetBrains Mono. Default Rp 150.000. Dipakai untuk ROI calculation di dashboard (estimasi pendapatan = pelanggan kembali × harga rata-rata). Hint text menjelaskan kegunaannya. Tersimpan saat klik "Simpan Profil". |
 | 2026-03-26 | Sync with HTML: All sections are collapsible accordions (QR, Profil, WA, Danger Zone). One open at a time. QR default open on load. |
+| 2026-04-18 | **WA + NOTIFIKASI MERGED.** Section 3 renamed "WhatsApp" → "WhatsApp & Notifikasi". Added OTP verification flow untuk `ownerWa` (3-state: unverified amber / pending / verified lime + auto re-verify on number change). Migrated 4 notification checkboxes dari billing page Section 8 (lowCredit/criticalCredit/subLow/renewalReminder) — simpan ke `u.billingNotifs`. Combined save button "Simpan Pengaturan WA & Notifikasi". Schema additions: `ownerWaVerifiedAt` (ISO string \| null), `ownerWaOtpPending` ({ code, expiresAt } \| null). Billing Section 8 dihapus. |
+| 2026-04-19 | **META CONNECTION PERSISTENT DISPLAY.** Section 3 WhatsApp: tambah Meta connection card di bawah WA status yang menampilkan persistent info hasil Embedded Signup — verified name, business portfolio name, quality rating badge (HIGH/MEDIUM/LOW/UNKNOWN), messaging tier (1K/10K/100K/Unlimited pesan/hari). Tombol "Lihat teknis →" buka modal dengan Info Teknis: display number, verified name, business portfolio, platform (CLOUD_API), Coexistence status, connected timestamp, + 4 Technical IDs masked (WABA/Phone/Business/Template Namespace) dengan copy buttons. Modal juga tampilkan warning note bahwa access token disimpan server-side bukan localStorage. Data source: `u.meta` object (populated dari Embedded Signup). |
