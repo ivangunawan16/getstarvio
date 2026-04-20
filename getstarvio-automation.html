@@ -654,10 +654,14 @@ var _pinGatePending = null  // { fn, label }
 function requirePin(actionFn, contextLabel) {
   var U = loadU()
   if (!U) return
-  // If no PIN set — show warning, still execute (backwards compat)
+  // If no PIN set — show close-only warning modal (no backdoor)
   if (!U.adminPin) {
-    if (!window.confirm('⚠️ PIN admin belum diatur.\n\nAksi ini seharusnya pakai PIN untuk proteksi. Lanjut tanpa PIN?\n\n(Setup PIN di Settings → PIN Admin untuk proteksi ekstra)')) return
-    actionFn()
+    showWarning('PIN admin belum diatur.\n\nUntuk aksi kritis, kamu harus setup PIN dulu di Settings. Ini proteksi penting biar akun kamu aman.', {
+      title: 'PIN Admin Belum Diatur',
+      icon: '🔒',
+      okLabel: 'Mengerti',
+      ctaLink: { href: 'getstarvio-settings.html#pin', label: 'Setup PIN Sekarang' }
+    })
     return
   }
   // PIN set — open gate
@@ -783,6 +787,55 @@ function showToast(msg, kind) {
   setTimeout(function() { t.style.opacity = '0' }, 2400)
   setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t) }, 2900)
 }
+
+/* ══ CUSTOM DIALOG SYSTEM — drop-in replacement for native prompt/confirm/alert ══ */
+function showDialog(opts) {
+  opts = opts || {}
+  return new Promise(function(resolve) {
+    var existing = document.getElementById('util-dialog')
+    if (existing) existing.remove()
+    var kind = opts.kind || 'info'
+    var iconBg = kind === 'danger' ? 'var(--red-bg)' : kind === 'warn' ? 'var(--amber-bg)' : 'var(--lime-bg)'
+    var iconBd = kind === 'danger' ? '#f5c5c3' : kind === 'warn' ? '#fcd88a' : '#c8f07a'
+    var iconEmoji = opts.icon || (kind === 'danger' ? '⚠️' : kind === 'warn' ? '⚠️' : 'ℹ️')
+    var okBtnClass = kind === 'danger' ? 'btn-danger' : 'btn-lime'
+    var showCancel = opts.showCancel !== false
+    var okLabel = opts.okLabel || (opts.input ? 'Konfirmasi' : 'OK')
+    var cancelLabel = opts.cancelLabel || 'Batal'
+    var inputHtml = ''
+    if (opts.input) {
+      var it = opts.input
+      var attrs = 'type="' + (it.type || 'text') + '" id="util-dlg-input" value="' + String(it.value || '').replace(/"/g,'&quot;') + '" placeholder="' + (it.placeholder || '') + '"' + (it.maxLength ? ' maxlength="' + it.maxLength + '"' : '') + (it.inputMode ? ' inputmode="' + it.inputMode + '"' : '') + (it.pattern ? ' pattern="' + it.pattern + '"' : '')
+      var inputStyle = 'width:100%;padding:12px 14px;font-size:' + (it.type === 'password' ? '20px;letter-spacing:.5em;text-align:center;font-family:\'JetBrains Mono\',monospace;font-weight:700' : '14px;font-family:inherit') + ';border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink);margin-top:8px'
+      inputHtml = '<input ' + attrs + ' style="' + inputStyle + '"><div id="util-dlg-err" style="display:none;font-size:11px;color:var(--red-dk);margin-top:6px;font-weight:600;text-align:center"></div>'
+    }
+    var ctaLinkHtml = opts.ctaLink ? '<a href="' + opts.ctaLink.href + '" class="btn btn-lime btn-sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:10px">' + opts.ctaLink.label + ' →</a>' : ''
+    var el = document.createElement('div')
+    el.id = 'util-dialog'
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(26,25,23,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:600;padding:16px'
+    el.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);max-width:400px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:fadeUp .18s ease"><div style="padding:22px 24px 16px;text-align:center"><div style="width:48px;height:48px;border-radius:12px;background:' + iconBg + ';border:1px solid ' + iconBd + ';display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px">' + iconEmoji + '</div>' + (opts.title ? '<div style="font-size:16px;font-weight:700;color:var(--ink);line-height:1.3">' + opts.title + '</div>' : '') + (opts.message ? '<div style="font-size:13px;color:var(--ink3);margin-top:8px;line-height:1.6;white-space:pre-wrap;text-align:left">' + opts.message + '</div>' : '') + inputHtml + ctaLinkHtml + '</div><div style="padding:12px 24px 16px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border)">' + (showCancel ? '<button id="util-dlg-cancel" class="btn btn-ghost btn-sm">' + cancelLabel + '</button>' : '') + '<button id="util-dlg-ok" class="btn ' + okBtnClass + ' btn-sm">' + okLabel + '</button></div></div>'
+    document.body.appendChild(el)
+    function cleanup() { document.removeEventListener('keydown', onKey); el.remove() }
+    function doOk() {
+      if (opts.input) {
+        var inp = document.getElementById('util-dlg-input'); var val = inp ? inp.value : ''
+        if (opts.validate) { var errMsg = opts.validate(val); if (errMsg) { var errEl = document.getElementById('util-dlg-err'); if (errEl) { errEl.textContent = errMsg; errEl.style.display = 'block' } if (inp) { inp.focus(); inp.select() } return } }
+        cleanup(); resolve(val)
+      } else { cleanup(); resolve(true) }
+    }
+    function doCancel() { cleanup(); resolve(opts.input ? null : false) }
+    function onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doOk() } else if (e.key === 'Escape') { e.preventDefault(); if (showCancel) doCancel(); else doOk() } }
+    document.getElementById('util-dlg-ok').addEventListener('click', doOk)
+    if (showCancel) document.getElementById('util-dlg-cancel').addEventListener('click', doCancel)
+    el.addEventListener('click', function(e) { if (e.target === el && showCancel) doCancel() })
+    document.addEventListener('keydown', onKey)
+    if (opts.input) { var inp = document.getElementById('util-dlg-input'); if (inp) { inp.focus(); inp.select() } } else { document.getElementById('util-dlg-ok').focus() }
+  })
+}
+function showAlert(msg, opts) { opts = opts || {}; return showDialog({ title: opts.title || 'Info', message: msg, showCancel: false, kind: opts.kind || 'info', okLabel: opts.okLabel || 'OK', icon: opts.icon }) }
+function showConfirm(msg, opts) { opts = opts || {}; return showDialog({ title: opts.title || 'Konfirmasi', message: msg, kind: opts.kind || 'warn', okLabel: opts.okLabel || 'Ya', cancelLabel: opts.cancelLabel || 'Batal', icon: opts.icon }) }
+function showPrompt(msg, opts) { opts = opts || {}; return showDialog({ title: opts.title || 'Input', message: msg, kind: opts.kind || 'info', input: { type: opts.type || 'text', placeholder: opts.placeholder, value: opts.defaultValue || '', maxLength: opts.maxLength, inputMode: opts.inputMode, pattern: opts.pattern }, okLabel: opts.okLabel || 'Konfirmasi', cancelLabel: opts.cancelLabel || 'Batal', icon: opts.icon, validate: opts.validate }) }
+function showWarning(msg, opts) { opts = opts || {}; return showDialog({ title: opts.title || 'Perhatian', message: msg, showCancel: false, kind: 'warn', okLabel: opts.okLabel || 'Mengerti', icon: opts.icon || '⚠️', ctaLink: opts.ctaLink }) }
 
 /* == CATEGORY TOGGLE == */
 function toggleCat(catId) {

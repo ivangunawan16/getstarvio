@@ -1234,6 +1234,133 @@ function showToast(msg) {
   setTimeout(function() { t.classList.remove('show') }, 2200)
 }
 
+/* ══════════════════════════════════════════════
+   CUSTOM DIALOG SYSTEM — drop-in replacement for native prompt/confirm/alert
+   Usage:
+     showAlert('msg')                           → Promise<true>
+     showConfirm('msg', {kind:'danger'})        → Promise<boolean>
+     showPrompt('msg', {type:'password'})       → Promise<string|null>
+     showWarning('msg', {ctaLink:{href,label}}) → Promise<true>  (close-only, no backdoor)
+   ══════════════════════════════════════════════ */
+function showDialog(opts) {
+  opts = opts || {}
+  return new Promise(function(resolve) {
+    var existing = document.getElementById('util-dialog')
+    if (existing) existing.remove()
+
+    var kind = opts.kind || 'info'
+    var iconBg = kind === 'danger' ? 'var(--red-bg)' : kind === 'warn' ? 'var(--amber-bg)' : 'var(--lime-bg)'
+    var iconBd = kind === 'danger' ? '#f5c5c3' : kind === 'warn' ? '#fcd88a' : '#c8f07a'
+    var iconEmoji = opts.icon || (kind === 'danger' ? '⚠️' : kind === 'warn' ? '⚠️' : 'ℹ️')
+    var okBtnClass = kind === 'danger' ? 'btn-danger' : 'btn-lime'
+    var showCancel = opts.showCancel !== false
+    var okLabel = opts.okLabel || (opts.input ? 'Konfirmasi' : 'OK')
+    var cancelLabel = opts.cancelLabel || 'Batal'
+
+    var inputHtml = ''
+    if (opts.input) {
+      var it = opts.input
+      var attrs = 'type="' + (it.type || 'text') + '"' +
+        ' id="util-dlg-input"' +
+        ' value="' + String(it.value || '').replace(/"/g,'&quot;') + '"' +
+        ' placeholder="' + (it.placeholder || '') + '"' +
+        (it.maxLength ? ' maxlength="' + it.maxLength + '"' : '') +
+        (it.inputMode ? ' inputmode="' + it.inputMode + '"' : '') +
+        (it.pattern ? ' pattern="' + it.pattern + '"' : '') +
+        (it.autocomplete ? ' autocomplete="' + it.autocomplete + '"' : '')
+      var inputStyle = 'width:100%;padding:12px 14px;font-size:' + (it.type === 'password' ? '20px;letter-spacing:.5em;text-align:center;font-family:\'JetBrains Mono\',monospace;font-weight:700' : '14px;font-family:inherit') + ';border:1.5px solid var(--border2);border-radius:var(--r-sm);outline:none;background:#fff;color:var(--ink);margin-top:8px'
+      inputHtml = '<input ' + attrs + ' style="' + inputStyle + '">' +
+        '<div id="util-dlg-err" style="display:none;font-size:11px;color:var(--red-dk);margin-top:6px;font-weight:600;text-align:center"></div>'
+    }
+
+    var ctaLinkHtml = ''
+    if (opts.ctaLink) {
+      ctaLinkHtml = '<a href="' + opts.ctaLink.href + '" class="btn btn-lime btn-sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:10px">' + opts.ctaLink.label + ' →</a>'
+    }
+
+    var el = document.createElement('div')
+    el.id = 'util-dialog'
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(26,25,23,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:600;padding:16px;animation:fadeUp .15s ease'
+    el.innerHTML =
+      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);max-width:400px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)">' +
+        '<div style="padding:22px 24px 16px;text-align:center">' +
+          '<div style="width:48px;height:48px;border-radius:12px;background:' + iconBg + ';border:1px solid ' + iconBd + ';display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px">' + iconEmoji + '</div>' +
+          (opts.title ? '<div style="font-size:16px;font-weight:700;color:var(--ink);line-height:1.3">' + opts.title + '</div>' : '') +
+          (opts.message ? '<div style="font-size:13px;color:var(--ink3);margin-top:8px;line-height:1.6;white-space:pre-wrap;text-align:left">' + opts.message + '</div>' : '') +
+          inputHtml +
+          ctaLinkHtml +
+        '</div>' +
+        '<div style="padding:12px 24px 16px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border)">' +
+          (showCancel ? '<button id="util-dlg-cancel" class="btn btn-ghost btn-sm">' + cancelLabel + '</button>' : '') +
+          '<button id="util-dlg-ok" class="btn ' + okBtnClass + ' btn-sm">' + okLabel + '</button>' +
+        '</div>' +
+      '</div>'
+    document.body.appendChild(el)
+
+    function cleanup() {
+      document.removeEventListener('keydown', onKey)
+      el.remove()
+    }
+    function doOk() {
+      if (opts.input) {
+        var inp = document.getElementById('util-dlg-input')
+        var val = inp ? inp.value : ''
+        if (opts.validate) {
+          var errMsg = opts.validate(val)
+          if (errMsg) {
+            var errEl = document.getElementById('util-dlg-err')
+            if (errEl) { errEl.textContent = errMsg; errEl.style.display = 'block' }
+            if (inp) { inp.focus(); inp.select() }
+            return
+          }
+        }
+        cleanup(); resolve(val)
+      } else {
+        cleanup(); resolve(true)
+      }
+    }
+    function doCancel() { cleanup(); resolve(opts.input ? null : false) }
+    function onKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doOk() }
+      else if (e.key === 'Escape') { e.preventDefault(); if (showCancel) doCancel(); else doOk() }
+    }
+
+    document.getElementById('util-dlg-ok').addEventListener('click', doOk)
+    if (showCancel) document.getElementById('util-dlg-cancel').addEventListener('click', doCancel)
+    el.addEventListener('click', function(e) { if (e.target === el && showCancel) doCancel() })
+    document.addEventListener('keydown', onKey)
+
+    if (opts.input) {
+      var inp = document.getElementById('util-dlg-input')
+      if (inp) { inp.focus(); inp.select() }
+    } else {
+      document.getElementById('util-dlg-ok').focus()
+    }
+  })
+}
+
+function showAlert(msg, opts) {
+  opts = opts || {}
+  return showDialog({ title: opts.title || 'Info', message: msg, showCancel: false, kind: opts.kind || 'info', okLabel: opts.okLabel || 'OK', icon: opts.icon })
+}
+function showConfirm(msg, opts) {
+  opts = opts || {}
+  return showDialog({ title: opts.title || 'Konfirmasi', message: msg, kind: opts.kind || 'warn', okLabel: opts.okLabel || 'Ya', cancelLabel: opts.cancelLabel || 'Batal', icon: opts.icon })
+}
+function showPrompt(msg, opts) {
+  opts = opts || {}
+  return showDialog({
+    title: opts.title || 'Input', message: msg, kind: opts.kind || 'info',
+    input: { type: opts.type || 'text', placeholder: opts.placeholder, value: opts.defaultValue || '', maxLength: opts.maxLength, inputMode: opts.inputMode, pattern: opts.pattern, autocomplete: opts.autocomplete },
+    okLabel: opts.okLabel || 'Konfirmasi', cancelLabel: opts.cancelLabel || 'Batal',
+    icon: opts.icon, validate: opts.validate
+  })
+}
+function showWarning(msg, opts) {
+  opts = opts || {}
+  return showDialog({ title: opts.title || 'Perhatian', message: msg, showCancel: false, kind: 'warn', okLabel: opts.okLabel || 'Mengerti', icon: opts.icon || '⚠️', ctaLink: opts.ctaLink })
+}
+
 /* ── PHONE STRIP 0 ── */
 document.addEventListener('input', function(e) {
   if (e.target.id === 'inp-ownerWa') {
@@ -1356,18 +1483,23 @@ function savePinSetup() {
   if (pin !== confirm) { err.textContent = 'Konfirmasi PIN tidak cocok'; err.style.display = 'block'; return }
   // Warn on common weak PINs
   var weakPins = ['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1212']
-  if (weakPins.indexOf(pin) !== -1) {
-    if (!window.confirm('PIN "' + pin + '" mudah ditebak. Tetap lanjut?')) return
+  var proceedSetup = function() {
+    u.adminPin = pin
+    u.adminPinSetAt = new Date().toISOString()
+    saveU(u)
+    document.getElementById('pin-new').value = ''
+    document.getElementById('pin-confirm').value = ''
+    err.style.display = 'none'
+    renderPinAccordion(u)
+    showToast('🔐 PIN admin berhasil diatur!')
   }
-
-  u.adminPin = pin
-  u.adminPinSetAt = new Date().toISOString()
-  saveU(u)
-  document.getElementById('pin-new').value = ''
-  document.getElementById('pin-confirm').value = ''
-  err.style.display = 'none'
-  renderPinAccordion(u)
-  showToast('🔐 PIN admin berhasil diatur!')
+  if (weakPins.indexOf(pin) !== -1) {
+    showConfirm('PIN "' + pin + '" termasuk PIN yang mudah ditebak.\n\nTetap lanjut dengan PIN ini?', { title: 'PIN Lemah', kind: 'warn', okLabel: 'Tetap Pakai', cancelLabel: 'Ganti PIN' }).then(function(ok) {
+      if (ok) proceedSetup()
+    })
+    return
+  }
+  proceedSetup()
 }
 
 function savePinChange() {
@@ -1389,19 +1521,24 @@ function savePinChange() {
   if (newPin !== confirm) { err.textContent = 'Konfirmasi PIN baru tidak cocok'; err.style.display = 'block'; return }
   if (newPin === current) { err.textContent = 'PIN baru sama dengan PIN sekarang'; err.style.display = 'block'; return }
   var weakPins = ['0000','1111','2222','3333','4444','5555','6666','7777','8888','9999','1234','4321','0123','1212']
-  if (weakPins.indexOf(newPin) !== -1) {
-    if (!window.confirm('PIN "' + newPin + '" mudah ditebak. Tetap lanjut?')) return
+  var proceedChange = function() {
+    u.adminPin = newPin
+    u.adminPinSetAt = new Date().toISOString()
+    saveU(u)
+    document.getElementById('pin-current').value = ''
+    document.getElementById('pin-new2').value = ''
+    document.getElementById('pin-confirm2').value = ''
+    err.style.display = 'none'
+    renderPinAccordion(u)
+    showToast('🔐 PIN admin berhasil diubah!')
   }
-
-  u.adminPin = newPin
-  u.adminPinSetAt = new Date().toISOString()
-  saveU(u)
-  document.getElementById('pin-current').value = ''
-  document.getElementById('pin-new2').value = ''
-  document.getElementById('pin-confirm2').value = ''
-  err.style.display = 'none'
-  renderPinAccordion(u)
-  showToast('🔐 PIN admin berhasil diubah!')
+  if (weakPins.indexOf(newPin) !== -1) {
+    showConfirm('PIN "' + newPin + '" termasuk PIN yang mudah ditebak.\n\nTetap lanjut dengan PIN ini?', { title: 'PIN Lemah', kind: 'warn', okLabel: 'Tetap Pakai', cancelLabel: 'Ganti PIN' }).then(function(ok) {
+      if (ok) proceedChange()
+    })
+    return
+  }
+  proceedChange()
 }
 
 function removePin() {
@@ -1413,16 +1550,40 @@ function removePin() {
     renderPinAccordion(u)
     return
   }
-  var current = window.prompt('Masukkan PIN sekarang untuk hapus PIN admin:')
-  if (current === null) return
-  if (current !== u.adminPin) { showToast('PIN salah', 'error'); return }
-  if (!window.confirm('Yakin mau hapus PIN admin?\n\nSetelah dihapus, aksi kritis tidak akan terproteksi lagi. Kamu bisa setup PIN lagi kapan aja.')) return
-
-  delete u.adminPin
-  delete u.adminPinSetAt
-  saveU(u)
-  renderPinAccordion(u)
-  showToast('PIN admin dihapus — aksi kritis tidak terproteksi lagi')
+  showPrompt('Masukkan PIN sekarang untuk konfirmasi hapus:', {
+    title: 'Hapus PIN Admin',
+    kind: 'danger',
+    icon: '🗑️',
+    type: 'password',
+    inputMode: 'numeric',
+    pattern: '\\d{4}',
+    maxLength: 4,
+    placeholder: '••••',
+    autocomplete: 'current-password',
+    okLabel: 'Lanjut',
+    validate: function(val) {
+      var v = (val || '').trim()
+      if (v.length !== 4) return 'PIN harus 4 digit'
+      if (v !== u.adminPin) return 'PIN salah'
+      return null
+    }
+  }).then(function(entered) {
+    if (entered === null) return
+    showConfirm('Yakin mau hapus PIN admin?\n\nSetelah dihapus, aksi kritis tidak akan terproteksi lagi. Kamu bisa setup PIN lagi kapan aja.', {
+      title: 'Hapus PIN?',
+      kind: 'danger',
+      icon: '⚠️',
+      okLabel: 'Ya, Hapus PIN',
+      cancelLabel: 'Batal'
+    }).then(function(ok) {
+      if (!ok) return
+      delete u.adminPin
+      delete u.adminPinSetAt
+      saveU(u)
+      renderPinAccordion(u)
+      showToast('PIN admin dihapus — aksi kritis tidak terproteksi lagi')
+    })
+  })
 }
 
 /* ══════════════════════════════════════════════
@@ -1585,14 +1746,22 @@ function handleLogoUpload(event) {
 }
 
 function confirmRemoveLogo() {
-  if (!confirm('Hapus logo bisnis? Halaman check-in akan kembali pakai inisial.')) return
-  const u = loadU()
-  if (!u) return
-  u.bizLogo = null
-  saveU(u)
-  hideLogoPreview()
-  clearLogoMessages()
-  showToast('Logo dihapus.')
+  showConfirm('Hapus logo bisnis? Halaman check-in akan kembali pakai inisial.', {
+    title: 'Hapus Logo?',
+    kind: 'danger',
+    icon: '🗑️',
+    okLabel: 'Ya, Hapus',
+    cancelLabel: 'Batal'
+  }).then(function(ok) {
+    if (!ok) return
+    var u = loadU()
+    if (!u) return
+    u.bizLogo = null
+    saveU(u)
+    hideLogoPreview()
+    clearLogoMessages()
+    showToast('Logo dihapus.')
+  })
 }
 
 /* ── SAVE WA + NOTIFICATION PREFERENCES ── */
@@ -1640,7 +1809,7 @@ function sendOwnerWaOtp() {
   var num = document.getElementById('inp-ownerWa').value.trim().replace(/\D/g, '')
   if (num.startsWith('0')) num = num.slice(1)
   if (num.length < 9) {
-    alert('Masukkan nomor WA owner yang valid (min 9 digit) dulu.')
+    showAlert('Masukkan nomor WA owner yang valid (min 9 digit) dulu.', { title: 'Nomor Tidak Valid', kind: 'warn' })
     return
   }
   // Prototype: generate mock 6-digit OTP, expires in 5 min
@@ -1693,14 +1862,22 @@ function verifyOwnerWaOtp() {
 }
 
 function resetOwnerWaVerify() {
-  if (!confirm('Verifikasi ulang nomor WA owner? Kamu harus input kode OTP baru.')) return
-  var u = loadU()
-  if (!u) return
-  u.ownerWaVerifiedAt = null
-  u.ownerWaOtpPending = null
-  saveU(u)
-  refreshOwnerWaVerifyUI()
-  renderPinAccordion(u)  // Re-lock PIN accordion (if PIN not set)
+  showConfirm('Verifikasi ulang nomor WA owner? Kamu harus input kode OTP baru.', {
+    title: 'Verify Ulang?',
+    kind: 'warn',
+    icon: '🔄',
+    okLabel: 'Ya, Verify Ulang',
+    cancelLabel: 'Batal'
+  }).then(function(ok) {
+    if (!ok) return
+    var u = loadU()
+    if (!u) return
+    u.ownerWaVerifiedAt = null
+    u.ownerWaOtpPending = null
+    saveU(u)
+    refreshOwnerWaVerifyUI()
+    renderPinAccordion(u)
+  })
 }
 
 function refreshOwnerWaVerifyUI() {
